@@ -609,7 +609,7 @@
                         var r = rotatePolygon(part, 360f / config.Rotations);
                         r.Rotation = part.Rotation + (360f / config.Rotations);
                         r.Source = part.Source;
-                        r.id = part.id;
+                        r.Id = part.Id;
 
                         // rotation is not in-place
                         part = r;
@@ -646,7 +646,7 @@
                                     {
                                         x = sheetNfp[j][k].x - part[0].x,
                                         y = sheetNfp[j][k].y - part[0].y,
-                                        id = part.id,
+                                        id = part.Id,
                                         rotation = part.Rotation,
                                         source = part.Source.Value,
                                     };
@@ -822,7 +822,7 @@
                         {
                             shiftvector = new PlacementItem()
                             {
-                                id = part.id,
+                                id = part.Id,
                                 x = nf[k].x - part[0].x,
                                 y = nf[k].y - part[0].y,
                                 source = part.Source.Value,
@@ -984,7 +984,7 @@
                 {
                     allplacements.Add(new SheetPlacementItem()
                     {
-                        sheetId = sheet.id,
+                        sheetId = sheet.Id,
                         sheetSource = sheet.Source.Value,
                         sheetplacements = placements,
                     });
@@ -1074,7 +1074,7 @@
             for (var i = 0; i < parts.Count; i++)
             {
                 parts[i].Rotation = rotations[i];
-                parts[i].id = ids[i];
+                parts[i].Id = ids[i];
                 parts[i].Source = sources[i];
                 if (!data.config.Simplify)
                 {
@@ -1084,7 +1084,7 @@
 
             for (int i = 0; i < data.sheets.Count; i++)
             {
-                data.sheets[i].id = data.sheetids[i];
+                data.sheets[i].Id = data.sheetids[i];
                 data.sheets[i].Source = data.sheetsources[i];
                 data.sheets[i].children = data.sheetchildren[i];
             }

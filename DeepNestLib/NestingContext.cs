@@ -47,18 +47,18 @@
 
             for (int i = 0; i < this.Polygons.Count; i++)
             {
-                this.Polygons[i].id = i;
+                this.Polygons[i].Id = i;
             }
 
             for (int i = 0; i < this.Sheets.Count; i++)
             {
-                this.Sheets[i].id = i;
+                this.Sheets[i].Id = i;
             }
 
             foreach (var item in this.Polygons)
             {
                 NFP clone = new NFP();
-                clone.id = item.id;
+                clone.Id = item.Id;
                 clone.Source = item.Source;
                 clone.Points = item.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }).ToArray();
                 if (item.children != null)
@@ -68,7 +68,7 @@
                     {
                         clone.children.Add(new NFP());
                         var l = clone.children.Last();
-                        l.id = citem.id;
+                        l.Id = citem.Id;
                         l.Source = citem.Source;
                         l.Points = citem.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }).ToArray();
                     }
@@ -80,7 +80,7 @@
             foreach (var item in this.Sheets)
             {
                 NFP clone = new NFP();
-                clone.id = item.id;
+                clone.Id = item.Id;
                 clone.Source = item.Source;
                 clone.Points = item.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }).ToArray();
                 if (item.children != null)
@@ -90,7 +90,7 @@
                     {
                         clone.children.Add(new NFP());
                         var l = clone.children.Last();
-                        l.id = citem.id;
+                        l.Id = citem.Id;
                         l.Source = citem.Source;
                         l.Points = citem.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }).ToArray();
                     }
@@ -106,7 +106,7 @@
                 {
                     Parallel.ForEach(grps, (item) =>
                     {
-                        SvgNest.offsetTree(item.First(), 0.5 * SvgNest.Config.Spacing, SvgNest.Config);
+                        SvgNest.OffsetTree(item.First(), 0.5 * SvgNest.Config.Spacing, SvgNest.Config);
                         foreach (var zitem in item)
                         {
                             zitem.Points = item.First().Points.ToArray();
@@ -117,7 +117,7 @@
                 {
                     foreach (var item in grps)
                     {
-                        SvgNest.offsetTree(item.First(), 0.5 * SvgNest.Config.Spacing, SvgNest.Config);
+                        SvgNest.OffsetTree(item.First(), 0.5 * SvgNest.Config.Spacing, SvgNest.Config);
                         foreach (var zitem in item)
                         {
                             zitem.Points = item.First().Points.ToArray();
@@ -196,13 +196,13 @@
                         sheetsIds.Add(sheetid);
                     }
 
-                    var sheet = this.Sheets.First(z => z.id == sheetid);
+                    var sheet = this.Sheets.First(z => z.Id == sheetid);
                     totalSheetsArea += GeometryUtil.polygonArea(sheet);
 
                     foreach (var ssitem in zitem.sheetplacements)
                     {
                         this.PlacedPartsCount++;
-                        var poly = this.Polygons.First(z => z.id == ssitem.id);
+                        var poly = this.Polygons.First(z => z.Id == ssitem.id);
                         totalPartsArea += GeometryUtil.polygonArea(poly);
                         placed.Add(poly);
                         poly.sheet = sheet;
@@ -213,7 +213,7 @@
                 }
             }
 
-            var emptySheets = this.Sheets.Where(z => !sheetsIds.Contains(z.id)).ToArray();
+            var emptySheets = this.Sheets.Where(z => !sheetsIds.Contains(z.Id)).ToArray();
 
             this.MaterialUtilization = Math.Abs(totalPartsArea / totalSheetsArea);
 

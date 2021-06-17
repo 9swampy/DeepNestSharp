@@ -154,7 +154,7 @@
 
             for (i = 0; i < female.placements.Count; i++)
             {
-                if (!gene1.Any(z => z.id == female.placements[i].id))
+                if (!gene1.Any(z => z.Id == female.placements[i].Id))
                 {
                     gene1.Add(female.placements[i]);
                     rot1.Add(female.Rotation[i]);
@@ -163,7 +163,7 @@
 
             for (i = 0; i < male.placements.Count; i++)
             {
-                if (!gene2.Any(z => z.id == male.placements[i].id))
+                if (!gene2.Any(z => z.Id == male.placements[i].Id))
                 {
                     gene2.Add(male.placements[i]);
                     rot2.Add(male.Rotation[i]);

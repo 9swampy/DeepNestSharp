@@ -408,7 +408,7 @@
         }
 
         // offset tree recursively
-        public static void offsetTree(NFP t, double offset, SvgNestConfig config, bool? inside = null)
+        public static void OffsetTree(NFP t, double offset, SvgNestConfig config, bool? inside = null)
         {
             var simple = simplifyFunction(t, (inside == null) ? false : inside.Value);
             var offsetpaths = new NFP[] { simple };
@@ -446,7 +446,7 @@
             {
                 for (var i = 0; i < t.children.Count; i++)
                 {
-                    offsetTree(t.children[i], -offset, config, (inside == null) ? true : (!inside));
+                    OffsetTree(t.children[i], -offset, config, (inside == null) ? true : (!inside));
                 }
             }
         }
@@ -726,7 +726,7 @@
                         for (int j = 0; j < parts[i].Quanity; j++)
                         {
                             var poly = cloneTree(parts[i].Polygon); // deep copy
-                            poly.id = id; // id is the unique id of all parts that will be nested, including cloned duplicates
+                            poly.Id = id; // id is the unique id of all parts that will be nested, including cloned duplicates
                             poly.Source = i; // source is the id of each unique part from the main part list
 
                             adam.Add(poly);
@@ -793,7 +793,7 @@
                     for (int j = 0; j < parts[i].Quanity; j++)
                     {
                         var cln = cloneTree(poly);
-                        cln.id = sid; // id is the unique id of all parts that will be nested, including cloned duplicates
+                        cln.Id = sid; // id is the unique id of all parts that will be nested, including cloned duplicates
                         cln.Source = poly.Source; // source is the id of each unique part from the main part list
 
                         sheets.Add(cln);
@@ -820,7 +820,7 @@
 
                     for (int j = 0; j < this.ga.Population[i].placements.Count; j++)
                     {
-                        var id = this.ga.Population[i].placements[j].id;
+                        var id = this.ga.Population[i].placements[j].Id;
                         var source = this.ga.Population[i].placements[j].Source;
                         var child = this.ga.Population[i].placements[j].children;
 

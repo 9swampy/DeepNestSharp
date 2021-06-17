@@ -16,7 +16,7 @@
         public override string ToString()
         {
             var str1 = (this.Points != null) ? this.Points.Count() + string.Empty : "null";
-            return $"nfp: id: {this.id}; source: {this.Source}; rotation: {this.rotation}; points: {str1}";
+            return $"nfp: id: {this.Id}; source: {this.Source}; rotation: {this.rotation}; points: {str1}";
         }
 
         public NFP()
@@ -83,20 +83,7 @@
             }
         }
 
-        public int id;
-
-        public int Id
-        {
-            get
-            {
-                return this.Id;
-            }
-
-            set
-            {
-                this.Id = value;
-            }
-        }
+        public int Id { get; set; }
 
         public double? Offsetx;
         public double? Offsety;

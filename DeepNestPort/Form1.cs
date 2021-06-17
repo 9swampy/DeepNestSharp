@@ -98,13 +98,13 @@
             this.listView1.Items.Clear();
             foreach (var item in this.polygons)
             {
-                this.listView1.Items.Add(new ListViewItem(new string[] { item.id.ToString(), item.Source.ToString(), item.Name, item.Points.Count().ToString() }) { Tag = item });
+                this.listView1.Items.Add(new ListViewItem(new string[] { item.Id.ToString(), item.Source.ToString(), item.Name, item.Points.Count().ToString() }) { Tag = item });
             }
 
             this.listView2.Items.Clear();
             foreach (var item in this.sheets)
             {
-                this.listView2.Items.Add(new ListViewItem(new string[] { item.id.ToString(), item.Source.ToString(), item.Name, item.Points.Count().ToString() }) { Tag = item });
+                this.listView2.Items.Add(new ListViewItem(new string[] { item.Id.ToString(), item.Source.ToString(), item.Name, item.Points.Count().ToString() }) { Tag = item });
             }
 
             this.groupBox5.Text = "Parts: " + this.polygons.Count();
@@ -298,19 +298,19 @@
                             foreach (var zitem in fr.placements.First())
                             {
                                 var sheetid = zitem.sheetId;
-                                if (sheetid != item.id)
+                                if (sheetid != item.Id)
                                 {
                                     continue;
                                 }
 
-                                var sheet = this.sheets.FirstOrDefault(z => z.id == sheetid);
+                                var sheet = this.sheets.FirstOrDefault(z => z.Id == sheetid);
                                 if (sheet != null)
                                 {
                                     tot1 += Math.Abs(GeometryUtil.polygonArea(sheet));
                                     was = true;
                                     foreach (var ssitem in zitem.sheetplacements)
                                     {
-                                        var poly = this.polygons.FirstOrDefault(z => z.id == ssitem.id);
+                                        var poly = this.polygons.FirstOrDefault(z => z.Id == ssitem.id);
                                         if (poly != null)
                                         {
                                             tot2 += Math.Abs(GeometryUtil.polygonArea(poly));
