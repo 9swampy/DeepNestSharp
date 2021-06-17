@@ -127,8 +127,8 @@
 
                 foreach (var item in lsheets)
                 {
-                    var gap = SvgNest.Config.sheetSpacing - SvgNest.Config.spacing / 2;
-                    SvgNest.offsetTree(item, -gap, SvgNest.Config, true);
+                    var gap = SvgNest.Config.SheetSpacing - SvgNest.Config.Spacing / 2;
+                    SvgNest.OffsetTree(item, -gap, SvgNest.Config, true);
                 }
             }
 

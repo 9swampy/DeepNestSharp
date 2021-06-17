@@ -1472,7 +1472,7 @@
                 return;
             }
 
-            this.Preview = DxfParser.loadDxf((this.objectListView1.SelectedObject as DetailLoadInfo).Path);
+            this.Preview = DxfParser.LoadDxf((this.objectListView1.SelectedObject as DetailLoadInfo).Path);
             if (autoFit) fitAll();
         }
 
