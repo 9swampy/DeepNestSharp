@@ -12,6 +12,21 @@
         public double TimeRatio = 0.5;
         public bool MergeLines = false;
 
+        public int SaveAsFileTypeIndex
+        {
+            get
+            {
+                return (int)Properties.Settings.Default["SaveAsFileTypeIndex"];
+            }
+
+            set
+            {
+                Properties.Settings.Default["SaveAsFileTypeIndex"] = value;
+                Properties.Settings.Default.Save();
+                Properties.Settings.Default.Upgrade();
+            }
+        }
+
         public PlacementTypeEnum PlacementType
         {
             get

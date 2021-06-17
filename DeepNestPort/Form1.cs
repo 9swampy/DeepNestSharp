@@ -175,7 +175,6 @@
             ctx2.Setup();
         }
 
-
         public void Redraw()
         {
             var pos = this.pictureBox1.PointToClient(Cursor.Position);
@@ -1295,10 +1294,19 @@
         private void toolStripButton2_Click_1(object sender, EventArgs e)
         {
             SaveFileDialog sfd = new SaveFileDialog();
-            sfd.Filter = "Svgs files (*.svg)|*.svg";
+            sfd.Filter = "Svgs files (*.svg)|*.svg|Dxf files (*.dxf)|*.dxf";
+            sfd.FilterIndex = SvgNest.Config.SaveAsFileTypeIndex;
             if (sfd.ShowDialog() == DialogResult.OK)
             {
-                SvgParser.Export(sfd.FileName, this.polygons.ToArray(), this.sheets.ToArray());
+                SvgNest.Config.SaveAsFileTypeIndex = sfd.FilterIndex;
+                if (sfd.FilterIndex == 0)
+                {
+                    SvgParser.Export(sfd.FileName, this.polygons.ToArray(), this.sheets.ToArray());
+                }
+                else
+                {
+                    DxfParser.Export(sfd.FileName, this.polygons, this.sheets);
+                }
             }
         }
 
@@ -1431,7 +1439,6 @@
 
         public List<DetailLoadInfo> Infos = new List<DetailLoadInfo>();
 
-
         private void toolStripButton6_Click(object sender, EventArgs e)
         {
             this.context = new NestingContext();
@@ -1508,7 +1515,6 @@
             }
             objectListView1.SetObjects(Infos);
         }
-
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {

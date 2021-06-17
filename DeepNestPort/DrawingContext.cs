@@ -165,11 +165,11 @@
             zoom = kx;
             if (sz1.Width > w || sz1.Height > h) zoom = ky;
 
-            var x = dx / 2 + minx;
-            var y = dy / 2 + miny;
+            var x = (dx / 2) + minx;
+            var y = (dy / 2) + miny;
 
-            sx = ((w / 2f) / zoom - x);
-            sy = -((h / 2f) / zoom + y);
+            sx = ((w / 2f) / zoom) - x;
+            sy = -(((h / 2f) / zoom) + y);
 
             var test = Transform(new PointF(x, y));
 
