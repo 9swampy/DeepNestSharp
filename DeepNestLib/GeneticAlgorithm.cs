@@ -6,11 +6,11 @@
 
     public class GeneticAlgorithm
     {
-        SvgNestConfig Config;
-        public List<PopulationItem> population;
+        private SvgNestConfig config;
+        private List<PopulationItem> population;
 
-        public static bool StrictAngles = false;
-        float[] defaultAngles = new float[]
+        private static bool strictAngles = false;
+        private float[] defaultAngles = new float[]
         {
         0,
         0,
@@ -33,34 +33,34 @@
             }
 
             this.defaultAngles = ang2.ToArray();
-            this.Config = config;
+            this.config = config;
 
             List<float> angles = new List<float>();
             for (int i = 0; i < adam.Length; i++)
             {
-                if (StrictAngles)
+                if (strictAngles)
                 {
                     angles.Add(this.defaultAngles[i]);
                 }
                 else
                 {
-                    var angle = (float)Math.Floor(this.r.NextDouble() * this.Config.rotations) * (360f / this.Config.rotations);
+                    var angle = (float)Math.Floor(this.r.NextDouble() * this.config.rotations) * (360f / this.config.rotations);
                     angles.Add(angle);
                 }
 
                 // angles.Add(randomAngle(adam[i]));
             }
 
-            this.population = new List<PopulationItem>();
-            this.population.Add(new PopulationItem() { placements = adam.ToList(), Rotation = angles.ToArray() });
-            while (this.population.Count() < config.populationSize)
+            this.Population = new List<PopulationItem>();
+            this.Population.Add(new PopulationItem() { placements = adam.ToList(), Rotation = angles.ToArray() });
+            while (this.Population.Count() < config.populationSize)
             {
-                var mutant = this.mutate(this.population[0]);
-                this.population.Add(mutant);
+                var mutant = this.Mutate(this.Population[0]);
+                this.Population.Add(mutant);
             }
         }
 
-        public PopulationItem mutate(PopulationItem p)
+        public PopulationItem Mutate(PopulationItem p)
         {
             var clone = new PopulationItem();
 
@@ -69,7 +69,7 @@
             for (int i = 0; i < clone.placements.Count(); i++)
             {
                 var rand = this.r.NextDouble();
-                if (rand < 0.01 * this.Config.mutationRate)
+                if (rand < 0.01 * this.config.mutationRate)
                 {
                     var j = i + 1;
                     if (j < clone.placements.Count)
@@ -81,18 +81,20 @@
                 }
 
                 rand = this.r.NextDouble();
-                if (rand < 0.01 * this.Config.mutationRate)
+                if (rand < 0.01 * this.config.mutationRate)
                 {
-                    clone.Rotation[i] = (float)Math.Floor(this.r.NextDouble() * this.Config.rotations) * (360f / this.Config.rotations);
+                    clone.Rotation[i] = (float)Math.Floor(this.r.NextDouble() * this.config.rotations) * (360f / this.config.rotations);
                 }
             }
 
             return clone;
         }
 
-        Random r = new Random();
+        private Random r = new Random();
 
-        public float[] shuffleArray(float[] array)
+        public List<PopulationItem> Population { get => this.population; set => this.population = value; }
+
+        public float[] ShuffleArray(float[] array)
         {
             for (var i = array.Length - 1; i > 0; i--)
             {
@@ -106,14 +108,14 @@
         }
 
         // returns a random individual from the population, weighted to the front of the list (lower fitness value is more likely to be selected)
-        public PopulationItem randomWeightedIndividual(PopulationItem exclude = null)
+        public PopulationItem RandomWeightedIndividual(PopulationItem exclude = null)
         {
             // var pop = this.population.slice(0);
-            var pop = this.population.ToArray();
+            var pop = this.Population.ToArray();
 
             if (exclude != null && Array.IndexOf(pop, exclude) >= 0)
             {
-                pop.splice(Array.IndexOf(pop, exclude), 1);
+                pop.Splice(Array.IndexOf(pop, exclude), 1);
             }
 
             var rand = this.r.NextDouble();
@@ -138,7 +140,7 @@
         }
 
         // single point crossover
-        public PopulationItem[] mate(PopulationItem male, PopulationItem female)
+        public PopulationItem[] Mate(PopulationItem male, PopulationItem female)
         {
             var cutpoint = (int)Math.Round(Math.Min(Math.Max(this.r.NextDouble(), 0.1), 0.9) * (male.placements.Count - 1));
 
@@ -170,7 +172,7 @@
 
             return new[]
             {
-                new  PopulationItem()
+                new PopulationItem()
             {
                 placements = gene1, Rotation = rot1.ToArray(),
             },
@@ -178,32 +180,32 @@
             };
         }
 
-        public void generation()
+        public void Generation()
         {
             // Individuals with higher fitness are more likely to be selected for mating
-            this.population = this.population.OrderBy(z => z.fitness).ToList();
+            this.Population = this.Population.OrderBy(z => z.fitness).ToList();
 
             // fittest individual is preserved in the new generation (elitism)
             List<PopulationItem> newpopulation = new List<PopulationItem>();
-            newpopulation.Add(this.population[0]);
-            while (newpopulation.Count() < this.population.Count)
+            newpopulation.Add(this.Population[0]);
+            while (newpopulation.Count() < this.Population.Count)
             {
-                var male = this.randomWeightedIndividual();
-                var female = this.randomWeightedIndividual(male);
+                var male = this.RandomWeightedIndividual();
+                var female = this.RandomWeightedIndividual(male);
 
                 // each mating produces two children
-                var children = this.mate(male, female);
+                var children = this.Mate(male, female);
 
                 // slightly mutate children
-                newpopulation.Add(this.mutate(children[0]));
+                newpopulation.Add(this.Mutate(children[0]));
 
-                if (newpopulation.Count < this.population.Count)
+                if (newpopulation.Count < this.Population.Count)
                 {
-                    newpopulation.Add(this.mutate(children[1]));
+                    newpopulation.Add(this.Mutate(children[1]));
                 }
             }
 
-            this.population = newpopulation;
+            this.Population = newpopulation;
         }
     }
 }

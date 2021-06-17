@@ -190,7 +190,7 @@
             }
 
             // reset bounding box
-            RectangleF rr = new RectangleF();
+            RectangleF rr = default(RectangleF);
 
             var ret = new PolygonWithBounds()
             {
@@ -199,8 +199,8 @@
             var bounds = GeometryUtil.getPolygonBounds(ret);
             ret.x = bounds.x;
             ret.y = bounds.y;
-            ret.width = bounds.width;
-            ret.height = bounds.height;
+            ret.Width = bounds.width;
+            ret.Height = bounds.height;
             return ret;
         }
 
@@ -229,7 +229,7 @@
 
             for (var i = 0; i < nfp.Length; i++)
             {
-                for (var j = 0; j < nfp[i].length; j++)
+                for (var j = 0; j < nfp[i].Length; j++)
                 {
                     if (_almostEqual(p.x, nfp[i][j].x) && _almostEqual(p.y, nfp[i][j].y))
                     {
@@ -290,7 +290,7 @@
             return -(pdotnorm - s1dotnorm + ((s1dotnorm - s2dotnorm) * (s1dot - pdot) / (s1dot - s2dot)));
         }
 
-        static double TOL = (float)Math.Pow(10, -9); // Floating point error is likely to be above 1 epsilon
+        private static double TOL = (float)Math.Pow(10, -9); // Floating point error is likely to be above 1 epsilon
 
                                                      // returns true if p lies on the line segment defined by AB, but not at any endpoints
                                                      // may need work!
@@ -361,24 +361,24 @@
         // project each point of B onto A in the given direction, and return the
         public static double? polygonProjectionDistance(NFP A, NFP B, SvgPoint direction)
         {
-            var Boffsetx = B.offsetx ?? 0;
-            var Boffsety = B.offsety ?? 0;
+            var Boffsetx = B.Offsetx ?? 0;
+            var Boffsety = B.Offsety ?? 0;
 
-            var Aoffsetx = A.offsetx ?? 0;
-            var Aoffsety = A.offsety ?? 0;
+            var Aoffsetx = A.Offsetx ?? 0;
+            var Aoffsety = A.Offsety ?? 0;
 
             A = A.slice(0);
             B = B.slice(0);
 
             // close the loop for polygons
-            if (A[0] != A[A.length - 1])
+            if (A[0] != A[A.Length - 1])
             {
-                A.push(A[0]);
+                A.Push(A[0]);
             }
 
-            if (B[0] != B[B.length - 1])
+            if (B[0] != B[B.Length - 1])
             {
-                B.push(B[0]);
+                B.Push(B[0]);
             }
 
             var edgeA = A;
@@ -388,12 +388,12 @@
             SvgPoint p, s1, s2;
             double? d;
 
-            for (var i = 0; i < edgeB.length; i++)
+            for (var i = 0; i < edgeB.Length; i++)
             {
                 // the shortest/most negative projection of B onto A
                 double? minprojection = null;
                 SvgPoint minp = null;
-                for (var j = 0; j < edgeA.length - 1; j++)
+                for (var j = 0; j < edgeA.Length - 1; j++)
                 {
                     p = new SvgPoint(edgeB[i].x + Boffsetx, edgeB[i].y + Boffsety);
                     s1 = new SvgPoint(edgeA[j].x + Aoffsetx, edgeA[j].y + Aoffsety);
@@ -446,10 +446,10 @@
 
             var inside = false;
 
-            // var offsetx = polygon.offsetx || 0;
-            // var offsety = polygon.offsety || 0;
-            double offsetx = polygon.offsetx == null ? 0 : polygon.offsetx.Value;
-            double offsety = polygon.offsety == null ? 0 : polygon.offsety.Value;
+            // var offsetx = polygon.Offsetx || 0;
+            // var offsety = polygon.Offsety || 0;
+            double offsetx = polygon.Offsetx == null ? 0 : polygon.Offsetx.Value;
+            double offsety = polygon.Offsety == null ? 0 : polygon.Offsety.Value;
 
             int i, j;
             for (i = 0, j = polygon.Points.Count() - 1; i < polygon.Points.Length; j = i++)
@@ -488,56 +488,56 @@
         // returnEdges: if set, return all edges on A that have intersections
         public static bool intersect(NFP A, NFP B)
         {
-            var Aoffsetx = A.offsetx ?? 0;
-            var Aoffsety = A.offsety ?? 0;
+            var aOffsetx = A.Offsetx ?? 0;
+            var aOffsety = A.Offsety ?? 0;
 
-            var Boffsetx = B.offsetx ?? 0;
-            var Boffsety = B.offsety ?? 0;
+            var bOffsetx = B.Offsetx ?? 0;
+            var bOffsety = B.Offsety ?? 0;
 
             A = A.slice(0);
             B = B.slice(0);
 
-            for (var i = 0; i < A.length - 1; i++)
+            for (var i = 0; i < A.Length - 1; i++)
             {
-                for (var j = 0; j < B.length - 1; j++)
+                for (var j = 0; j < B.Length - 1; j++)
                 {
-                    var a1 = new SvgPoint(A[i].x + Aoffsetx, A[i].y + Aoffsety);
-                    var a2 = new SvgPoint(A[i + 1].x + Aoffsetx, A[i + 1].y + Aoffsety);
-                    var b1 = new SvgPoint(B[j].x + Boffsetx, B[j].y + Boffsety);
-                    var b2 = new SvgPoint(B[j + 1].x + Boffsetx, B[j + 1].y + Boffsety);
+                    var a1 = new SvgPoint(A[i].x + aOffsetx, A[i].y + aOffsety);
+                    var a2 = new SvgPoint(A[i + 1].x + aOffsetx, A[i + 1].y + aOffsety);
+                    var b1 = new SvgPoint(B[j].x + bOffsetx, B[j].y + bOffsety);
+                    var b2 = new SvgPoint(B[j + 1].x + bOffsetx, B[j + 1].y + bOffsety);
 
-                    var prevbindex = (j == 0) ? B.length - 1 : j - 1;
-                    var prevaindex = (i == 0) ? A.length - 1 : i - 1;
-                    var nextbindex = (j + 1 == B.length - 1) ? 0 : j + 2;
-                    var nextaindex = (i + 1 == A.length - 1) ? 0 : i + 2;
+                    var prevbindex = (j == 0) ? B.Length - 1 : j - 1;
+                    var prevaindex = (i == 0) ? A.Length - 1 : i - 1;
+                    var nextbindex = (j + 1 == B.Length - 1) ? 0 : j + 2;
+                    var nextaindex = (i + 1 == A.Length - 1) ? 0 : i + 2;
 
                     // go even further back if we happen to hit on a loop end point
                     if (B[prevbindex] == B[j] || (_almostEqual(B[prevbindex].x, B[j].x) && _almostEqual(B[prevbindex].y, B[j].y)))
                     {
-                        prevbindex = (prevbindex == 0) ? B.length - 1 : prevbindex - 1;
+                        prevbindex = (prevbindex == 0) ? B.Length - 1 : prevbindex - 1;
                     }
 
                     if (A[prevaindex] == A[i] || (_almostEqual(A[prevaindex].x, A[i].x) && _almostEqual(A[prevaindex].y, A[i].y)))
                     {
-                        prevaindex = (prevaindex == 0) ? A.length - 1 : prevaindex - 1;
+                        prevaindex = (prevaindex == 0) ? A.Length - 1 : prevaindex - 1;
                     }
 
                     // go even further forward if we happen to hit on a loop end point
                     if (B[nextbindex] == B[j + 1] || (_almostEqual(B[nextbindex].x, B[j + 1].x) && _almostEqual(B[nextbindex].y, B[j + 1].y)))
                     {
-                        nextbindex = (nextbindex == B.length - 1) ? 0 : nextbindex + 1;
+                        nextbindex = (nextbindex == B.Length - 1) ? 0 : nextbindex + 1;
                     }
 
                     if (A[nextaindex] == A[i + 1] || (_almostEqual(A[nextaindex].x, A[i + 1].x) && _almostEqual(A[nextaindex].y, A[i + 1].y)))
                     {
-                        nextaindex = (nextaindex == A.length - 1) ? 0 : nextaindex + 1;
+                        nextaindex = (nextaindex == A.Length - 1) ? 0 : nextaindex + 1;
                     }
 
-                    var a0 = new SvgPoint(A[prevaindex].x + Aoffsetx, A[prevaindex].y + Aoffsety);
-                    var b0 = new SvgPoint(B[prevbindex].x + Boffsetx, B[prevbindex].y + Boffsety);
+                    var a0 = new SvgPoint(A[prevaindex].x + aOffsetx, A[prevaindex].y + aOffsety);
+                    var b0 = new SvgPoint(B[prevbindex].x + bOffsetx, B[prevbindex].y + bOffsety);
 
-                    var a3 = new SvgPoint(A[nextaindex].x + Aoffsetx, A[nextaindex].y + Aoffsety);
-                    var b3 = new SvgPoint(B[nextbindex].x + Boffsetx, B[nextbindex].y + Boffsety);
+                    var a3 = new SvgPoint(A[nextaindex].x + aOffsetx, A[nextaindex].y + aOffsety);
+                    var b3 = new SvgPoint(B[nextbindex].x + bOffsetx, B[nextbindex].y + bOffsety);
 
                     if (_onSegment(a1, a2, b1) || (_almostEqual(a1.x, b1.x) && _almostEqual(a1.y, b1.y)))
                     {
@@ -602,7 +602,7 @@
                         }
                     }
 
-                    var p = _lineIntersect(b1, b2, a1, a2);
+                    var p = LineIntersect(b1, b2, a1, a2);
 
                     if (p != null)
                     {
@@ -614,7 +614,7 @@
             return false;
         }
 
-        public static bool isFinite(object obj)
+        private static bool IsFinite(object obj)
         {
             return true;
         }
@@ -622,7 +622,7 @@
         // returns the intersection of AB and EF
         // or null if there are no intersections or other numerical error
         // if the infinite flag is set, AE and EF describe infinite lines without endpoints, they are finite line segments otherwise
-        public static SvgPoint _lineIntersect(SvgPoint A, SvgPoint B, SvgPoint E, SvgPoint F, bool infinite = false)
+        private static SvgPoint LineIntersect(SvgPoint A, SvgPoint B, SvgPoint E, SvgPoint F, bool infinite = false)
         {
             double a1, a2, b1, b2, c1, c2, x, y;
 
@@ -638,7 +638,7 @@
             x = ((b1 * c2) - (b2 * c1)) / denom;
             y = ((a2 * c1) - (a1 * c2)) / denom;
 
-            if (!isFinite(x) || !isFinite(y))
+            if (!IsFinite(x) || !IsFinite(y))
             {
                 return null;
             }
@@ -679,54 +679,54 @@
 
         // searches for an arrangement of A and B such that they do not overlap
         // if an NFP is given, only search for startpoints that have not already been traversed in the given NFP
-        public static SvgPoint searchStartPoint(NFP A, NFP B, bool inside, NFP[] NFP = null)
+        private static SvgPoint SearchStartPoint(NFP A, NFP B, bool inside, NFP[] NFP = null)
         {
             // clone arrays
             A = A.slice(0);
             B = B.slice(0);
 
             // close the loop for polygons
-            if (A[0] != A[A.length - 1])
+            if (A[0] != A[A.Length - 1])
             {
-                A.push(A[0]);
+                A.Push(A[0]);
             }
 
-            if (B[0] != B[B.length - 1])
+            if (B[0] != B[B.Length - 1])
             {
-                B.push(B[0]);
+                B.Push(B[0]);
             }
 
-            for (var i = 0; i < A.length - 1; i++)
+            for (var i = 0; i < A.Length - 1; i++)
             {
                 if (!A[i].marked)
                 {
                     A[i].marked = true;
-                    for (var j = 0; j < B.length; j++)
+                    for (var j = 0; j < B.Length; j++)
                     {
-                        B.offsetx = A[i].x - B[j].x;
-                        B.offsety = A[i].y - B[j].y;
+                        B.Offsetx = A[i].x - B[j].x;
+                        B.Offsety = A[i].y - B[j].y;
 
-                        bool? Binside = null;
-                        for (var k = 0; k < B.length; k++)
+                        bool? bInside = null;
+                        for (var k = 0; k < B.Length; k++)
                         {
                             var inpoly = pointInPolygon(
                                 new SvgPoint(
-                                B[k].x + B.offsetx.Value,
-                                B[k].y + B.offsety.Value), A);
+                                B[k].x + B.Offsetx.Value,
+                                B[k].y + B.Offsety.Value), A);
                             if (inpoly != null)
                             {
-                                Binside = inpoly;
+                                bInside = inpoly;
                                 break;
                             }
                         }
 
-                        if (Binside == null)
+                        if (bInside == null)
                         { // A and B are the same
                             return null;
                         }
 
-                        var startPoint = new SvgPoint(B.offsetx.Value, B.offsety.Value);
-                        if (((Binside.Value && inside) || (!Binside.Value && !inside)) &&
+                        var startPoint = new SvgPoint(B.Offsetx.Value, B.Offsety.Value);
+                        if (((bInside.Value && inside) || (!bInside.Value && !inside)) &&
                             !intersect(A, B) && !inNfp(startPoint, NFP))
                         {
                             return startPoint;
@@ -778,24 +778,24 @@
                             vy *= d.Value / vd;
                         }
 
-                        B.offsetx += vx;
-                        B.offsety += vy;
+                        B.Offsetx += vx;
+                        B.Offsety += vy;
 
-                        for (var k = 0; k < B.length; k++)
+                        for (var k = 0; k < B.Length; k++)
                         {
                             var inpoly = pointInPolygon(
                                 new SvgPoint(
-                                 B[k].x + B.offsetx.Value, B[k].y + B.offsety.Value), A);
+                                 B[k].x + B.Offsetx.Value, B[k].y + B.Offsety.Value), A);
                             if (inpoly != null)
                             {
-                                Binside = inpoly;
+                                bInside = inpoly;
                                 break;
                             }
                         }
 
                         startPoint =
-                                            new SvgPoint(B.offsetx.Value, B.offsety.Value);
-                        if (((Binside.Value && inside) || (!Binside.Value && !inside)) &&
+                                            new SvgPoint(B.Offsetx.Value, B.Offsety.Value);
+                        if (((bInside.Value && inside) || (!bInside.Value && !inside)) &&
                             !intersect(A, B) && !inNfp(startPoint, NFP))
                         {
                             return startPoint;
@@ -1026,24 +1026,24 @@
             SvgPoint A1, A2, B1, B2;
             double Aoffsetx, Aoffsety, Boffsetx, Boffsety;
 
-            Aoffsetx = A.offsetx ?? 0;
-            Aoffsety = A.offsety ?? 0;
+            Aoffsetx = A.Offsetx ?? 0;
+            Aoffsety = A.Offsety ?? 0;
 
-            Boffsetx = B.offsetx ?? 0;
-            Boffsety = B.offsety ?? 0;
+            Boffsetx = B.Offsetx ?? 0;
+            Boffsety = B.Offsety ?? 0;
 
             A = A.slice(0);
             B = B.slice(0);
 
             // close the loop for polygons
-            if (A[0] != A[A.length - 1])
+            if (A[0] != A[A.Length - 1])
             {
-                A.push(A[0]);
+                A.Push(A[0]);
             }
 
-            if (B[0] != B[B.length - 1])
+            if (B[0] != B[B.Length - 1])
             {
-                B.push(B[0]);
+                B.Push(B[0]);
             }
 
             var edgeA = A;
@@ -1062,10 +1062,10 @@
 
             var reverse = new SvgPoint(-dir.x, -dir.y);
 
-            for (var i = 0; i < edgeB.length - 1; i++)
+            for (var i = 0; i < edgeB.Length - 1; i++)
             {
                 // var mind = null;
-                for (var j = 0; j < edgeA.length - 1; j++)
+                for (var j = 0; j < edgeA.Length - 1; j++)
                 {
                     A1 = new SvgPoint(
                          edgeA[j].x + Aoffsetx, edgeA[j].y + Aoffsety);
@@ -1115,13 +1115,13 @@
         // if the searchEdges flag is set, all edges of A are explored for NFPs - multiple
         public static NFP[] noFitPolygon(NFP A, NFP B, bool inside, bool searchEdges)
         {
-            if (A == null || A.length < 3 || B == null || B.length < 3)
+            if (A == null || A.Length < 3 || B == null || B.Length < 3)
             {
                 return null;
             }
 
-            A.offsetx = 0;
-            A.offsety = 0;
+            A.Offsetx = 0;
+            A.Offsety = 0;
 
             int i = 0, j = 0;
 
@@ -1131,7 +1131,7 @@
             var maxB = B[0].y;
             var maxBindex = 0;
 
-            for (i = 1; i < A.length; i++)
+            for (i = 1; i < A.Length; i++)
             {
                 A[i].marked = false;
                 if (A[i].y < minA)
@@ -1141,7 +1141,7 @@
                 }
             }
 
-            for (i = 1; i < B.length; i++)
+            for (i = 1; i < B.Length; i++)
             {
                 B[i].marked = false;
                 if (B[i].y > maxB)
@@ -1162,15 +1162,15 @@
             else
             {
                 // no reliable heuristic for inside
-                startpoint = searchStartPoint(A, B, true);
+                startpoint = SearchStartPoint(A, B, true);
             }
 
             List<NFP> NFPlist = new List<NFP>();
 
             while (startpoint != null)
             {
-                B.offsetx = startpoint.x;
-                B.offsety = startpoint.y;
+                B.Offsetx = startpoint.x;
+                B.Offsety = startpoint.y;
 
                 // maintain a list of touching points/edges
                 List<TouchingItem> touching = null;
@@ -1178,47 +1178,47 @@
                 nVector prevvector = null; // keep track of previous vector
                 NFP NFP = new NFP();
                 /*var NFP = [{
-                    x: B[0].x + B.offsetx,
-        y: B[0].y + B.offsety
+                    x: B[0].x + B.Offsetx,
+        y: B[0].y + B.Offsety
 
 
 
 
 
                 }];*/
-                NFP.push(new SvgPoint(B[0].x + B.offsetx.Value, B[0].y + B.offsety.Value));
+                NFP.Push(new SvgPoint(B[0].x + B.Offsetx.Value, B[0].y + B.Offsety.Value));
 
-                double referencex = B[0].x + B.offsetx.Value;
-                double referencey = B[0].y + B.offsety.Value;
+                double referencex = B[0].x + B.Offsetx.Value;
+                double referencey = B[0].y + B.Offsety.Value;
                 var startx = referencex;
                 var starty = referencey;
                 var counter = 0;
 
-                while (counter < 10 * (A.length + B.length))
+                while (counter < 10 * (A.Length + B.Length))
                 { // sanity check, prevent infinite loop
                     touching = new List<GeometryUtil.TouchingItem>();
 
                     // find touching vertices/edges
-                    for (i = 0; i < A.length; i++)
+                    for (i = 0; i < A.Length; i++)
                     {
-                        var nexti = (i == A.length - 1) ? 0 : i + 1;
-                        for (j = 0; j < B.length; j++)
+                        var nexti = (i == A.Length - 1) ? 0 : i + 1;
+                        for (j = 0; j < B.Length; j++)
                         {
-                            var nextj = (j == B.length - 1) ? 0 : j + 1;
-                            if (_almostEqual(A[i].x, B[j].x + B.offsetx) && _almostEqual(A[i].y, B[j].y + B.offsety))
+                            var nextj = (j == B.Length - 1) ? 0 : j + 1;
+                            if (_almostEqual(A[i].x, B[j].x + B.Offsetx) && _almostEqual(A[i].y, B[j].y + B.Offsety))
                             {
                                 touching.Add(new TouchingItem(0, i, j));
                             }
                             else if (_onSegment(A[i], A[nexti],
-                                new SvgPoint(B[j].x + B.offsetx.Value, B[j].y + B.offsety.Value)))
+                                new SvgPoint(B[j].x + B.Offsetx.Value, B[j].y + B.Offsety.Value)))
                             {
                                 touching.Add(new TouchingItem(1, nexti, j));
                             }
                             else if (_onSegment(
                                 new SvgPoint(
-                                 B[j].x + B.offsetx.Value, B[j].y + B.offsety.Value),
+                                 B[j].x + B.Offsetx.Value, B[j].y + B.Offsety.Value),
                                 new SvgPoint(
-                                 B[nextj].x + B.offsetx.Value, B[nextj].y + B.offsety.Value), A[i]))
+                                 B[nextj].x + B.Offsetx.Value, B[nextj].y + B.Offsety.Value), A[i]))
                             {
                                 touching.Add(new TouchingItem(2, i, nextj));
                             }
@@ -1236,8 +1236,8 @@
                         var prevAindex = touching[i].A - 1;
                         var nextAindex = touching[i].A + 1;
 
-                        prevAindex = (prevAindex < 0) ? A.length - 1 : prevAindex; // loop
-                        nextAindex = (nextAindex >= A.length) ? 0 : nextAindex; // loop
+                        prevAindex = (prevAindex < 0) ? A.Length - 1 : prevAindex; // loop
+                        nextAindex = (nextAindex >= A.Length) ? 0 : nextAindex; // loop
 
                         var prevA = A[prevAindex];
                         var nextA = A[nextAindex];
@@ -1248,8 +1248,8 @@
                         var prevBindex = touching[i].B - 1;
                         var nextBindex = touching[i].B + 1;
 
-                        prevBindex = (prevBindex < 0) ? B.length - 1 : prevBindex; // loop
-                        nextBindex = (nextBindex >= B.length) ? 0 : nextBindex; // loop
+                        prevBindex = (prevBindex < 0) ? B.Length - 1 : prevBindex; // loop
+                        nextBindex = (nextBindex >= B.Length) ? 0 : nextBindex; // loop
 
                         var prevB = B[prevBindex];
                         var nextB = B[nextBindex];
@@ -1289,28 +1289,28 @@
                         else if (touching[i].type == 1)
                         {
                             vectors.Add(new nVector(
-                                 vertexA.x - (vertexB.x + B.offsetx.Value),
-                                 vertexA.y - (vertexB.y + B.offsety.Value),
+                                 vertexA.x - (vertexB.x + B.Offsetx.Value),
+                                 vertexA.y - (vertexB.y + B.Offsety.Value),
                                  prevA,
                                  vertexA));
 
                             vectors.Add(new nVector(
-                                 prevA.x - (vertexB.x + B.offsetx.Value),
-                                 prevA.y - (vertexB.y + B.offsety.Value),
+                                 prevA.x - (vertexB.x + B.Offsetx.Value),
+                                 prevA.y - (vertexB.y + B.Offsety.Value),
                                  vertexA,
                                  prevA));
                         }
                         else if (touching[i].type == 2)
                         {
                             vectors.Add(new nVector(
-                                 vertexA.x - (vertexB.x + B.offsetx.Value),
-                                 vertexA.y - (vertexB.y + B.offsety.Value),
+                                 vertexA.x - (vertexB.x + B.Offsetx.Value),
+                                 vertexA.y - (vertexB.y + B.Offsety.Value),
                                  prevB,
                                  vertexB));
 
                             vectors.Add(new nVector(
-                                 vertexA.x - (prevB.x + B.offsetx.Value),
-                                 vertexA.y - (prevB.y + B.offsety.Value),
+                                 vertexA.x - (prevB.x + B.Offsetx.Value),
+                                 vertexA.y - (prevB.y + B.Offsety.Value),
                                  vertexB,
                                  prevB));
                         }
@@ -1394,9 +1394,9 @@
 
                     // if A and B start on a touching horizontal line, the end point may not be the start point
                     var looped = false;
-                    if (NFP.length > 0)
+                    if (NFP.Length > 0)
                     {
-                        for (i = 0; i < NFP.length - 1; i++)
+                        for (i = 0; i < NFP.Length - 1; i++)
                         {
                             if (_almostEqual(referencex, NFP[i].x) && _almostEqual(referencey, NFP[i].y))
                             {
@@ -1411,16 +1411,16 @@
                         break;
                     }
 
-                    NFP.push(new SvgPoint(
+                    NFP.Push(new SvgPoint(
                          referencex, referencey));
 
-                    B.offsetx += translate.x;
-                    B.offsety += translate.y;
+                    B.Offsetx += translate.x;
+                    B.Offsety += translate.y;
 
                     counter++;
                 }
 
-                if (NFP != null && NFP.length > 0)
+                if (NFP != null && NFP.Length > 0)
                 {
                     NFPlist.Add(NFP);
                 }
@@ -1431,7 +1431,7 @@
                     break;
                 }
 
-                startpoint = searchStartPoint(A, B, inside, NFPlist.ToArray());
+                startpoint = SearchStartPoint(A, B, inside, NFPlist.ToArray());
             }
 
             return NFPlist.ToArray();

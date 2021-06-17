@@ -109,7 +109,7 @@
 
                 var m = new Matrix();
                 m.Translate((float)item.x, (float)item.y);
-                m.Rotate(item.rotation);
+                m.Rotate(item.Rotation);
 
                 PointF[] pp = item.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
                 m.TransformPoints(pp);

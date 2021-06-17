@@ -4,10 +4,8 @@
     {
         public class PolygonWithBounds : NFP
         {
-            public double x;
-            public double y;
-            public double width;
-            public double height;
+            public double Width;
+            public double Height;
         }
     }
 }

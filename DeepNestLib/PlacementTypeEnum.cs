@@ -2,6 +2,8 @@
 {
     public enum PlacementTypeEnum
     {
-        box, gravity, squeeze,
+        Box,
+        Gravity,
+        Squeeze,
     }
 }

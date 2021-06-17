@@ -16,7 +16,7 @@
             return Math.Sqrt(Math.Pow(p.X - p2.X, 2) + Math.Pow(p.Y - p2.Y, 2));
         }
 
-        public static T[] splice<T>(this T[] p, int a, int b)
+        public static T[] Splice<T>(this T[] p, int a, int b)
         {
             List<T> ret = new List<T>();
             for (int i = 0; i < p.Length; i++)
@@ -32,7 +32,7 @@
             return ret.ToArray();
         }
 
-        public static List<List<ClipperLib.IntPoint>> splice(this List<List<ClipperLib.IntPoint>> p, int a, int b)
+        public static List<List<ClipperLib.IntPoint>> Splice(this List<List<ClipperLib.IntPoint>> p, int a, int b)
         {
             List<List<ClipperLib.IntPoint>> ret = new List<List<ClipperLib.IntPoint>>();
             for (int i = a; i < (a + b); i++)
@@ -48,7 +48,7 @@
             return ret;
         }
 
-        public static NFP[] splice(this NFP[] p, int a, int b)
+        public static NFP[] Splice(this NFP[] p, int a, int b)
         {
             List<NFP> ret = new List<NFP>();
             for (int i = 0; i < p.Length; i++)

@@ -2,7 +2,7 @@
 {
     public class SvgNestConfig
     {
-        public PlacementTypeEnum placementType = PlacementTypeEnum.box;
+        public PlacementTypeEnum placementType = PlacementTypeEnum.Box;
         public double curveTolerance = 0.72;
         public double scale = 25;
         public double clipperScale = 10000000;

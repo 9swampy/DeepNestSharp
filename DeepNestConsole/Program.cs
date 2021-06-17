@@ -4,9 +4,9 @@
     using System.IO;
     using System.Linq;
 
-    class Program
+    internal class Program
     {
-        static void ShowUsage()
+        private static void ShowUsage()
         {
             Console.WriteLine("deepnest console tool. usage:");
             Console.WriteLine("Runing sample:");
@@ -16,7 +16,7 @@
             Console.WriteLine("deepNestConsole xml [xml]");
         }
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             if (args.Count() < 1)
             {

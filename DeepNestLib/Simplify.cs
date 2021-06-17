@@ -55,7 +55,7 @@
 
             SvgPoint point = null;
             int i = 1;
-            for (var len = points.length; i < len; i++)
+            for (var len = points.Length; i < len; i++)
             {
                 point = points[i];
 
@@ -106,7 +106,7 @@
                     simplifyDPStep(points, first, index, sqTolerance, simplified);
                 }
 
-                simplified.push(points[index]);
+                simplified.Push(points[index]);
                 if (last - index > 1)
                 {
                     simplifyDPStep(points, index, last, sqTolerance, simplified);
@@ -117,12 +117,12 @@
         // simplification using Ramer-Douglas-Peucker algorithm
         public static NFP simplifyDouglasPeucker(NFP points, double? sqTolerance)
         {
-            var last = points.length - 1;
+            var last = points.Length - 1;
 
             var simplified = new NFP();
             simplified.AddPoint(points[0]);
             simplifyDPStep(points, 0, last, sqTolerance, simplified);
-            simplified.push(points[last]);
+            simplified.Push(points[last]);
 
             return simplified;
         }
@@ -130,7 +130,7 @@
         // both algorithms combined for awesome performance
         public static NFP simplify(NFP points, double? tolerance, bool highestQuality)
         {
-            if (points.length <= 2)
+            if (points.Length <= 2)
             {
                 return points;
             }

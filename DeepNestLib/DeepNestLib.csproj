@@ -51,7 +51,7 @@
     <Compile Include="ClipCacheItem.cs" />
     <Compile Include="D3.cs" />
     <Compile Include="DataInfo.cs" />
-    <Compile Include="dbCache.cs" />
+    <Compile Include="DbCache.cs" />
     <Compile Include="DbCacheKey.cs" />
     <Compile Include="DxfParser.cs" />
     <Compile Include="Extensions.cs" />

@@ -6,14 +6,17 @@
 
     public class NFP : IStringify
     {
-        public bool fitted { get { return this.sheet != null; } }
+        public bool fitted
+        {
+            get { return this.sheet != null; }
+        }
 
         public NFP sheet;
 
         public override string ToString()
         {
             var str1 = (this.Points != null) ? this.Points.Count() + string.Empty : "null";
-            return $"nfp: id: {this.id}; source: {this.source}; rotation: {this.rotation}; points: {str1}";
+            return $"nfp: id: {this.id}; source: {this.Source}; rotation: {this.rotation}; points: {str1}";
         }
 
         public NFP()
@@ -30,10 +33,8 @@
             this.Points = list.ToArray();
         }
 
-        #region gdi section
         public bool isBin;
 
-        #endregion
         public void reverse()
         {
             this.Points = this.Points.Reverse().ToArray();
@@ -82,19 +83,9 @@
             }
         }
 
-        // public float? width;
-        // public float? height;
-        public int length
-        {
-            get
-            {
-                return this.Points.Length;
-            }
-        }
+        public int id;
 
-        public int Id;
-
-        public int id
+        public int Id
         {
             get
             {
@@ -107,21 +98,21 @@
             }
         }
 
-        public double? offsetx;
-        public double? offsety;
-        public int? source = null;
-        public float Rotation;
+        public double? Offsetx;
+        public double? Offsety;
+        public int? Source = null;
+        private float rotation;
 
-        public float rotation
+        public float Rotation
         {
             get
             {
-                return this.Rotation;
+                return this.rotation;
             }
 
             set
             {
-                this.Rotation = value;
+                this.rotation = value;
             }
         }
 
@@ -151,7 +142,7 @@
             }
         }
 
-        internal void push(SvgPoint svgPoint)
+        internal void Push(SvgPoint svgPoint)
         {
             List<SvgPoint> points = new List<SvgPoint>();
             if (this.Points == null)
@@ -168,7 +159,7 @@
         {
             var ret = new NFP();
             List<SvgPoint> pp = new List<SvgPoint>();
-            for (int i = v; i < this.length; i++)
+            for (int i = v; i < this.Length; i++)
             {
                 pp.Add(new SvgPoint(this[i].x, this[i].y));
             }

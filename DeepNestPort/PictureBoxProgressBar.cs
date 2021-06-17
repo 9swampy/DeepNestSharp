@@ -19,8 +19,8 @@
             this.gr = Graphics.FromImage(this.bmp);
         }
 
-        Bitmap bmp;
-        Graphics gr;
+        private Bitmap bmp;
+        private Graphics gr;
         public float Value;
 
         public void UpdateImg()

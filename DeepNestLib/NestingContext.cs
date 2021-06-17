@@ -17,9 +17,12 @@
 
         public int PlacedPartsCount { get; private set; } = 0;
 
-        SheetPlacement current = null;
+        private SheetPlacement current = null;
 
-        public SheetPlacement Current { get { return this.current; } }
+        public SheetPlacement Current
+        {
+            get { return this.current; }
+        }
 
         public SvgNest Nest { get; private set; }
 
@@ -35,7 +38,7 @@
             this.Iterations = 0;
         }
 
-        bool offsetTreePhase = true;
+        private bool offsetTreePhase = true;
 
         public void NestIterate()
         {
@@ -56,7 +59,7 @@
             {
                 NFP clone = new NFP();
                 clone.id = item.id;
-                clone.source = item.source;
+                clone.Source = item.Source;
                 clone.Points = item.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }).ToArray();
                 if (item.children != null)
                 {
@@ -66,7 +69,7 @@
                         clone.children.Add(new NFP());
                         var l = clone.children.Last();
                         l.id = citem.id;
-                        l.source = citem.source;
+                        l.Source = citem.Source;
                         l.Points = citem.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }).ToArray();
                     }
                 }
@@ -78,7 +81,7 @@
             {
                 NFP clone = new NFP();
                 clone.id = item.id;
-                clone.source = item.source;
+                clone.Source = item.Source;
                 clone.Points = item.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }).ToArray();
                 if (item.children != null)
                 {
@@ -88,7 +91,7 @@
                         clone.children.Add(new NFP());
                         var l = clone.children.Last();
                         l.id = citem.id;
-                        l.source = citem.source;
+                        l.Source = citem.Source;
                         l.Points = citem.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }).ToArray();
                     }
                 }
@@ -98,7 +101,7 @@
 
             if (this.offsetTreePhase)
             {
-                var grps = lpoly.GroupBy(z => z.source).ToArray();
+                var grps = lpoly.GroupBy(z => z.Source).ToArray();
                 if (Background.UseParallel)
                 {
                     Parallel.ForEach(grps, (item) =>
@@ -130,14 +133,14 @@
             }
 
             List<NestItem> partsLocal = new List<NestItem>();
-            var p1 = lpoly.GroupBy(z => z.source).Select(z => new NestItem()
+            var p1 = lpoly.GroupBy(z => z.Source).Select(z => new NestItem()
             {
                 Polygon = z.First(),
                 IsSheet = false,
                 Quanity = z.Count(),
             });
 
-            var p2 = lsheets.GroupBy(z => z.source).Select(z => new NestItem()
+            var p2 = lsheets.GroupBy(z => z.Source).Select(z => new NestItem()
             {
                 Polygon = z.First(),
                 IsSheet = true,
@@ -149,7 +152,7 @@
             int srcc = 0;
             foreach (var item in partsLocal)
             {
-                item.Polygon.source = srcc++;
+                item.Polygon.Source = srcc++;
             }
 
             this.Nest.launchWorkers(partsLocal.ToArray());
@@ -205,7 +208,7 @@
                         poly.sheet = sheet;
                         poly.x = ssitem.x + sheet.x;
                         poly.y = ssitem.y + sheet.y;
-                        poly.rotation = ssitem.rotation;
+                        poly.Rotation = ssitem.rotation;
                     }
                 }
             }
@@ -252,14 +255,14 @@
             tt.Name = "sheet" + (this.Sheets.Count + 1);
             this.Sheets.Add(tt);
 
-            tt.source = src;
+            tt.Source = src;
             tt.Height = h;
             tt.Width = w;
             tt.Rebuild();
             this.ReorderSheets();
         }
 
-        Random r = new Random();
+        private Random r = new Random();
 
         public void LoadSampleData()
         {
@@ -336,7 +339,7 @@
                     po.children.Add(r);
                 }
 
-                po.source = src;
+                po.Source = src;
                 this.Polygons.Add(po);
             }
 
@@ -347,7 +350,7 @@
         {
             if (this.Polygons.Any())
             {
-                return this.Polygons.Max(z => z.source.Value) + 1;
+                return this.Polygons.Max(z => z.Source.Value) + 1;
             }
 
             return 0;
@@ -357,7 +360,7 @@
         {
             if (this.Sheets.Any())
             {
-                return this.Sheets.Max(z => z.source.Value) + 1;
+                return this.Sheets.Max(z => z.Source.Value) + 1;
             }
 
             return 0;
@@ -370,7 +373,7 @@
             NFP pl = new NFP();
 
             this.Polygons.Add(pl);
-            pl.source = src;
+            pl.Source = src;
             pl.Points = new SvgPoint[] { };
             pl.AddPoint(new SvgPoint(xx, yy));
             pl.AddPoint(new SvgPoint(xx + ww, yy));

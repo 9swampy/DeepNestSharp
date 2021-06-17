@@ -18,7 +18,7 @@
         public void Run()
         {
             Background.UseParallel = true;
-            SvgNest.Config.placementType = PlacementTypeEnum.gravity;
+            SvgNest.Config.placementType = PlacementTypeEnum.Gravity;
             Console.WriteLine("Settings updated..");
 
             Console.WriteLine("Start nesting..");
@@ -35,10 +35,8 @@
             }
             while (!this.IsFinished());
 
-            #region convert results
             this.Context.ExportSvg("temp.svg");
             Console.WriteLine("Results exported in: temp.svg");
-            #endregion
         }
     }
 }

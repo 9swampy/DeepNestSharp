@@ -16,7 +16,7 @@
         public static NFP shiftPolygon(NFP p, PlacementItem shift)
         {
             NFP shifted = new NFP();
-            for (var i = 0; i < p.length; i++)
+            for (var i = 0; i < p.Length; i++)
             {
                 shifted.AddPoint(new SvgPoint(p[i].x + shift.x, p[i].y + shift.y) { exact = p[i].exact });
             }
@@ -213,8 +213,8 @@
         public static NFP clone(NFP nfp)
         {
             NFP newnfp = new NFP();
-            newnfp.source = nfp.source;
-            for (var i = 0; i < nfp.length; i++)
+            newnfp.Source = nfp.Source;
+            for (var i = 0; i < nfp.Length; i++)
             {
                 newnfp.AddPoint(new SvgPoint(nfp[i].x, nfp[i].y));
             }
@@ -226,7 +226,7 @@
                 {
                     var child = nfp.children[i];
                     NFP newchild = new NFP();
-                    for (var j = 0; j < child.length; j++)
+                    for (var j = 0; j < child.Length; j++)
                     {
                         newchild.AddPoint(new SvgPoint(child[j].x, child[j].y));
                     }
@@ -244,7 +244,7 @@
 
         public static NFP[] Process2(NFP A, NFP B, int type)
         {
-            var key = A.source + ";" + B.source + ";" + A.rotation + ";" + B.rotation;
+            var key = A.Source + ";" + B.Source + ";" + A.Rotation + ";" + B.Rotation;
             bool cacheAllow = type != 1;
             if (cacheProcess.ContainsKey(key) && cacheAllow)
             {
@@ -383,34 +383,34 @@
             bounds.y -= 0.5 * (bounds.height - (bounds.height / 1.1));
 
             var frame = new NFP();
-            frame.push(new SvgPoint(bounds.x, bounds.y));
-            frame.push(new SvgPoint(bounds.x + bounds.width, bounds.y));
-            frame.push(new SvgPoint(bounds.x + bounds.width, bounds.y + bounds.height));
-            frame.push(new SvgPoint(bounds.x, bounds.y + bounds.height));
+            frame.Push(new SvgPoint(bounds.x, bounds.y));
+            frame.Push(new SvgPoint(bounds.x + bounds.width, bounds.y));
+            frame.Push(new SvgPoint(bounds.x + bounds.width, bounds.y + bounds.height));
+            frame.Push(new SvgPoint(bounds.x, bounds.y + bounds.height));
 
             frame.children = new List<NFP>() { (NFP)A };
-            frame.source = A.source;
-            frame.rotation = 0;
+            frame.Source = A.Source;
+            frame.Rotation = 0;
 
             return frame;
         }
 
         public static NFP[] getInnerNfp(NFP A, NFP B, int type, SvgNestConfig config)
         {
-            if (A.source != null && B.source != null)
+            if (A.Source != null && B.Source != null)
             {
                 var key = new DbCacheKey()
                 {
-                    A = A.source.Value,
-                    B = B.source.Value,
+                    A = A.Source.Value,
+                    B = B.Source.Value,
                     ARotation = 0,
-                    BRotation = B.rotation,
+                    BRotation = B.Rotation,
 
                     // Inside =true??
                 };
 
                 // var doc = window.db.find({ A: A.source, B: B.source, Arotation: 0, Brotation: B.rotation }, true);
-                var res = window.db.find(key, true);
+                var res = window.db.Find(key, true);
                 if (res != null)
                 {
                     return res;
@@ -419,7 +419,7 @@
 
             var frame = getFrame(A);
 
-            var nfp = getOuterNfp(frame, B, type, true);
+            var nfp = GetOuterNfp(frame, B, type, true);
 
             if (nfp == null || nfp.children == null || nfp.children.Count == 0)
             {
@@ -431,7 +431,7 @@
             {
                 for (var i = 0; i < A.children.Count; i++)
                 {
-                    var hnfp = getOuterNfp(A.children[i], B, 1);
+                    var hnfp = GetOuterNfp(A.children[i], B, 1);
                     if (hnfp != null)
                     {
                         holes.Add(hnfp);
@@ -444,8 +444,8 @@
                 return nfp.children.ToArray();
             }
 
-            var clipperNfp = innerNfpToClipperCoordinates(nfp.children.ToArray(), config);
-            var clipperHoles = innerNfpToClipperCoordinates(holes.ToArray(), config);
+            var clipperNfp = InnerNfpToClipperCoordinates(nfp.children.ToArray(), config);
+            var clipperHoles = InnerNfpToClipperCoordinates(holes.ToArray(), config);
 
             List<List<IntPoint>> finalNfp = new List<List<IntPoint>>();
             var clipper = new ClipperLib.Clipper();
@@ -466,22 +466,22 @@
             List<NFP> f = new List<NFP>();
             for (var i = 0; i < finalNfp.Count; i++)
             {
-                f.Add(toNestCoordinates(finalNfp[i].ToArray(), config.clipperScale));
+                f.Add(ToNestCoordinates(finalNfp[i].ToArray(), config.clipperScale));
             }
 
-            if (A.source != null && B.source != null)
+            if (A.Source != null && B.Source != null)
             {
                 // insert into db
                 // console.log('inserting inner: ', A.source, B.source, B.rotation, f);
                 var doc = new DbCacheKey()
                 {
-                    A = A.source.Value,
-                    B = B.source.Value,
+                    A = A.Source.Value,
+                    B = B.Source.Value,
                     ARotation = 0,
-                    BRotation = B.rotation,
+                    BRotation = B.Rotation,
                     nfp = f.ToArray(),
                 };
-                window.db.insert(doc, true);
+                window.db.Insert(doc, true);
             }
 
             return f.ToArray();
@@ -493,7 +493,7 @@
 
             var angle = degrees * Math.PI / 180;
             List<SvgPoint> pp = new List<SvgPoint>();
-            for (var i = 0; i < polygon.length; i++)
+            for (var i = 0; i < polygon.Length; i++)
             {
                 var x = polygon[i].x;
                 var y = polygon[i].y;
@@ -517,7 +517,7 @@
             return rotated;
         }
 
-        public static SheetPlacement placeParts(NFP[] sheets, NFP[] parts, SvgNestConfig config, int nestindex)
+        public static SheetPlacement PlaceParts(NFP[] sheets, NFP[] parts, SvgNestConfig config, int nestindex)
         {
             if (sheets == null || sheets.Count() == 0)
             {
@@ -536,9 +536,9 @@
             var rotated = new List<NFP>();
             for (i = 0; i < parts.Length; i++)
             {
-                var r = rotatePolygon(parts[i], parts[i].rotation);
-                r.Rotation = parts[i].rotation;
-                r.source = parts[i].source;
+                var r = rotatePolygon(parts[i], parts[i].Rotation);
+                r.Rotation = parts[i].Rotation;
+                r.Source = parts[i].Source;
                 r.Id = parts[i].Id;
                 rotated.Add(r);
             }
@@ -596,7 +596,7 @@
 
                         if (sheetNfp != null && sheetNfp.Count() > 0)
                         {
-                            if (sheetNfp[0].length == 0)
+                            if (sheetNfp[0].Length == 0)
                             {
                                 throw new ArgumentException();
                             }
@@ -607,17 +607,17 @@
                         }
 
                         var r = rotatePolygon(part, 360f / config.rotations);
-                        r.rotation = part.rotation + (360f / config.rotations);
-                        r.source = part.source;
+                        r.Rotation = part.Rotation + (360f / config.rotations);
+                        r.Source = part.Source;
                         r.id = part.id;
 
                         // rotation is not in-place
                         part = r;
                         parts[i] = r;
 
-                        if (part.rotation > 360f)
+                        if (part.Rotation > 360f)
                         {
-                            part.rotation = part.rotation % 360f;
+                            part.Rotation = part.Rotation % 360f;
                         }
                     }
 
@@ -634,7 +634,7 @@
                         // first placement, put it on the top left corner
                         for (j = 0; j < sheetNfp.Count(); j++)
                         {
-                            for (k = 0; k < sheetNfp[j].length; k++)
+                            for (k = 0; k < sheetNfp[j].Length; k++)
                             {
                                 if (position == null ||
                                     ((sheetNfp[j][k].x - part[0].x) < position.x) ||
@@ -647,8 +647,8 @@
                                         x = sheetNfp[j][k].x - part[0].x,
                                         y = sheetNfp[j][k].y - part[0].y,
                                         id = part.id,
-                                        rotation = part.rotation,
-                                        source = part.source.Value,
+                                        rotation = part.Rotation,
+                                        source = part.Source.Value,
                                     };
                                 }
                             }
@@ -668,7 +668,7 @@
                         continue;
                     }
 
-                    clipperSheetNfp = innerNfpToClipperCoordinates(sheetNfp, config);
+                    clipperSheetNfp = InnerNfpToClipperCoordinates(sheetNfp, config);
 
                     clipper = new ClipperLib.Clipper();
                     combinedNfp = new List<List<ClipperLib.IntPoint>>();
@@ -677,7 +677,7 @@
 
                     // check if stored in clip cache
                     // var startindex = 0;
-                    clipkey = "s:" + part.source + "r:" + part.rotation;
+                    clipkey = "s:" + part.Source + "r:" + part.Rotation;
                     var startindex = 0;
                     if (EnableCaches && clipCache.ContainsKey(clipkey))
                     {
@@ -688,7 +688,7 @@
 
                     for (j = startindex; j < placed.Count; j++)
                     {
-                        nfp = getOuterNfp(placed[j], part, 0);
+                        nfp = GetOuterNfp(placed[j], part, 0);
 
                         // minkowski difference failed. very rare but could happen
                         if (nfp == null)
@@ -698,7 +698,7 @@
                         }
 
                         // shift to placed location
-                        for (m = 0; m < nfp.length; m++)
+                        for (m = 0; m < nfp.Length; m++)
                         {
                             nfp[m].x += placements[j].x;
                             nfp[m].y += placements[j].y;
@@ -708,7 +708,7 @@
                         {
                             for (n = 0; n < nfp.children.Count; n++)
                             {
-                                for (var o = 0; o < nfp.children[n].length; o++)
+                                for (var o = 0; o < nfp.children[n].Length; o++)
                                 {
                                     nfp.children[n][o].x += placements[j].x;
                                     nfp.children[n][o].y += placements[j].y;
@@ -716,7 +716,7 @@
                             }
                         }
 
-                        var clipperNfp = nfpToClipperCoordinates(nfp, config);
+                        var clipperNfp = NfpToClipperCoordinates(nfp, config);
 
                         clipper.AddPaths(clipperNfp.Select(z => z.ToList()).ToList(), ClipperLib.PolyType.ptSubject, true);
                     }
@@ -761,7 +761,7 @@
                     for (j = 0; j < _finalNfp.Count; j++)
                     {
                         // back to normal scale
-                        f.Add(Background.toNestCoordinates(_finalNfp[j].ToArray(), config.clipperScale));
+                        f.Add(Background.ToNestCoordinates(_finalNfp[j].ToArray(), config.clipperScale));
                     }
 
                     var finalNfp = f;
@@ -786,7 +786,7 @@
                     NFP allpoints = new NFP();
                     for (m = 0; m < placed.Count; m++)
                     {
-                        for (n = 0; n < placed[m].length; n++)
+                        for (n = 0; n < placed[m].Length; n++)
                         {
                             allpoints.AddPoint(
                                 new SvgPoint(
@@ -796,12 +796,12 @@
 
                     PolygonBounds allbounds = null;
                     PolygonBounds partbounds = null;
-                    if (config.placementType == PlacementTypeEnum.gravity || config.placementType == PlacementTypeEnum.box)
+                    if (config.placementType == PlacementTypeEnum.Gravity || config.placementType == PlacementTypeEnum.Box)
                     {
                         allbounds = GeometryUtil.getPolygonBounds(allpoints);
 
                         NFP partpoints = new NFP();
-                        for (m = 0; m < part.length; m++)
+                        for (m = 0; m < part.Length; m++)
                         {
                             partpoints.AddPoint(new SvgPoint(part[m].x, part[m].y));
                         }
@@ -810,7 +810,7 @@
                     }
                     else
                     {
-                        allpoints = getHull(allpoints);
+                        allpoints = GetHull(allpoints);
                     }
 
                     for (j = 0; j < finalNfp.Count; j++)
@@ -818,18 +818,18 @@
                         nf = finalNfp[j];
 
                         // console.log('evalnf',nf.length);
-                        for (k = 0; k < nf.length; k++)
+                        for (k = 0; k < nf.Length; k++)
                         {
                             shiftvector = new PlacementItem()
                             {
                                 id = part.id,
                                 x = nf[k].x - part[0].x,
                                 y = nf[k].y - part[0].y,
-                                source = part.source.Value,
-                                rotation = part.rotation,
+                                source = part.Source.Value,
+                                rotation = part.Rotation,
                             };
                             PolygonBounds rectbounds = null;
-                            if (config.placementType == PlacementTypeEnum.gravity || config.placementType == PlacementTypeEnum.box)
+                            if (config.placementType == PlacementTypeEnum.Gravity || config.placementType == PlacementTypeEnum.Box)
                             {
                                 NFP poly = new NFP();
                                 poly.AddPoint(new SvgPoint(allbounds.x, allbounds.y));
@@ -860,7 +860,7 @@
                                 rectbounds = GeometryUtil.getPolygonBounds(poly);
 
                                 // weigh width more, to help compress in direction of gravity
-                                if (config.placementType == PlacementTypeEnum.gravity)
+                                if (config.placementType == PlacementTypeEnum.Gravity)
                                 {
                                     area = (rectbounds.width * 2) + rectbounds.height;
                                 }
@@ -874,14 +874,14 @@
                                 // must be convex hull
                                 var localpoints = clone(allpoints);
 
-                                for (m = 0; m < part.length; m++)
+                                for (m = 0; m < part.Length; m++)
                                 {
                                     localpoints.AddPoint(new SvgPoint(part[m].x + shiftvector.x, part[m].y + shiftvector.y));
                                 }
 
-                                area = Math.Abs(GeometryUtil.polygonArea(getHull(localpoints)));
-                                shiftvector.hull = getHull(localpoints);
-                                shiftvector.hullsheet = getHull(sheet);
+                                area = Math.Abs(GeometryUtil.polygonArea(GetHull(localpoints)));
+                                shiftvector.hull = GetHull(localpoints);
+                                shiftvector.hullsheet = GetHull(sheet);
                             }
 
                             // console.timeEnd('evalbounds');
@@ -976,7 +976,7 @@
                     var index = Array.IndexOf(parts, placed[i]);
                     if (index >= 0)
                     {
-                        parts = parts.splice(index, 1);
+                        parts = parts.Splice(index, 1);
                     }
                 }
 
@@ -985,7 +985,7 @@
                     allplacements.Add(new SheetPlacementItem()
                     {
                         sheetId = sheet.id,
-                        sheetSource = sheet.source.Value,
+                        sheetSource = sheet.Source.Value,
                         sheetplacements = placements,
                     });
 
@@ -1026,9 +1026,9 @@
 
         // jsClipper uses X/Y instead of x/y...
         public DataInfo data;
-        NFP[] parts;
+        private NFP[] parts;
 
-        int index;
+        private int index;
 
         // run the placement synchronously
         public static windowUnk window = new windowUnk();
@@ -1037,7 +1037,7 @@
 
         public static long LastPlacePartTime = 0;
 
-        public void sync()
+        public void Sync()
         {
             // console.log('starting synchronous calculations', Object.keys(window.nfpCache).length);
             // console.log('in sync');
@@ -1049,7 +1049,7 @@
 
             // console.log('nfp cached:', c);
             Stopwatch sw = Stopwatch.StartNew();
-            var placement = placeParts(this.data.sheets.ToArray(), this.parts, this.data.config, this.index);
+            var placement = PlaceParts(this.data.sheets.ToArray(), this.parts, this.data.config, this.index);
             sw.Stop();
             LastPlacePartTime = sw.ElapsedMilliseconds;
 
@@ -1073,9 +1073,9 @@
 
             for (var i = 0; i < parts.Count; i++)
             {
-                parts[i].rotation = rotations[i];
+                parts[i].Rotation = rotations[i];
                 parts[i].id = ids[i];
-                parts[i].source = sources[i];
+                parts[i].Source = sources[i];
                 if (!data.config.simplify)
                 {
                     parts[i].children = children[i];
@@ -1085,7 +1085,7 @@
             for (int i = 0; i < data.sheets.Count; i++)
             {
                 data.sheets[i].id = data.sheetids[i];
-                data.sheets[i].source = data.sheetsources[i];
+                data.sheets[i].Source = data.sheetsources[i];
                 data.sheets[i].children = data.sheetchildren[i];
             }
 
@@ -1106,22 +1106,22 @@
                             {
                                 A = A,
                                 B = B,
-                                ARotation = A.rotation,
-                                BRotation = B.rotation,
-                                Asource = A.source.Value,
-                                Bsource = B.source.Value,
+                                ARotation = A.Rotation,
+                                BRotation = B.Rotation,
+                                Asource = A.Source.Value,
+                                Bsource = B.Source.Value,
                             };
                             var doc = new DbCacheKey()
                             {
-                                A = A.source.Value,
-                                B = B.source.Value,
+                                A = A.Source.Value,
+                                B = B.Source.Value,
 
-                                ARotation = A.rotation,
-                                BRotation = B.rotation,
+                                ARotation = A.Rotation,
+                                BRotation = B.Rotation,
                             };
                             lock (lobj)
                             {
-                                if (!this.inpairs(key, pairs.ToArray()) && !window.db.has(doc))
+                                if (!this.InPairs(key, pairs.ToArray()) && !window.db.Has(doc))
                                 {
                                     pairs.Add(key);
                                 }
@@ -1142,20 +1142,20 @@
                         {
                             A = A,
                             B = B,
-                            ARotation = A.rotation,
-                            BRotation = B.rotation,
-                            Asource = A.source.Value,
-                            Bsource = B.source.Value,
+                            ARotation = A.Rotation,
+                            BRotation = B.Rotation,
+                            Asource = A.Source.Value,
+                            Bsource = B.Source.Value,
                         };
                         var doc = new DbCacheKey()
                         {
-                            A = A.source.Value,
-                            B = B.source.Value,
+                            A = A.Source.Value,
+                            B = B.Source.Value,
 
-                            ARotation = A.rotation,
-                            BRotation = B.rotation,
+                            ARotation = A.Rotation,
+                            BRotation = B.Rotation,
                         };
-                        if (!this.inpairs(key, pairs.ToArray()) && !window.db.has(doc))
+                        if (!this.InPairs(key, pairs.ToArray()) && !window.db.Has(doc))
                         {
                             pairs.Add(key);
                         }
@@ -1168,20 +1168,20 @@
             this.parts = parts.ToArray();
             if (pairs.Count > 0)
             {
-                var ret1 = this.pmapDeepNest(pairs);
-                this.thenDeepNest(ret1, parts);
+                var ret1 = this.PmapDeepNest(pairs);
+                this.ThenDeepNest(ret1, parts);
             }
             else
             {
-                this.sync();
+                this.Sync();
             }
         }
 
-        public NFP getPart(int source, List<NFP> parts)
+        public NFP GetPart(int source, List<NFP> parts)
         {
             for (var k = 0; k < parts.Count; k++)
             {
-                if (parts[k].source == source)
+                if (parts[k].Source == source)
                 {
                     return parts[k];
                 }
@@ -1190,12 +1190,12 @@
             return null;
         }
 
-        public void thenIterate(NfpPair processed, List<NFP> parts)
+        public void ThenIterate(NfpPair processed, List<NFP> parts)
         {
             // returned data only contains outer nfp, we have to account for any holes separately in the synchronous portion
             // this is because the c++ addon which can process interior nfps cannot run in the worker thread
-            var A = this.getPart(processed.Asource, parts);
-            var B = this.getPart(processed.Bsource, parts);
+            var A = this.GetPart(processed.Asource, parts);
+            var B = this.GetPart(processed.Bsource, parts);
 
             List<NFP> Achildren = new List<NFP>();
 
@@ -1246,7 +1246,7 @@
                     nfp: processed[i].nfp
 
                 };*/
-            window.db.insert(doc);
+            window.db.Insert(doc);
         }
 
         public static Action<float> displayProgress;
@@ -1259,7 +1259,7 @@
             }
         }
 
-        public void thenDeepNest(NfpPair[] processed, List<NFP> parts)
+        public void ThenDeepNest(NfpPair[] processed, List<NFP> parts)
         {
             int cnt = 0;
             if (UseParallel)
@@ -1269,7 +1269,7 @@
                     float progress = 0.33f + (0.33f * (cnt / (float)processed.Count()));
                     cnt++;
                     DisplayProgress(progress);
-                    this.thenIterate(processed[i], parts);
+                    this.ThenIterate(processed[i], parts);
                 });
             }
             else
@@ -1279,16 +1279,16 @@
                     float progress = 0.33f + (0.33f * (cnt / (float)processed.Count()));
                     cnt++;
                     DisplayProgress(progress);
-                    this.thenIterate(processed[i], parts);
+                    this.ThenIterate(processed[i], parts);
                 }
             }
 
             // console.timeEnd('Total');
             // console.log('before sync');
-            this.sync();
+            this.Sync();
         }
 
-        public bool inpairs(NfpPair key, NfpPair[] p)
+        public bool InPairs(NfpPair key, NfpPair[] p)
         {
             for (var i = 0; i < p.Length; i++)
             {
@@ -1303,7 +1303,7 @@
 
         public static bool UseParallel = false;
 
-        public NfpPair[] pmapDeepNest(List<NfpPair> pairs)
+        public NfpPair[] PmapDeepNest(List<NfpPair> pairs)
         {
             NfpPair[] ret = new NfpPair[pairs.Count()];
             int cnt = 0;
@@ -1311,7 +1311,7 @@
             {
                 Parallel.For(0, pairs.Count, (i) =>
                 {
-                    ret[i] = this.process(pairs[i]);
+                    ret[i] = this.Process(pairs[i]);
                     float progress = 0.33f * (cnt / (float)pairs.Count);
                     cnt++;
                     DisplayProgress(progress);
@@ -1322,7 +1322,7 @@
                 for (int i = 0; i < pairs.Count; i++)
                 {
                     var item = pairs[i];
-                    ret[i] = this.process(item);
+                    ret[i] = this.Process(item);
                     float progress = 0.33f * (cnt / (float)pairs.Count);
                     cnt++;
                     DisplayProgress(progress);
@@ -1332,7 +1332,7 @@
             return ret.ToArray();
         }
 
-        public NfpPair process(NfpPair pair)
+        public NfpPair Process(NfpPair pair)
         {
             var A = rotatePolygon(pair.A, pair.ARotation);
             var B = rotatePolygon(pair.B, pair.BRotation);
@@ -1353,7 +1353,7 @@
             double? largestArea = null;
             for (int i = 0; i < solution.Count(); i++)
             {
-                var n = toNestCoordinates(solution[i].ToArray(), 10000000);
+                var n = ToNestCoordinates(solution[i].ToArray(), 10000000);
                 var sarea = -GeometryUtil.polygonArea(n);
                 if (largestArea == null || largestArea < sarea)
                 {
@@ -1362,7 +1362,7 @@
                 }
             }
 
-            for (var i = 0; i < clipperNfp.length; i++)
+            for (var i = 0; i < clipperNfp.Length; i++)
             {
                 clipperNfp[i].x += B[0].x;
                 clipperNfp[i].y += B[0].y;
@@ -1378,7 +1378,7 @@
             return pair;
         }
 
-        public static NFP toNestCoordinates(IntPoint[] polygon, double scale)
+        public static NFP ToNestCoordinates(IntPoint[] polygon, double scale)
         {
             var clone = new List<SvgPoint>();
 
@@ -1392,7 +1392,7 @@
             return new NFP() { Points = clone.ToArray() };
         }
 
-        public static NFP getHull(NFP polygon)
+        public static NFP GetHull(NFP polygon)
         {
             // convert to hulljs format
             /*var hull = new ConvexHullGrahamScan();
@@ -1401,8 +1401,8 @@
             }
 
             return hull.getHull();*/
-            double[][] points = new double[polygon.length][];
-            for (var i = 0; i < polygon.length; i++)
+            double[][] points = new double[polygon.Length][];
+            for (var i = 0; i < polygon.Length; i++)
             {
                 points[i] = new double[] { polygon[i].x, polygon[i].y };
             }
@@ -1424,7 +1424,7 @@
         }
 
         // returns clipper nfp. Remember that clipper nfp are a list of polygons, not a tree!
-        public static IntPoint[][] nfpToClipperCoordinates(NFP nfp, SvgNestConfig config)
+        public static IntPoint[][] NfpToClipperCoordinates(NFP nfp, SvgNestConfig config)
         {
             List<IntPoint[]> clipperNfp = new List<IntPoint[]>();
 
@@ -1462,12 +1462,12 @@
         }
 
         // inner nfps can be an array of nfps, outer nfps are always singular
-        public static IntPoint[][] innerNfpToClipperCoordinates(NFP[] nfp, SvgNestConfig config)
+        public static IntPoint[][] InnerNfpToClipperCoordinates(NFP[] nfp, SvgNestConfig config)
         {
             List<IntPoint[]> clipperNfp = new List<IntPoint[]>();
             for (var i = 0; i < nfp.Count(); i++)
             {
-                var clip = nfpToClipperCoordinates(nfp[i], config);
+                var clip = NfpToClipperCoordinates(nfp[i], config);
                 clipperNfp.AddRange(clip);
 
                 // clipperNfp = clipperNfp.Concat(new[] { clip }).ToList();
@@ -1476,23 +1476,23 @@
             return clipperNfp.ToArray();
         }
 
-        static object lockobj = new object();
+        private static object lockobj = new object();
 
-        public static NFP getOuterNfp(NFP A, NFP B, int type, bool inside = false) // todo:?inside def?
+        public static NFP GetOuterNfp(NFP A, NFP B, int type, bool inside = false) // todo:?inside def?
         {
             NFP[] nfp = null;
 
             var key = new DbCacheKey()
             {
-                A = A.source,
-                B = B.source,
-                ARotation = A.rotation,
-                BRotation = B.rotation,
+                A = A.Source,
+                B = B.Source,
+                ARotation = A.Rotation,
+                BRotation = B.Rotation,
 
                 // Type = type
             };
 
-            var doc = window.db.find(key);
+            var doc = window.db.Find(key);
             if (doc != null)
             {
                 return doc.First();
@@ -1518,22 +1518,22 @@
             }
             else
             {
-                var Ac = _Clipper.ScaleUpPaths(A, 10000000);
+                var ac = _Clipper.ScaleUpPaths(A, 10000000);
 
-                var Bc = _Clipper.ScaleUpPaths(B, 10000000);
-                for (var i = 0; i < Bc.Length; i++)
+                var bc = _Clipper.ScaleUpPaths(B, 10000000);
+                for (var i = 0; i < bc.Length; i++)
                 {
-                    Bc[i].X *= -1;
-                    Bc[i].Y *= -1;
+                    bc[i].X *= -1;
+                    bc[i].Y *= -1;
                 }
 
-                var solution = ClipperLib.Clipper.MinkowskiSum(new List<IntPoint>(Ac), new List<IntPoint>(Bc), true);
+                var solution = ClipperLib.Clipper.MinkowskiSum(new List<IntPoint>(ac), new List<IntPoint>(bc), true);
                 NFP clipperNfp = null;
 
                 double? largestArea = null;
                 for (int i = 0; i < solution.Count(); i++)
                 {
-                    var n = Background.toNestCoordinates(solution[i].ToArray(), 10000000);
+                    var n = Background.ToNestCoordinates(solution[i].ToArray(), 10000000);
                     var sarea = GeometryUtil.polygonArea(n);
                     if (largestArea == null || largestArea > sarea)
                     {
@@ -1542,7 +1542,7 @@
                     }
                 }
 
-                for (var i = 0; i < clipperNfp.length; i++)
+                for (var i = 0; i < clipperNfp.Length; i++)
                 {
                     clipperNfp[i].x += B[0].x;
                     clipperNfp[i].y += B[0].y;
@@ -1572,17 +1572,17 @@
                 return null;
             }
             */
-            if (!inside && A.source != null && B.source != null)
+            if (!inside && A.Source != null && B.Source != null)
             {
                 var doc2 = new DbCacheKey()
                 {
-                    A = A.source.Value,
-                    B = B.source.Value,
-                    ARotation = A.rotation,
-                    BRotation = B.rotation,
+                    A = A.Source.Value,
+                    B = B.Source.Value,
+                    ARotation = A.Rotation,
+                    BRotation = B.Rotation,
                     nfp = nfp,
                 };
-                window.db.insert(doc2);
+                window.db.Insert(doc2);
             }
 
             /*

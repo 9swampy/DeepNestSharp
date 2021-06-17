@@ -87,20 +87,20 @@
             }
         }
 
-        PictureBoxProgressBar progressBar1;
+        private PictureBoxProgressBar progressBar1;
 
         public void UpdateList()
         {
             this.listView1.Items.Clear();
             foreach (var item in this.polygons)
             {
-                this.listView1.Items.Add(new ListViewItem(new string[] { item.id.ToString(), item.source.ToString(), item.Name, item.Points.Count().ToString() }) { Tag = item });
+                this.listView1.Items.Add(new ListViewItem(new string[] { item.id.ToString(), item.Source.ToString(), item.Name, item.Points.Count().ToString() }) { Tag = item });
             }
 
             this.listView2.Items.Clear();
             foreach (var item in this.sheets)
             {
-                this.listView2.Items.Add(new ListViewItem(new string[] { item.id.ToString(), item.source.ToString(), item.Name, item.Points.Count().ToString() }) { Tag = item });
+                this.listView2.Items.Add(new ListViewItem(new string[] { item.id.ToString(), item.Source.ToString(), item.Name, item.Points.Count().ToString() }) { Tag = item });
             }
 
             this.groupBox5.Text = "Parts: " + this.polygons.Count();
@@ -109,13 +109,16 @@
 
         public NestingContext Context = new NestingContext();
 
-        public SvgNest nest { get { return this.context.Nest; } }
+        public SvgNest nest
+        {
+            get { return this.context.Nest; }
+        }
 
         public object selected = null;
 
-        Thread dth;
+        private Thread dth;
 
-        object Preview;
+        private object Preview;
 
         public void RedrawPreview(DrawingContext ctx2, object previewObject)
         {
@@ -178,11 +181,8 @@
             this.ctx.Update();
 
             // ctx2.Update();
-            #region preview draw
             this.RedrawPreview(this.ctx2, this.Preview);
             this.RedrawPreview(this.ctx3, this.Preview);
-            #endregion
-
             this.ctx.gr.SmoothingMode = SmoothingMode.AntiAlias;
             this.ctx.gr.Clear(Color.White);
 
@@ -198,7 +198,7 @@
                 yy += (int)this.Font.Size + gap;
                 this.ctx.gr.DrawString($"Material Utilization: {Math.Round(this.context.MaterialUtilization * 100.0f, 2)}%   Iterations: {this.context.Iterations}    Parts placed: {this.context.PlacedPartsCount}/{this.polygons.Count}", this.Font, Brushes.DarkBlue, 0, yy);
                 yy += (int)this.Font.Size + gap;
-                this.ctx.gr.DrawString($"Sheets: {this.sheets.Count}   Parts:{this.polygons.Count}    parts types: {this.polygons.GroupBy(z => z.source).Count()}", this.Font, Brushes.DarkBlue, 0, yy);
+                this.ctx.gr.DrawString($"Sheets: {this.sheets.Count}   Parts:{this.polygons.Count}    parts types: {this.polygons.GroupBy(z => z.Source).Count()}", this.Font, Brushes.DarkBlue, 0, yy);
                 yy += (int)this.Font.Size + gap;
 
                 if (this.nest != null && this.nest.nests.Any())
@@ -214,7 +214,7 @@
             {
                 this.ctx.gr.DrawString($"Iterations: {this.context.Iterations}    Parts placed: {this.context.PlacedPartsCount}/{this.polygons.Count}", this.Font, Brushes.DarkBlue, 0, yy);
                 yy += (int)this.Font.Size + gap;
-                this.ctx.gr.DrawString($"Sheets: {this.sheets.Count}   Parts:{this.polygons.Count}    Parts types: {this.polygons.GroupBy(z => z.source).Count()}", this.Font, Brushes.DarkBlue, 0, yy);
+                this.ctx.gr.DrawString($"Sheets: {this.sheets.Count}   Parts:{this.polygons.Count}    Parts types: {this.polygons.GroupBy(z => z.Source).Count()}", this.Font, Brushes.DarkBlue, 0, yy);
                 yy += (int)this.Font.Size + gap;
             }
 
@@ -249,7 +249,7 @@
                     // rotate first;
                     var m = new Matrix();
                     m.Translate((float)item.x, (float)item.y);
-                    m.Rotate(item.rotation);
+                    m.Rotate(item.Rotation);
 
                     var pnts = item.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
                     m.TransformPoints(pnts);
@@ -352,7 +352,7 @@
                     // rotate first;
                     var m = new Matrix();
                     m.Translate((float)item.x, (float)item.y);
-                    m.Rotate(item.rotation);
+                    m.Rotate(item.Rotation);
 
                     var pnts = item.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
                     m.TransformPoints(pnts);
@@ -425,7 +425,7 @@
             }
         }
 
-        Thread th;
+        private Thread th;
 
         internal void displayProgress(float progress)
         {
@@ -619,7 +619,7 @@
                 sheet.Width = (float)b.width;
                 sheet.Height = (float)b.height;
 
-                sheet.source = this.context.GetNextSheetSource();
+                sheet.Source = this.context.GetNextSheetSource();
                 this.sheets.Add(sheet);
                 this.context.ReorderSheets();
                 this.UpdateList();
@@ -685,7 +685,7 @@
                     int src = 0;
                     if (this.polygons.Any())
                     {
-                        src = this.polygons.Max(z => z.source.Value) + 1;
+                        src = this.polygons.Max(z => z.Source.Value) + 1;
                     }
 
                     for (int i = 0; i < q.Qnt; i++)
@@ -725,7 +725,7 @@
                     int src = 0;
                     if (this.polygons.Any())
                     {
-                        src = this.polygons.Max(z => z.source.Value) + 1;
+                        src = this.polygons.Max(z => z.Source.Value) + 1;
                     }
 
                     for (int i = 0; i < q.Qnt; i++)
@@ -738,7 +738,7 @@
             }
         }
 
-        bool stop = false;
+        private bool stop = false;
 
         public void RunDeepnest()
         {
@@ -775,7 +775,7 @@
             this.th.Start();
         }
 
-        Random r = new Random();
+        private Random r = new Random();
 
         private void cloneQntToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -796,7 +796,7 @@
             }
         }
 
-        void run()
+        private void run()
         {
             if (this.sheets.Count == 0 || this.polygons.Count == 0)
             {
@@ -831,17 +831,17 @@
             var t = this.comboBox1.SelectedItem as string;
             if (t.ToLower().Contains("gravi"))
             {
-                SvgNest.Config.placementType = PlacementTypeEnum.gravity;
+                SvgNest.Config.placementType = PlacementTypeEnum.Gravity;
             }
 
             if (t.ToLower().Contains("box"))
             {
-                SvgNest.Config.placementType = PlacementTypeEnum.box;
+                SvgNest.Config.placementType = PlacementTypeEnum.Box;
             }
 
             if (t.ToLower().Contains("squ"))
             {
-                SvgNest.Config.placementType = PlacementTypeEnum.squeeze;
+                SvgNest.Config.placementType = PlacementTypeEnum.Squeeze;
             }
         }
 
@@ -929,7 +929,7 @@
 
             foreach (var item in sh)
             {
-                item.source = src;
+                item.Source = src;
                 this.context.Sheets.Add(item);
             }
 
@@ -962,11 +962,11 @@
                 int src = 0;
                 if (this.polygons.Any())
                 {
-                    src = this.polygons.Max(z => z.source.Value) + 1;
+                    src = this.polygons.Max(z => z.Source.Value) + 1;
                 }
 
                 this.polygons.Add(pl);
-                pl.source = src;
+                pl.Source = src;
                 pl.x = xx;
                 pl.y = yy;
                 pl.Points = new SvgPoint[] { };
@@ -992,10 +992,10 @@
                 int src = 0;
                 if (this.polygons.Any())
                 {
-                    src = this.polygons.Max(z => z.source.Value) + 1;
+                    src = this.polygons.Max(z => z.Source.Value) + 1;
                 }
 
-                pl.source = src;
+                pl.Source = src;
                 this.polygons.Add(pl);
                 pl.x = xx;
                 pl.y = yy;
@@ -1024,10 +1024,10 @@
                 int src = 0;
                 if (this.polygons.Any())
                 {
-                    src = this.polygons.Max(z => z.source.Value) + 1;
+                    src = this.polygons.Max(z => z.Source.Value) + 1;
                 }
 
-                pl.source = src;
+                pl.Source = src;
                 this.polygons.Add(pl);
                 pl.Points = new SvgPoint[] { };
                 pl.x = xx;
@@ -1053,10 +1053,10 @@
                 int src = 0;
                 if (this.polygons.Any())
                 {
-                    src = this.polygons.Max(z => z.source.Value) + 1;
+                    src = this.polygons.Max(z => z.Source.Value) + 1;
                 }
 
-                pl.source = src;
+                pl.Source = src;
                 this.polygons.Add(pl);
                 pl.Points = new SvgPoint[] { };
                 pl.AddPoint(new SvgPoint(xx, yy));
@@ -1076,7 +1076,7 @@
             int src = 0;
             if (this.polygons.Any())
             {
-                src = this.polygons.Max(z => z.source.Value) + 1;
+                src = this.polygons.Max(z => z.Source.Value) + 1;
             }
 
             if (q.ShowDialog() == DialogResult.OK)
@@ -1088,7 +1088,7 @@
 
                     NFP pl = new NFP();
 
-                    pl.source = src;
+                    pl.Source = src;
                     this.polygons.Add(pl);
                     pl.Points = new SvgPoint[] { };
                     pl.x = xx;
@@ -1108,9 +1108,12 @@
             this.stop = true;
         }
 
-        NestingContext context = new NestingContext();
+        private NestingContext context = new NestingContext();
 
-        List<NFP> polygons { get { return this.context.Polygons; } }
+        private List<NFP> polygons
+        {
+            get { return this.context.Polygons; }
+        }
 
         private void button6_Click(object sender, EventArgs e)
         {
@@ -1126,11 +1129,11 @@
                 int src = 0;
                 if (this.polygons.Any())
                 {
-                    src = this.polygons.Max(z => z.source.Value) + 1;
+                    src = this.polygons.Max(z => z.Source.Value) + 1;
                 }
 
                 this.polygons.Add(pl);
-                pl.source = src;
+                pl.Source = src;
                 pl.Points = new SvgPoint[] { };
                 pl.AddPoint(new SvgPoint(0, 0));
                 pl.AddPoint(new SvgPoint(0 + ww, 0));
@@ -1168,10 +1171,10 @@
                 int src = 0;
                 if (this.polygons.Any())
                 {
-                    src = this.polygons.Max(z => z.source.Value) + 1;
+                    src = this.polygons.Max(z => z.Source.Value) + 1;
                 }
 
-                pl.source = src;
+                pl.Source = src;
                 this.polygons.Add(pl);
                 pl.Points = new SvgPoint[] { };
 
@@ -1218,11 +1221,11 @@
             int src = 0;
             if (this.polygons.Any())
             {
-                src = this.polygons.Max(z => z.source.Value) + 1;
+                src = this.polygons.Max(z => z.Source.Value) + 1;
             }
 
             this.polygons.Add(pl);
-            pl.source = src;
+            pl.Source = src;
             pl.x = xx;
             pl.y = yy;
             pl.Points = new SvgPoint[] { };
@@ -1234,7 +1237,7 @@
             this.UpdateList();
         }
 
-        bool isInfoShow = false;
+        private bool isInfoShow = false;
 
         private void toolStripButton3_Click(object sender, EventArgs e)
         {
@@ -1280,7 +1283,10 @@
             }
         }
 
-        List<NFP> sheets { get { return this.context.Sheets; } }
+        private List<NFP> sheets
+        {
+            get { return this.context.Sheets; }
+        }
 
         private void toolStripButton2_Click_1(object sender, EventArgs e)
         {
@@ -1301,7 +1307,7 @@
             }
         }
 
-        Bitmap bb;
+        private Bitmap bb;
 
         private void button7_Click(object sender, EventArgs e)
         {
@@ -1335,11 +1341,11 @@
             int src = 0;
             if (this.polygons.Any())
             {
-                src = this.polygons.Max(z => z.source.Value) + 1;
+                src = this.polygons.Max(z => z.Source.Value) + 1;
             }
 
             this.polygons.Add(pl);
-            pl.source = src;
+            pl.Source = src;
             pl.Points = new SvgPoint[] { };
             pl.AddPoint(new SvgPoint(0, 0));
             pl.AddPoint(new SvgPoint(0 + ww, 0));
@@ -1433,7 +1439,7 @@
                 {
                     var ns = this.NewSheet(item.Width, item.Height);
                     this.sheets.Add(ns);
-                    ns.source = src;
+                    ns.Source = src;
                 }
             }
 
@@ -1485,7 +1491,7 @@
             Preview = null;
         }
 
-        List<SheetLoadInfo> sheetsInfos = new List<SheetLoadInfo>();
+        private List<SheetLoadInfo> sheetsInfos = new List<SheetLoadInfo>();
 
         private void deleteToolStripMenuItem2_Click(object sender, EventArgs e)
         {

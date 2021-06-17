@@ -22,7 +22,7 @@
             List<InrangeItem> inrange = new List<InrangeItem>();
 
             // find closest points within 2 offset deltas
-            for (var j = 0; j < simple.length; j++)
+            for (var j = 0; j < simple.Length; j++)
             {
                 var s = simple[j];
                 var d2 = ((o.x - s.x) * (o.x - s.x)) + ((o.y - s.y) * (o.y - s.y));
@@ -53,7 +53,7 @@
             else
             {
                 double? mind = null;
-                for (int j = 0; j < simple.length; j++)
+                for (int j = 0; j < simple.Length; j++)
                 {
                     var s = simple[j];
                     var d2 = ((o.x - s.x) * (o.x - s.x)) + ((o.y - s.y) * (o.y - s.y));
@@ -73,7 +73,7 @@
         public static NFP clone(NFP p)
         {
             var newp = new NFP();
-            for (var i = 0; i < p.length; i++)
+            for (var i = 0; i < p.Length; i++)
             {
                 newp.AddPoint(new SvgPoint(
 
@@ -97,7 +97,7 @@
         public static bool exterior(NFP simple, NFP complex, bool inside)
         {
             // find all protruding vertices
-            for (var i = 0; i < complex.length; i++)
+            for (var i = 0; i < complex.Length; i++)
             {
                 var v = complex[i];
                 if (!inside && !pointInPolygon(v, simple) && find(v, simple) == null)
@@ -132,7 +132,7 @@
                 }
 
                 return hull.getHull();*/
-                var hull = Background.getHull(polygon);
+                var hull = Background.GetHull(polygon);
                 if (hull != null)
                 {
                     return hull;
@@ -144,7 +144,7 @@
             }
 
             var cleaned = cleanPolygon2(polygon);
-            if (cleaned != null && cleaned.length > 1)
+            if (cleaned != null && cleaned.Length > 1)
             {
                 polygon = cleaned;
             }
@@ -155,12 +155,12 @@
 
             // polygon to polyline
             var copy = polygon.slice(0);
-            copy.push(copy[0]);
+            copy.Push(copy[0]);
 
             // mark all segments greater than ~0.25 in to be kept
             // the PD simplification algo doesn't care about the accuracy of long lines, only the absolute distance of each point
             // we care a great deal
-            for (i = 0; i < copy.length - 1; i++)
+            for (i = 0; i < copy.Length - 1; i++)
             {
                 var p1 = copy[i];
                 var p2 = copy[i + 1];
@@ -208,16 +208,16 @@
             }
 
             // mark any points that are exact
-            for (i = 0; i < simple.length; i++)
+            for (i = 0; i < simple.Length; i++)
             {
                 var seg = new NFP();
                 seg.AddPoint(simple[i]);
-                seg.AddPoint(simple[i + 1 == simple.length ? 0 : i + 1]);
+                seg.AddPoint(simple[i + 1 == simple.Length ? 0 : i + 1]);
 
                 var index1 = find(seg[0], polygon);
                 var index2 = find(seg[1], polygon);
 
-                if (index1 + 1 == index2 || index2 + 1 == index1 || (index1 == 0 && index2 == polygon.length - 1) || (index2 == 0 && index1 == polygon.length - 1))
+                if (index1 + 1 == index2 || index2 + 1 == index1 || (index1 == 0 && index2 == polygon.Length - 1) || (index2 == 0 && index1 == polygon.Length - 1))
                 {
                     seg[0].exact = true;
                     seg[1].exact = true;
@@ -248,7 +248,7 @@
             }
 
             // selective reversal of offset
-            for (i = 0; i < offset.length; i++)
+            for (i = 0; i < offset.Length; i++)
             {
                 var o = offset[i];
                 var target = getTarget(o, simple, 2 * tolerance);
@@ -289,10 +289,10 @@
             // a rounded rectangle would still have issues at this point, as the long sides won't line up straight
             var straightened = false;
 
-            for (i = 0; i < offset.length; i++)
+            for (i = 0; i < offset.Length; i++)
             {
                 var p1 = offset[i];
-                var p2 = offset[i + 1 == offset.length ? 0 : i + 1];
+                var p2 = offset[i + 1 == offset.Length ? 0 : i + 1];
 
                 var sqd = ((p2.x - p1.x) * (p2.x - p1.x)) + ((p2.y - p1.y) * (p2.y - p1.y));
 
@@ -301,10 +301,10 @@
                     continue;
                 }
 
-                for (j = 0; j < simple.length; j++)
+                for (j = 0; j < simple.Length; j++)
                 {
                     var s1 = simple[j];
-                    var s2 = simple[j + 1 == simple.length ? 0 : j + 1];
+                    var s2 = simple[j + 1 == simple.Length ? 0 : j + 1];
 
                     var sqds = ((p2.x - p1.x) * (p2.x - p1.x)) + ((p2.y - p1.y) * (p2.y - p1.y));
 
@@ -344,7 +344,7 @@
                 double? largestArea = null;
                 for (i = 0; i < combined.Count; i++)
                 {
-                    var n = Background.toNestCoordinates(combined[i].ToArray(), 10000000);
+                    var n = Background.ToNestCoordinates(combined[i].ToArray(), 10000000);
                     var sarea = -GeometryUtil.polygonArea(n);
                     if (largestArea == null || largestArea < sarea)
                     {
@@ -356,15 +356,15 @@
 
             // }
             cleaned = cleanPolygon2(offset);
-            if (cleaned != null && cleaned.length > 1)
+            if (cleaned != null && cleaned.Length > 1)
             {
                 offset = cleaned;
             }
 
             // mark any points that are exact (for line merge detection)
-            for (i = 0; i < offset.length; i++)
+            for (i = 0; i < offset.Length; i++)
             {
-                var seg = new SvgPoint[] { offset[i], offset[i + 1 == offset.length ? 0 : i + 1] };
+                var seg = new SvgPoint[] { offset[i], offset[i + 1 == offset.Length ? 0 : i + 1] };
                 var index1 = find(seg[0], polygon);
                 var index2 = find(seg[1], polygon);
                 if (index1 == null)
@@ -378,8 +378,8 @@
                 }
 
                 if (index1 + 1 == index2 || index2 + 1 == index1
-                    || (index1 == 0 && index2 == polygon.length - 1) ||
-                    (index2 == 0 && index1 == polygon.length - 1))
+                    || (index1 == 0 && index2 == polygon.Length - 1) ||
+                    (index2 == 0 && index1 == polygon.Length - 1))
                 {
                     seg[0].exact = true;
                     seg[1].exact = true;
@@ -396,7 +396,7 @@
 
         public static int? find(SvgPoint v, NFP p)
         {
-            for (var i = 0; i < p.length; i++)
+            for (var i = 0; i < p.Length; i++)
             {
                 if (GeometryUtil._withinDistance(v, p[i], Config.curveTolerance / 1000))
                 {
@@ -421,7 +421,7 @@
             {
                 List<SvgPoint> rett = new List<SvgPoint>();
                 rett.AddRange(offsetpaths[0].Points);
-                rett.AddRange(t.Points.Skip(t.length));
+                rett.AddRange(t.Points.Skip(t.Length));
                 t.Points = rett.ToArray();
 
                 // replace array items in place
@@ -566,7 +566,7 @@
 
             // remove duplicate endpoints
             var start = cleaned[0];
-            var end = cleaned[cleaned.length - 1];
+            var end = cleaned[cleaned.Length - 1];
             if (start == end || (GeometryUtil._almostEqual(start.x, end.x)
                 && GeometryUtil._almostEqual(start.y, end.y)))
             {
@@ -677,9 +677,9 @@
 
         public Background background = new Background();
 
-        PopulationItem individual = null;
-        NFP[] placelist;
-        GeneticAlgorithm ga;
+        private PopulationItem individual = null;
+        private NFP[] placelist;
+        private GeneticAlgorithm ga;
 
         public List<SheetPlacement> nests = new List<SheetPlacement>();
 
@@ -692,8 +692,8 @@
                 return;
             }
 
-            this.ga.population[payload.index].processing = null;
-            this.ga.population[payload.index].fitness = payload.fitness;
+            this.ga.Population[payload.index].processing = null;
+            this.ga.Population[payload.index].fitness = payload.fitness;
 
             // render placement
             if (this.nests.Count == 0 || this.nests[0].fitness > payload.fitness)
@@ -727,7 +727,7 @@
                         {
                             var poly = cloneTree(parts[i].Polygon); // deep copy
                             poly.id = id; // id is the unique id of all parts that will be nested, including cloned duplicates
-                            poly.source = i; // source is the id of each unique part from the main part list
+                            poly.Source = i; // source is the id of each unique part from the main part list
 
                             adam.Add(poly);
                             id++;
@@ -759,9 +759,9 @@
 
             // check if current generation is finished
             var finished = true;
-            for (int i = 0; i < this.ga.population.Count; i++)
+            for (int i = 0; i < this.ga.Population.Count; i++)
             {
-                if (this.ga.population[i].fitness == null)
+                if (this.ga.Population[i].fitness == null)
                 {
                     finished = false;
                     break;
@@ -772,10 +772,10 @@
             {
                 // console.log('new generation!');
                 // all individuals have been evaluated, start next generation
-                this.ga.generation();
+                this.ga.Generation();
             }
 
-            var running = this.ga.population.Where((p) =>
+            var running = this.ga.Population.Where((p) =>
             {
                 return p.processing != null;
             }).Count();
@@ -794,7 +794,7 @@
                     {
                         var cln = cloneTree(poly);
                         cln.id = sid; // id is the unique id of all parts that will be nested, including cloned duplicates
-                        cln.source = poly.source; // source is the id of each unique part from the main part list
+                        cln.Source = poly.Source; // source is the id of each unique part from the main part list
 
                         sheets.Add(cln);
                         sheetids.Add(sid);
@@ -805,24 +805,24 @@
                 }
             }
 
-            for (int i = 0; i < this.ga.population.Count; i++)
+            for (int i = 0; i < this.ga.Population.Count; i++)
             {
                 // if(running < config.threads && !GA.population[i].processing && !GA.population[i].fitness){
                 // only one background window now...
-                if (running < 1 && this.ga.population[i].processing == null && this.ga.population[i].fitness == null)
+                if (running < 1 && this.ga.Population[i].processing == null && this.ga.Population[i].fitness == null)
                 {
-                    this.ga.population[i].processing = true;
+                    this.ga.Population[i].processing = true;
 
                     // hash values on arrays don't make it across ipc, store them in an array and reassemble on the other side....
                     List<int> ids = new List<int>();
                     List<int> sources = new List<int>();
                     List<List<NFP>> children = new List<List<NFP>>();
 
-                    for (int j = 0; j < this.ga.population[i].placements.Count; j++)
+                    for (int j = 0; j < this.ga.Population[i].placements.Count; j++)
                     {
-                        var id = this.ga.population[i].placements[j].id;
-                        var source = this.ga.population[i].placements[j].source;
-                        var child = this.ga.population[i].placements[j].children;
+                        var id = this.ga.Population[i].placements[j].id;
+                        var source = this.ga.Population[i].placements[j].Source;
+                        var child = this.ga.Population[i].placements[j].children;
 
                         // ids[j] = id;
                         ids.Add(id);
@@ -841,7 +841,7 @@
                         sheetids = sheetids.ToArray(),
                         sheetsources = sheetsources.ToArray(),
                         sheetchildren = sheetchildren,
-                        individual = this.ga.population[i],
+                        individual = this.ga.Population[i],
                         config = Config,
                         ids = ids.ToArray(),
                         sources = sources.ToArray(),
@@ -861,7 +861,7 @@
         public static IntPoint[] toClipperCoordinates(NFP polygon)
         {
             var clone = new List<IntPoint>();
-            for (var i = 0; i < polygon.length; i++)
+            for (var i = 0; i < polygon.Length; i++)
             {
                 clone.Add(
                     new IntPoint(

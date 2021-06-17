@@ -3,18 +3,18 @@
     using System;
     using System.Linq;
 
-    public class dbCache
+    public class DbCache
     {
-        public dbCache(windowUnk w)
+        public DbCache(windowUnk w)
         {
             this.window = w;
         }
 
-        public bool has(DbCacheKey obj)
+        public bool Has(DbCacheKey obj)
         {
             lock (this.lockobj)
             {
-                var key = this.getKey(obj);
+                var key = this.GetKey(obj);
 
                 // var key = "A" + obj.A + "B" + obj.B + "Arot" + (int)Math.Round(obj.ARotation)                + "Brot" + (int)Math.Round(obj.BRotation);
                 if (this.window.nfpCache.ContainsKey(key))
@@ -29,15 +29,15 @@
         public windowUnk window;
         public object lockobj = new object();
 
-        string getKey(DbCacheKey obj)
+        private string GetKey(DbCacheKey obj)
         {
             var key = "A" + obj.A + "B" + obj.B + "Arot" + (int)Math.Round(obj.ARotation * 10000) + "Brot" + (int)Math.Round(obj.BRotation * 10000) + ";" + obj.Type;
             return key;
         }
 
-        internal void insert(DbCacheKey obj, bool inner = false)
+        internal void Insert(DbCacheKey obj, bool inner = false)
         {
-            var key = this.getKey(obj);
+            var key = this.GetKey(obj);
 
             // if (window.performance.memory.totalJSHeapSize < 0.8 * window.performance.memory.jsHeapSizeLimit)
             {
@@ -60,11 +60,11 @@
             }
         }
 
-        public NFP[] find(DbCacheKey obj, bool inner = false)
+        public NFP[] Find(DbCacheKey obj, bool inner = false)
         {
             lock (this.lockobj)
             {
-                var key = this.getKey(obj);
+                var key = this.GetKey(obj);
 
                 // var key = "A" + obj.A + "B" + obj.B + "Arot" + (int)Math.Round(obj.ARotation) + "Brot" + (int)Math.Round((obj.BRotation));
 

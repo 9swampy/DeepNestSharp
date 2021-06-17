@@ -85,13 +85,13 @@
             }
         }
 
-        float startx;
-        float starty;
-        float origsx;
-        float origsy;
-        bool isDrag = false;
+        private float startx;
+        private float starty;
+        private float origsx;
+        private float origsy;
+        private bool isDrag = false;
 
-        PictureBox box;
+        private PictureBox box;
         public float sx;
         public float sy;
         public float zoom = 1;
@@ -106,7 +106,7 @@
 
         public virtual PointF Transform(double x, double y)
         {
-            return new PointF(((float) x + this.sx) * this.zoom, (this.InvertY ? (-1) : 1) * ((float) y + this.sy) * this.zoom);
+            return new PointF(((float)x + this.sx) * this.zoom, (this.InvertY ? (-1) : 1) * ((float)y + this.sy) * this.zoom);
         }
 
 

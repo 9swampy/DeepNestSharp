@@ -6,10 +6,10 @@
     {
         public windowUnk()
         {
-            this.db = new dbCache(this);
+            this.db = new DbCache(this);
         }
 
         public Dictionary<string, List<NFP>> nfpCache = new Dictionary<string, List<NFP>>();
-        public dbCache db;
+        public DbCache db;
     }
 }
