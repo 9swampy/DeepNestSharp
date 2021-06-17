@@ -18,7 +18,7 @@
         public void Run()
         {
             Background.UseParallel = true;
-            SvgNest.Config.placementType = PlacementTypeEnum.Gravity;
+            SvgNest.Config.PlacementType = PlacementTypeEnum.Gravity;
             Console.WriteLine("Settings updated..");
 
             Console.WriteLine("Start nesting..");

@@ -532,7 +532,7 @@
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
             "Gravity",
-            "Bounding box",
+            "BoundingBox",
             "Squeeze"});
             this.comboBox1.Location = new System.Drawing.Point(7, 164);
             this.comboBox1.Margin = new System.Windows.Forms.Padding(2);

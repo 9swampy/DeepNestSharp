@@ -44,7 +44,7 @@
                 }
                 else
                 {
-                    var angle = (float)Math.Floor(this.r.NextDouble() * this.config.rotations) * (360f / this.config.rotations);
+                    var angle = (float)Math.Floor(this.r.NextDouble() * this.config.Rotations) * (360f / this.config.Rotations);
                     angles.Add(angle);
                 }
 
@@ -53,7 +53,7 @@
 
             this.Population = new List<PopulationItem>();
             this.Population.Add(new PopulationItem() { placements = adam.ToList(), Rotation = angles.ToArray() });
-            while (this.Population.Count() < config.populationSize)
+            while (this.Population.Count() < config.PopulationSize)
             {
                 var mutant = this.Mutate(this.Population[0]);
                 this.Population.Add(mutant);
@@ -69,7 +69,7 @@
             for (int i = 0; i < clone.placements.Count(); i++)
             {
                 var rand = this.r.NextDouble();
-                if (rand < 0.01 * this.config.mutationRate)
+                if (rand < 0.01 * this.config.MutationRate)
                 {
                     var j = i + 1;
                     if (j < clone.placements.Count)
@@ -81,9 +81,9 @@
                 }
 
                 rand = this.r.NextDouble();
-                if (rand < 0.01 * this.config.mutationRate)
+                if (rand < 0.01 * this.config.MutationRate)
                 {
-                    clone.Rotation[i] = (float)Math.Floor(this.r.NextDouble() * this.config.rotations) * (360f / this.config.rotations);
+                    clone.Rotation[i] = (float)Math.Floor(this.r.NextDouble() * this.config.Rotations) * (360f / this.config.Rotations);
                 }
             }
 

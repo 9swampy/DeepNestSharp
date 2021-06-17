@@ -466,7 +466,7 @@
             List<NFP> f = new List<NFP>();
             for (var i = 0; i < finalNfp.Count; i++)
             {
-                f.Add(ToNestCoordinates(finalNfp[i].ToArray(), config.clipperScale));
+                f.Add(ToNestCoordinates(finalNfp[i].ToArray(), config.ClipperScale));
             }
 
             if (A.Source != null && B.Source != null)
@@ -590,7 +590,7 @@
 
                     // try all possible rotations until it fits
                     // (only do this for the first part of each sheet, to ensure that all parts that can be placed are, even if we have to to open a lot of sheets)
-                    for (j = 0; j < (360f / config.rotations); j++)
+                    for (j = 0; j < (360f / config.Rotations); j++)
                     {
                         sheetNfp = getInnerNfp(sheet, part, 0, config);
 
@@ -606,8 +606,8 @@
                             }
                         }
 
-                        var r = rotatePolygon(part, 360f / config.rotations);
-                        r.Rotation = part.Rotation + (360f / config.rotations);
+                        var r = rotatePolygon(part, 360f / config.Rotations);
+                        r.Rotation = part.Rotation + (360f / config.Rotations);
                         r.Source = part.Source;
                         r.id = part.id;
 
@@ -761,7 +761,7 @@
                     for (j = 0; j < _finalNfp.Count; j++)
                     {
                         // back to normal scale
-                        f.Add(Background.ToNestCoordinates(_finalNfp[j].ToArray(), config.clipperScale));
+                        f.Add(Background.ToNestCoordinates(_finalNfp[j].ToArray(), config.ClipperScale));
                     }
 
                     var finalNfp = f;
@@ -796,7 +796,7 @@
 
                     PolygonBounds allbounds = null;
                     PolygonBounds partbounds = null;
-                    if (config.placementType == PlacementTypeEnum.Gravity || config.placementType == PlacementTypeEnum.Box)
+                    if (config.PlacementType == PlacementTypeEnum.Gravity || config.PlacementType == PlacementTypeEnum.BoundingBox)
                     {
                         allbounds = GeometryUtil.getPolygonBounds(allpoints);
 
@@ -829,7 +829,7 @@
                                 rotation = part.Rotation,
                             };
                             PolygonBounds rectbounds = null;
-                            if (config.placementType == PlacementTypeEnum.Gravity || config.placementType == PlacementTypeEnum.Box)
+                            if (config.PlacementType == PlacementTypeEnum.Gravity || config.PlacementType == PlacementTypeEnum.BoundingBox)
                             {
                                 NFP poly = new NFP();
                                 poly.AddPoint(new SvgPoint(allbounds.x, allbounds.y));
@@ -860,7 +860,7 @@
                                 rectbounds = GeometryUtil.getPolygonBounds(poly);
 
                                 // weigh width more, to help compress in direction of gravity
-                                if (config.placementType == PlacementTypeEnum.Gravity)
+                                if (config.PlacementType == PlacementTypeEnum.Gravity)
                                 {
                                     area = (rectbounds.width * 2) + rectbounds.height;
                                 }
@@ -887,7 +887,7 @@
                             // console.timeEnd('evalbounds');
                             // console.time('evalmerge');
                             MergedResult merged = null;
-                            if (config.mergeLines)
+                            if (config.MergeLines)
                             {
                                 throw new NotImplementedException();
 
@@ -901,9 +901,9 @@
                                 }
 
                                 // don't check small lines, cut off at about 1/2 in
-                                double minlength = 0.5 * config.scale;
-                                merged = mergedLength(shiftedplaced.ToArray(), shiftedpart, minlength, 0.1 * config.curveTolerance);
-                                area -= merged.totalLength * config.timeRatio;
+                                double minlength = 0.5 * config.Scale;
+                                merged = mergedLength(shiftedplaced.ToArray(), shiftedpart, minlength, 0.1 * config.CurveTolerance);
+                                area -= merged.totalLength * config.TimeRatio;
                             }
 
                             // console.timeEnd('evalmerge');
@@ -927,7 +927,7 @@
                                     miny = shiftvector.y;
                                 }
 
-                                if (config.mergeLines)
+                                if (config.MergeLines)
                                 {
                                     position.mergedLength = merged.totalLength;
                                     position.mergedSegments = merged.segments;
@@ -1076,7 +1076,7 @@
                 parts[i].Rotation = rotations[i];
                 parts[i].id = ids[i];
                 parts[i].Source = sources[i];
-                if (!data.config.simplify)
+                if (!data.config.Simplify)
                 {
                     parts[i].children = children[i];
                 }
@@ -1439,7 +1439,7 @@
                     }
 
                     // var childNfp = SvgNest.toClipperCoordinates(nfp.children[j]);
-                    var childNfp = _Clipper.ScaleUpPaths(nfp.children[j], config.clipperScale);
+                    var childNfp = _Clipper.ScaleUpPaths(nfp.children[j], config.ClipperScale);
                     clipperNfp.Add(childNfp);
                 }
             }
@@ -1452,7 +1452,7 @@
             // var outerNfp = SvgNest.toClipperCoordinates(nfp);
 
             // clipper js defines holes based on orientation
-            var outerNfp = _Clipper.ScaleUpPaths(nfp, config.clipperScale);
+            var outerNfp = _Clipper.ScaleUpPaths(nfp, config.ClipperScale);
 
             // var cleaned = ClipperLib.Clipper.CleanPolygon(outerNfp, 0.00001*config.clipperScale);
             clipperNfp.Add(outerNfp);

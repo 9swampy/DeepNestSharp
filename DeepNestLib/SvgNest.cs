@@ -116,13 +116,13 @@
 
         public static NFP simplifyFunction(NFP polygon, bool inside)
         {
-            var tolerance = 4 * Config.curveTolerance;
+            var tolerance = 4 * Config.CurveTolerance;
 
             // give special treatment to line segments above this length (squared)
-            var fixedTolerance = 40 * Config.curveTolerance * 40 * Config.curveTolerance;
+            var fixedTolerance = 40 * Config.CurveTolerance * 40 * Config.CurveTolerance;
             int i, j, k;
 
-            if (Config.simplify)
+            if (Config.Simplify)
             {
                 /*
                 // use convex hull
@@ -316,8 +316,8 @@
                     if ((GeometryUtil._almostEqual(s1.x, s2.x) || GeometryUtil._almostEqual(s1.y, s2.y)) && // we only really care about vertical and horizontal lines
                     GeometryUtil._withinDistance(p1, s1, 2 * tolerance) &&
                     GeometryUtil._withinDistance(p2, s2, 2 * tolerance) &&
-                    (!GeometryUtil._withinDistance(p1, s1, Config.curveTolerance / 1000) ||
-                    !GeometryUtil._withinDistance(p2, s2, Config.curveTolerance / 1000)))
+                    (!GeometryUtil._withinDistance(p1, s1, Config.CurveTolerance / 1000) ||
+                    !GeometryUtil._withinDistance(p2, s2, Config.CurveTolerance / 1000)))
                     {
                         p1.x = s1.x;
                         p1.y = s1.y;
@@ -398,7 +398,7 @@
         {
             for (var i = 0; i < p.Length; i++)
             {
-                if (GeometryUtil._withinDistance(v, p[i], Config.curveTolerance / 1000))
+                if (GeometryUtil._withinDistance(v, p[i], Config.CurveTolerance / 1000))
                 {
                     return i;
                 }
@@ -463,11 +463,11 @@
             var p = svgToClipper(polygon).ToList();
 
             var miterLimit = 4;
-            var co = new ClipperLib.ClipperOffset(miterLimit, Config.curveTolerance * Config.clipperScale);
+            var co = new ClipperLib.ClipperOffset(miterLimit, Config.CurveTolerance * Config.ClipperScale);
             co.AddPath(p.ToList(), ClipperLib.JoinType.jtMiter, ClipperLib.EndType.etClosedPolygon);
 
             var newpaths = new List<List<ClipperLib.IntPoint>>();
-            co.Execute(ref newpaths, offset * Config.clipperScale);
+            co.Execute(ref newpaths, offset * Config.ClipperScale);
 
             var result = new List<NFP>();
             for (var i = 0; i < newpaths.Count; i++)
@@ -481,14 +481,14 @@
         // converts a polygon from normal float coordinates to integer coordinates used by clipper, as well as x/y -> X/Y
         public static IntPoint[] svgToClipper2(NFP polygon, double? scale = null)
         {
-            var d = _Clipper.ScaleUpPaths(polygon, scale == null ? Config.clipperScale : scale.Value);
+            var d = _Clipper.ScaleUpPaths(polygon, scale == null ? Config.ClipperScale : scale.Value);
             return d.ToArray();
         }
 
         // converts a polygon from normal float coordinates to integer coordinates used by clipper, as well as x/y -> X/Y
         public static ClipperLib.IntPoint[] svgToClipper(NFP polygon)
         {
-            var d = _Clipper.ScaleUpPaths(polygon, Config.clipperScale);
+            var d = _Clipper.ScaleUpPaths(polygon, Config.ClipperScale);
             return d.ToArray();
 
             return polygon.Points.Select(z => new IntPoint((long)z.x, (long)z.y)).ToArray();
@@ -520,7 +520,7 @@
             }
 
             // clean up singularities, coincident points and edges
-            var clean = ClipperLib.Clipper.CleanPolygon(biggest, 0.01 * Config.curveTolerance * Config.clipperScale);
+            var clean = ClipperLib.Clipper.CleanPolygon(biggest, 0.01 * Config.CurveTolerance * Config.ClipperScale);
 
             if (clean == null || clean.Count == 0)
             {
@@ -555,7 +555,7 @@
             }
 
             // clean up singularities, coincident points and edges
-            var clean = ClipperLib.Clipper.CleanPolygon(biggest, 0.01 * Config.curveTolerance * Config.clipperScale);
+            var clean = ClipperLib.Clipper.CleanPolygon(biggest, 0.01 * Config.CurveTolerance * Config.ClipperScale);
 
             if (clean == null || clean.Count == 0)
             {
@@ -582,7 +582,7 @@
 
             for (var i = 0; i < polygon.Count; i++)
             {
-                ret.Add(new SvgPoint(polygon[i].X / Config.clipperScale, polygon[i].Y / Config.clipperScale));
+                ret.Add(new SvgPoint(polygon[i].X / Config.ClipperScale, polygon[i].Y / Config.ClipperScale));
             }
 
             return new NFP() { Points = ret.ToArray() };
@@ -700,7 +700,7 @@
             {
                 this.nests.Insert(0, payload);
 
-                if (this.nests.Count > Config.populationSize)
+                if (this.nests.Count > Config.PopulationSize)
                 {
                     this.nests.RemoveAt(this.nests.Count - 1);
                 }

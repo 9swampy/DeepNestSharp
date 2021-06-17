@@ -44,8 +44,12 @@
             ctx3.FocusOnMove = false;
             ctx2.FocusOnMove = false;
 
-            this.checkBox2.Checked = SvgNest.Config.simplify;
+            this.checkBox2.Checked = SvgNest.Config.Simplify;
             this.checkBox4.Checked = Background.UseParallel;
+            this.numericUpDown1.Value = SvgNest.Config.PopulationSize;
+            this.numericUpDown2.Value = SvgNest.Config.MutationRate;
+            this.comboBox1.SelectedItem = SvgNest.Config.PlacementType.ToString();
+            this.textBox1.Text = SvgNest.Config.Spacing.ToString();
 
             this.UpdateFilesList(@"dxfs");
             Load += Form1_Load;
@@ -546,7 +550,7 @@
         {
             try
             {
-                SvgNest.Config.spacing = float.Parse(this.textBox1.Text, CultureInfo.InvariantCulture);
+                SvgNest.Config.Spacing = float.Parse(this.textBox1.Text, CultureInfo.InvariantCulture);
                 this.textBox1.BackColor = Color.White;
                 this.textBox1.ForeColor = Color.Black;
             }
@@ -561,7 +565,7 @@
         {
             try
             {
-                SvgNest.Config.sheetSpacing = float.Parse(this.textBox2.Text, CultureInfo.InvariantCulture);
+                SvgNest.Config.SheetSpacing = float.Parse(this.textBox2.Text, CultureInfo.InvariantCulture);
                 this.textBox2.BackColor = Color.White;
                 this.textBox2.ForeColor = Color.Black;
             }
@@ -576,7 +580,7 @@
         {
             try
             {
-                SvgNest.Config.rotations = int.Parse(this.textBox3.Text, CultureInfo.InvariantCulture);
+                SvgNest.Config.Rotations = int.Parse(this.textBox3.Text, CultureInfo.InvariantCulture);
                 this.textBox3.BackColor = Color.White;
                 this.textBox3.ForeColor = Color.Black;
             }
@@ -818,7 +822,7 @@
 
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
-            SvgNest.Config.simplify = this.checkBox2.Checked;
+            SvgNest.Config.Simplify = this.checkBox2.Checked;
         }
 
         private void checkBox4_CheckedChanged(object sender, EventArgs e)
@@ -831,23 +835,23 @@
             var t = this.comboBox1.SelectedItem as string;
             if (t.ToLower().Contains("gravi"))
             {
-                SvgNest.Config.placementType = PlacementTypeEnum.Gravity;
+                SvgNest.Config.PlacementType = PlacementTypeEnum.Gravity;
             }
 
             if (t.ToLower().Contains("box"))
             {
-                SvgNest.Config.placementType = PlacementTypeEnum.Box;
+                SvgNest.Config.PlacementType = PlacementTypeEnum.BoundingBox;
             }
 
             if (t.ToLower().Contains("squ"))
             {
-                SvgNest.Config.placementType = PlacementTypeEnum.Squeeze;
+                SvgNest.Config.PlacementType = PlacementTypeEnum.Squeeze;
             }
         }
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
-            SvgNest.Config.populationSize = (int)this.numericUpDown1.Value;
+            SvgNest.Config.PopulationSize = (int)this.numericUpDown1.Value;
         }
 
         private void listView4_SelectedIndexChanged(object sender, EventArgs e)
@@ -861,7 +865,7 @@
 
         private void numericUpDown2_ValueChanged(object sender, EventArgs e)
         {
-            SvgNest.Config.mutationRate = (int)this.numericUpDown2.Value;
+            SvgNest.Config.MutationRate = (int)this.numericUpDown2.Value;
         }
 
         private void button1_Click(object sender, EventArgs e)

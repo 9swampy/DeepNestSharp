@@ -106,7 +106,7 @@
                 {
                     Parallel.ForEach(grps, (item) =>
                     {
-                        SvgNest.offsetTree(item.First(), 0.5 * SvgNest.Config.spacing, SvgNest.Config);
+                        SvgNest.offsetTree(item.First(), 0.5 * SvgNest.Config.Spacing, SvgNest.Config);
                         foreach (var zitem in item)
                         {
                             zitem.Points = item.First().Points.ToArray();
@@ -117,7 +117,7 @@
                 {
                     foreach (var item in grps)
                     {
-                        SvgNest.offsetTree(item.First(), 0.5 * SvgNest.Config.spacing, SvgNest.Config);
+                        SvgNest.offsetTree(item.First(), 0.5 * SvgNest.Config.Spacing, SvgNest.Config);
                         foreach (var zitem in item)
                         {
                             zitem.Points = item.First().Points.ToArray();
@@ -386,7 +386,7 @@
             var d = XDocument.Load(v);
             var f = d.Descendants().First();
             var gap = int.Parse(f.Attribute("gap").Value);
-            SvgNest.Config.spacing = gap;
+            SvgNest.Config.Spacing = gap;
 
             foreach (var item in d.Descendants("sheet"))
             {
