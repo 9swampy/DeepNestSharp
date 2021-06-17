@@ -1,17 +1,16 @@
-﻿using ClipperLib;
-using Minkowski;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace DeepNestLib
+﻿namespace DeepNestLib
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Drawing;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using ClipperLib;
+    using Minkowski;
+
     public class Background
     {
-
         public static bool EnableCaches = true;
 
         public static NFP shiftPolygon(NFP p, PlacementItem shift)
@@ -21,6 +20,7 @@ namespace DeepNestLib
             {
                 shifted.AddPoint(new SvgPoint(p[i].x + shift.x, p[i].y + shift.y) { exact = p[i].exact });
             }
+
             if (p.children != null /*&& p.children.Count*/)
             {
                 shifted.children = new List<NFP>();
@@ -33,20 +33,19 @@ namespace DeepNestLib
             return shifted;
         }
 
-
         // returns the square of the length of any merged lines
         // filter out any lines less than minlength long
         public static MergedResult mergedLength(NFP[] parts, NFP p, double minlength, double tolerance)
         {
-            //            var min2 = minlength * minlength;
+            // var min2 = minlength * minlength;
             //            var totalLength = 0;
             //            var segments = [];
 
-            //            for (var i = 0; i < p.length; i++)
+            // for (var i = 0; i < p.length; i++)
             //            {
             //                var A1 = p[i];
 
-            //                if (i + 1 == p.length)
+            // if (i + 1 == p.length)
             //                {
             //                    A2 = p[0];
             //                }
@@ -55,31 +54,31 @@ namespace DeepNestLib
             //                    var A2 = p[i + 1];
             //                }
 
-            //                if (!A1.exact || !A2.exact)
+            // if (!A1.exact || !A2.exact)
             //                {
             //                    continue;
             //                }
 
-            //                var Ax2 = (A2.x - A1.x) * (A2.x - A1.x);
+            // var Ax2 = (A2.x - A1.x) * (A2.x - A1.x);
             //                var Ay2 = (A2.y - A1.y) * (A2.y - A1.y);
 
-            //                if (Ax2 + Ay2 < min2)
+            // if (Ax2 + Ay2 < min2)
             //                {
             //                    continue;
             //                }
 
-            //                var angle = Math.atan2((A2.y - A1.y), (A2.x - A1.x));
+            // var angle = Math.atan2((A2.y - A1.y), (A2.x - A1.x));
 
-            //                var c = Math.cos(-angle);
+            // var c = Math.cos(-angle);
             //                var s = Math.sin(-angle);
 
-            //                var c2 = Math.cos(angle);
+            // var c2 = Math.cos(angle);
             //                var s2 = Math.sin(angle);
 
-            //                var relA2 = { x: A2.x - A1.x, y: A2.y - A1.y};
+            // var relA2 = { x: A2.x - A1.x, y: A2.y - A1.y};
             //            var rotA2x = relA2.x * c - relA2.y * s;
 
-            //            for (var j = 0; j < parts.length; j++)
+            // for (var j = 0; j < parts.length; j++)
             //            {
             //                var B = parts[j];
             //                if (B.length > 1)
@@ -88,7 +87,7 @@ namespace DeepNestLib
             //                    {
             //                        var B1 = B[k];
 
-            //                        if (k + 1 == B.length)
+            // if (k + 1 == B.length)
             //                        {
             //                            var B2 = B[0];
             //                        }
@@ -97,93 +96,92 @@ namespace DeepNestLib
             //                            var B2 = B[k + 1];
             //                        }
 
-            //                        if (!B1.exact || !B2.exact)
+            // if (!B1.exact || !B2.exact)
             //                        {
             //                            continue;
             //                        }
             //                        var Bx2 = (B2.x - B1.x) * (B2.x - B1.x);
             //                        var By2 = (B2.y - B1.y) * (B2.y - B1.y);
 
-            //                        if (Bx2 + By2 < min2)
+            // if (Bx2 + By2 < min2)
             //                        {
             //                            continue;
             //                        }
 
-            //                        // B relative to A1 (our point of rotation)
+            // // B relative to A1 (our point of rotation)
             //                        var relB1 = { x: B1.x - A1.x, y: B1.y - A1.y};
             //                    var relB2 = { x: B2.x - A1.x, y: B2.y - A1.y};
 
-
-            //                // rotate such that A1 and A2 are horizontal
+            // // rotate such that A1 and A2 are horizontal
             //                var rotB1 = { x: relB1.x* c -relB1.y * s, y: relB1.x* s +relB1.y * c};
             //            var rotB2 = { x: relB2.x* c -relB2.y * s, y: relB2.x* s +relB2.y * c};
 
-            //					if(!GeometryUtil.almostEqual(rotB1.y, 0, tolerance) || !GeometryUtil.almostEqual(rotB2.y, 0, tolerance)){
-            //						continue;
-            //					}
+            // if(!GeometryUtil.almostEqual(rotB1.y, 0, tolerance) || !GeometryUtil.almostEqual(rotB2.y, 0, tolerance)){
+            // continue;
+            // }
 
-            //					var min1 = Math.min(0, rotA2x);
+            // var min1 = Math.min(0, rotA2x);
             //        var max1 = Math.max(0, rotA2x);
 
-            //        var min2 = Math.min(rotB1.x, rotB2.x);
+            // var min2 = Math.min(rotB1.x, rotB2.x);
             //        var max2 = Math.max(rotB1.x, rotB2.x);
 
-            //					// not overlapping
-            //					if(min2 >= max1 || max2 <= min1){
-            //						continue;
-            //					}
+            // // not overlapping
+            // if(min2 >= max1 || max2 <= min1){
+            // continue;
+            // }
 
-            //					var len = 0;
+            // var len = 0;
             //        var relC1x = 0;
             //        var relC2x = 0;
 
-            //					// A is B
-            //					if(GeometryUtil.almostEqual(min1, min2) && GeometryUtil.almostEqual(max1, max2)){
-            //						len = max1-min1;
-            //						relC1x = min1;
-            //						relC2x = max1;
-            //					}
-            //					// A inside B
-            //					else if(min1 > min2 && max1<max2){
-            //						len = max1-min1;
-            //						relC1x = min1;
-            //						relC2x = max1;
-            //					}
-            //					// B inside A
-            //					else if(min2 > min1 && max2<max1){
-            //						len = max2-min2;
-            //						relC1x = min2;
-            //						relC2x = max2;
-            //					}
-            //					else{
-            //						len = Math.max(0, Math.min(max1, max2) - Math.max(min1, min2));
-            //						relC1x = Math.min(max1, max2);
-            //						relC2x = Math.max(min1, min2);		
-            //					}
+            // // A is B
+            // if(GeometryUtil.almostEqual(min1, min2) && GeometryUtil.almostEqual(max1, max2)){
+            // len = max1-min1;
+            // relC1x = min1;
+            // relC2x = max1;
+            // }
+            // // A inside B
+            // else if(min1 > min2 && max1<max2){
+            // len = max1-min1;
+            // relC1x = min1;
+            // relC2x = max1;
+            // }
+            // // B inside A
+            // else if(min2 > min1 && max2<max1){
+            // len = max2-min2;
+            // relC1x = min2;
+            // relC2x = max2;
+            // }
+            // else{
+            // len = Math.max(0, Math.min(max1, max2) - Math.max(min1, min2));
+            // relC1x = Math.min(max1, max2);
+            // relC2x = Math.max(min1, min2);
+            // }
 
-            //					if(len* len > min2){
-            //						totalLength += len;
+            // if(len* len > min2){
+            // totalLength += len;
 
-            //						var relC1 = { x: relC1x * c2, y: relC1x * s2 };
-            //var relC2 = { x: relC2x * c2, y: relC2x * s2 };
+            // var relC1 = { x: relC1x * c2, y: relC1x * s2 };
+            // var relC2 = { x: relC2x * c2, y: relC2x * s2 };
 
-            //var C1 = { x: relC1.x + A1.x, y: relC1.y + A1.y };
-            //var C2 = { x: relC2.x + A1.x, y: relC2.y + A1.y };
+            // var C1 = { x: relC1.x + A1.x, y: relC1.y + A1.y };
+            // var C2 = { x: relC2.x + A1.x, y: relC2.y + A1.y };
 
-            //segments.push([C1, C2]);
-            //					}
-            //				}
-            //			}
+            // segments.push([C1, C2]);
+            // }
+            // }
+            // }
 
-            //			if(B.children && B.children.length > 0){
-            //				var child = mergedLength(B.children, p, minlength, tolerance);
-            //totalLength += child.totalLength;
-            //				segments = segments.concat(child.segments);
-            //			}
-            //		}
-            //	}
+            // if(B.children && B.children.length > 0){
+            // var child = mergedLength(B.children, p, minlength, tolerance);
+            // totalLength += child.totalLength;
+            // segments = segments.concat(child.segments);
+            // }
+            // }
+            // }
 
-            //	return {totalLength: totalLength, segments: segments};
+            // return {totalLength: totalLength, segments: segments};
             throw new NotImplementedException();
         }
 
@@ -193,27 +191,27 @@ namespace DeepNestLib
             public object segments;
         }
 
-
         public static NFP[] cloneNfp(NFP[] nfp, bool inner = false)
         {
-
             if (!inner)
             {
                 return new[] { clone(nfp.First()) };
             }
+
             throw new NotImplementedException();
+
             // inner nfp is actually an array of nfps
             List<NFP> newnfp = new List<NFP>();
             for (var i = 0; i < nfp.Count(); i++)
             {
-                //  newnfp.push(clone(nfp[i]));
+                // newnfp.push(clone(nfp[i]));
             }
 
-            //return newnfp;
+            // return newnfp;
         }
+
         public static NFP clone(NFP nfp)
         {
-
             NFP newnfp = new NFP();
             newnfp.source = nfp.source;
             for (var i = 0; i < nfp.length; i++)
@@ -232,6 +230,7 @@ namespace DeepNestLib
                     {
                         newchild.AddPoint(new SvgPoint(child[j].x, child[j].y));
                     }
+
                     newnfp.children.Add(newchild);
                 }
             }
@@ -239,10 +238,10 @@ namespace DeepNestLib
             return newnfp;
         }
 
-
         public static int callCounter = 0;
 
         public static Dictionary<string, NFP[]> cacheProcess = new Dictionary<string, NFP[]>();
+
         public static NFP[] Process2(NFP A, NFP B, int type)
         {
             var key = A.source + ";" + B.source + ";" + A.rotation + ";" + B.rotation;
@@ -262,6 +261,7 @@ namespace DeepNestLib
                 target.Add(item.x);
                 target.Add(item.y);
             }
+
             dic2.Add("B", new List<double>());
             foreach (var item in B.Points)
             {
@@ -269,7 +269,6 @@ namespace DeepNestLib
                 target.Add(item.x);
                 target.Add(item.y);
             }
-
 
             List<double> hdat = new List<double>();
 
@@ -306,12 +305,9 @@ namespace DeepNestLib
                 throw new ArgumentException("sizes1 cnt >1");
             }
 
-
-            //convert back to answer here
+            // convert back to answer here
             bool isa = true;
             List<PointF> Apts = new List<PointF>();
-
-
 
             List<List<double>> holesval = new List<List<double>>();
             bool holes = false;
@@ -352,6 +348,7 @@ namespace DeepNestLib
             {
                 ret.AddPoint(new SvgPoint(item.X, item.Y));
             }
+
             foreach (var item in holesout)
             {
                 ret.children = new List<NFP>();
@@ -371,6 +368,7 @@ namespace DeepNestLib
             {
                 cacheProcess.Add(key, res);
             }
+
             return res;
         }
 
@@ -390,7 +388,6 @@ namespace DeepNestLib
             frame.push(new SvgPoint(bounds.x + bounds.width, bounds.y + bounds.height));
             frame.push(new SvgPoint(bounds.x, bounds.y + bounds.height));
 
-
             frame.children = new List<NFP>() { (NFP)A };
             frame.source = A.source;
             frame.rotation = 0;
@@ -402,23 +399,23 @@ namespace DeepNestLib
         {
             if (A.source != null && B.source != null)
             {
-
                 var key = new DbCacheKey()
                 {
                     A = A.source.Value,
                     B = B.source.Value,
                     ARotation = 0,
                     BRotation = B.rotation,
-                    //Inside =true??
+
+                    // Inside =true??
                 };
-                //var doc = window.db.find({ A: A.source, B: B.source, Arotation: 0, Brotation: B.rotation }, true);
+
+                // var doc = window.db.find({ A: A.source, B: B.source, Arotation: 0, Brotation: B.rotation }, true);
                 var res = window.db.find(key, true);
                 if (res != null)
                 {
                     return res;
                 }
             }
-
 
             var frame = getFrame(A);
 
@@ -428,6 +425,7 @@ namespace DeepNestLib
             {
                 return null;
             }
+
             List<NFP> holes = new List<NFP>();
             if (A.children != null && A.children.Count > 0)
             {
@@ -445,6 +443,7 @@ namespace DeepNestLib
             {
                 return nfp.children.ToArray();
             }
+
             var clipperNfp = innerNfpToClipperCoordinates(nfp.children.ToArray(), config);
             var clipperHoles = innerNfpToClipperCoordinates(holes.ToArray(), config);
 
@@ -473,23 +472,21 @@ namespace DeepNestLib
             if (A.source != null && B.source != null)
             {
                 // insert into db
-                //console.log('inserting inner: ', A.source, B.source, B.rotation, f);
+                // console.log('inserting inner: ', A.source, B.source, B.rotation, f);
                 var doc = new DbCacheKey()
                 {
                     A = A.source.Value,
                     B = B.source.Value,
                     ARotation = 0,
                     BRotation = B.rotation,
-                    nfp = f.ToArray()
-
-
+                    nfp = f.ToArray(),
                 };
                 window.db.insert(doc, true);
             }
 
             return f.ToArray();
-
         }
+
         public static NFP rotatePolygon(NFP polygon, float degrees)
         {
             NFP rotated = new NFP();
@@ -500,16 +497,17 @@ namespace DeepNestLib
             {
                 var x = polygon[i].x;
                 var y = polygon[i].y;
-                var x1 = (x * Math.Cos(angle) - y * Math.Sin(angle));
-                var y1 = (x * Math.Sin(angle) + y * Math.Cos(angle));
+                var x1 = (x * Math.Cos(angle)) - (y * Math.Sin(angle));
+                var y1 = (x * Math.Sin(angle)) + (y * Math.Cos(angle));
 
                 pp.Add(new SvgPoint(x1, y1));
             }
+
             rotated.Points = pp.ToArray();
 
             if (polygon.children != null && polygon.children.Count > 0)
             {
-                rotated.children = new List<NFP>(); ;
+                rotated.children = new List<NFP>();
                 for (var j = 0; j < polygon.children.Count; j++)
                 {
                     rotated.children.Add(rotatePolygon(polygon.children[j], degrees));
@@ -521,13 +519,16 @@ namespace DeepNestLib
 
         public static SheetPlacement placeParts(NFP[] sheets, NFP[] parts, SvgNestConfig config, int nestindex)
         {
-            if (sheets == null || sheets.Count() == 0) return null;
-
+            if (sheets == null || sheets.Count() == 0)
+            {
+                return null;
+            }
 
             int i, j, k, m, n;
             double totalsheetarea = 0;
 
             NFP part = null;
+
             // total length of merged lines
             double totalMerged = 0;
 
@@ -556,7 +557,6 @@ namespace DeepNestLib
 
             while (parts.Length > 0)
             {
-
                 List<NFP> placed = new List<NFP>();
 
                 List<PlacementItem> placements = new List<PlacementItem>();
@@ -569,7 +569,7 @@ namespace DeepNestLib
 
                 fitness += sheetarea; // add 1 for each new sheet opened (lower fitness is better)
 
-                string clipkey = "";
+                string clipkey = string.Empty;
                 Dictionary<string, ClipCacheItem> clipCache = new Dictionary<string, ClipCacheItem>();
                 var clipper = new ClipperLib.Clipper();
                 var combinedNfp = new List<List<ClipperLib.IntPoint>>();
@@ -580,12 +580,14 @@ namespace DeepNestLib
                 double? minarea = null;
                 for (i = 0; i < parts.Length; i++)
                 {
-                    float prog = 0.66f + 0.34f * (totalPlaced / (float)totalParts);
+                    float prog = 0.66f + (0.34f * (totalPlaced / (float)totalParts));
                     DisplayProgress(prog);
 
                     part = parts[i];
+
                     // inner NFP
                     NFP[] sheetNfp = null;
+
                     // try all possible rotations until it fits
                     // (only do this for the first part of each sheet, to ensure that all parts that can be placed are, even if we have to to open a lot of sheets)
                     for (j = 0; j < (360f / config.rotations); j++)
@@ -618,6 +620,7 @@ namespace DeepNestLib
                             part.rotation = part.rotation % 360f;
                         }
                     }
+
                     // part unplaceable, skip
                     if (sheetNfp == null || sheetNfp.Count() == 0)
                     {
@@ -637,8 +640,7 @@ namespace DeepNestLib
                                     ((sheetNfp[j][k].x - part[0].x) < position.x) ||
                                     (
                                     GeometryUtil._almostEqual(sheetNfp[j][k].x - part[0].x, position.x)
-                                    && ((sheetNfp[j][k].y - part[0].y) < position.y))
-                                    )
+                                    && ((sheetNfp[j][k].y - part[0].y) < position.y)))
                                 {
                                     position = new PlacementItem()
                                     {
@@ -646,11 +648,8 @@ namespace DeepNestLib
                                         y = sheetNfp[j][k].y - part[0].y,
                                         id = part.id,
                                         rotation = part.rotation,
-                                        source = part.source.Value
-
+                                        source = part.source.Value,
                                     };
-
-
                                 }
                             }
                         }
@@ -658,8 +657,10 @@ namespace DeepNestLib
                         if (position == null)
                         {
                             throw new Exception("position null");
-                            //console.log(sheetNfp);
+
+                            // console.log(sheetNfp);
                         }
+
                         placements.Add(position);
                         placed.Add(part);
                         totalPlaced++;
@@ -675,7 +676,7 @@ namespace DeepNestLib
                     error = false;
 
                     // check if stored in clip cache
-                    //var startindex = 0;
+                    // var startindex = 0;
                     clipkey = "s:" + part.source + "r:" + part.rotation;
                     var startindex = 0;
                     if (EnableCaches && clipCache.ContainsKey(clipkey))
@@ -688,18 +689,21 @@ namespace DeepNestLib
                     for (j = startindex; j < placed.Count; j++)
                     {
                         nfp = getOuterNfp(placed[j], part, 0);
+
                         // minkowski difference failed. very rare but could happen
                         if (nfp == null)
                         {
                             error = true;
                             break;
                         }
+
                         // shift to placed location
                         for (m = 0; m < nfp.length; m++)
                         {
                             nfp[m].x += placements[j].x;
                             nfp[m].y += placements[j].y;
                         }
+
                         if (nfp.children != null && nfp.children.Count > 0)
                         {
                             for (n = 0; n < nfp.children.Count; n++)
@@ -716,25 +720,24 @@ namespace DeepNestLib
 
                         clipper.AddPaths(clipperNfp.Select(z => z.ToList()).ToList(), ClipperLib.PolyType.ptSubject, true);
                     }
-                    //TODO: a lot here to insert
 
+                    // TODO: a lot here to insert
                     if (error || !clipper.Execute(ClipperLib.ClipType.ctUnion, combinedNfp, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero))
                     {
-                        //console.log('clipper error', error);
+                        // console.log('clipper error', error);
                         continue;
                     }
-
 
                     if (EnableCaches)
                     {
                         clipCache[clipkey] = new ClipCacheItem()
                         {
                             index = placed.Count - 1,
-                            nfpp = combinedNfp.Select(z => z.ToArray()).ToArray()
+                            nfpp = combinedNfp.Select(z => z.ToArray()).ToArray(),
                         };
                     }
 
-                    //console.log('save cache', placed.length - 1);
+                    // console.log('save cache', placed.length - 1);
 
                     // difference with sheet polygon
                     List<List<IntPoint>> _finalNfp = new List<List<IntPoint>>();
@@ -743,7 +746,6 @@ namespace DeepNestLib
                     clipper.AddPaths(combinedNfp, ClipperLib.PolyType.ptClip, true);
 
                     clipper.AddPaths(clipperSheetNfp.Select(z => z.ToList()).ToList(), ClipperLib.PolyType.ptSubject, true);
-
 
                     if (!clipper.Execute(ClipperLib.ClipType.ctDifference, _finalNfp, ClipperLib.PolyFillType.pftEvenOdd, ClipperLib.PolyFillType.pftNonZero))
                     {
@@ -755,15 +757,16 @@ namespace DeepNestLib
                         continue;
                     }
 
-
                     List<NFP> f = new List<NFP>();
                     for (j = 0; j < _finalNfp.Count; j++)
                     {
                         // back to normal scale
                         f.Add(Background.toNestCoordinates(_finalNfp[j].ToArray(), config.clipperScale));
                     }
+
                     var finalNfp = f;
-                    //finalNfp = f;
+
+                    // finalNfp = f;
 
                     // choose placement that results in the smallest bounding box/hull etc
                     // todo: generalize gravity direction
@@ -779,7 +782,6 @@ namespace DeepNestLib
                     NFP nf;
                     double area;
                     PlacementItem shiftvector = null;
-
 
                     NFP allpoints = new NFP();
                     for (m = 0; m < placed.Count; m++)
@@ -803,16 +805,19 @@ namespace DeepNestLib
                         {
                             partpoints.AddPoint(new SvgPoint(part[m].x, part[m].y));
                         }
+
                         partbounds = GeometryUtil.getPolygonBounds(partpoints);
                     }
                     else
                     {
                         allpoints = getHull(allpoints);
                     }
+
                     for (j = 0; j < finalNfp.Count; j++)
                     {
                         nf = finalNfp[j];
-                        //console.log('evalnf',nf.length);
+
+                        // console.log('evalnf',nf.length);
                         for (k = 0; k < nf.length; k++)
                         {
                             shiftvector = new PlacementItem()
@@ -821,7 +826,7 @@ namespace DeepNestLib
                                 x = nf[k].x - part[0].x,
                                 y = nf[k].y - part[0].y,
                                 source = part.source.Value,
-                                rotation = part.rotation
+                                rotation = part.rotation,
                             };
                             PolygonBounds rectbounds = null;
                             if (config.placementType == PlacementTypeEnum.gravity || config.placementType == PlacementTypeEnum.box)
@@ -844,7 +849,7 @@ namespace DeepNestLib
                                 poly.AddPoint(new SvgPoint(partbounds.x + partbounds.width + shiftvector.x, partbounds.y + partbounds.height + shiftvector.y));
                                 poly.AddPoint(new SvgPoint(partbounds.x + shiftvector.x, partbounds.y + partbounds.height + shiftvector.y));
                                 /*
-                                 [                            
+                                 [
 
                                 // part points
                                 { x: partbounds.x + shiftvector.x, y: partbounds.y + shiftvector.y},
@@ -857,7 +862,7 @@ namespace DeepNestLib
                                 // weigh width more, to help compress in direction of gravity
                                 if (config.placementType == PlacementTypeEnum.gravity)
                                 {
-                                    area = rectbounds.width * 2 + rectbounds.height;
+                                    area = (rectbounds.width * 2) + rectbounds.height;
                                 }
                                 else
                                 {
@@ -878,13 +883,15 @@ namespace DeepNestLib
                                 shiftvector.hull = getHull(localpoints);
                                 shiftvector.hullsheet = getHull(sheet);
                             }
-                            //console.timeEnd('evalbounds');
-                            //console.time('evalmerge');
+
+                            // console.timeEnd('evalbounds');
+                            // console.time('evalmerge');
                             MergedResult merged = null;
                             if (config.mergeLines)
                             {
                                 throw new NotImplementedException();
-                                // if lines can be merged, subtract savings from area calculation						
+
+                                // if lines can be merged, subtract savings from area calculation
                                 var shiftedpart = shiftPolygon(part, shiftvector);
                                 List<NFP> shiftedplaced = new List<NFP>();
 
@@ -899,13 +906,12 @@ namespace DeepNestLib
                                 area -= merged.totalLength * config.timeRatio;
                             }
 
-                            //console.timeEnd('evalmerge');
+                            // console.timeEnd('evalmerge');
                             if (
                     minarea == null ||
                     area < minarea ||
                     (GeometryUtil._almostEqual(minarea, area) && (minx == null || shiftvector.x < minx)) ||
-                    (GeometryUtil._almostEqual(minarea, area) && (minx != null && GeometryUtil._almostEqual(shiftvector.x, minx) && shiftvector.y < miny))
-                    )
+                    (GeometryUtil._almostEqual(minarea, area) && (minx != null && GeometryUtil._almostEqual(shiftvector.x, minx) && shiftvector.y < miny)))
                             {
                                 minarea = area;
 
@@ -915,6 +921,7 @@ namespace DeepNestLib
                                 {
                                     minx = shiftvector.x;
                                 }
+
                                 if (miny == null || shiftvector.y < miny)
                                 {
                                     miny = shiftvector.y;
@@ -927,7 +934,6 @@ namespace DeepNestLib
                                 }
                             }
                         }
-
                     }
 
                     if (position != null)
@@ -940,18 +946,21 @@ namespace DeepNestLib
                             totalMerged += position.mergedLength.Value;
                         }
                     }
+
                     // send placement progress signal
                     var placednum = placed.Count;
                     for (j = 0; j < allplacements.Count; j++)
                     {
                         placednum += allplacements[j].sheetplacements.Count;
                     }
-                    //console.log(placednum, totalnum);
-                    //ipcRenderer.send('background-progress', { index: nestindex, progress: 0.5 + 0.5 * (placednum / totalnum)});
 
-                    //console.timeEnd('placement');
+                    // console.log(placednum, totalnum);
+                    // ipcRenderer.send('background-progress', { index: nestindex, progress: 0.5 + 0.5 * (placednum / totalnum)});
+
+                    // console.timeEnd('placement');
                 }
-                //if(minwidth){
+
+                // if(minwidth){
                 if (!minwidth.HasValue)
                 {
                     fitness = double.NaN;
@@ -961,7 +970,7 @@ namespace DeepNestLib
                     fitness += (minwidth.Value / sheetarea) + minarea.Value;
                 }
 
-                //}
+                // }
                 for (i = 0; i < placed.Count; i++)
                 {
                     var index = Array.IndexOf(parts, placed[i]);
@@ -970,15 +979,17 @@ namespace DeepNestLib
                         parts = parts.splice(index, 1);
                     }
                 }
+
                 if (placements != null && placements.Count > 0)
                 {
                     allplacements.Add(new SheetPlacementItem()
                     {
                         sheetId = sheet.id,
                         sheetSource = sheet.source.Value,
-                        sheetplacements = placements
+                        sheetplacements = placements,
                     });
-                    //allplacements.Add({ sheet: sheet.source, sheetid: sheet.id, sheetplacements: placements});
+
+                    // allplacements.Add({ sheet: sheet.source, sheetid: sheet.id, sheetplacements: placements});
                 }
                 else
                 {
@@ -997,56 +1008,57 @@ namespace DeepNestLib
             {
                 fitness += 100000000 * (Math.Abs(GeometryUtil.polygonArea(parts[i])) / totalsheetarea);
             }
+
             // send finish progerss signal
-            //ipcRenderer.send('background-progress', { index: nestindex, progress: -1});
-
-
+            // ipcRenderer.send('background-progress', { index: nestindex, progress: -1});
             return new SheetPlacement()
             {
                 placements = new[] { allplacements.ToList() },
                 fitness = fitness,
-                //  paths = paths,
+
+                // paths = paths,
                 area = sheetarea,
-                mergedLength = totalMerged
-
-
+                mergedLength = totalMerged,
             };
-            //return { placements: allplacements, fitness: fitness, area: sheetarea, mergedLength: totalMerged };
+
+            // return { placements: allplacements, fitness: fitness, area: sheetarea, mergedLength: totalMerged };
         }
+
         // jsClipper uses X/Y instead of x/y...
         public DataInfo data;
         NFP[] parts;
 
-
-
         int index;
+
         // run the placement synchronously
-
-
         public static windowUnk window = new windowUnk();
 
         public Action<SheetPlacement> ResponseAction;
 
         public static long LastPlacePartTime = 0;
+
         public void sync()
         {
-            //console.log('starting synchronous calculations', Object.keys(window.nfpCache).length);
-            //console.log('in sync');
+            // console.log('starting synchronous calculations', Object.keys(window.nfpCache).length);
+            // console.log('in sync');
             var c = 0;
             foreach (var key in window.nfpCache)
             {
                 c++;
             }
-            //console.log('nfp cached:', c);
+
+            // console.log('nfp cached:', c);
             Stopwatch sw = Stopwatch.StartNew();
-            var placement = placeParts(data.sheets.ToArray(), parts, data.config, index);
+            var placement = placeParts(this.data.sheets.ToArray(), this.parts, this.data.config, this.index);
             sw.Stop();
             LastPlacePartTime = sw.ElapsedMilliseconds;
 
-            placement.index = data.index;
-            ResponseAction(placement);
-            //ipcRenderer.send('background-response', placement);
+            placement.index = this.data.index;
+            this.ResponseAction(placement);
+
+            // ipcRenderer.send('background-response', placement);
         }
+
         public void BackgroundStart(DataInfo data)
         {
             this.data = data;
@@ -1097,8 +1109,7 @@ namespace DeepNestLib
                                 ARotation = A.rotation,
                                 BRotation = B.rotation,
                                 Asource = A.source.Value,
-                                Bsource = B.source.Value
-
+                                Bsource = B.source.Value,
                             };
                             var doc = new DbCacheKey()
                             {
@@ -1106,12 +1117,11 @@ namespace DeepNestLib
                                 B = B.source.Value,
 
                                 ARotation = A.rotation,
-                                BRotation = B.rotation
-
+                                BRotation = B.rotation,
                             };
                             lock (lobj)
                             {
-                                if (!inpairs(key, pairs.ToArray()) && !window.db.has(doc))
+                                if (!this.inpairs(key, pairs.ToArray()) && !window.db.has(doc))
                                 {
                                     pairs.Add(key);
                                 }
@@ -1119,8 +1129,6 @@ namespace DeepNestLib
                         }
                     }
                 });
-
-
             }
             else
             {
@@ -1137,8 +1145,7 @@ namespace DeepNestLib
                             ARotation = A.rotation,
                             BRotation = B.rotation,
                             Asource = A.source.Value,
-                            Bsource = B.source.Value
-
+                            Bsource = B.source.Value,
                         };
                         var doc = new DbCacheKey()
                         {
@@ -1146,10 +1153,9 @@ namespace DeepNestLib
                             B = B.source.Value,
 
                             ARotation = A.rotation,
-                            BRotation = B.rotation
-
+                            BRotation = B.rotation,
                         };
-                        if (!inpairs(key, pairs.ToArray()) && !window.db.has(doc))
+                        if (!this.inpairs(key, pairs.ToArray()) && !window.db.has(doc))
                         {
                             pairs.Add(key);
                         }
@@ -1157,21 +1163,20 @@ namespace DeepNestLib
                 }
             }
 
-            //console.log('pairs: ', pairs.length);
-            //console.time('Total');
-
+            // console.log('pairs: ', pairs.length);
+            // console.time('Total');
             this.parts = parts.ToArray();
             if (pairs.Count > 0)
             {
-
-                var ret1 = pmapDeepNest(pairs);
-                thenDeepNest(ret1, parts);
+                var ret1 = this.pmapDeepNest(pairs);
+                this.thenDeepNest(ret1, parts);
             }
             else
             {
-                sync();
+                this.sync();
             }
         }
+
         public NFP getPart(int source, List<NFP> parts)
         {
             for (var k = 0; k < parts.Count; k++)
@@ -1181,19 +1186,18 @@ namespace DeepNestLib
                     return parts[k];
                 }
             }
+
             return null;
         }
 
         public void thenIterate(NfpPair processed, List<NFP> parts)
         {
-
             // returned data only contains outer nfp, we have to account for any holes separately in the synchronous portion
-            // this is because the c++ addon which can process interior nfps cannot run in the worker thread					
-            var A = getPart(processed.Asource, parts);
-            var B = getPart(processed.Bsource, parts);
+            // this is because the c++ addon which can process interior nfps cannot run in the worker thread
+            var A = this.getPart(processed.Asource, parts);
+            var B = this.getPart(processed.Bsource, parts);
 
             List<NFP> Achildren = new List<NFP>();
-
 
             if (A.children != null)
             {
@@ -1214,7 +1218,7 @@ namespace DeepNestLib
                     var cbounds = GeometryUtil.getPolygonBounds(Achildren[j]);
                     if (cbounds.width > bbounds.width && cbounds.height > bbounds.height)
                     {
-                        var n = getInnerNfp(Achildren[j], Brotated, 1, data.config);
+                        var n = getInnerNfp(Achildren[j], Brotated, 1, this.data.config);
                         if (n != null && n.Count() > 0)
                         {
                             cnfp.AddRange(n);
@@ -1224,13 +1228,14 @@ namespace DeepNestLib
 
                 processed.nfp.children = cnfp;
             }
+
             DbCacheKey doc = new DbCacheKey()
             {
                 A = processed.Asource,
                 B = processed.Bsource,
                 ARotation = processed.ARotation,
                 BRotation = processed.BRotation,
-                nfp = new[] { processed.nfp }
+                nfp = new[] { processed.nfp },
             };
 
             /*var doc = {
@@ -1245,6 +1250,7 @@ namespace DeepNestLib
         }
 
         public static Action<float> displayProgress;
+
         public static void DisplayProgress(float p)
         {
             if (displayProgress != null)
@@ -1252,6 +1258,7 @@ namespace DeepNestLib
                 displayProgress(p);
             }
         }
+
         public void thenDeepNest(NfpPair[] processed, List<NFP> parts)
         {
             int cnt = 0;
@@ -1259,29 +1266,27 @@ namespace DeepNestLib
             {
                 Parallel.For(0, processed.Count(), (i) =>
                 {
-                    float progress = 0.33f + 0.33f * (cnt / (float)processed.Count());
+                    float progress = 0.33f + (0.33f * (cnt / (float)processed.Count()));
                     cnt++;
                     DisplayProgress(progress);
-                    thenIterate(processed[i], parts);
+                    this.thenIterate(processed[i], parts);
                 });
-
             }
             else
             {
                 for (var i = 0; i < processed.Count(); i++)
                 {
-                    float progress = 0.33f + 0.33f * (cnt / (float)processed.Count());
+                    float progress = 0.33f + (0.33f * (cnt / (float)processed.Count()));
                     cnt++;
                     DisplayProgress(progress);
-                    thenIterate(processed[i], parts);
+                    this.thenIterate(processed[i], parts);
                 }
             }
 
-            //console.timeEnd('Total');
-            //console.log('before sync');
-            sync();
+            // console.timeEnd('Total');
+            // console.log('before sync');
+            this.sync();
         }
-
 
         public bool inpairs(NfpPair key, NfpPair[] p)
         {
@@ -1292,21 +1297,21 @@ namespace DeepNestLib
                     return true;
                 }
             }
+
             return false;
         }
 
         public static bool UseParallel = false;
+
         public NfpPair[] pmapDeepNest(List<NfpPair> pairs)
         {
-
-
             NfpPair[] ret = new NfpPair[pairs.Count()];
             int cnt = 0;
             if (UseParallel)
             {
                 Parallel.For(0, pairs.Count, (i) =>
                 {
-                    ret[i] = process(pairs[i]);
+                    ret[i] = this.process(pairs[i]);
                     float progress = 0.33f * (cnt / (float)pairs.Count);
                     cnt++;
                     DisplayProgress(progress);
@@ -1317,14 +1322,16 @@ namespace DeepNestLib
                 for (int i = 0; i < pairs.Count; i++)
                 {
                     var item = pairs[i];
-                    ret[i] = process(item);
+                    ret[i] = this.process(item);
                     float progress = 0.33f * (cnt / (float)pairs.Count);
                     cnt++;
                     DisplayProgress(progress);
                 }
             }
+
             return ret.ToArray();
         }
+
         public NfpPair process(NfpPair pair)
         {
             var A = rotatePolygon(pair.A, pair.ARotation);
@@ -1339,6 +1346,7 @@ namespace DeepNestLib
                 Bc[i].X *= -1;
                 Bc[i].Y *= -1;
             }
+
             var solution = ClipperLib.Clipper.MinkowskiSum(new List<IntPoint>(Ac), new List<IntPoint>(Bc), true);
             NFP clipperNfp = null;
 
@@ -1360,7 +1368,7 @@ namespace DeepNestLib
                 clipperNfp[i].y += B[0].y;
             }
 
-            //return new SvgNestPort.NFP[] { new SvgNestPort.NFP() { Points = clipperNfp.Points } };
+            // return new SvgNestPort.NFP[] { new SvgNestPort.NFP() { Points = clipperNfp.Points } };
 
             //////////////
 
@@ -1368,9 +1376,8 @@ namespace DeepNestLib
             pair.B = null;
             pair.nfp = clipperNfp;
             return pair;
-
-
         }
+
         public static NFP toNestCoordinates(IntPoint[] polygon, double scale)
         {
             var clone = new List<SvgPoint>();
@@ -1379,11 +1386,12 @@ namespace DeepNestLib
             {
                 clone.Add(new SvgPoint(
                      polygon[i].X / scale,
-                             polygon[i].Y / scale
-                        ));
+                     polygon[i].Y / scale));
             }
+
             return new NFP() { Points = clone.ToArray() };
         }
+
         public static NFP getHull(NFP polygon)
         {
             // convert to hulljs format
@@ -1396,7 +1404,7 @@ namespace DeepNestLib
             double[][] points = new double[polygon.length][];
             for (var i = 0; i < polygon.length; i++)
             {
-                points[i] = (new double[] { polygon[i].x, polygon[i].y });
+                points[i] = new double[] { polygon[i].x, polygon[i].y };
             }
 
             var hullpoints = D3.polygonHull(points);
@@ -1411,14 +1419,13 @@ namespace DeepNestLib
             {
                 hull.AddPoint(new SvgPoint(hullpoints[i][0], hullpoints[i][1]));
             }
+
             return hull;
         }
-
 
         // returns clipper nfp. Remember that clipper nfp are a list of polygons, not a tree!
         public static IntPoint[][] nfpToClipperCoordinates(NFP nfp, SvgNestConfig config)
         {
-
             List<IntPoint[]> clipperNfp = new List<IntPoint[]>();
 
             // children first
@@ -1430,7 +1437,8 @@ namespace DeepNestLib
                     {
                         nfp.children[j].reverse();
                     }
-                    //var childNfp = SvgNest.toClipperCoordinates(nfp.children[j]);
+
+                    // var childNfp = SvgNest.toClipperCoordinates(nfp.children[j]);
                     var childNfp = _Clipper.ScaleUpPaths(nfp.children[j], config.clipperScale);
                     clipperNfp.Add(childNfp);
                 }
@@ -1441,20 +1449,18 @@ namespace DeepNestLib
                 nfp.reverse();
             }
 
-
-            //var outerNfp = SvgNest.toClipperCoordinates(nfp);
+            // var outerNfp = SvgNest.toClipperCoordinates(nfp);
 
             // clipper js defines holes based on orientation
-
             var outerNfp = _Clipper.ScaleUpPaths(nfp, config.clipperScale);
 
-            //var cleaned = ClipperLib.Clipper.CleanPolygon(outerNfp, 0.00001*config.clipperScale);
-
+            // var cleaned = ClipperLib.Clipper.CleanPolygon(outerNfp, 0.00001*config.clipperScale);
             clipperNfp.Add(outerNfp);
-            //var area = Math.abs(ClipperLib.Clipper.Area(cleaned));
 
+            // var area = Math.abs(ClipperLib.Clipper.Area(cleaned));
             return clipperNfp.ToArray();
         }
+
         // inner nfps can be an array of nfps, outer nfps are always singular
         public static IntPoint[][] innerNfpToClipperCoordinates(NFP[] nfp, SvgNestConfig config)
         {
@@ -1463,17 +1469,18 @@ namespace DeepNestLib
             {
                 var clip = nfpToClipperCoordinates(nfp[i], config);
                 clipperNfp.AddRange(clip);
-                //clipperNfp = clipperNfp.Concat(new[] { clip }).ToList();
+
+                // clipperNfp = clipperNfp.Concat(new[] { clip }).ToList();
             }
 
             return clipperNfp.ToArray();
         }
 
         static object lockobj = new object();
-        public static NFP getOuterNfp(NFP A, NFP B, int type, bool inside = false)//todo:?inside def?
+
+        public static NFP getOuterNfp(NFP A, NFP B, int type, bool inside = false) // todo:?inside def?
         {
             NFP[] nfp = null;
-
 
             var key = new DbCacheKey()
             {
@@ -1481,7 +1488,8 @@ namespace DeepNestLib
                 B = B.source,
                 ARotation = A.rotation,
                 BRotation = B.rotation,
-                //Type = type
+
+                // Type = type
             };
 
             var doc = window.db.find(key);
@@ -1500,8 +1508,7 @@ namespace DeepNestLib
                 return doc;
             }*/
 
-
-            // not found in cache           
+            // not found in cache
             if (inside || (A.children != null && A.children.Count > 0))
             {
                 lock (lockobj)
@@ -1519,6 +1526,7 @@ namespace DeepNestLib
                     Bc[i].X *= -1;
                     Bc[i].Y *= -1;
                 }
+
                 var solution = ClipperLib.Clipper.MinkowskiSum(new List<IntPoint>(Ac), new List<IntPoint>(Bc), true);
                 NFP clipperNfp = null;
 
@@ -1539,14 +1547,13 @@ namespace DeepNestLib
                     clipperNfp[i].x += B[0].x;
                     clipperNfp[i].y += B[0].y;
                 }
+
                 nfp = new NFP[] { new NFP() { Points = clipperNfp.Points } };
-
-
             }
 
             if (nfp == null || nfp.Length == 0)
             {
-                //console.log('holy shit', nfp, A, B, JSON.stringify(A), JSON.stringify(B));
+                // console.log('holy shit', nfp, A, B, JSON.stringify(A), JSON.stringify(B));
                 return null;
             }
 
@@ -1558,6 +1565,7 @@ namespace DeepNestLib
             {
                 return null;
             }
+
             /*
             if (!nfp || nfp.length == 0)
             {
@@ -1572,12 +1580,11 @@ namespace DeepNestLib
                     B = B.source.Value,
                     ARotation = A.rotation,
                     BRotation = B.rotation,
-                    nfp = nfp
+                    nfp = nfp,
                 };
                 window.db.insert(doc2);
-
-
             }
+
             /*
             if (!inside && typeof A.source !== 'undefined' && typeof B.source !== 'undefined')
             {
@@ -1594,94 +1601,6 @@ namespace DeepNestLib
             }
             */
             return nfps;
-
-
-
         }
-    }
-
-    public class ClipCacheItem
-    {
-        public int index;
-        public IntPoint[][] nfpp;
-    }
-
-    public class dbCache
-    {
-        public dbCache(windowUnk w)
-        {
-            window = w;
-        }
-        public bool has(DbCacheKey obj)
-        {
-            lock (lockobj)
-            {
-                var key = getKey(obj);
-                //var key = "A" + obj.A + "B" + obj.B + "Arot" + (int)Math.Round(obj.ARotation)                + "Brot" + (int)Math.Round(obj.BRotation);
-                if (window.nfpCache.ContainsKey(key))
-                {
-                    return true;
-                }
-                return false;
-            }
-
-        }
-
-        public windowUnk window;
-        public object lockobj = new object();
-
-        string getKey(DbCacheKey obj)
-        {
-            var key = "A" + obj.A + "B" + obj.B + "Arot" + (int)Math.Round(obj.ARotation * 10000) + "Brot" + (int)Math.Round((obj.BRotation * 10000)) + ";" + obj.Type;
-            return key;
-        }
-        internal void insert(DbCacheKey obj, bool inner = false)
-        {
-
-            var key = getKey(obj);
-            //if (window.performance.memory.totalJSHeapSize < 0.8 * window.performance.memory.jsHeapSizeLimit)
-            {
-                lock (lockobj)
-                {
-                    if (!window.nfpCache.ContainsKey(key))
-                    {
-                        window.nfpCache.Add(key, Background.cloneNfp(obj.nfp, inner).ToList());
-                    }
-                    else
-                    {
-                        throw new Exception("trouble .cache allready has such key");
-                        //   window.nfpCache[key] = Background.cloneNfp(new[] { obj.nfp }, inner).ToList();
-                    }
-                }
-                //console.log('cached: ',window.cache[key].poly);
-                //console.log('using', window.performance.memory.totalJSHeapSize/window.performance.memory.jsHeapSizeLimit);
-            }
-        }
-        public NFP[] find(DbCacheKey obj, bool inner = false)
-        {
-            lock (lockobj)
-            {
-                var key = getKey(obj);
-                //var key = "A" + obj.A + "B" + obj.B + "Arot" + (int)Math.Round(obj.ARotation) + "Brot" + (int)Math.Round((obj.BRotation));
-
-                //console.log('key: ', key);
-                if (window.nfpCache.ContainsKey(key))
-                {
-                    return Background.cloneNfp(window.nfpCache[key].ToArray(), inner);
-                }
-
-                return null;
-            }
-        }
-
-    }
-    public class windowUnk
-    {
-        public windowUnk()
-        {
-            db = new dbCache(this);
-        }
-        public Dictionary<string, List<NFP>> nfpCache = new Dictionary<string, List<NFP>>();
-        public dbCache db;
     }
 }

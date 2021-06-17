@@ -1,24 +1,20 @@
-﻿using DeepNestLib;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-
-namespace DeepNestConsole
+﻿namespace DeepNestConsole
 {
+    using System;
+    using System.Diagnostics;
+    using System.Linq;
+    using DeepNestLib;
+
     public class SampleProgram
     {
         public NestingContext Context = new NestingContext();
+
         public bool IsFinished()
         {
-            //insert you code here            
-            return Context.Iterations >= 3;
+            // insert you code here
+            return this.Context.Iterations >= 3;
         }
+
         public void Run()
         {
             Background.UseParallel = true;
@@ -26,22 +22,23 @@ namespace DeepNestConsole
             Console.WriteLine("Settings updated..");
 
             Console.WriteLine("Start nesting..");
-            Console.WriteLine("Parts: " + Context.Polygons.Count());
-            Console.WriteLine("Sheets: " + Context.Sheets.Count());
+            Console.WriteLine("Parts: " + this.Context.Polygons.Count());
+            Console.WriteLine("Sheets: " + this.Context.Sheets.Count());
 
-            Context.StartNest();
+            this.Context.StartNest();
             do
             {
                 var sw = Stopwatch.StartNew();
-                Context.NestIterate();
+                this.Context.NestIterate();
                 sw.Stop();
-                Console.WriteLine("Iteration: " + Context.Iterations + "; fitness: " + Context.Current.fitness + "; nesting time: " + sw.ElapsedMilliseconds + "ms");
-            } while (!IsFinished());
+                Console.WriteLine("Iteration: " + this.Context.Iterations + "; fitness: " + this.Context.Current.fitness + "; nesting time: " + sw.ElapsedMilliseconds + "ms");
+            }
+            while (!this.IsFinished());
 
             #region convert results
-            Context.ExportSvg("temp.svg");
+            this.Context.ExportSvg("temp.svg");
             Console.WriteLine("Results exported in: temp.svg");
-            #endregion            
-        }        
+            #endregion
+        }
     }
 }

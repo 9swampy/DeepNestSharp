@@ -1,43 +1,56 @@
-﻿using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Windows.Forms;
-
-namespace DeepNestPort
+﻿namespace DeepNestPort
 {
+    using System;
+    using System.Drawing;
+    using System.Drawing.Drawing2D;
+    using System.Windows.Forms;
+
     public class DrawingContext
     {
         public DrawingContext(PictureBox pb)
         {
-            box = pb;
+            this.box = pb;
 
-            bmp = new Bitmap(pb.Width, pb.Height);
-            pb.SizeChanged += Pb_SizeChanged;
-            gr = Graphics.FromImage(bmp);
-            gr.SmoothingMode = SmoothingMode.AntiAlias;
-            box.Image = bmp;
+            this.bmp = new Bitmap(pb.Width, pb.Height);
+            pb.SizeChanged += this.Pb_SizeChanged;
+            this.gr = Graphics.FromImage(this.bmp);
+            this.gr.SmoothingMode = SmoothingMode.AntiAlias;
+            this.box.Image = this.bmp;
 
-            pb.MouseDown += PictureBox1_MouseDown;
-            pb.MouseUp += PictureBox1_MouseUp;
-            pb.MouseMove += Pb_MouseMove;
-            sx = box.Width / 2;
-            sy = -box.Height / 2;
-            pb.MouseWheel += Pb_MouseWheel;
+            pb.MouseDown += this.PictureBox1_MouseDown;
+            pb.MouseUp += this.PictureBox1_MouseUp;
+            pb.MouseMove += this.Pb_MouseMove;
+            this.sx = this.box.Width / 2;
+            this.sy = -this.box.Height / 2;
+            pb.MouseWheel += this.Pb_MouseWheel;
         }
 
         private void Pb_MouseWheel(object sender, MouseEventArgs e)
         {
-            float zold = zoom;
-            if (e.Delta > 0) { zoom *= 1.5f; ; }
-            else { zoom *= 0.5f; }
-            if (zoom < 0.08) { zoom = 0.08f; }
-            if (zoom > 1000) { zoom = 1000f; }
+            float zold = this.zoom;
+            if (e.Delta > 0)
+            {
+                this.zoom *= 1.5f;
+            }
+            else
+            {
+                this.zoom *= 0.5f;
+            }
 
-            var pos = box.PointToClient(Cursor.Position);
+            if (this.zoom < 0.08)
+            {
+                this.zoom = 0.08f;
+            }
 
-            sx = -(pos.X / zold - sx - pos.X / zoom);
-            sy = (pos.Y / zold + sy - pos.Y / zoom);
+            if (this.zoom > 1000)
+            {
+                this.zoom = 1000f;
+            }
+
+            var pos = this.box.PointToClient(Cursor.Position);
+
+            this.sx = -((pos.X / zold) - this.sx - (pos.X / this.zoom));
+            this.sy = (pos.Y / zold) + this.sy - (pos.Y / this.zoom);
         }
 
         public bool FocusOnMove = true;
@@ -49,78 +62,85 @@ namespace DeepNestPort
 
         private void PictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
-            isDrag = false;
+            this.isDrag = false;
 
-            var p = box.PointToClient(Cursor.Position);
-            var pos = box.PointToClient(Cursor.Position);
-            var posx = (pos.X / zoom - sx);
-            var posy = (-pos.Y / zoom - sy);
+            var p = this.box.PointToClient(Cursor.Position);
+            var pos = this.box.PointToClient(Cursor.Position);
+            var posx = (pos.X / this.zoom) - this.sx;
+            var posy = (-pos.Y / this.zoom) - this.sy;
         }
 
         private void PictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
-            var pos = box.PointToClient(Cursor.Position);
-            var p = Transform(pos);
+            var pos = this.box.PointToClient(Cursor.Position);
+            var p = this.Transform(pos);
 
             if (e.Button == MouseButtons.Right)
             {
-                isDrag = true;
-                startx = pos.X;
-                starty = pos.Y;
-                origsx = sx;
-                origsy = sy;
+                this.isDrag = true;
+                this.startx = pos.X;
+                this.starty = pos.Y;
+                this.origsx = this.sx;
+                this.origsy = this.sy;
             }
         }
-        float startx, starty;
-        float origsx, origsy;
+
+        float startx;
+        float starty;
+        float origsx;
+        float origsy;
         bool isDrag = false;
 
         PictureBox box;
-        public float sx, sy;
+        public float sx;
+        public float sy;
         public float zoom = 1;
         public Graphics gr;
         public Bitmap bmp;
         public bool InvertY = true;
+
         public virtual PointF Transform(PointF p1)
         {
-            return new PointF((p1.X + sx) * zoom, (InvertY ? (-1) : 1) * (p1.Y + sy) * zoom);
+            return new PointF((p1.X + this.sx) * this.zoom, (this.InvertY ? (-1) : 1) * (p1.Y + this.sy) * this.zoom);
         }
+
         public virtual PointF Transform(double x, double y)
         {
-            return new PointF(((float)(x) + sx) * zoom, (InvertY ? (-1) : 1) * ((float)(y) + sy) * zoom);
+            return new PointF(((float) x + this.sx) * this.zoom, (this.InvertY ? (-1) : 1) * ((float) y + this.sy) * this.zoom);
         }
 
 
         private void Pb_SizeChanged(object sender, EventArgs e)
         {
-            bmp = new Bitmap(box.Width, box.Height);
-            gr = Graphics.FromImage(bmp);
+            this.bmp = new Bitmap(this.box.Width, this.box.Height);
+            this.gr = Graphics.FromImage(this.bmp);
 
-            box.Image = bmp;
+            this.box.Image = this.bmp;
         }
 
         public PointF GetPos()
         {
-            var pos = box.PointToClient(Cursor.Position);
-            var posx = (pos.X / zoom - sx);
-            var posy = (-pos.Y / zoom - sy);
+            var pos = this.box.PointToClient(Cursor.Position);
+            var posx = (pos.X / this.zoom) - this.sx;
+            var posy = (-pos.Y / this.zoom) - this.sy;
 
             return new PointF(posx, posy);
         }
+
         public void Update()
         {
-            if (isDrag)
+            if (this.isDrag)
             {
-                var p = box.PointToClient(Cursor.Position);
+                var p = this.box.PointToClient(Cursor.Position);
 
-                sx = origsx + ((p.X - startx) / zoom);
-                sy = origsy + (-(p.Y - starty) / zoom);
+                this.sx = this.origsx + ((p.X - this.startx) / this.zoom);
+                this.sy = this.origsy + (-(p.Y - this.starty) / this.zoom);
             }
         }
 
         public void Setup()
         {
-            box.Invalidate();
+            this.box.Invalidate();
         }
 
         public void FitToPoints(PointF[] points, int gap = 0)

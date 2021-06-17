@@ -1,30 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace DeepNestLib
+﻿namespace DeepNestLib
 {
     public class Simplify
     {
-
         // to suit your point format, run search/replace for '.x' and '.y';
         // for 3D version, see 3d branch (configurability would draw significant performance overhead)
 
         // square distance between 2 points
         public static double getSqDist(SvgPoint p1, SvgPoint p2)
         {
-
             var dx = p1.x - p2.x;
             var dy = p1.y - p2.y;
 
-            return dx * dx + dy * dy;
+            return (dx * dx) + (dy * dy);
         }
 
         // square distance from a point to a segment
         public static double getSqSegDist(SvgPoint p, SvgPoint p1, SvgPoint p2)
         {
-
             var x = p1.x;
             var y = p1.y;
             var dx = p2.x - x;
@@ -32,14 +24,12 @@ namespace DeepNestLib
 
             if (dx != 0 || dy != 0)
             {
-
-                var t = ((p.x - x) * dx + (p.y - y) * dy) / (dx * dx + dy * dy);
+                var t = (((p.x - x) * dx) + ((p.y - y) * dy)) / ((dx * dx) + (dy * dy));
 
                 if (t > 1)
                 {
                     x = p2.x;
                     y = p2.y;
-
                 }
                 else if (t > 0)
                 {
@@ -51,14 +41,14 @@ namespace DeepNestLib
             dx = p.x - x;
             dy = p.y - y;
 
-            return dx * dx + dy * dy;
+            return (dx * dx) + (dy * dy);
         }
+
         // rest of the code doesn't care about point format
 
         // basic distance-based simplification
         public static NFP simplifyRadialDist(NFP points, double? sqTolerance)
         {
-
             var prevPoint = points[0];
             var newPoints = new NFP();
             newPoints.AddPoint(prevPoint);
@@ -76,10 +66,13 @@ namespace DeepNestLib
                 }
             }
 
-            if (prevPoint != point) newPoints.AddPoint(point);
+            if (prevPoint != point)
+            {
+                newPoints.AddPoint(point);
+            }
+
             return newPoints;
         }
-
 
         public static void simplifyDPStep(NFP points, int first, int last, double? sqTolerance, NFP simplified)
         {
@@ -95,6 +88,7 @@ namespace DeepNestLib
                     index = i;
                     maxSqDist = sqDist;
                 }
+
                 /*if(points[i].marked && maxSqDist <= sqTolerance){
                     index = i;
                     marked = true;
@@ -107,9 +101,16 @@ namespace DeepNestLib
 
             if (maxSqDist > sqTolerance || marked)
             {
-                if (index - first > 1) simplifyDPStep(points, first, index, sqTolerance, simplified);
+                if (index - first > 1)
+                {
+                    simplifyDPStep(points, first, index, sqTolerance, simplified);
+                }
+
                 simplified.push(points[index]);
-                if (last - index > 1) simplifyDPStep(points, index, last, sqTolerance, simplified);
+                if (last - index > 1)
+                {
+                    simplifyDPStep(points, index, last, sqTolerance, simplified);
+                }
             }
         }
 
@@ -129,8 +130,10 @@ namespace DeepNestLib
         // both algorithms combined for awesome performance
         public static NFP simplify(NFP points, double? tolerance, bool highestQuality)
         {
-
-            if (points.length <= 2) return points;
+            if (points.length <= 2)
+            {
+                return points;
+            }
 
             var sqTolerance = (tolerance != null) ? (tolerance * tolerance) : 1;
 

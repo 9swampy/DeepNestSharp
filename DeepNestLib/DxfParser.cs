@@ -1,13 +1,13 @@
-﻿using IxMilia.Dxf;
-using IxMilia.Dxf.Entities;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-
-namespace DeepNestLib
+﻿namespace DeepNestLib
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Drawing;
+    using System.IO;
+    using System.Linq;
+    using IxMilia.Dxf;
+    using IxMilia.Dxf.Entities;
+
     public class DxfParser
     {
         public static RawDetail LoadDxf(string path)
@@ -16,10 +16,8 @@ namespace DeepNestLib
             DxfFile dxffile = DxfFile.Load(fi.FullName);
             RawDetail s = new RawDetail();
 
-
             s.Name = fi.FullName;
             IEnumerable<DxfEntity> entities = dxffile.Entities.ToArray();
-
 
             LocalContour points = new LocalContour();
             List<LineElement> elems = new List<LineElement>();
@@ -35,11 +33,13 @@ namespace DeepNestLib
                             {
                                 continue;
                             }
+
                             foreach (DxfLwPolylineVertex vert in poly.Vertices)
                             {
                                 points.Points.Add(new PointF((float)vert.X, (float)vert.Y));
                             }
                         }
+
                         break;
                     case DxfEntityType.Arc:
                         {
@@ -56,6 +56,7 @@ namespace DeepNestLib
                                 var tt = arc.GetPointFromAngle(i);
                                 pp.Add(new PointF((float)tt.X, (float)tt.Y));
                             }
+
                             var t = arc.GetPointFromAngle(arc.EndAngle);
                             pp.Add(new PointF((float)t.X, (float)t.Y));
                             for (int j = 1; j < pp.Count; j++)
@@ -65,6 +66,7 @@ namespace DeepNestLib
                                 elems.Add(new LineElement() { Start = new PointF((float)p1.X, (float)p1.Y), End = new PointF((float)p2.X, (float)p2.Y) });
                             }
                         }
+
                         break;
                     case DxfEntityType.Circle:
                         {
@@ -74,10 +76,11 @@ namespace DeepNestLib
                             for (int i = 0; i <= 360; i += 15)
                             {
                                 var ang = i * Math.PI / 180f;
-                                var xx = cr.Center.X + cr.Radius * Math.Cos(ang);
-                                var yy = cr.Center.Y + cr.Radius * Math.Sin(ang);
+                                var xx = cr.Center.X + (cr.Radius * Math.Cos(ang));
+                                var yy = cr.Center.Y + (cr.Radius * Math.Sin(ang));
                                 cc.Points.Add(new PointF((float)xx, (float)yy));
                             }
+
                             for (int i = 1; i < cc.Points.Count; i++)
                             {
                                 var p1 = cc.Points[i - 1];
@@ -85,6 +88,7 @@ namespace DeepNestLib
                                 elems.Add(new LineElement() { Start = p1, End = p2 });
                             }
                         }
+
                         break;
                     case DxfEntityType.Line:
                         {
@@ -95,7 +99,6 @@ namespace DeepNestLib
 
                     case DxfEntityType.Polyline:
                         {
-
                             DxfPolyline poly = (DxfPolyline)ent;
                             if (poly.Vertices.Count() < 2)
                             {
@@ -105,17 +108,16 @@ namespace DeepNestLib
                             foreach (DxfVertex vert in poly.Vertices)
                             {
                                 points.Points.Add(new PointF((float)vert.Location.X, (float)vert.Location.Y));
-
                             }
+
                             break;
                         }
+
                     default:
                         throw new ArgumentException("unsupported entity type: " + ent);
-
-                };
+                }
             }
 
-            
             elems = elems.Where(z => z.Start.DistTo(z.End) > RemoveThreshold).ToList();
             var cntrs2 = ConnectElements(elems.ToArray());
             s.Outers.AddRange(cntrs2);
@@ -126,6 +128,7 @@ namespace DeepNestLib
 
             return s;
         }
+
         public static double RemoveThreshold = 10e-5;
         public static double ClosingThreshold = 10e-4;
 
@@ -157,6 +160,7 @@ namespace DeepNestLib
                         pp.Clear();
                         continue;
                     }
+
                     last.Remove(f1);
                     if (f1.Start.DistTo(ll) < f1.End.DistTo(ll))
                     {
@@ -168,10 +172,12 @@ namespace DeepNestLib
                     }
                 }
             }
+
             if (pp.Any())
             {
                 ret.Add(new LocalContour() { Points = pp.ToList() });
             }
+
             return ret.ToArray();
         }
     }
