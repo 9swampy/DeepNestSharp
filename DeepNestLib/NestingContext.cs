@@ -42,94 +42,16 @@
 
         public void NestIterate()
         {
-            List<NFP> lsheets = new List<NFP>();
-            List<NFP> lpoly = new List<NFP>();
+            this.SetPolygonIds();
+            this.SetSheetIds();
 
-            for (int i = 0; i < this.Polygons.Count; i++)
-            {
-                this.Polygons[i].Id = i;
-            }
-
-            for (int i = 0; i < this.Sheets.Count; i++)
-            {
-                this.Sheets[i].Id = i;
-            }
-
-            foreach (var item in this.Polygons)
-            {
-                NFP clone = new NFP();
-                clone.Id = item.Id;
-                clone.Source = item.Source;
-                clone.Points = item.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }).ToArray();
-                if (item.children != null)
-                {
-                    clone.children = new List<NFP>();
-                    foreach (var citem in item.children)
-                    {
-                        clone.children.Add(new NFP());
-                        var l = clone.children.Last();
-                        l.Id = citem.Id;
-                        l.Source = citem.Source;
-                        l.Points = citem.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }).ToArray();
-                    }
-                }
-
-                lpoly.Add(clone);
-            }
-
-            foreach (var item in this.Sheets)
-            {
-                NFP clone = new NFP();
-                clone.Id = item.Id;
-                clone.Source = item.Source;
-                clone.Points = item.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }).ToArray();
-                if (item.children != null)
-                {
-                    clone.children = new List<NFP>();
-                    foreach (var citem in item.children)
-                    {
-                        clone.children.Add(new NFP());
-                        var l = clone.children.Last();
-                        l.Id = citem.Id;
-                        l.Source = citem.Source;
-                        l.Points = citem.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }).ToArray();
-                    }
-                }
-
-                lsheets.Add(clone);
-            }
+            List<NFP> lsheets = new List<NFP>(this.ClonedSheets);
+            List<NFP> lpoly = new List<NFP>(this.ClonedPolygons);
 
             if (this.offsetTreePhase)
             {
-                var grps = lpoly.GroupBy(z => z.Source).ToArray();
-                if (Background.UseParallel)
-                {
-                    Parallel.ForEach(grps, (item) =>
-                    {
-                        SvgNest.OffsetTree(item.First(), 0.5 * SvgNest.Config.Spacing, SvgNest.Config);
-                        foreach (var zitem in item)
-                        {
-                            zitem.Points = item.First().Points.ToArray();
-                        }
-                    });
-                }
-                else
-                {
-                    foreach (var item in grps)
-                    {
-                        SvgNest.OffsetTree(item.First(), 0.5 * SvgNest.Config.Spacing, SvgNest.Config);
-                        foreach (var zitem in item)
-                        {
-                            zitem.Points = item.First().Points.ToArray();
-                        }
-                    }
-                }
-
-                foreach (var item in lsheets)
-                {
-                    var gap = SvgNest.Config.SheetSpacing - (SvgNest.Config.Spacing / 2);
-                    SvgNest.OffsetTree(item, -gap, SvgNest.Config, true);
-                }
+                PolygonGroupsOffsetTree(lpoly);
+                SheetsOffsetTree(lsheets);
             }
 
             List<NestItem> partsLocal = new List<NestItem>();
@@ -164,6 +86,115 @@
             }
 
             this.Iterations++;
+        }
+
+        private static void SheetsOffsetTree(List<NFP> lsheets)
+        {
+            foreach (var item in lsheets)
+            {
+                var gap = SvgNest.Config.SheetSpacing - (SvgNest.Config.Spacing / 2);
+                SvgNest.OffsetTree(item, -gap, SvgNest.Config, true);
+            }
+        }
+
+        private static void PolygonGroupsOffsetTree(List<NFP> lpoly)
+        {
+            var grps = lpoly.GroupBy(z => z.Source).ToArray();
+            if (Background.UseParallel)
+            {
+                Parallel.ForEach(grps, (item) =>
+                {
+                    OffsetTree(item);
+                });
+            }
+            else
+            {
+                foreach (var item in grps)
+                {
+                    OffsetTree(item);
+                }
+            }
+        }
+
+        private static void OffsetTree(IGrouping<int?, NFP> item)
+        {
+            SvgNest.OffsetTree(item.First(), 0.5 * SvgNest.Config.Spacing, SvgNest.Config);
+            foreach (var zitem in item)
+            {
+                zitem.Points = item.First().Points.ToArray();
+            }
+        }
+
+        private void SetSheetIds()
+        {
+            for (int i = 0; i < this.Sheets.Count; i++)
+            {
+                this.Sheets[i].Id = i;
+            }
+        }
+
+        private void SetPolygonIds()
+        {
+            for (int i = 0; i < this.Polygons.Count; i++)
+            {
+                this.Polygons[i].Id = i;
+            }
+        }
+
+        private IEnumerable<NFP> ClonedSheets
+        {
+            get
+            {
+                foreach (var item in this.Sheets)
+                {
+                    NFP clone = new NFP();
+                    clone.Id = item.Id;
+                    clone.Source = item.Source;
+                    clone.Points = item.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }).ToArray();
+                    if (item.children != null)
+                    {
+                        clone.children = new List<NFP>();
+                        foreach (var citem in item.children)
+                        {
+                            clone.children.Add(new NFP());
+                            var l = clone.children.Last();
+                            l.Id = citem.Id;
+                            l.Source = citem.Source;
+                            l.Points = citem.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }).ToArray();
+                        }
+                    }
+
+                    yield return clone;
+                }
+            }
+        }
+
+        private IEnumerable<NFP> ClonedPolygons
+        {
+            get
+            {
+                foreach (var item in this.Polygons)
+                {
+                    NFP clone = new NFP();
+                    clone.Id = item.Id;
+                    clone.Source = item.Source;
+                    clone.Points = item.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }).ToArray();
+                    if (item.children != null)
+                    {
+                        clone.children = new List<NFP>();
+                        foreach (var citem in item.children)
+                        {
+                            clone.children.Add(new NFP());
+                            var l = clone.children.Last();
+                            l.Id = citem.Id;
+                            l.Source = citem.Source;
+                            l.Points = citem.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }).ToArray();
+                        }
+                    }
+
+                    yield return clone;
+                }
+            }
         }
 
         public void ExportSvg(string v)
