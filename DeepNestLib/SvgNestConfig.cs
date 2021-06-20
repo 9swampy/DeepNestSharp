@@ -2,7 +2,7 @@
 {
     public class SvgNestConfig
     {
-        public double CurveTolerance = 0.72;
+        public double CurveTolerance = 0.1;
         public double Scale = 25;
         public double ClipperScale = 10000000;
         public bool ExploreConcave = false;

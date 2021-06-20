@@ -1544,6 +1544,7 @@
             {
                 gp.AddPolygon(item.Points.ToArray());
             }
+
             ctx3.FitToPoints(gp.PathPoints, 5);
         }
 

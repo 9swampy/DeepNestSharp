@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "clipper_library", "clipper_
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeepNestConsole", "DeepNestConsole\DeepNestConsole.csproj", "{C02ABAED-5922-4BBF-A78C-44FCDD96D118}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SvgDxfConverter.CiTests", "SvgDxfConverter.CiTests\SvgDxfConverter.CiTests.csproj", "{FE7F6106-A662-4DBC-A70C-FE475D3BEAB1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{C02ABAED-5922-4BBF-A78C-44FCDD96D118}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C02ABAED-5922-4BBF-A78C-44FCDD96D118}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C02ABAED-5922-4BBF-A78C-44FCDD96D118}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE7F6106-A662-4DBC-A70C-FE475D3BEAB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE7F6106-A662-4DBC-A70C-FE475D3BEAB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE7F6106-A662-4DBC-A70C-FE475D3BEAB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE7F6106-A662-4DBC-A70C-FE475D3BEAB1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
