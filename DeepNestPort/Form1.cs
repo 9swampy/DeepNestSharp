@@ -36,7 +36,7 @@
 
             this.listView1.DoubleBuffered(true);
             this.listView2.DoubleBuffered(true);
-            this.listView3.DoubleBuffered(true);
+            this.listViewDebugFiles.DoubleBuffered(true);
             this.listView4.DoubleBuffered(true);
             this.progressBar1 = new PictureBoxProgressBar();
             this.progressBar1.Dock = DockStyle.Fill;
@@ -455,11 +455,11 @@
         {
             var di = new DirectoryInfo(path);
             this.groupBox3.Text = "Files: " + di.FullName;
-            this.listView3.Items.Clear();
-            this.listView3.Items.Add(new ListViewItem(new string[] { ".." }) { Tag = di.Parent, BackColor = Color.LightBlue });
+            this.listViewDebugFiles.Items.Clear();
+            this.listViewDebugFiles.Items.Add(new ListViewItem(new string[] { ".." }) { Tag = di.Parent, BackColor = Color.LightBlue });
             foreach (var item in di.GetDirectories())
             {
-                this.listView3.Items.Add(new ListViewItem(new string[] { item.Name }) { Tag = item, BackColor = Color.LightBlue });
+                this.listViewDebugFiles.Items.Add(new ListViewItem(new string[] { item.Name }) { Tag = item, BackColor = Color.LightBlue });
             }
 
             foreach (var item in di.GetFiles())
@@ -469,7 +469,7 @@
                     continue;
                 }
 
-                this.listView3.Items.Add(new ListViewItem(new string[] { item.Name }) { Tag = item });
+                this.listViewDebugFiles.Items.Add(new ListViewItem(new string[] { item.Name }) { Tag = item });
             }
         }
 
@@ -655,14 +655,14 @@
             }
         }
 
-        private void listView3_MouseDoubleClick(object sender, MouseEventArgs e)
+        private void listViewDebugFiles_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (this.listView3.SelectedItems.Count <= 0)
+            if (this.listViewDebugFiles.SelectedItems.Count <= 0)
             {
                 return;
             }
 
-            var si = this.listView3.SelectedItems[0].Tag;
+            var si = this.listViewDebugFiles.SelectedItems[0].Tag;
             if (si is DirectoryInfo)
             {
                 this.UpdateFilesList((si as DirectoryInfo).FullName);
@@ -703,7 +703,7 @@
 
         private void importSelectedToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (this.listView3.SelectedItems.Count <= 0)
+            if (this.listViewDebugFiles.SelectedItems.Count <= 0)
             {
                 return;
             }
@@ -711,7 +711,7 @@
             QntDialog q = new QntDialog();
             if (q.ShowDialog() == DialogResult.OK)
             {
-                foreach (var item in this.listView3.SelectedItems)
+                foreach (var item in this.listViewDebugFiles.SelectedItems)
                 {
                     var t = (item as ListViewItem).Tag as FileInfo;
                     RawDetail det = null;
@@ -1271,7 +1271,7 @@
                 if (path.Extension == ".svg")
                 {
                     det = SvgParser.LoadSvg(path.FullName);
-                }
+        }
 
                 if (path.Extension == ".dxf")
                 {
@@ -1312,7 +1312,7 @@
 
         private void listView3_MouseMove(object sender, MouseEventArgs e)
         {
-            var ch = this.listView3.GetChildAtPoint(this.listView3.PointToClient(Cursor.Position));
+            var ch = this.listViewDebugFiles.GetChildAtPoint(this.listViewDebugFiles.PointToClient(Cursor.Position));
 
             if (ch != null)
             {

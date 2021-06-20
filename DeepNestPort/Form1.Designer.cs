@@ -109,7 +109,7 @@
             this.button10 = new System.Windows.Forms.Button();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.listView3 = new System.Windows.Forms.ListView();
+            this.listViewDebugFiles = new System.Windows.Forms.ListView();
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuStrip3 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.importSelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -1146,25 +1146,25 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Files";
             // 
-            // listView3
+            // listViewDebugFiles
             // 
-            this.listView3.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.listViewDebugFiles.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader5});
-            this.listView3.ContextMenuStrip = this.contextMenuStrip3;
-            this.listView3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listView3.FullRowSelect = true;
-            this.listView3.GridLines = true;
-            this.listView3.HideSelection = false;
-            this.listView3.Location = new System.Drawing.Point(2, 15);
-            this.listView3.Margin = new System.Windows.Forms.Padding(2);
-            this.listView3.Name = "listView3";
-            this.listView3.Size = new System.Drawing.Size(387, 149);
-            this.listView3.TabIndex = 3;
-            this.listView3.UseCompatibleStateImageBehavior = false;
-            this.listView3.View = System.Windows.Forms.View.Details;
-            this.listView3.SelectedIndexChanged += new System.EventHandler(this.listView3_SelectedIndexChanged);
-            this.listView3.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView3_MouseDoubleClick);
-            this.listView3.MouseMove += new System.Windows.Forms.MouseEventHandler(this.listView3_MouseMove);
+            this.listViewDebugFiles.ContextMenuStrip = this.contextMenuStrip3;
+            this.listViewDebugFiles.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewDebugFiles.FullRowSelect = true;
+            this.listViewDebugFiles.GridLines = true;
+            this.listViewDebugFiles.HideSelection = false;
+            this.listViewDebugFiles.Location = new System.Drawing.Point(3, 17);
+            this.listViewDebugFiles.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.listViewDebugFiles.Name = "listViewDebugFiles";
+            this.listViewDebugFiles.Size = new System.Drawing.Size(516, 188);
+            this.listViewDebugFiles.TabIndex = 3;
+            this.listViewDebugFiles.UseCompatibleStateImageBehavior = false;
+            this.listViewDebugFiles.View = System.Windows.Forms.View.Details;
+            this.listViewDebugFiles.SelectedIndexChanged += new System.EventHandler(this.toolStripButton2_Click_1);
+            this.listViewDebugFiles.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listViewDebugFiles_MouseDoubleClick);
+            this.listViewDebugFiles.MouseMove += new System.Windows.Forms.MouseEventHandler(this.listView3_MouseMove);
             // 
             // columnHeader5
             // 
@@ -1587,7 +1587,7 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
         private System.Windows.Forms.ToolStripMenuItem clearAllToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem moveToPolygonsToolStripMenuItem;
-        private System.Windows.Forms.ListView listView3;
+        private System.Windows.Forms.ListView listViewDebugFiles;
         private System.Windows.Forms.ColumnHeader columnHeader5;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip3;
         private System.Windows.Forms.ToolStripMenuItem importSelectedToolStripMenuItem;
