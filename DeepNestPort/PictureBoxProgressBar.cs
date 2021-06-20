@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-
-namespace DeepNestPort
+﻿namespace DeepNestPort
 {
+    using System;
+    using System.Drawing;
+    using System.Windows.Forms;
+
     public class PictureBoxProgressBar : PictureBox
     {
         public PictureBoxProgressBar()
@@ -22,9 +19,10 @@ namespace DeepNestPort
             gr = Graphics.FromImage(bmp);
         }
 
-        Bitmap bmp;
-        Graphics gr;
+        private Bitmap bmp;
+        private Graphics gr;
         public float Value;
+
         public void UpdateImg()
         {
             gr.FillRectangle(Brushes.White, 0, 0, Width, Height);

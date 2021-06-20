@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
+﻿namespace DeepNestLib
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Drawing;
+    using System.Linq;
 
-namespace DeepNestLib
-{ 
-    public class GeometryUtil
+    public partial class GeometryUtil
     {
         // returns true if points are within the given distance
         public static bool _withinDistance(SvgPoint p1, SvgPoint p2, double distance)
         {
             var dx = p1.x - p2.x;
             var dy = p1.y - p2.y;
-            return ((dx * dx + dy * dy) < distance * distance);
+            return ((dx * dx) + (dy * dy)) < distance * distance;
         }
 
         // returns an interior NFP for the special case where A is a rectangle
@@ -29,14 +29,17 @@ namespace DeepNestLib
                 {
                     minAx = A[i].x;
                 }
+
                 if (A[i].y < minAy)
                 {
                     minAy = A[i].y;
                 }
+
                 if (A[i].x > maxAx)
                 {
                     maxAx = A[i].x;
                 }
+
                 if (A[i].y > maxAy)
                 {
                     maxAy = A[i].y;
@@ -53,14 +56,17 @@ namespace DeepNestLib
                 {
                     minBx = B[i].x;
                 }
+
                 if (B[i].y < minBy)
                 {
                     minBy = B[i].y;
                 }
+
                 if (B[i].x > maxBx)
                 {
                     maxBx = B[i].x;
                 }
+
                 if (B[i].y > maxBy)
                 {
                     maxBy = B[i].y;
@@ -71,36 +77,42 @@ namespace DeepNestLib
             {
                 return null;
             }
+
             if (maxBy - minBy > maxAy - minAy)
             {
                 return null;
             }
 
-
-            var pnts = new NFP[] { new NFP() { Points=new SvgPoint[]{
-
+            var pnts = new NFP[]
+            {
+                new NFP()
+            {
+                Points = new SvgPoint[]
+            {
                 new SvgPoint(minAx - minBx + B[0].x, minAy - minBy + B[0].y),
-            new SvgPoint(maxAx - maxBx + B[0].x, minAy - minBy + B[0].y),
-            new SvgPoint( maxAx - maxBx + B[0].x, maxAy - maxBy + B[0].y),
-            new SvgPoint( minAx - minBx + B[0].x, maxAy - maxBy + B[0].y)
-            } } };
+                new SvgPoint(maxAx - maxBx + B[0].x, minAy - minBy + B[0].y),
+                new SvgPoint(maxAx - maxBx + B[0].x, maxAy - maxBy + B[0].y),
+                new SvgPoint(minAx - minBx + B[0].x, maxAy - maxBy + B[0].y),
+            },
+            },
+            };
             return pnts;
         }
 
-  
         // returns the rectangular bounding box of the given polygon
         public static PolygonBounds getPolygonBounds(NFP _polygon)
         {
             return getPolygonBounds(_polygon.Points);
         }
+
         public static PolygonBounds getPolygonBounds(List<SvgPoint
             > polygon)
         {
             return getPolygonBounds(polygon.ToArray());
         }
+
         public static PolygonBounds getPolygonBounds(SvgPoint[] polygon)
         {
-
             if (polygon == null || polygon.Count() < 3)
             {
                 throw new ArgumentException("null");
@@ -134,10 +146,9 @@ namespace DeepNestLib
 
             var w = xmax - xmin;
             var h = ymax - ymin;
-            //return new rectanglef(xmin, ymin, xmax - xmin, ymax - ymin);
+
+            // return new rectanglef(xmin, ymin, xmax - xmin, ymax - ymin);
             return new PolygonBounds(xmin, ymin, w, h);
-
-
         }
 
         public static bool isRectangle(NFP poly, double? tolerance = null)
@@ -148,13 +159,13 @@ namespace DeepNestLib
                 tolerance = TOL;
             }
 
-
             for (var i = 0; i < poly.Points.Length; i++)
             {
                 if (!_almostEqual(poly.Points[i].x, bb.x) && !_almostEqual(poly.Points[i].x, bb.x + bb.width))
                 {
                     return false;
                 }
+
                 if (!_almostEqual(poly.Points[i].y, bb.y) && !_almostEqual(poly.Points[i].y, bb.y + bb.height))
                 {
                     return false;
@@ -166,53 +177,48 @@ namespace DeepNestLib
 
         public static PolygonWithBounds rotatePolygon(NFP polygon, float angle)
         {
-
             List<SvgPoint> rotated = new List<SvgPoint>();
             angle = (float)(angle * Math.PI / 180.0f);
             for (var i = 0; i < polygon.Points.Length; i++)
             {
                 var x = polygon.Points[i].x;
                 var y = polygon.Points[i].y;
-                var x1 = (float)(x * Math.Cos(angle) - y * Math.Sin(angle));
-                var y1 = (float)(x * Math.Sin(angle) + y * Math.Cos(angle));
+                var x1 = (float)((x * Math.Cos(angle)) - (y * Math.Sin(angle)));
+                var y1 = (float)((x * Math.Sin(angle)) + (y * Math.Cos(angle)));
 
                 rotated.Add(new SvgPoint(x1, y1));
             }
+
             // reset bounding box
-            RectangleF rr = new RectangleF();
+            RectangleF rr = default(RectangleF);
 
             var ret = new PolygonWithBounds()
             {
-                Points = rotated.ToArray()
+                Points = rotated.ToArray(),
             };
             var bounds = GeometryUtil.getPolygonBounds(ret);
             ret.x = bounds.x;
             ret.y = bounds.y;
-            ret.width = bounds.width;
-            ret.height = bounds.height;
+            ret.Width = bounds.width;
+            ret.Height = bounds.height;
             return ret;
-
         }
 
-        public class PolygonWithBounds : NFP
-        {
-            public double x;
-            public double y;
-            public double width;
-            public double height;
-        }
         public static bool _almostEqual(double a, double b, double? tolerance = null)
         {
             if (tolerance == null)
             {
                 tolerance = TOL;
             }
+
             return Math.Abs(a - b) < tolerance;
         }
+
         public static bool _almostEqual(double? a, double? b, double? tolerance = null)
         {
             return _almostEqual(a.Value, b.Value, tolerance);
         }
+
         // returns true if point already exists in the given nfp
         public static bool inNfp(SvgPoint p, NFP[] nfp)
         {
@@ -223,7 +229,7 @@ namespace DeepNestLib
 
             for (var i = 0; i < nfp.Length; i++)
             {
-                for (var j = 0; j < nfp[i].length; j++)
+                for (var j = 0; j < nfp[i].Length; j++)
                 {
                     if (_almostEqual(p.x, nfp[i][j].x) && _almostEqual(p.y, nfp[i][j].y))
                     {
@@ -234,32 +240,34 @@ namespace DeepNestLib
 
             return false;
         }
+
         // normalize vector into a unit vector
         public static SvgPoint _normalizeVector(SvgPoint v)
         {
-            if (_almostEqual(v.x * v.x + v.y * v.y, 1))
+            if (_almostEqual((v.x * v.x) + (v.y * v.y), 1))
             {
                 return v; // given vector was already a unit vector
             }
-            var len = Math.Sqrt(v.x * v.x + v.y * v.y);
+
+            var len = Math.Sqrt((v.x * v.x) + (v.y * v.y));
             var inverse = (float)(1 / len);
 
-            return new SvgPoint(v.x * inverse, v.y * inverse
-        );
+            return new SvgPoint(v.x * inverse, v.y * inverse);
         }
+
         public static double? pointDistance(SvgPoint p, SvgPoint s1, SvgPoint s2, SvgPoint normal, bool infinite = false)
         {
             normal = _normalizeVector(normal);
 
             var dir = new SvgPoint(normal.y, -normal.x);
 
-            var pdot = p.x * dir.x + p.y * dir.y;
-            var s1dot = s1.x * dir.x + s1.y * dir.y;
-            var s2dot = s2.x * dir.x + s2.y * dir.y;
+            var pdot = (p.x * dir.x) + (p.y * dir.y);
+            var s1dot = (s1.x * dir.x) + (s1.y * dir.y);
+            var s2dot = (s2.x * dir.x) + (s2.y * dir.y);
 
-            var pdotnorm = p.x * normal.x + p.y * normal.y;
-            var s1dotnorm = s1.x * normal.x + s1.y * normal.y;
-            var s2dotnorm = s2.x * normal.x + s2.y * normal.y;
+            var pdotnorm = (p.x * normal.x) + (p.y * normal.y);
+            var s1dotnorm = (s1.x * normal.x) + (s1.y * normal.y);
+            var s2dotnorm = (s2.x * normal.x) + (s2.y * normal.y);
 
             if (!infinite)
             {
@@ -267,24 +275,27 @@ namespace DeepNestLib
                 {
                     return null; // dot doesn't collide with segment, or lies directly on the vertex
                 }
+
                 if ((_almostEqual(pdot, s1dot) && _almostEqual(pdot, s2dot)) && (pdotnorm > s1dotnorm && pdotnorm > s2dotnorm))
                 {
                     return Math.Min(pdotnorm - s1dotnorm, pdotnorm - s2dotnorm);
                 }
+
                 if ((_almostEqual(pdot, s1dot) && _almostEqual(pdot, s2dot)) && (pdotnorm < s1dotnorm && pdotnorm < s2dotnorm))
                 {
                     return -Math.Min(s1dotnorm - pdotnorm, s2dotnorm - pdotnorm);
                 }
             }
 
-            return -(pdotnorm - s1dotnorm + (s1dotnorm - s2dotnorm) * (s1dot - pdot) / (s1dot - s2dot));
+            return -(pdotnorm - s1dotnorm + ((s1dotnorm - s2dotnorm) * (s1dot - pdot) / (s1dot - s2dot)));
         }
-        static double TOL = (float)Math.Pow(10, -9); // Floating point error is likely to be above 1 epsilon
+
+        private static double TOL = (float)Math.Pow(10, -9); // Floating point error is likely to be above 1 epsilon
+
                                                      // returns true if p lies on the line segment defined by AB, but not at any endpoints
                                                      // may need work!
         public static bool _onSegment(SvgPoint A, SvgPoint B, SvgPoint p)
         {
-
             // vertical line
             if (_almostEqual(A.x, B.x) && _almostEqual(p.x, A.x))
             {
@@ -311,12 +322,11 @@ namespace DeepNestLib
                 }
             }
 
-            //range check
+            // range check
             if ((p.x < A.x && p.x < B.x) || (p.x > A.x && p.x > B.x) || (p.y < A.y && p.y < B.y) || (p.y > A.y && p.y > B.y))
             {
                 return false;
             }
-
 
             // exclude end points
             if ((_almostEqual(p.x, A.x) && _almostEqual(p.y, A.y)) || (_almostEqual(p.x, B.x) && _almostEqual(p.y, B.y)))
@@ -324,25 +334,21 @@ namespace DeepNestLib
                 return false;
             }
 
-            var cross = (p.y - A.y) * (B.x - A.x) - (p.x - A.x) * (B.y - A.y);
+            var cross = ((p.y - A.y) * (B.x - A.x)) - ((p.x - A.x) * (B.y - A.y));
 
             if (Math.Abs(cross) > TOL)
             {
                 return false;
             }
 
-            var dot = (p.x - A.x) * (B.x - A.x) + (p.y - A.y) * (B.y - A.y);
-
-
+            var dot = ((p.x - A.x) * (B.x - A.x)) + ((p.y - A.y) * (B.y - A.y));
 
             if (dot < 0 || _almostEqual(dot, 0))
             {
                 return false;
             }
 
-            var len2 = (B.x - A.x) * (B.x - A.x) + (B.y - A.y) * (B.y - A.y);
-
-
+            var len2 = ((B.x - A.x) * (B.x - A.x)) + ((B.y - A.y) * (B.y - A.y));
 
             if (dot > len2 || _almostEqual(dot, len2))
             {
@@ -352,28 +358,27 @@ namespace DeepNestLib
             return true;
         }
 
-
-        // project each point of B onto A in the given direction, and return the 
+        // project each point of B onto A in the given direction, and return the
         public static double? polygonProjectionDistance(NFP A, NFP B, SvgPoint direction)
         {
-            var Boffsetx = B.offsetx ?? 0;
-            var Boffsety = B.offsety ?? 0;
+            var Boffsetx = B.Offsetx ?? 0;
+            var Boffsety = B.Offsety ?? 0;
 
-            var Aoffsetx = A.offsetx ?? 0;
-            var Aoffsety = A.offsety ?? 0;
+            var Aoffsetx = A.Offsetx ?? 0;
+            var Aoffsety = A.Offsety ?? 0;
 
             A = A.slice(0);
             B = B.slice(0);
 
             // close the loop for polygons
-            if (A[0] != A[A.length - 1])
+            if (A[0] != A[A.Length - 1])
             {
-                A.push(A[0]);
+                A.Push(A[0]);
             }
 
-            if (B[0] != B[B.length - 1])
+            if (B[0] != B[B.Length - 1])
             {
-                B.push(B[0]);
+                B.Push(B[0]);
             }
 
             var edgeA = A;
@@ -383,19 +388,18 @@ namespace DeepNestLib
             SvgPoint p, s1, s2;
             double? d;
 
-
-            for (var i = 0; i < edgeB.length; i++)
+            for (var i = 0; i < edgeB.Length; i++)
             {
                 // the shortest/most negative projection of B onto A
                 double? minprojection = null;
                 SvgPoint minp = null;
-                for (var j = 0; j < edgeA.length - 1; j++)
+                for (var j = 0; j < edgeA.Length - 1; j++)
                 {
                     p = new SvgPoint(edgeB[i].x + Boffsetx, edgeB[i].y + Boffsety);
                     s1 = new SvgPoint(edgeA[j].x + Aoffsetx, edgeA[j].y + Aoffsety);
                     s2 = new SvgPoint(edgeA[j + 1].x + Aoffsetx, edgeA[j + 1].y + Aoffsety);
 
-                    if (Math.Abs((s2.y - s1.y) * direction.x - (s2.x - s1.x) * direction.y) < TOL)
+                    if (Math.Abs(((s2.y - s1.y) * direction.x) - ((s2.x - s1.x) * direction.y)) < TOL)
                     {
                         continue;
                     }
@@ -409,6 +413,7 @@ namespace DeepNestLib
                         minp = p;
                     }
                 }
+
                 if (minprojection != null && (distance == null || minprojection > distance))
                 {
                     distance = minprojection;
@@ -427,6 +432,7 @@ namespace DeepNestLib
                 area += (polygon.Points[j].x + polygon.Points[i].x) * (polygon.Points[j].y
                     - polygon.Points[i].y);
             }
+
             return 0.5f * area;
         }
 
@@ -439,10 +445,11 @@ namespace DeepNestLib
             }
 
             var inside = false;
-            //var offsetx = polygon.offsetx || 0;
-            //var offsety = polygon.offsety || 0;
-            double offsetx = polygon.offsetx == null ? 0 : polygon.offsetx.Value;
-            double offsety = polygon.offsety == null ? 0 : polygon.offsety.Value;
+
+            // var offsetx = polygon.Offsetx || 0;
+            // var offsety = polygon.Offsety || 0;
+            double offsetx = polygon.Offsetx == null ? 0 : polygon.Offsetx.Value;
+            double offsety = polygon.Offsety == null ? 0 : polygon.Offsety.Value;
 
             int i, j;
             for (i = 0, j = polygon.Points.Count() - 1; i < polygon.Points.Length; j = i++)
@@ -454,7 +461,6 @@ namespace DeepNestLib
 
                 if (_almostEqual(xi, point.x) && _almostEqual(yi, point.y))
                 {
-
                     return null; // no result
                 }
 
@@ -468,67 +474,70 @@ namespace DeepNestLib
                     continue;
                 }
 
-                var intersect = ((yi > point.y) != (yj > point.y)) && (point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi);
-                if (intersect) inside = !inside;
+                var intersect = ((yi > point.y) != (yj > point.y)) && (point.x < ((xj - xi) * (point.y - yi) / (yj - yi)) + xi);
+                if (intersect)
+                {
+                    inside = !inside;
+                }
             }
 
             return inside;
         }
+
         // todo: swap this for a more efficient sweep-line implementation
         // returnEdges: if set, return all edges on A that have intersections
-
         public static bool intersect(NFP A, NFP B)
         {
-            var Aoffsetx = A.offsetx ?? 0;
-            var Aoffsety = A.offsety ?? 0;
+            var aOffsetx = A.Offsetx ?? 0;
+            var aOffsety = A.Offsety ?? 0;
 
-            var Boffsetx = B.offsetx ?? 0;
-            var Boffsety = B.offsety ?? 0;
+            var bOffsetx = B.Offsetx ?? 0;
+            var bOffsety = B.Offsety ?? 0;
 
             A = A.slice(0);
             B = B.slice(0);
 
-            for (var i = 0; i < A.length - 1; i++)
+            for (var i = 0; i < A.Length - 1; i++)
             {
-                for (var j = 0; j < B.length - 1; j++)
+                for (var j = 0; j < B.Length - 1; j++)
                 {
-                    var a1 = new SvgPoint(A[i].x + Aoffsetx, A[i].y + Aoffsety);
-                    var a2 = new SvgPoint(A[i + 1].x + Aoffsetx, A[i + 1].y + Aoffsety);
-                    var b1 = new SvgPoint(B[j].x + Boffsetx, B[j].y + Boffsety);
-                    var b2 = new SvgPoint(B[j + 1].x + Boffsetx, B[j + 1].y + Boffsety);
+                    var a1 = new SvgPoint(A[i].x + aOffsetx, A[i].y + aOffsety);
+                    var a2 = new SvgPoint(A[i + 1].x + aOffsetx, A[i + 1].y + aOffsety);
+                    var b1 = new SvgPoint(B[j].x + bOffsetx, B[j].y + bOffsety);
+                    var b2 = new SvgPoint(B[j + 1].x + bOffsetx, B[j + 1].y + bOffsety);
 
-                    var prevbindex = (j == 0) ? B.length - 1 : j - 1;
-                    var prevaindex = (i == 0) ? A.length - 1 : i - 1;
-                    var nextbindex = (j + 1 == B.length - 1) ? 0 : j + 2;
-                    var nextaindex = (i + 1 == A.length - 1) ? 0 : i + 2;
+                    var prevbindex = (j == 0) ? B.Length - 1 : j - 1;
+                    var prevaindex = (i == 0) ? A.Length - 1 : i - 1;
+                    var nextbindex = (j + 1 == B.Length - 1) ? 0 : j + 2;
+                    var nextaindex = (i + 1 == A.Length - 1) ? 0 : i + 2;
 
                     // go even further back if we happen to hit on a loop end point
                     if (B[prevbindex] == B[j] || (_almostEqual(B[prevbindex].x, B[j].x) && _almostEqual(B[prevbindex].y, B[j].y)))
                     {
-                        prevbindex = (prevbindex == 0) ? B.length - 1 : prevbindex - 1;
+                        prevbindex = (prevbindex == 0) ? B.Length - 1 : prevbindex - 1;
                     }
 
                     if (A[prevaindex] == A[i] || (_almostEqual(A[prevaindex].x, A[i].x) && _almostEqual(A[prevaindex].y, A[i].y)))
                     {
-                        prevaindex = (prevaindex == 0) ? A.length - 1 : prevaindex - 1;
+                        prevaindex = (prevaindex == 0) ? A.Length - 1 : prevaindex - 1;
                     }
 
                     // go even further forward if we happen to hit on a loop end point
                     if (B[nextbindex] == B[j + 1] || (_almostEqual(B[nextbindex].x, B[j + 1].x) && _almostEqual(B[nextbindex].y, B[j + 1].y)))
                     {
-                        nextbindex = (nextbindex == B.length - 1) ? 0 : nextbindex + 1;
+                        nextbindex = (nextbindex == B.Length - 1) ? 0 : nextbindex + 1;
                     }
 
                     if (A[nextaindex] == A[i + 1] || (_almostEqual(A[nextaindex].x, A[i + 1].x) && _almostEqual(A[nextaindex].y, A[i + 1].y)))
                     {
-                        nextaindex = (nextaindex == A.length - 1) ? 0 : nextaindex + 1;
+                        nextaindex = (nextaindex == A.Length - 1) ? 0 : nextaindex + 1;
                     }
 
-                    var a0 = new SvgPoint(A[prevaindex].x + Aoffsetx, A[prevaindex].y + Aoffsety);
-                    var b0 = new SvgPoint(B[prevbindex].x + Boffsetx, B[prevbindex].y + Boffsety);
+                    var a0 = new SvgPoint(A[prevaindex].x + aOffsetx, A[prevaindex].y + aOffsety);
+                    var b0 = new SvgPoint(B[prevbindex].x + bOffsetx, B[prevbindex].y + bOffsety);
 
-                    var a3 = new SvgPoint(A[nextaindex].x + Aoffsetx, A[nextaindex].y + Aoffsety);
-                    var b3 = new SvgPoint(B[nextbindex].x + Boffsetx, B[nextbindex].y + Boffsety);
+                    var a3 = new SvgPoint(A[nextaindex].x + aOffsetx, A[nextaindex].y + aOffsety);
+                    var b3 = new SvgPoint(B[nextbindex].x + bOffsetx, B[nextbindex].y + bOffsety);
 
                     if (_onSegment(a1, a2, b1) || (_almostEqual(a1.x, b1.x) && _almostEqual(a1.y, b1.y)))
                     {
@@ -593,7 +602,7 @@ namespace DeepNestLib
                         }
                     }
 
-                    var p = _lineIntersect(b1, b2, a1, a2);
+                    var p = LineIntersect(b1, b2, a1, a2);
 
                     if (p != null)
                     {
@@ -605,31 +614,31 @@ namespace DeepNestLib
             return false;
         }
 
-        public static bool isFinite(object obj)
+        private static bool IsFinite(object obj)
         {
             return true;
         }
+
         // returns the intersection of AB and EF
         // or null if there are no intersections or other numerical error
         // if the infinite flag is set, AE and EF describe infinite lines without endpoints, they are finite line segments otherwise
-        public static SvgPoint _lineIntersect(SvgPoint A, SvgPoint B, SvgPoint E, SvgPoint F, bool infinite = false)
+        private static SvgPoint LineIntersect(SvgPoint A, SvgPoint B, SvgPoint E, SvgPoint F, bool infinite = false)
         {
             double a1, a2, b1, b2, c1, c2, x, y;
 
             a1 = B.y - A.y;
             b1 = A.x - B.x;
-            c1 = B.x * A.y - A.x * B.y;
+            c1 = (B.x * A.y) - (A.x * B.y);
             a2 = F.y - E.y;
             b2 = E.x - F.x;
-            c2 = F.x * E.y - E.x * F.y;
+            c2 = (F.x * E.y) - (E.x * F.y);
 
-            var denom = a1 * b2 - a2 * b1;
+            var denom = (a1 * b2) - (a2 * b1);
 
-            x = (b1 * c2 - b2 * c1) / denom;
-            y = (a2 * c1 - a1 * c2) / denom;
+            x = ((b1 * c2) - (b2 * c1)) / denom;
+            y = ((a2 * c1) - (a1 * c2)) / denom;
 
-
-            if (!isFinite(x) || !isFinite(y))
+            if (!IsFinite(x) || !IsFinite(y))
             {
                 return null;
             }
@@ -644,11 +653,25 @@ namespace DeepNestLib
             if (!infinite)
             {
                 // coincident points do not count as intersecting
-                if (Math.Abs(A.x - B.x) > TOL && ((A.x < B.x) ? x < A.x || x > B.x : x > A.x || x < B.x)) return null;
-                if (Math.Abs(A.y - B.y) > TOL && ((A.y < B.y) ? y < A.y || y > B.y : y > A.y || y < B.y)) return null;
+                if (Math.Abs(A.x - B.x) > TOL && ((A.x < B.x) ? x < A.x || x > B.x : x > A.x || x < B.x))
+                {
+                    return null;
+                }
 
-                if (Math.Abs(E.x - F.x) > TOL && ((E.x < F.x) ? x < E.x || x > F.x : x > E.x || x < F.x)) return null;
-                if (Math.Abs(E.y - F.y) > TOL && ((E.y < F.y) ? y < E.y || y > F.y : y > E.y || y < F.y)) return null;
+                if (Math.Abs(A.y - B.y) > TOL && ((A.y < B.y) ? y < A.y || y > B.y : y > A.y || y < B.y))
+                {
+                    return null;
+                }
+
+                if (Math.Abs(E.x - F.x) > TOL && ((E.x < F.x) ? x < E.x || x > F.x : x > E.x || x < F.x))
+                {
+                    return null;
+                }
+
+                if (Math.Abs(E.y - F.y) > TOL && ((E.y < F.y) ? y < E.y || y > F.y : y > E.y || y < F.y))
+                {
+                    return null;
+                }
             }
 
             return new SvgPoint(x, y);
@@ -656,53 +679,54 @@ namespace DeepNestLib
 
         // searches for an arrangement of A and B such that they do not overlap
         // if an NFP is given, only search for startpoints that have not already been traversed in the given NFP
-
-        public static SvgPoint searchStartPoint(NFP A, NFP B, bool inside, NFP[] NFP = null)
+        private static SvgPoint SearchStartPoint(NFP A, NFP B, bool inside, NFP[] NFP = null)
         {
             // clone arrays
             A = A.slice(0);
             B = B.slice(0);
 
             // close the loop for polygons
-            if (A[0] != A[A.length - 1])
+            if (A[0] != A[A.Length - 1])
             {
-                A.push(A[0]);
+                A.Push(A[0]);
             }
 
-            if (B[0] != B[B.length - 1])
+            if (B[0] != B[B.Length - 1])
             {
-                B.push(B[0]);
+                B.Push(B[0]);
             }
 
-            for (var i = 0; i < A.length - 1; i++)
+            for (var i = 0; i < A.Length - 1; i++)
             {
                 if (!A[i].marked)
                 {
                     A[i].marked = true;
-                    for (var j = 0; j < B.length; j++)
+                    for (var j = 0; j < B.Length; j++)
                     {
-                        B.offsetx = A[i].x - B[j].x;
-                        B.offsety = A[i].y - B[j].y;
+                        B.Offsetx = A[i].x - B[j].x;
+                        B.Offsety = A[i].y - B[j].y;
 
-                        bool? Binside = null;
-                        for (var k = 0; k < B.length; k++)
+                        bool? bInside = null;
+                        for (var k = 0; k < B.Length; k++)
                         {
-                            var inpoly = pointInPolygon(new SvgPoint(B[k].x + B.offsetx.Value,
-                                B[k].y + B.offsety.Value), A);
+                            var inpoly = pointInPolygon(
+                                new SvgPoint(
+                                B[k].x + B.Offsetx.Value,
+                                B[k].y + B.Offsety.Value), A);
                             if (inpoly != null)
                             {
-                                Binside = inpoly;
+                                bInside = inpoly;
                                 break;
                             }
                         }
 
-                        if (Binside == null)
+                        if (bInside == null)
                         { // A and B are the same
                             return null;
                         }
 
-                        var startPoint = new SvgPoint(B.offsetx.Value, B.offsety.Value);
-                        if (((Binside.Value && inside) || (!Binside.Value && !inside)) &&
+                        var startPoint = new SvgPoint(B.Offsetx.Value, B.Offsety.Value);
+                        if (((bInside.Value && inside) || (!bInside.Value && !inside)) &&
                             !intersect(A, B) && !inNfp(startPoint, NFP))
                         {
                             return startPoint;
@@ -739,39 +763,39 @@ namespace DeepNestLib
                         // todo: clean this up
                         if (d != null && !_almostEqual(d, 0) && d > 0)
                         {
-
                         }
                         else
                         {
                             continue;
                         }
 
-                        var vd2 = vx * vx + vy * vy;
+                        var vd2 = (vx * vx) + (vy * vy);
 
                         if (d * d < vd2 && !_almostEqual(d * d, vd2))
                         {
-                            var vd = (float)Math.Sqrt(vx * vx + vy * vy);
+                            var vd = (float)Math.Sqrt((vx * vx) + (vy * vy));
                             vx *= d.Value / vd;
                             vy *= d.Value / vd;
                         }
 
-                        B.offsetx += vx;
-                        B.offsety += vy;
+                        B.Offsetx += vx;
+                        B.Offsety += vy;
 
-                        for (var k = 0; k < B.length; k++)
+                        for (var k = 0; k < B.Length; k++)
                         {
                             var inpoly = pointInPolygon(
                                 new SvgPoint(
-                                 B[k].x + B.offsetx.Value, B[k].y + B.offsety.Value), A);
+                                 B[k].x + B.Offsetx.Value, B[k].y + B.Offsety.Value), A);
                             if (inpoly != null)
                             {
-                                Binside = inpoly;
+                                bInside = inpoly;
                                 break;
                             }
                         }
+
                         startPoint =
-                                            new SvgPoint(B.offsetx.Value, B.offsety.Value);
-                        if (((Binside.Value && inside) || (!Binside.Value && !inside)) &&
+                                            new SvgPoint(B.Offsetx.Value, B.Offsety.Value);
+                        if (((bInside.Value && inside) || (!bInside.Value && !inside)) &&
                             !intersect(A, B) && !inNfp(startPoint, NFP))
                         {
                             return startPoint;
@@ -780,8 +804,6 @@ namespace DeepNestLib
                 }
             }
 
-
-
             return null;
         }
 
@@ -789,38 +811,35 @@ namespace DeepNestLib
         {
             public TouchingItem(int _type, int _a, int _b)
             {
-                A = _a;
-                B = _b;
-                type = _type;
+                this.A = _a;
+                this.B = _b;
+                this.type = _type;
             }
+
             public int A;
             public int B;
             public int type;
-
         }
 
         public static double? segmentDistance(SvgPoint A, SvgPoint B, SvgPoint E, SvgPoint F, SvgPoint direction)
         {
             var normal = new SvgPoint(
                 direction.y,
-                -direction.x
-
-            );
+                -direction.x);
 
             var reverse = new SvgPoint(
                     -direction.x,
-                     -direction.y
-                );
+                    -direction.y);
 
-            var dotA = A.x * normal.x + A.y * normal.y;
-            var dotB = B.x * normal.x + B.y * normal.y;
-            var dotE = E.x * normal.x + E.y * normal.y;
-            var dotF = F.x * normal.x + F.y * normal.y;
+            var dotA = (A.x * normal.x) + (A.y * normal.y);
+            var dotB = (B.x * normal.x) + (B.y * normal.y);
+            var dotE = (E.x * normal.x) + (E.y * normal.y);
+            var dotF = (F.x * normal.x) + (F.y * normal.y);
 
-            var crossA = A.x * direction.x + A.y * direction.y;
-            var crossB = B.x * direction.x + B.y * direction.y;
-            var crossE = E.x * direction.x + E.y * direction.y;
-            var crossF = F.x * direction.x + F.y * direction.y;
+            var crossA = (A.x * direction.x) + (A.y * direction.y);
+            var crossB = (B.x * direction.x) + (B.y * direction.y);
+            var crossE = (E.x * direction.x) + (E.y * direction.y);
+            var crossF = (F.x * direction.x) + (F.y * direction.y);
 
             var crossABmin = Math.Min(crossA, crossB);
             var crossABmax = Math.Max(crossA, crossB);
@@ -839,6 +858,7 @@ namespace DeepNestLib
             {
                 return null;
             }
+
             // segments miss eachother completely
             if (ABmax < EFmin || ABmin > EFmax)
             {
@@ -862,39 +882,41 @@ namespace DeepNestLib
                 overlap = (minMax - maxMin) / (maxMax - minMin);
             }
 
-            var crossABE = (E.y - A.y) * (B.x - A.x) - (E.x - A.x) * (B.y - A.y);
-            var crossABF = (F.y - A.y) * (B.x - A.x) - (F.x - A.x) * (B.y - A.y);
+            var crossABE = ((E.y - A.y) * (B.x - A.x)) - ((E.x - A.x) * (B.y - A.y));
+            var crossABF = ((F.y - A.y) * (B.x - A.x)) - ((F.x - A.x) * (B.y - A.y));
 
             // lines are colinear
             if (_almostEqual(crossABE, 0) && _almostEqual(crossABF, 0))
             {
-
                 var ABnorm = new SvgPoint(B.y - A.y, A.x - B.x);
                 var EFnorm = new SvgPoint(F.y - E.y, E.x - F.x);
 
-                var ABnormlength = (float)Math.Sqrt(ABnorm.x * ABnorm.x + ABnorm.y * ABnorm.y);
+                var ABnormlength = (float)Math.Sqrt((ABnorm.x * ABnorm.x) + (ABnorm.y * ABnorm.y));
                 ABnorm.x /= ABnormlength;
                 ABnorm.y /= ABnormlength;
 
-                var EFnormlength = (float)Math.Sqrt(EFnorm.x * EFnorm.x + EFnorm.y * EFnorm.y);
+                var EFnormlength = (float)Math.Sqrt((EFnorm.x * EFnorm.x) + (EFnorm.y * EFnorm.y));
                 EFnorm.x /= EFnormlength;
                 EFnorm.y /= EFnormlength;
 
                 // segment normals must point in opposite directions
-                if (Math.Abs(ABnorm.y * EFnorm.x - ABnorm.x * EFnorm.y) < TOL && ABnorm.y * EFnorm.y + ABnorm.x * EFnorm.x < 0)
+                if (Math.Abs((ABnorm.y * EFnorm.x) - (ABnorm.x * EFnorm.y)) < TOL && (ABnorm.y * EFnorm.y) + (ABnorm.x * EFnorm.x) < 0)
                 {
                     // normal of AB segment must point in same direction as given direction vector
-                    var normdot = ABnorm.y * direction.y + ABnorm.x * direction.x;
+                    var normdot = (ABnorm.y * direction.y) + (ABnorm.x * direction.x);
+
                     // the segments merely slide along eachother
                     if (_almostEqual(normdot, 0, TOL))
                     {
                         return null;
                     }
+
                     if (normdot < 0)
                     {
                         return 0;
                     }
                 }
+
                 return null;
             }
 
@@ -913,13 +935,14 @@ namespace DeepNestLib
             {
                 var d = pointDistance(A, E, F, reverse);
                 if (d != null && _almostEqual(d, 0))
-                { //  A currently touches EF, but AB is moving away from EF
+                { // A currently touches EF, but AB is moving away from EF
                     var dB = pointDistance(B, E, F, reverse, true);
                     if (dB < 0 || _almostEqual(dB * overlap, 0))
                     {
                         d = null;
                     }
                 }
+
                 if (d != null)
                 {
                     distances.Add(d.Value);
@@ -946,6 +969,7 @@ namespace DeepNestLib
                         d = null;
                     }
                 }
+
                 if (d != null)
                 {
                     distances.Add(d.Value);
@@ -963,6 +987,7 @@ namespace DeepNestLib
                         d = null;
                     }
                 }
+
                 if (d != null)
                 {
                     distances.Add(d.Value);
@@ -980,6 +1005,7 @@ namespace DeepNestLib
                         d = null;
                     }
                 }
+
                 if (d != null)
                 {
                     distances.Add(d.Value);
@@ -991,63 +1017,60 @@ namespace DeepNestLib
                 return null;
             }
 
-            //return Math.min.apply(Math, distances);
+            // return Math.min.apply(Math, distances);
             return distances.Min();
         }
+
         public static double? polygonSlideDistance(NFP A, NFP B, nVector direction, bool ignoreNegative)
         {
-
             SvgPoint A1, A2, B1, B2;
             double Aoffsetx, Aoffsety, Boffsetx, Boffsety;
 
-            Aoffsetx = A.offsetx ?? 0;
-            Aoffsety = A.offsety ?? 0;
+            Aoffsetx = A.Offsetx ?? 0;
+            Aoffsety = A.Offsety ?? 0;
 
-            Boffsetx = B.offsetx ?? 0;
-            Boffsety = B.offsety ?? 0;
+            Boffsetx = B.Offsetx ?? 0;
+            Boffsety = B.Offsety ?? 0;
 
             A = A.slice(0);
             B = B.slice(0);
 
             // close the loop for polygons
-            if (A[0] != A[A.length - 1])
+            if (A[0] != A[A.Length - 1])
             {
-                A.push(A[0]);
+                A.Push(A[0]);
             }
 
-            if (B[0] != B[B.length - 1])
+            if (B[0] != B[B.Length - 1])
             {
-                B.push(B[0]);
+                B.Push(B[0]);
             }
 
             var edgeA = A;
             var edgeB = B;
 
             double? distance = null;
-            //var p, s1, s2;
-            double? d;
 
+            // var p, s1, s2;
+            double? d;
 
             var dir = _normalizeVector(new SvgPoint(direction.x, direction.y));
 
             var normal = new SvgPoint(
                 dir.y,
-                 -dir.x
-            );
+                -dir.x);
 
             var reverse = new SvgPoint(-dir.x, -dir.y);
 
-            for (var i = 0; i < edgeB.length - 1; i++)
+            for (var i = 0; i < edgeB.Length - 1; i++)
             {
-                //var mind = null;
-                for (var j = 0; j < edgeA.length - 1; j++)
+                // var mind = null;
+                for (var j = 0; j < edgeA.Length - 1; j++)
                 {
                     A1 = new SvgPoint(
-                         edgeA[j].x + Aoffsetx, edgeA[j].y + Aoffsety
-        );
+                         edgeA[j].x + Aoffsetx, edgeA[j].y + Aoffsety);
                     A2 = new SvgPoint(
-                        edgeA[j + 1].x + Aoffsetx, edgeA[j + 1].y + Aoffsety
-                );
+                        edgeA[j + 1].x + Aoffsetx, edgeA[j + 1].y + Aoffsety);
                     B1 = new SvgPoint(edgeB[i].x + Boffsetx, edgeB[i].y + Boffsety);
                     B2 = new SvgPoint(edgeB[i + 1].x + Boffsetx, edgeB[i + 1].y + Boffsety);
 
@@ -1067,15 +1090,16 @@ namespace DeepNestLib
                     }
                 }
             }
+
             return distance;
         }
+
         public class nVector
         {
             public SvgPoint start;
             public SvgPoint end;
             public double x;
             public double y;
-
 
             public nVector(double v1, double v2, SvgPoint _start, SvgPoint _end)
             {
@@ -1088,16 +1112,16 @@ namespace DeepNestLib
 
         // given a static polygon A and a movable polygon B, compute a no fit polygon by orbiting B about A
         // if the inside flag is set, B is orbited inside of A rather than outside
-        // if the searchEdges flag is set, all edges of A are explored for NFPs - multiple 
+        // if the searchEdges flag is set, all edges of A are explored for NFPs - multiple
         public static NFP[] noFitPolygon(NFP A, NFP B, bool inside, bool searchEdges)
         {
-            if (A == null || A.length < 3 || B == null || B.length < 3)
+            if (A == null || A.Length < 3 || B == null || B.Length < 3)
             {
                 return null;
             }
 
-            A.offsetx = 0;
-            A.offsety = 0;
+            A.Offsetx = 0;
+            A.Offsety = 0;
 
             int i = 0, j = 0;
 
@@ -1107,7 +1131,7 @@ namespace DeepNestLib
             var maxB = B[0].y;
             var maxBindex = 0;
 
-            for (i = 1; i < A.length; i++)
+            for (i = 1; i < A.Length; i++)
             {
                 A[i].marked = false;
                 if (A[i].y < minA)
@@ -1117,7 +1141,7 @@ namespace DeepNestLib
                 }
             }
 
-            for (i = 1; i < B.length; i++)
+            for (i = 1; i < B.Length; i++)
             {
                 B[i].marked = false;
                 if (B[i].y > maxB)
@@ -1126,6 +1150,7 @@ namespace DeepNestLib
                     maxBindex = i;
                 }
             }
+
             SvgPoint startpoint;
             if (!inside)
             {
@@ -1137,19 +1162,15 @@ namespace DeepNestLib
             else
             {
                 // no reliable heuristic for inside
-
-                startpoint = searchStartPoint(A, B, true);
+                startpoint = SearchStartPoint(A, B, true);
             }
 
             List<NFP> NFPlist = new List<NFP>();
 
-
-
             while (startpoint != null)
             {
-
-                B.offsetx = startpoint.x;
-                B.offsety = startpoint.y;
+                B.Offsetx = startpoint.x;
+                B.Offsety = startpoint.y;
 
                 // maintain a list of touching points/edges
                 List<TouchingItem> touching = null;
@@ -1157,46 +1178,47 @@ namespace DeepNestLib
                 nVector prevvector = null; // keep track of previous vector
                 NFP NFP = new NFP();
                 /*var NFP = [{
-                    x: B[0].x + B.offsetx,
-        y: B[0].y + B.offsety
+                    x: B[0].x + B.Offsetx,
+        y: B[0].y + B.Offsety
 
 
 
 
 
                 }];*/
-                NFP.push(new SvgPoint(B[0].x + B.offsetx.Value, B[0].y + B.offsety.Value));
+                NFP.Push(new SvgPoint(B[0].x + B.Offsetx.Value, B[0].y + B.Offsety.Value));
 
-                double referencex = B[0].x + B.offsetx.Value;
-                double referencey = B[0].y + B.offsety.Value;
+                double referencex = B[0].x + B.Offsetx.Value;
+                double referencey = B[0].y + B.Offsety.Value;
                 var startx = referencex;
                 var starty = referencey;
                 var counter = 0;
 
-                while (counter < 10 * (A.length + B.length))
+                while (counter < 10 * (A.Length + B.Length))
                 { // sanity check, prevent infinite loop
                     touching = new List<GeometryUtil.TouchingItem>();
+
                     // find touching vertices/edges
-                    for (i = 0; i < A.length; i++)
+                    for (i = 0; i < A.Length; i++)
                     {
-                        var nexti = (i == A.length - 1) ? 0 : i + 1;
-                        for (j = 0; j < B.length; j++)
+                        var nexti = (i == A.Length - 1) ? 0 : i + 1;
+                        for (j = 0; j < B.Length; j++)
                         {
-                            var nextj = (j == B.length - 1) ? 0 : j + 1;
-                            if (_almostEqual(A[i].x, B[j].x + B.offsetx) && _almostEqual(A[i].y, B[j].y + B.offsety))
+                            var nextj = (j == B.Length - 1) ? 0 : j + 1;
+                            if (_almostEqual(A[i].x, B[j].x + B.Offsetx) && _almostEqual(A[i].y, B[j].y + B.Offsety))
                             {
                                 touching.Add(new TouchingItem(0, i, j));
                             }
                             else if (_onSegment(A[i], A[nexti],
-                                new SvgPoint(B[j].x + B.offsetx.Value, B[j].y + B.offsety.Value)))
+                                new SvgPoint(B[j].x + B.Offsetx.Value, B[j].y + B.Offsety.Value)))
                             {
                                 touching.Add(new TouchingItem(1, nexti, j));
                             }
                             else if (_onSegment(
                                 new SvgPoint(
-                                 B[j].x + B.offsetx.Value, B[j].y + B.offsety.Value),
+                                 B[j].x + B.Offsetx.Value, B[j].y + B.Offsety.Value),
                                 new SvgPoint(
-                                 B[nextj].x + B.offsetx.Value, B[nextj].y + B.offsety.Value), A[i]))
+                                 B[nextj].x + B.Offsetx.Value, B[nextj].y + B.Offsety.Value), A[i]))
                             {
                                 touching.Add(new TouchingItem(2, i, nextj));
                             }
@@ -1214,8 +1236,8 @@ namespace DeepNestLib
                         var prevAindex = touching[i].A - 1;
                         var nextAindex = touching[i].A + 1;
 
-                        prevAindex = (prevAindex < 0) ? A.length - 1 : prevAindex; // loop
-                        nextAindex = (nextAindex >= A.length) ? 0 : nextAindex; // loop
+                        prevAindex = (prevAindex < 0) ? A.Length - 1 : prevAindex; // loop
+                        nextAindex = (nextAindex >= A.Length) ? 0 : nextAindex; // loop
 
                         var prevA = A[prevAindex];
                         var nextA = A[nextAindex];
@@ -1226,43 +1248,38 @@ namespace DeepNestLib
                         var prevBindex = touching[i].B - 1;
                         var nextBindex = touching[i].B + 1;
 
-                        prevBindex = (prevBindex < 0) ? B.length - 1 : prevBindex; // loop
-                        nextBindex = (nextBindex >= B.length) ? 0 : nextBindex; // loop
+                        prevBindex = (prevBindex < 0) ? B.Length - 1 : prevBindex; // loop
+                        nextBindex = (nextBindex >= B.Length) ? 0 : nextBindex; // loop
 
                         var prevB = B[prevBindex];
                         var nextB = B[nextBindex];
 
                         if (touching[i].type == 0)
                         {
-
                             var vA1 = new nVector(
                                  prevA.x - vertexA.x,
                                  prevA.y - vertexA.y,
                                  vertexA,
-                                 prevA
-                                    );
+                                 prevA);
 
                             var vA2 = new nVector(
                                      nextA.x - vertexA.x,
                                      nextA.y - vertexA.y,
                                      vertexA,
-                                     nextA
-                                        );
+                                     nextA);
 
                             // B vectors need to be inverted
                             var vB1 = new nVector(
                                          vertexB.x - prevB.x,
                                          vertexB.y - prevB.y,
                                          prevB,
-                                         vertexB
-                                    );
+                                         vertexB);
 
                             var vB2 = new nVector(
                                              vertexB.x - nextB.x,
-                                            vertexB.y - nextB.y,
+                                             vertexB.y - nextB.y,
                                              nextB,
-                                             vertexB
-                                        );
+                                             vertexB);
 
                             vectors.Add(vA1);
                             vectors.Add(vA2);
@@ -1272,40 +1289,34 @@ namespace DeepNestLib
                         else if (touching[i].type == 1)
                         {
                             vectors.Add(new nVector(
-                                 vertexA.x - (vertexB.x + B.offsetx.Value),
-                                 vertexA.y - (vertexB.y + B.offsety.Value),
+                                 vertexA.x - (vertexB.x + B.Offsetx.Value),
+                                 vertexA.y - (vertexB.y + B.Offsety.Value),
                                  prevA,
-                                 vertexA
-        ));
+                                 vertexA));
 
                             vectors.Add(new nVector(
-                                 prevA.x - (vertexB.x + B.offsetx.Value),
-                                prevA.y - (vertexB.y + B.offsety.Value),
+                                 prevA.x - (vertexB.x + B.Offsetx.Value),
+                                 prevA.y - (vertexB.y + B.Offsety.Value),
                                  vertexA,
-                                 prevA
-        ));
+                                 prevA));
                         }
                         else if (touching[i].type == 2)
                         {
                             vectors.Add(new nVector(
-                                 vertexA.x - (vertexB.x + B.offsetx.Value),
-                                vertexA.y - (vertexB.y + B.offsety.Value),
+                                 vertexA.x - (vertexB.x + B.Offsetx.Value),
+                                 vertexA.y - (vertexB.y + B.Offsety.Value),
                                  prevB,
-                                 vertexB
-                            ));
+                                 vertexB));
 
                             vectors.Add(new nVector(
-                                 vertexA.x - (prevB.x + B.offsetx.Value),
-                                vertexA.y - (prevB.y + B.offsety.Value),
+                                 vertexA.x - (prevB.x + B.Offsetx.Value),
+                                 vertexA.y - (prevB.y + B.Offsety.Value),
                                  vertexB,
-                                 prevB
-
-                            ));
+                                 prevB));
                         }
                     }
 
                     // todo: there should be a faster way to reject vectors that will cause immediate intersection. For now just check them all
-
                     nVector translate = null;
                     double maxd = 0;
 
@@ -1319,29 +1330,28 @@ namespace DeepNestLib
                         // if this vector points us back to where we came from, ignore it.
                         // ie cross product = 0, dot product < 0
                         if (prevvector != null &&
-                            vectors[i].y * prevvector.y + vectors[i].x * prevvector.x < 0)
+                            (vectors[i].y * prevvector.y) + (vectors[i].x * prevvector.x) < 0)
                         {
-
                             // compare magnitude with unit vectors
-                            var vectorlength = (float)Math.Sqrt(vectors[i].x * vectors[i].x + vectors[i].y * vectors[i].y);
+                            var vectorlength = (float)Math.Sqrt((vectors[i].x * vectors[i].x) + (vectors[i].y * vectors[i].y));
                             var unitv = new SvgPoint(vectors[i].x / vectorlength, vectors[i].y / vectorlength);
 
-                            var prevlength = (float)Math.Sqrt(prevvector.x * prevvector.x + prevvector.y * prevvector.y);
+                            var prevlength = (float)Math.Sqrt((prevvector.x * prevvector.x) + (prevvector.y * prevvector.y));
                             var prevunit = new SvgPoint(prevvector.x / prevlength, prevvector.y / prevlength);
 
                             // we need to scale down to unit vectors to normalize vector length. Could also just do a tan here
-                            if (Math.Abs(unitv.y * prevunit.x - unitv.x * prevunit.y) < 0.0001)
+                            if (Math.Abs((unitv.y * prevunit.x) - (unitv.x * prevunit.y)) < 0.0001)
                             {
                                 continue;
                             }
                         }
 
                         var d = polygonSlideDistance(A, B, vectors[i], true);
-                        var vecd2 = vectors[i].x * vectors[i].x + vectors[i].y * vectors[i].y;
+                        var vecd2 = (vectors[i].x * vectors[i].x) + (vectors[i].y * vectors[i].y);
 
                         if (d == null || d * d > vecd2)
                         {
-                            var vecd = (float)Math.Sqrt(vectors[i].x * vectors[i].x + vectors[i].y * vectors[i].y);
+                            var vecd = (float)Math.Sqrt((vectors[i].x * vectors[i].x) + (vectors[i].y * vectors[i].y));
                             d = vecd;
                         }
 
@@ -1351,7 +1361,6 @@ namespace DeepNestLib
                             translate = vectors[i];
                         }
                     }
-
 
                     if (translate == null || _almostEqual(maxd, 0))
                     {
@@ -1366,7 +1375,7 @@ namespace DeepNestLib
                     prevvector = translate;
 
                     // trim
-                    var vlength2 = translate.x * translate.x + translate.y * translate.y;
+                    var vlength2 = (translate.x * translate.x) + (translate.y * translate.y);
                     if (maxd * maxd < vlength2 && !_almostEqual(maxd * maxd, vlength2))
                     {
                         var scale = (float)Math.Sqrt((maxd * maxd) / vlength2);
@@ -1385,9 +1394,9 @@ namespace DeepNestLib
 
                     // if A and B start on a touching horizontal line, the end point may not be the start point
                     var looped = false;
-                    if (NFP.length > 0)
+                    if (NFP.Length > 0)
                     {
-                        for (i = 0; i < NFP.length - 1; i++)
+                        for (i = 0; i < NFP.Length - 1; i++)
                         {
                             if (_almostEqual(referencex, NFP[i].x) && _almostEqual(referencey, NFP[i].y))
                             {
@@ -1402,20 +1411,18 @@ namespace DeepNestLib
                         break;
                     }
 
-                    NFP.push(new SvgPoint(
-                         referencex, referencey
-                    ));
+                    NFP.Push(new SvgPoint(
+                         referencex, referencey));
 
-                    B.offsetx += translate.x;
-                    B.offsety += translate.y;
+                    B.Offsetx += translate.x;
+                    B.Offsety += translate.y;
 
                     counter++;
                 }
 
-                if (NFP != null && NFP.length > 0)
+                if (NFP != null && NFP.Length > 0)
                 {
                     NFPlist.Add(NFP);
-
                 }
 
                 if (!searchEdges)
@@ -1423,15 +1430,14 @@ namespace DeepNestLib
                     // only get outer NFP or first inner NFP
                     break;
                 }
-                startpoint = searchStartPoint(A, B, inside, NFPlist.ToArray());
+
+                startpoint = SearchStartPoint(A, B, inside, NFPlist.ToArray());
             }
 
             return NFPlist.ToArray();
         }
-
-
-
     }
+
     public class PolygonBounds
     {
         public double x;

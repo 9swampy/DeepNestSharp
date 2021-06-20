@@ -1,33 +1,29 @@
-﻿using DeepNestLib;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DeepNestConsole
+﻿namespace DeepNestConsole
 {
-    class Program
-    {
+    using System;
+    using System.IO;
+    using System.Linq;
 
-        static void ShowUsage()
+    internal class Program
+    {
+        private static void ShowUsage()
         {
             Console.WriteLine("deepnest console tool. usage:");
             Console.WriteLine("Runing sample:");
             Console.WriteLine("deepNestConsole sample");
-            Console.WriteLine("");            
+            Console.WriteLine(string.Empty);
             Console.WriteLine("Runing nesting from xml plan:");
             Console.WriteLine("deepNestConsole xml [xml]");
         }
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             if (args.Count() < 1)
             {
                 ShowUsage();
                 return;
             }
+
             var type = args[0];
             SampleProgram sample = new SampleProgram();
             switch (type)
@@ -39,11 +35,13 @@ namespace DeepNestConsole
                             Console.WriteLine("wrong format");
                             return;
                         }
+
                         if (!File.Exists(args[1]))
                         {
                             Console.WriteLine("xml file not exist.");
                             return;
                         }
+
                         try
                         {
                             sample.Context.LoadXml(args[1]);
@@ -54,11 +52,13 @@ namespace DeepNestConsole
                             return;
                         }
                     }
-                    break;             
+
+                    break;
                 case "sample":
                     {
                         sample.Context.LoadSampleData();
                     }
+
                     break;
                 default:
                     {

@@ -1,19 +1,19 @@
-﻿using DeepNestLib;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Windows.Forms;
-using System.Xml.Linq;
-
-namespace DeepNestPort
+﻿namespace DeepNestPort
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Diagnostics;
+    using System.Drawing;
+    using System.Drawing.Drawing2D;
+    using System.Globalization;
+    using System.IO;
+    using System.Linq;
+    using System.Threading;
+    using System.Windows.Forms;
+    using System.Xml.Linq;
+    using DeepNestLib;
+
     public partial class Form1 : Form
     {
         public Form1()
@@ -44,8 +44,12 @@ namespace DeepNestPort
             progressBar1.Dock = DockStyle.Fill;
             panel1.Controls.Add(progressBar1);
 
-            checkBox2.Checked = SvgNest.Config.simplify;
+            checkBox2.Checked = SvgNest.Config.Simplify;
             checkBox4.Checked = Background.UseParallel;
+            this.numericUpDown1.Value = SvgNest.Config.PopulationSize;
+            this.numericUpDown2.Value = SvgNest.Config.MutationRate;
+            this.comboBox1.SelectedItem = SvgNest.Config.PlacementType.ToString();
+            this.textBox1.Text = SvgNest.Config.Spacing.ToString();
 
             UpdateFilesList(@"dxfs");
             Load += Form1_Load;
@@ -61,7 +65,11 @@ namespace DeepNestPort
 
         private void LoadSettings()
         {
-            if (!File.Exists("settings.xml")) return;
+            if (!File.Exists("settings.xml"))
+            {
+                return;
+            }
+
             var doc = XDocument.Load("settings.xml");
             foreach (var item in doc.Descendants("setting"))
             {
@@ -71,29 +79,31 @@ namespace DeepNestPort
                         {
                             DxfParser.ClosingThreshold = double.Parse(item.Attribute("value").Value.Replace(",", "."), CultureInfo.InvariantCulture);
                         }
+
                         break;
                     case "removeThreshold":
                         {
                             DxfParser.RemoveThreshold = double.Parse(item.Attribute("value").Value.Replace(",", "."), CultureInfo.InvariantCulture);
                         }
+
                         break;
                 }
             }
         }
 
-        PictureBoxProgressBar progressBar1;
+        private PictureBoxProgressBar progressBar1;
 
         public void UpdateList()
         {
             listView1.Items.Clear();
             foreach (var item in polygons)
             {
-                listView1.Items.Add(new ListViewItem(new string[] { item.id.ToString(), item.source.ToString(), item.Name, item.Points.Count().ToString() }) { Tag = item });
+                listView1.Items.Add(new ListViewItem(new string[] { item.Id.ToString(), item.Source.ToString(), item.Name, item.Points.Count().ToString() }) { Tag = item });
             }
             listView2.Items.Clear();
             foreach (var item in sheets)
             {
-                listView2.Items.Add(new ListViewItem(new string[] { item.id.ToString(), item.source.ToString(), item.Name, item.Points.Count().ToString() }) { Tag = item });
+                listView2.Items.Add(new ListViewItem(new string[] { item.Id.ToString(), item.Source.ToString(), item.Name, item.Points.Count().ToString() }) { Tag = item });
             }
 
             groupBox5.Text = "Parts: " + polygons.Count();
@@ -102,13 +112,16 @@ namespace DeepNestPort
 
         public NestingContext Context = new NestingContext();
 
-        public SvgNest nest { get { return context.Nest; } }
+        public SvgNest nest
+        {
+            get { return this.context.Nest; }
+        }
 
         public object selected = null;
 
-        Thread dth;
+        private Thread dth;
 
-        object Preview;
+        private object Preview;
 
         public void RedrawPreview(DrawingContext ctx2, object previewObject)
         {
@@ -133,6 +146,7 @@ namespace DeepNestPort
                         gp2.AddPolygon(item.Points.ToArray());
                     }
                 }
+
                 if (previewObject is NFP nfp)
                 {
                     gp.AddPolygon(nfp.Points.Select(z => ctx2.Transform(z.x, z.y)).ToArray());
@@ -190,7 +204,7 @@ namespace DeepNestPort
                 yy += (int)Font.Size + gap;
                 ctx.gr.DrawString($"Material Utilization: {Math.Round(context.MaterialUtilization * 100.0f, 2)}%   Iterations: {context.Iterations}    Parts placed: {context.PlacedPartsCount}/{polygons.Count}", Font, Brushes.DarkBlue, 0, yy);
                 yy += (int)Font.Size + gap;
-                ctx.gr.DrawString($"Sheets: {sheets.Count}   Parts:{polygons.Count}    parts types: {polygons.GroupBy(z => z.source).Count()}", Font, Brushes.DarkBlue, 0, yy);
+                ctx.gr.DrawString($"Sheets: {sheets.Count}   Parts:{polygons.Count}    parts types: {polygons.GroupBy(z => z.Source).Count()}", Font, Brushes.DarkBlue, 0, yy);
                 yy += (int)Font.Size + gap;
 
                 if (nest != null && nest.nests.Any())
@@ -206,7 +220,7 @@ namespace DeepNestPort
             {
                 ctx.gr.DrawString($"Iterations: {context.Iterations}    Parts placed: {context.PlacedPartsCount}/{polygons.Count}", Font, Brushes.DarkBlue, 0, yy);
                 yy += (int)Font.Size + gap;
-                ctx.gr.DrawString($"Sheets: {sheets.Count}   Parts:{polygons.Count}    Parts types: {polygons.GroupBy(z => z.source).Count()}", Font, Brushes.DarkBlue, 0, yy);
+                ctx.gr.DrawString($"Sheets: {sheets.Count}   Parts:{polygons.Count}    Parts types: {polygons.GroupBy(z => z.Source).Count()}", Font, Brushes.DarkBlue, 0, yy);
                 yy += (int)Font.Size + gap;
             }
 
@@ -236,7 +250,7 @@ namespace DeepNestPort
                     //rotate first;
                     var m = new Matrix();
                     m.Translate((float)item.x, (float)item.y);
-                    m.Rotate(item.rotation);
+                    m.Rotate(item.Rotation);
 
 
 
@@ -283,8 +297,8 @@ namespace DeepNestPort
                             {
 
                                 var sheetid = zitem.sheetId;
-                                if (sheetid != item.id) continue;
-                                var sheet = sheets.FirstOrDefault(z => z.id == sheetid);
+                                if (sheetid != item.Id) continue;
+                                var sheet = sheets.FirstOrDefault(z => z.Id == sheetid);
                                 if (sheet != null)
                                 {
                                     tot1 += Math.Abs(GeometryUtil.polygonArea(sheet));
@@ -292,7 +306,7 @@ namespace DeepNestPort
                                     foreach (var ssitem in zitem.sheetplacements)
                                     {
 
-                                        var poly = polygons.FirstOrDefault(z => z.id == ssitem.id);
+                                        var poly = polygons.FirstOrDefault(z => z.Id == ssitem.id);
                                         if (poly != null)
                                         {
                                             tot2 += Math.Abs(GeometryUtil.polygonArea(poly));
@@ -336,7 +350,7 @@ namespace DeepNestPort
                     //rotate first;
                     var m = new Matrix();
                     m.Translate((float)item.x, (float)item.y);
-                    m.Rotate(item.rotation);
+                    m.Rotate(item.Rotation);
 
 
 
@@ -530,7 +544,7 @@ namespace DeepNestPort
         {
             try
             {
-                SvgNest.Config.spacing = float.Parse(textBox1.Text, CultureInfo.InvariantCulture);
+                SvgNest.Config.Spacing = float.Parse(textBox1.Text, CultureInfo.InvariantCulture);
                 textBox1.BackColor = Color.White;
                 textBox1.ForeColor = Color.Black;
             }
@@ -545,7 +559,7 @@ namespace DeepNestPort
         {
             try
             {
-                SvgNest.Config.sheetSpacing = float.Parse(textBox2.Text, CultureInfo.InvariantCulture);
+                SvgNest.Config.SheetSpacing = float.Parse(textBox2.Text, CultureInfo.InvariantCulture);
                 textBox2.BackColor = Color.White;
                 textBox2.ForeColor = Color.Black;
             }
@@ -560,7 +574,7 @@ namespace DeepNestPort
         {
             try
             {
-                SvgNest.Config.rotations = int.Parse(textBox3.Text, CultureInfo.InvariantCulture);
+                SvgNest.Config.Rotations = int.Parse(textBox3.Text, CultureInfo.InvariantCulture);
                 textBox3.BackColor = Color.White;
                 textBox3.ForeColor = Color.Black;
             }
@@ -603,7 +617,7 @@ namespace DeepNestPort
                 sheet.Width = (float)b.width;
                 sheet.Height = (float)b.height;
 
-                sheet.source = context.GetNextSheetSource();
+                sheet.Source = context.GetNextSheetSource();
                 sheets.Add(sheet);
                 context.ReorderSheets();
                 UpdateList();
@@ -667,7 +681,7 @@ namespace DeepNestPort
                     int src = 0;
                     if (polygons.Any())
                     {
-                        src = polygons.Max(z => z.source.Value) + 1;
+                        src = polygons.Max(z => z.Source.Value) + 1;
                     }
                     for (int i = 0; i < q.Qnt; i++)
                     {
@@ -702,7 +716,7 @@ namespace DeepNestPort
                     int src = 0;
                     if (polygons.Any())
                     {
-                        src = polygons.Max(z => z.source.Value) + 1;
+                        src = polygons.Max(z => z.Source.Value) + 1;
                     }
                     for (int i = 0; i < q.Qnt; i++)
                     {
@@ -785,7 +799,7 @@ namespace DeepNestPort
 
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
-            SvgNest.Config.simplify = checkBox2.Checked;
+            SvgNest.Config.Simplify = checkBox2.Checked;
         }
 
         private void checkBox4_CheckedChanged(object sender, EventArgs e)
@@ -798,22 +812,22 @@ namespace DeepNestPort
             var t = comboBox1.SelectedItem as string;
             if (t.ToLower().Contains("gravi"))
             {
-                SvgNest.Config.placementType = PlacementTypeEnum.gravity;
+                SvgNest.Config.PlacementType = PlacementTypeEnum.Gravity;
             }
             if (t.ToLower().Contains("box"))
             {
-                SvgNest.Config.placementType = PlacementTypeEnum.box;
+                SvgNest.Config.PlacementType = PlacementTypeEnum.BoundingBox;
             }
             if (t.ToLower().Contains("squ"))
             {
-                SvgNest.Config.placementType = PlacementTypeEnum.squeeze;
+                SvgNest.Config.PlacementType = PlacementTypeEnum.Squeeze;
             }
 
         }
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
-            SvgNest.Config.populationSize = (int)numericUpDown1.Value;
+            SvgNest.Config.PopulationSize = (int)numericUpDown1.Value;
         }
 
         private void listView4_SelectedIndexChanged(object sender, EventArgs e)
@@ -827,7 +841,7 @@ namespace DeepNestPort
 
         private void numericUpDown2_ValueChanged(object sender, EventArgs e)
         {
-            SvgNest.Config.mutationRate = (int)numericUpDown2.Value;
+            SvgNest.Config.MutationRate = (int)numericUpDown2.Value;
         }
 
 
@@ -895,7 +909,7 @@ namespace DeepNestPort
             }
             foreach (var item in sh)
             {
-                item.source = src;
+                item.Source = src;
                 context.Sheets.Add(item);
             }
             UpdateList();
@@ -926,10 +940,10 @@ namespace DeepNestPort
                 int src = 0;
                 if (polygons.Any())
                 {
-                    src = polygons.Max(z => z.source.Value) + 1;
+                    src = polygons.Max(z => z.Source.Value) + 1;
                 }
                 polygons.Add(pl);
-                pl.source = src;
+                pl.Source = src;
                 pl.x = xx;
                 pl.y = yy;
                 pl.Points = new SvgPoint[] { };
@@ -955,9 +969,9 @@ namespace DeepNestPort
                 int src = 0;
                 if (polygons.Any())
                 {
-                    src = polygons.Max(z => z.source.Value) + 1;
+                    src = polygons.Max(z => z.Source.Value) + 1;
                 }
-                pl.source = src;
+                pl.Source = src;
                 polygons.Add(pl);
                 pl.x = xx;
                 pl.y = yy;
@@ -988,9 +1002,9 @@ namespace DeepNestPort
                 int src = 0;
                 if (polygons.Any())
                 {
-                    src = polygons.Max(z => z.source.Value) + 1;
+                    src = polygons.Max(z => z.Source.Value) + 1;
                 }
-                pl.source = src;
+                pl.Source = src;
                 polygons.Add(pl);
                 pl.Points = new SvgPoint[] { };
                 pl.x = xx;
@@ -1017,9 +1031,9 @@ namespace DeepNestPort
                 int src = 0;
                 if (polygons.Any())
                 {
-                    src = polygons.Max(z => z.source.Value) + 1;
+                    src = polygons.Max(z => z.Source.Value) + 1;
                 }
-                pl.source = src;
+                pl.Source = src;
                 polygons.Add(pl);
                 pl.Points = new SvgPoint[] { };
                 pl.AddPoint(new SvgPoint(xx, yy));
@@ -1038,7 +1052,7 @@ namespace DeepNestPort
             int src = 0;
             if (polygons.Any())
             {
-                src = polygons.Max(z => z.source.Value) + 1;
+                src = polygons.Max(z => z.Source.Value) + 1;
             }
             if (q.ShowDialog() == DialogResult.OK)
             {
@@ -1049,7 +1063,7 @@ namespace DeepNestPort
 
                     NFP pl = new NFP();
 
-                    pl.source = src;
+                    pl.Source = src;
                     polygons.Add(pl);
                     pl.Points = new SvgPoint[] { };
                     pl.x = xx;
@@ -1087,10 +1101,10 @@ namespace DeepNestPort
                 int src = 0;
                 if (polygons.Any())
                 {
-                    src = polygons.Max(z => z.source.Value) + 1;
+                    src = polygons.Max(z => z.Source.Value) + 1;
                 }
                 polygons.Add(pl);
-                pl.source = src;
+                pl.Source = src;
                 pl.Points = new SvgPoint[] { };
                 pl.AddPoint(new SvgPoint(0, 0));
                 pl.AddPoint(new SvgPoint(0 + ww, 0));
@@ -1129,9 +1143,9 @@ namespace DeepNestPort
                 int src = 0;
                 if (polygons.Any())
                 {
-                    src = polygons.Max(z => z.source.Value) + 1;
+                    src = polygons.Max(z => z.Source.Value) + 1;
                 }
-                pl.source = src;
+                pl.Source = src;
                 polygons.Add(pl);
                 pl.Points = new SvgPoint[] { };
 
@@ -1180,10 +1194,10 @@ namespace DeepNestPort
             int src = 0;
             if (polygons.Any())
             {
-                src = polygons.Max(z => z.source.Value) + 1;
+                src = polygons.Max(z => z.Source.Value) + 1;
             }
             polygons.Add(pl);
-            pl.source = src;
+            pl.Source = src;
             pl.x = xx;
             pl.y = yy;
             pl.Points = new SvgPoint[] { };
@@ -1237,25 +1251,37 @@ namespace DeepNestPort
         List<NFP> sheets { get { return context.Sheets; } }
 
         int lastSaveFilterIndex = 1;
+
         private void toolStripButton2_Click_1(object sender, EventArgs e)
         {
             SaveFileDialog sfd = new SaveFileDialog();
-            sfd.Filter = "Dxf files (*.dxf)|*.dxf|Svg files (*.svg)|*.svg";
-            sfd.FilterIndex = lastSaveFilterIndex;
-            if (sfd.ShowDialog() == DialogResult.OK)
+            if (polygons.ContainsDxfs() && polygons.ContainsSvgs())
             {
-                lastSaveFilterIndex = sfd.FilterIndex;
-                if (sfd.FilterIndex == 1)
+                MessageBox.Show("It's not possible to export when your parts were a mix of Svg's and Dxf's.", "DeepNestPort: Not Implemented", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                IExport exporter;
+                if (polygons.ContainsDxfs())
                 {
-                    ShowMessage("Not implemented yet", MessageBoxIcon.Warning);
-                    //DxfParser.Export(sfd.FileName, polygons.ToArray(), sheets.ToArray());
+                    sfd.Filter = "Dxf files (*.dxf)|*.dxf";
+                    exporter = new DxfParser();
                 }
-                if (sfd.FilterIndex == 2)
-                    SvgParser.Export(sfd.FileName, polygons.ToArray(), sheets.ToArray());
+                else
+                {
+                    sfd.Filter = "Svg files (*.svg)|*.svg";
+                    exporter = new SvgParser();
+                }
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    exporter.Export(sfd.FileName, polygons.ToArray(), sheets.ToArray());
+                }
             }
         }
 
         Bitmap bb;
+
         private void button7_Click(object sender, EventArgs e)
         {
             var sh = sheets[0] as Sheet;
@@ -1285,10 +1311,10 @@ namespace DeepNestPort
             int src = 0;
             if (polygons.Any())
             {
-                src = polygons.Max(z => z.source.Value) + 1;
+                src = polygons.Max(z => z.Source.Value) + 1;
             }
             polygons.Add(pl);
-            pl.source = src;
+            pl.Source = src;
             pl.Points = new SvgPoint[] { };
             pl.AddPoint(new SvgPoint(0, 0));
             pl.AddPoint(new SvgPoint(0 + ww, 0));
@@ -1384,7 +1410,7 @@ namespace DeepNestPort
                 {
                     var ns = NewSheet(item.Width, item.Height);
                     sheets.Add(ns);
-                    ns.source = src;
+                    ns.Source = src;
                 }
             }
 
@@ -1494,7 +1520,7 @@ namespace DeepNestPort
             ctx3.FitToPoints(gp.PathPoints, 5);
         }
 
-        bool autoFit = true;        
+        bool autoFit = true;
 
         private void toolStripButton9_CheckedChanged(object sender, EventArgs e)
         {
@@ -1514,7 +1540,7 @@ namespace DeepNestPort
         {
             try
             {
-                SvgNest.Config.curveTolerance = double.Parse(textBox6.Text.Replace(",", "."), CultureInfo.InvariantCulture);
+                SvgNest.Config.CurveTolerance = double.Parse(textBox6.Text.Replace(",", "."), CultureInfo.InvariantCulture);
                 textBox6.BackColor = Color.White;
                 textBox6.ForeColor = Color.Black;
             }

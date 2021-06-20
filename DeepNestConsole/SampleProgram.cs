@@ -22,7 +22,7 @@ namespace DeepNestConsole
         public void Run()
         {
             Background.UseParallel = true;
-            SvgNest.Config.placementType = PlacementTypeEnum.gravity;
+            SvgNest.Config.PlacementType = PlacementTypeEnum.Gravity;
             Console.WriteLine("Settings updated..");
 
             Console.WriteLine("Start nesting..");

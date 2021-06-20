@@ -1,8 +1,8 @@
-﻿using System.Reflection;
-using System.Windows.Forms;
-
-namespace DeepNestPort
+﻿namespace DeepNestPort
 {
+    using System.Reflection;
+    using System.Windows.Forms;
+
     public static class ControlExtensions
     {
         public static void DoubleBuffered(this Control control, bool enable)

@@ -1,51 +1,55 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml.Linq;
-
-namespace DeepNestLib
+﻿namespace DeepNestLib
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     public class NFP : IStringify
     {
-        public bool fitted { get { return sheet != null; } }
-        public NFP sheet;
+        public bool fitted
+        {
+            get { return this.Sheet != null; }
+        }
+
+        public NFP Sheet;
+
         public override string ToString()
         {
-            var str1 = (Points != null) ? Points.Count() + "" : "null";
-            return $"nfp: id: {id}; source: {source}; rotation: {rotation}; points: {str1}";
+            var str1 = (this.Points != null) ? this.Points.Count() + string.Empty : "null";
+            return $"nfp: id: {this.Id}; source: {this.Source}; rotation: {this.rotation}; points: {str1}";
         }
+
         public NFP()
         {
-            Points = new SvgPoint[] { };
+            this.Points = new SvgPoint[] { };
         }
 
         public string Name { get; set; }
+
         public void AddPoint(SvgPoint point)
         {
-            var list = Points.ToList();
+            var list = this.Points.ToList();
             list.Add(point);
-            Points = list.ToArray();
+            this.Points = list.ToArray();
         }
 
-        #region gdi section
         public bool isBin;
 
-        #endregion
         public void reverse()
         {
-            Points = Points.Reverse().ToArray();
+            this.Points = this.Points.Reverse().ToArray();
         }
 
         public double x { get; set; }
+
         public double y { get; set; }
 
         public double WidthCalculated
         {
             get
             {
-                var maxx = Points.Max(z => z.x);
-                var minx = Points.Min(z => z.x);
+                var maxx = this.Points.Max(z => z.x);
+                var minx = this.Points.Min(z => z.x);
 
                 return maxx - minx;
             }
@@ -55,8 +59,8 @@ namespace DeepNestLib
         {
             get
             {
-                var maxy = Points.Max(z => z.y);
-                var miny = Points.Min(z => z.y);
+                var maxy = this.Points.Max(z => z.y);
+                var miny = this.Points.Min(z => z.y);
                 return maxy - miny;
             }
         }
@@ -65,105 +69,88 @@ namespace DeepNestLib
         {
             get
             {
-                return Points[ind];
+                return this.Points[ind];
             }
         }
 
         public List<NFP> children;
 
-
-
-
         public int Length
         {
             get
             {
-                return Points.Length;
+                return this.Points.Length;
             }
         }
 
-        //public float? width;
-        //public float? height;
-        public int length
-        {
-            get
-            {
-                return Points.Length;
-            }
-        }
+        public int Id { get; set; }
 
-        public int Id;
-        public int id
+        public double? Offsetx;
+        public double? Offsety;
+        public int? Source = null;
+        private float rotation;
+
+        public float Rotation
         {
             get
             {
-                return Id;
+                return this.rotation;
             }
+
             set
             {
-                Id = value;
+                this.rotation = value;
             }
         }
-        
-        public double? offsetx;
-        public double? offsety;
-        public int? source = null;
-        public float Rotation;
 
-
-        public float rotation
-        {
-            get
-            {
-                return Rotation;
-            }
-            set
-            {
-                Rotation = value;
-            }
-        }
         public SvgPoint[] Points;
+
         public float Area
         {
             get
             {
                 float ret = 0;
-                if (Points.Length < 3) return 0;
+                if (this.Points.Length < 3)
+                {
+                    return 0;
+                }
+
                 List<SvgPoint> pp = new List<SvgPoint>();
-                pp.AddRange(Points);
-                pp.Add(Points[0]);
+                pp.AddRange(this.Points);
+                pp.Add(this.Points[0]);
                 for (int i = 1; i < pp.Count; i++)
                 {
                     var s0 = pp[i - 1];
                     var s1 = pp[i];
-                    ret += (float)(s0.x * s1.y - s0.y * s1.x);
+                    ret += (float)((s0.x * s1.y) - (s0.y * s1.x));
                 }
+
                 return (float)Math.Abs(ret / 2);
             }
         }
 
-        internal void push(SvgPoint svgPoint)
+        internal void Push(SvgPoint svgPoint)
         {
             List<SvgPoint> points = new List<SvgPoint>();
-            if (Points == null)
+            if (this.Points == null)
             {
-                Points = new SvgPoint[] { };
+                this.Points = new SvgPoint[] { };
             }
-            points.AddRange(Points);
-            points.Add(svgPoint);
-            Points = points.ToArray();
 
+            points.AddRange(this.Points);
+            points.Add(svgPoint);
+            this.Points = points.ToArray();
         }
 
         public NFP slice(int v)
         {
             var ret = new NFP();
             List<SvgPoint> pp = new List<SvgPoint>();
-            for (int i = v; i < length; i++)
+            for (int i = v; i < this.Length; i++)
             {
                 pp.Add(new SvgPoint(this[i].x, this[i].y));
-
             }
+
             ret.Points = pp.ToArray();
             return ret;
         }

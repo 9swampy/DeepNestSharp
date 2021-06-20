@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-
-namespace DeepNestLib
+﻿namespace DeepNestLib
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Drawing;
+    using System.Linq;
+    using System.Text;
+
     public class GeneticAlgorithm
     {        
         SvgNestConfig Config;
-        public List<PopulationItem> population;
+        public List<PopulationItem> Population;
 
         public static bool StrictAngles = false;
         float[] defaultAngles = new float[] {
@@ -47,18 +47,18 @@ namespace DeepNestLib
                 }
                 else
                 {
-                    var angle = (float)Math.Floor(r.NextDouble() * Config.rotations) * (360f / Config.rotations);
+                    var angle = (float)Math.Floor(r.NextDouble() * Config.Rotations) * (360f / Config.Rotations);
                     angles.Add(angle);
                 }
 
                 //angles.Add(randomAngle(adam[i]));
             }
-            population = new List<PopulationItem>();
-            population.Add(new PopulationItem() { placements = adam.ToList(), Rotation = angles.ToArray() });
-            while (population.Count() < config.populationSize)
+            Population = new List<PopulationItem>();
+            Population.Add(new PopulationItem() { placements = adam.ToList(), Rotation = angles.ToArray() });
+            while (Population.Count() < config.PopulationSize)
             {
-                var mutant = this.mutate(population[0]);
-                population.Add(mutant);
+                var mutant = this.mutate(Population[0]);
+                Population.Add(mutant);
             }
         }
        
@@ -72,7 +72,7 @@ namespace DeepNestLib
             for (int i = 0; i < clone.placements.Count(); i++)
             {
                 var rand = r.NextDouble();
-                if (rand < 0.01 * Config.mutationRate)
+                if (rand < 0.01 * Config.MutationRate)
                 {
                     var j = i + 1;
                     if (j < clone.placements.Count)
@@ -83,9 +83,9 @@ namespace DeepNestLib
                     }
                 }
                 rand = r.NextDouble();
-                if (rand < 0.01 * Config.mutationRate)
+                if (rand < 0.01 * Config.MutationRate)
                 {
-                    clone.Rotation[i] = (float)Math.Floor(r.NextDouble() * Config.rotations) * (360f / Config.rotations);
+                    clone.Rotation[i] = (float)Math.Floor(r.NextDouble() * Config.Rotations) * (360f / Config.Rotations);
                 }
             }
 
@@ -110,11 +110,11 @@ namespace DeepNestLib
         public PopulationItem randomWeightedIndividual(PopulationItem exclude = null)
         {
             //var pop = this.population.slice(0);
-            var pop = this.population.ToArray();
+            var pop = this.Population.ToArray();
 
             if (exclude != null && Array.IndexOf(pop, exclude) >= 0)
             {
-                pop.splice(Array.IndexOf(pop, exclude), 1);
+                pop.Splice(Array.IndexOf(pop, exclude), 1);
             }
 
             var rand = r.NextDouble();
@@ -152,7 +152,7 @@ namespace DeepNestLib
 
             for (i = 0; i < female.placements.Count; i++)
             {
-                if (!gene1.Any(z => z.id == female.placements[i].id))
+                if (!gene1.Any(z => z.Id == female.placements[i].Id))
                 {
                     gene1.Add(female.placements[i]);
                     rot1.Add(female.Rotation[i]);
@@ -161,7 +161,7 @@ namespace DeepNestLib
 
             for (i = 0; i < male.placements.Count; i++)
             {
-                if (!gene2.Any(z => z.id == male.placements[i].id))
+                if (!gene2.Any(z => z.Id == male.placements[i].Id))
                 {
                     gene2.Add(male.placements[i]);
                     rot2.Add(male.Rotation[i]);
@@ -176,16 +176,16 @@ namespace DeepNestLib
                 new PopulationItem(){ placements= gene2, Rotation= rot2.ToArray()}};
         }
 
-        public void generation()
+        public void Generation()
         {
             // Individuals with higher fitness are more likely to be selected for mating
-            population = population.OrderBy(z => z.fitness).ToList();
+            Population = Population.OrderBy(z => z.fitness).ToList();
 
             // fittest individual is preserved in the new generation (elitism)
 
             List<PopulationItem> newpopulation = new List<PopulationItem>();
-            newpopulation.Add(this.population[0]);
-            while (newpopulation.Count() < this.population.Count)
+            newpopulation.Add(this.Population[0]);
+            while (newpopulation.Count() < this.Population.Count)
             {
                 var male = randomWeightedIndividual();
                 var female = randomWeightedIndividual(male);
@@ -196,13 +196,13 @@ namespace DeepNestLib
                 // slightly mutate children
                 newpopulation.Add(this.mutate(children[0]));
 
-                if (newpopulation.Count < this.population.Count)
+                if (newpopulation.Count < this.Population.Count)
                 {
                     newpopulation.Add(this.mutate(children[1]));
                 }
             }
 
-            this.population = newpopulation;
+            this.Population = newpopulation;
         }
     }
 
