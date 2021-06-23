@@ -184,7 +184,6 @@
         public void Export(string path, IEnumerable<NFP> polygons, IEnumerable<NFP> sheets)
         {
             Dictionary<DxfFile, int> dxfexports = new Dictionary<DxfFile, int>();
-
             for (int i = 0; i < sheets.Count(); i++)
             {
                 DxfFile sheetdxf;
@@ -273,7 +272,7 @@
                 {
                     case DxfEntityType.Arc:
                         DxfArc dxfArc = (DxfArc)entity;
-                        dxfArc.Center += RotateLocation(rotationAngle, dxfArc.Center);
+                        dxfArc.Center = RotateLocation(rotationAngle, dxfArc.Center);
                         dxfArc.Center += offset;
                         dxfArc.StartAngle += rotationAngle;
                         dxfArc.EndAngle += rotationAngle;
@@ -445,22 +444,6 @@
             var x1 = (float)((x * Math.Cos(angle)) - (y * Math.Sin(angle)));
             var y1 = (float)((x * Math.Sin(angle)) + (y * Math.Cos(angle)));
             return new DxfPoint(x1, y1, pt.Z);
-        }
-
-        public static List<DxfPoint> RotateLocation(double rotationAngle, List<DxfPoint> pts)
-        {
-            List<DxfPoint> ptsRet = new List<DxfPoint>();
-            var angle = (float)(rotationAngle * Math.PI / 180.0f);
-            for (var i = 0; i < pts.Count; i++)
-            {
-                var x = pts[1].X;
-                var y = pts[i].Y;
-                var x1 = (float)((x * Math.Cos(angle)) - (y * Math.Sin(angle)));
-                var y1 = (float)((x * Math.Sin(angle)) + (y * Math.Cos(angle)));
-                ptsRet.Add(new DxfPoint(x1, y1, pts[i].Z));
-            }
-
-            return ptsRet;
         }
     }
 }
