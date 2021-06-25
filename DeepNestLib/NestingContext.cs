@@ -176,7 +176,7 @@
             PlacedPartsCount = 0;
             List<NFP> placed = new List<NFP>();
             foreach (var item in Polygons)
-            {                
+            {
                 item.Sheet = null;
             }
             List<int> sheetsIds = new List<int>();
@@ -199,7 +199,7 @@
                         PlacedPartsCount++;
                         var poly = Polygons.First(z => z.Id == ssitem.id);
                         totalPartsArea += GeometryUtil.polygonArea(poly);
-                        placed.Add(poly);                        
+                        placed.Add(poly);
                         poly.Sheet = sheet;
                         poly.x = ssitem.x + sheet.x;
                         poly.y = ssitem.y + sheet.y;
@@ -288,7 +288,7 @@
                     var src = GetNextSource();
                     for (int i = 0; i < count; i++)
                     {
-                        ImportFromRawDetail(SvgParser.LoadSvg(item.FullName), src);
+                        TryImportFromRawDetail(SvgParser.LoadSvg(item.FullName), src, out _);
                     }
                 }
                 catch (Exception ex)
@@ -297,7 +297,8 @@
                 }
             }
         }
-        public NFP ImportFromRawDetail(RawDetail raw, int src)
+
+        public bool TryImportFromRawDetail(RawDetail raw, int src, out NFP loadedNfp)
         {
             NFP po = null;
             List<NFP> nfps = new List<NFP>();
@@ -319,19 +320,31 @@
 
                 foreach (var r in nfps)
                 {
-                    if (r == tt) continue;
+                    if (r == tt)
+                    {
+                        continue;
+                    }
+
                     if (po.children == null)
                     {
                         po.children = new List<NFP>();
                     }
+
                     po.children.Add(r);
                 }
 
                 po.Source = src;
                 Polygons.Add(po);
+                loadedNfp = po;
+                return true;
             }
-            return po;
+            else
+            {
+                loadedNfp = null;
+                return false;
+            }
         }
+
         public int GetNextSource()
         {
             if (Polygons.Any())
@@ -390,7 +403,7 @@
 
                 for (int i = 0; i < cnt; i++)
                 {
-                    ImportFromRawDetail(r, src);
+                    TryImportFromRawDetail(r, src, out _);
                 }
             }
         }

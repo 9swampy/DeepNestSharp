@@ -685,7 +685,7 @@
                     }
                     for (int i = 0; i < q.Qnt; i++)
                     {
-                        context.ImportFromRawDetail(det, src);
+                        context.TryImportFromRawDetail(det, src, out _);
                     }
 
                     UpdateList();
@@ -720,7 +720,7 @@
                     }
                     for (int i = 0; i < q.Qnt; i++)
                     {
-                        context.ImportFromRawDetail(det, src);
+                        context.TryImportFromRawDetail(det, src, out _);
                     }
                 }
                 UpdateList();
@@ -1431,10 +1431,12 @@
 
                 for (int i = 0; i < item.Quantity; i++)
                 {
-                    context.ImportFromRawDetail(det, src);
+                    context.TryImportFromRawDetail(det, src, out _);
                 }
+
                 src++;
             }
+
             run();
         }
 
@@ -1517,7 +1519,11 @@
             {
                 gp.AddPolygon(item.Points.ToArray());
             }
-            ctx3.FitToPoints(gp.PathPoints, 5);
+
+            if (raw.Outers.Count > 0)
+            {
+                ctx3.FitToPoints(gp.PathPoints, 5);
+            }
         }
 
         bool autoFit = true;
