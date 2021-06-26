@@ -276,8 +276,8 @@
             {
                 AddRectanglePart(src1, 250, 220);
             }
-
         }
+
         public void LoadInputData(string path, int count)
         {
             var dir = new DirectoryInfo(path);

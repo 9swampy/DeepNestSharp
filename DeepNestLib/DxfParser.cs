@@ -38,6 +38,8 @@
                             {
                                 points.Points.Add(new PointF((float)vert.X, (float)vert.Y));
                             }
+
+                            elems.AddRange(ConnectTheDots(points.Points));
                         }
 
                         break;
@@ -81,12 +83,7 @@
                                 cc.Points.Add(new PointF((float)xx, (float)yy));
                             }
 
-                            for (int i = 1; i < cc.Points.Count; i++)
-                            {
-                                var p1 = cc.Points[i - 1];
-                                var p2 = cc.Points[i];
-                                elems.Add(new LineElement() { Start = p1, End = p2 });
-                            }
+                            elems.AddRange(ConnectTheDots(cc.Points));
                         }
 
                         break;
@@ -110,6 +107,8 @@
                                 points.Points.Add(new PointF((float)vert.Location.X, (float)vert.Location.Y));
                             }
 
+                            elems.AddRange(ConnectTheDots(points.Points));
+
                             break;
                         }
 
@@ -127,6 +126,21 @@
             }
 
             return s;
+        }
+
+        /// <summary>
+        /// Returns a series of LineElements to connect the points passed in.
+        /// </summary>
+        /// <param name="points">List of <see cref="PointF"/> to join.</param>
+        /// <returns>List of <see cref="LineElement"/> connecting the dots.</returns>
+        private static IEnumerable<LineElement> ConnectTheDots(IList<PointF> points)
+        {
+            for (int i = 1; i < points.Count; i++)
+            {
+                var p1 = points[i - 1];
+                var p2 = points[i];
+                yield return new LineElement() { Start = p1, End = p2 };
+            }
         }
 
         public static double RemoveThreshold = 10e-5;
