@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    public class NFP : IStringify
+    public class NFP : INfp, IStringify
     {
         public bool fitted
         {
@@ -17,6 +17,12 @@
         {
             var str1 = (this.Points != null) ? this.Points.Count() + string.Empty : "null";
             return $"nfp: id: {this.Id}; source: {this.Source}; rotation: {this.rotation}; points: {str1}";
+        }
+
+        public NFP(IList<NFP> children)
+            : this()
+        {
+            Children = children;
         }
 
         public NFP()
@@ -73,7 +79,7 @@
             }
         }
 
-        public List<NFP> children;
+        public IList<NFP> Children { get; set; } = new List<NFP>();
 
         public int Length
         {
@@ -87,7 +93,9 @@
 
         public double? Offsetx;
         public double? Offsety;
-        public int? Source = null;
+
+        public int? Source { get; set; } = null;
+
         private float rotation;
 
         public float Rotation
@@ -103,7 +111,7 @@
             }
         }
 
-        public SvgPoint[] Points;
+        public SvgPoint[] Points { get; set; }
 
         public float Area
         {

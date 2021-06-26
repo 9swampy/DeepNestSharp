@@ -54,13 +54,12 @@
                 clone.Id = item.Id;
                 clone.Source = item.Source;
                 clone.Points = item.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }).ToArray();
-                if (item.children != null)
+                if (item.Children != null)
                 {
-                    clone.children = new List<NFP>();
-                    foreach (var citem in item.children)
+                    foreach (var citem in item.Children)
                     {
-                        clone.children.Add(new NFP());
-                        var l = clone.children.Last();
+                        clone.Children.Add(new NFP());
+                        var l = clone.Children.Last();
                         l.Id = citem.Id;
                         l.Source = citem.Source;
                         l.Points = citem.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }).ToArray();
@@ -76,13 +75,12 @@
                 clone.Id = item.Id;
                 clone.Source = item.Source;
                 clone.Points = item.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }).ToArray();
-                if (item.children != null)
+                if (item.Children != null)
                 {
-                    clone.children = new List<NFP>();
-                    foreach (var citem in item.children)
+                    foreach (var citem in item.Children)
                     {
-                        clone.children.Add(new NFP());
-                        var l = clone.children.Last();
+                        clone.Children.Add(new NFP());
+                        var l = clone.Children.Last();
                         l.Id = citem.Id;
                         l.Source = citem.Source;
                         l.Points = citem.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }).ToArray();
@@ -315,7 +313,7 @@
             if (nfps.Any())
             {
                 var tt = nfps.OrderByDescending(z => z.Area).First();
-                po = tt;
+                po = tt; // Reference caution needed here; should be cloning not messing with the original object?
                 po.Name = raw.Name;
 
                 foreach (var r in nfps)
@@ -325,12 +323,12 @@
                         continue;
                     }
 
-                    if (po.children == null)
+                    if (po.Children == null)
                     {
-                        po.children = new List<NFP>();
+                        po.Children = new List<NFP>();
                     }
 
-                    po.children.Add(r);
+                    po.Children.Add(r);
                 }
 
                 po.Source = src;

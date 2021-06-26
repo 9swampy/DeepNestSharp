@@ -136,9 +136,9 @@
                 }
 
                 sb.Append("z ");
-                if (item.children != null)
+                if (item.Children != null)
                 {
-                    foreach (var citem in item.children)
+                    foreach (var citem in item.Children)
                     {
                         pp = citem.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
                         m.TransformPoints(pp);

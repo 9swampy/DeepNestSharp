@@ -89,6 +89,9 @@
     <Reference Include="FluentAssertions, Version=5.10.3.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentAssertions.5.10.3\lib\net45\FluentAssertions.dll</HintPath>
     </Reference>
+    <Reference Include="IxMilia.Dxf, Version=0.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\IxMilia.Dxf.0.8.0\lib\netstandard2.0\IxMilia.Dxf.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CodeAnalysis, Version=3.10.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeAnalysis.Common.3.10.0\lib\netstandard2.0\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
@@ -140,11 +143,25 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DxfGenerator.cs" />
     <Compile Include="DxfParserFixture.cs" />
+    <Compile Include="FitSmallSquarePartInLargerSquareSheetFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <Content Include="..\MinkowskiDlls\minkowski.dll">
+      <Link>minkowski.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\MinkowskiDlls\minkowski_x64.dll">
+      <Link>minkowski_x64.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\MinkowskiDlls\minkowski_x86.dll">
+      <Link>minkowski_x86.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="OneSquare.dxf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -185,4 +202,13 @@
   </Target>
   <Import Project="..\packages\xunit.core.2.4.1\build\xunit.core.targets" Condition="Exists('..\packages\xunit.core.2.4.1\build\xunit.core.targets')" />
   <Import Project="..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\build\Microsoft.CodeAnalysis.Analyzers.targets" Condition="Exists('..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\build\Microsoft.CodeAnalysis.Analyzers.targets')" />
+  <PropertyGroup>
+    <PostBuildEvent>copy $(SolutionDir)\MinkowskiDlls\minkowski.dll $(TargetDir)
+copy $(SolutionDir)\MinkowskiDlls\minkowski_x86.dll $(TargetDir)
+copy $(SolutionDir)\MinkowskiDlls\minkowski_x64.dll $(TargetDir)</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
 </Project>

@@ -388,7 +388,7 @@
 
             if (!inside && holes != null && holes.Count > 0)
             {
-                offset.children = holes;
+                offset.Children = holes;
             }
 
             return offset;
@@ -429,24 +429,24 @@
                 // Array.prototype.splice.apply(t, [0, t.length].concat(offsetpaths[0]));
             }
 
-            if (simple.children != null && simple.children.Count > 0)
+            if (simple.Children != null && simple.Children.Count > 0)
             {
-                if (t.children == null)
+                if (t.Children == null)
                 {
-                    t.children = new List<NFP>();
+                    t.Children = new List<NFP>();
                 }
 
-                for (var i = 0; i < simple.children.Count; i++)
+                for (var i = 0; i < simple.Children.Count; i++)
                 {
-                    t.children.Add(simple.children[i]);
+                    t.Children.Add(simple.Children[i]);
                 }
             }
 
-            if (t.children != null && t.children.Count > 0)
+            if (t.Children != null && t.Children.Count > 0)
             {
-                for (var i = 0; i < t.children.Count; i++)
+                for (var i = 0; i < t.Children.Count; i++)
                 {
-                    OffsetTree(t.children[i], -offset, config, (inside == null) ? true : (!inside));
+                    OffsetTree(t.Children[i], -offset, config, (inside == null) ? true : (!inside));
                 }
             }
         }
@@ -663,12 +663,11 @@
                 newtree.AddPoint(new SvgPoint(t.x, t.y) { exact = t.exact });
             }
 
-            if (tree.children != null && tree.children.Count > 0)
+            if (tree.Children != null && tree.Children.Count > 0)
             {
-                newtree.children = new List<NFP>();
-                foreach (var c in tree.children)
+                foreach (var c in tree.Children)
                 {
-                    newtree.children.Add(cloneTree(c));
+                    newtree.Children.Add(cloneTree(c));
                 }
             }
 
@@ -799,7 +798,7 @@
                         sheets.Add(cln);
                         sheetids.Add(sid);
                         sheetsources.Add(i);
-                        sheetchildren.Add(poly.children);
+                        sheetchildren.Add(poly.Children.ToList());
                         sid++;
                     }
                 }
@@ -822,7 +821,7 @@
                     {
                         var id = this.ga.Population[i].placements[j].Id;
                         var source = this.ga.Population[i].placements[j].Source;
-                        var child = this.ga.Population[i].placements[j].children;
+                        var child = this.ga.Population[i].placements[j].Children;
 
                         // ids[j] = id;
                         ids.Add(id);
@@ -831,7 +830,7 @@
                         sources.Add(source.Value);
 
                         // children[j] = child;
-                        children.Add(child);
+                        children.Add(child.ToList());
                     }
 
                     DataInfo data = new DataInfo()

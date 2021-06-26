@@ -21,12 +21,11 @@
                 shifted.AddPoint(new SvgPoint(p[i].x + shift.x, p[i].y + shift.y) { exact = p[i].exact });
             }
 
-            if (p.children != null /*&& p.children.Count*/)
+            if (p.Children != null /*&& p.Children.Count*/)
             {
-                shifted.children = new List<NFP>();
-                for (int i = 0; i < p.children.Count; i++)
+                for (int i = 0; i < p.Children.Count(); i++)
                 {
-                    shifted.children.Add(shiftPolygon(p.children[i], shift));
+                    shifted.Children.Add(shiftPolygon(p.Children[i], shift));
                 }
             }
 
@@ -173,8 +172,8 @@
             // }
             // }
 
-            // if(B.children && B.children.length > 0){
-            // var child = mergedLength(B.children, p, minlength, tolerance);
+            // if(B.Children && B.Children.length > 0){
+            // var child = mergedLength(B.Children, p, minlength, tolerance);
             // totalLength += child.totalLength;
             // segments = segments.concat(child.segments);
             // }
@@ -219,19 +218,18 @@
                 newnfp.AddPoint(new SvgPoint(nfp[i].x, nfp[i].y));
             }
 
-            if (nfp.children != null && nfp.children.Count > 0)
+            if (nfp.Children != null && nfp.Children.Count > 0)
             {
-                newnfp.children = new List<NFP>();
-                for (int i = 0; i < nfp.children.Count; i++)
+                for (int i = 0; i < nfp.Children.Count; i++)
                 {
-                    var child = nfp.children[i];
+                    var child = nfp.Children[i];
                     NFP newchild = new NFP();
                     for (var j = 0; j < child.Length; j++)
                     {
                         newchild.AddPoint(new SvgPoint(child[j].x, child[j].y));
                     }
 
-                    newnfp.children.Add(newchild);
+                    newnfp.Children.Add(newchild);
                 }
             }
 
@@ -242,7 +240,7 @@
 
         public static Dictionary<string, NFP[]> cacheProcess = new Dictionary<string, NFP[]>();
 
-        public static NFP[] Process2(NFP A, NFP B, int type)
+        internal static NFP[] Process2(INfp A, INfp B, int type)
         {
             var key = A.Source + ";" + B.Source + ";" + A.Rotation + ";" + B.Rotation;
             bool cacheAllow = type != 1;
@@ -272,7 +270,7 @@
 
             List<double> hdat = new List<double>();
 
-            foreach (var item in A.children)
+            foreach (var item in A.Children)
             {
                 foreach (var pitem in item.Points)
                 {
@@ -283,9 +281,14 @@
 
             var aa = dic2["A"];
             var bb = dic2["B"];
-            var arr1 = A.children.Select(z => z.Points.Count() * 2).ToArray();
+            var arr1 = A.Children.Select(z => z.Points.Count() * 2).ToArray();
 
-            MinkowskiWrapper.setData(aa.Count, aa.ToArray(), A.children.Count, arr1, hdat.ToArray(), bb.Count, bb.ToArray());
+#if x64
+            long[] longs = arr1.Select(o => (long)o).ToArray();
+            MinkowskiWrapper.setData(aa.Count, aa.ToArray(), A.Children.Count, longs, hdat.ToArray(), bb.Count, bb.ToArray());
+#else
+            MinkowskiWrapper.setData(aa.Count, aa.ToArray(), A.Children.Count, arr1, hdat.ToArray(), bb.Count, bb.ToArray());
+#endif
             MinkowskiWrapper.calculateNFP();
 
             callCounter++;
@@ -351,12 +354,11 @@
 
             foreach (var item in holesout)
             {
-                ret.children = new List<NFP>();
-                ret.children.Add(new NFP());
-                ret.children.Last().Points = new SvgPoint[] { };
+                ret.Children.Add(new NFP());
+                ret.Children.Last().Points = new SvgPoint[] { };
                 foreach (var hitem in item)
                 {
-                    ret.children.Last().AddPoint(new SvgPoint(hitem.X, hitem.Y));
+                    ret.Children.Last().AddPoint(new SvgPoint(hitem.X, hitem.Y));
                 }
             }
 
@@ -382,20 +384,19 @@
             bounds.x -= 0.5 * (bounds.width - (bounds.width / 1.1));
             bounds.y -= 0.5 * (bounds.height - (bounds.height / 1.1));
 
-            var frame = new NFP();
+            var frame = new NFP(new List<NFP>() { A });
             frame.Push(new SvgPoint(bounds.x, bounds.y));
             frame.Push(new SvgPoint(bounds.x + bounds.width, bounds.y));
             frame.Push(new SvgPoint(bounds.x + bounds.width, bounds.y + bounds.height));
             frame.Push(new SvgPoint(bounds.x, bounds.y + bounds.height));
 
-            frame.children = new List<NFP>() { (NFP)A };
             frame.Source = A.Source;
             frame.Rotation = 0;
 
             return frame;
         }
 
-        public static NFP[] getInnerNfp(NFP A, NFP B, int type, SvgNestConfig config)
+    private static NFP[] getInnerNfp(NFP A, NFP B, int type, SvgNestConfig config)
         {
             if (A.Source != null && B.Source != null)
             {
@@ -421,17 +422,17 @@
 
             var nfp = GetOuterNfp(frame, B, type, true);
 
-            if (nfp == null || nfp.children == null || nfp.children.Count == 0)
+            if (nfp == null || nfp.Children == null || nfp.Children.Count == 0)
             {
                 return null;
             }
 
             List<NFP> holes = new List<NFP>();
-            if (A.children != null && A.children.Count > 0)
+            if (A.Children != null && A.Children.Count > 0)
             {
-                for (var i = 0; i < A.children.Count; i++)
+                for (var i = 0; i < A.Children.Count; i++)
                 {
-                    var hnfp = GetOuterNfp(A.children[i], B, 1);
+                    var hnfp = GetOuterNfp(A.Children[i], B, 1);
                     if (hnfp != null)
                     {
                         holes.Add(hnfp);
@@ -441,10 +442,10 @@
 
             if (holes.Count == 0)
             {
-                return nfp.children.ToArray();
+                return nfp.Children.ToArray();
             }
 
-            var clipperNfp = InnerNfpToClipperCoordinates(nfp.children.ToArray(), config);
+            var clipperNfp = InnerNfpToClipperCoordinates(nfp.Children.ToArray(), config);
             var clipperHoles = InnerNfpToClipperCoordinates(holes.ToArray(), config);
 
             List<List<IntPoint>> finalNfp = new List<List<IntPoint>>();
@@ -455,7 +456,7 @@
 
             if (!clipper.Execute(ClipperLib.ClipType.ctDifference, finalNfp, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero))
             {
-                return nfp.children.ToArray();
+                return nfp.Children.ToArray();
             }
 
             if (finalNfp.Count == 0)
@@ -505,19 +506,18 @@
 
             rotated.Points = pp.ToArray();
 
-            if (polygon.children != null && polygon.children.Count > 0)
+            if (polygon.Children != null && polygon.Children.Count > 0)
             {
-                rotated.children = new List<NFP>();
-                for (var j = 0; j < polygon.children.Count; j++)
+                for (var j = 0; j < polygon.Children.Count; j++)
                 {
-                    rotated.children.Add(rotatePolygon(polygon.children[j], degrees));
+                    rotated.Children.Add(rotatePolygon(polygon.Children[j], degrees));
                 }
             }
 
             return rotated;
         }
 
-        public static SheetPlacement PlaceParts(NFP[] sheets, NFP[] parts, SvgNestConfig config, int nestindex)
+    private static SheetPlacement PlaceParts(NFP[] sheets, NFP[] parts, SvgNestConfig config, int nestindex)
         {
             if (sheets == null || sheets.Count() == 0)
             {
@@ -704,14 +704,14 @@
                             nfp[m].y += placements[j].y;
                         }
 
-                        if (nfp.children != null && nfp.children.Count > 0)
+                        if (nfp.Children != null && nfp.Children.Count > 0)
                         {
-                            for (n = 0; n < nfp.children.Count; n++)
+                            for (n = 0; n < nfp.Children.Count; n++)
                             {
-                                for (var o = 0; o < nfp.children[n].Length; o++)
+                                for (var o = 0; o < nfp.Children[n].Length; o++)
                                 {
-                                    nfp.children[n][o].x += placements[j].x;
-                                    nfp.children[n][o].y += placements[j].y;
+                                    nfp.Children[n][o].x += placements[j].x;
+                                    nfp.Children[n][o].y += placements[j].y;
                                 }
                             }
                         }
@@ -1037,7 +1037,7 @@
 
         public static long LastPlacePartTime = 0;
 
-        public void Sync()
+    private void Sync()
         {
             // console.log('starting synchronous calculations', Object.keys(window.nfpCache).length);
             // console.log('in sync');
@@ -1061,6 +1061,8 @@
 
         public void BackgroundStart(DataInfo data)
         {
+      try
+      {
             this.data = data;
             var index = data.index;
             var individual = data.individual;
@@ -1078,7 +1080,7 @@
                 parts[i].Source = sources[i];
                 if (!data.config.Simplify)
                 {
-                    parts[i].children = children[i];
+                    parts[i].Children = children[i];
                 }
             }
 
@@ -1086,7 +1088,7 @@
             {
                 data.sheets[i].Id = data.sheetids[i];
                 data.sheets[i].Source = data.sheetsources[i];
-                data.sheets[i].children = data.sheetchildren[i];
+                data.sheets[i].Children = data.sheetchildren[i];
             }
 
             // preprocess
@@ -1176,6 +1178,11 @@
                 this.Sync();
             }
         }
+      catch (DllNotFoundException)
+      {
+        throw;
+      }
+    }
 
         public NFP GetPart(int source, List<NFP> parts)
         {
@@ -1199,11 +1206,11 @@
 
             List<NFP> Achildren = new List<NFP>();
 
-            if (A.children != null)
+            if (A.Children != null)
             {
-                for (int j = 0; j < A.children.Count; j++)
+                for (int j = 0; j < A.Children.Count; j++)
                 {
-                    Achildren.Add(rotatePolygon(A.children[j], processed.ARotation));
+                    Achildren.Add(rotatePolygon(A.Children[j], processed.ARotation));
                 }
             }
 
@@ -1226,7 +1233,7 @@
                     }
                 }
 
-                processed.nfp.children = cnfp;
+                processed.nfp.Children = cnfp;
             }
 
             DbCacheKey doc = new DbCacheKey()
@@ -1251,7 +1258,7 @@
 
         public static Action<float> displayProgress;
 
-        public static void DisplayProgress(float p)
+    private static void DisplayProgress(float p)
         {
             if (displayProgress != null)
             {
@@ -1259,7 +1266,7 @@
             }
         }
 
-        public void ThenDeepNest(NfpPair[] processed, List<NFP> parts)
+    private void ThenDeepNest(NfpPair[] processed, List<NFP> parts)
         {
             int cnt = 0;
             if (UseParallel)
@@ -1288,7 +1295,7 @@
             this.Sync();
         }
 
-        public bool InPairs(NfpPair key, NfpPair[] p)
+    private bool InPairs(NfpPair key, NfpPair[] p)
         {
             for (var i = 0; i < p.Length; i++)
             {
@@ -1303,7 +1310,7 @@
 
         public static bool UseParallel = false;
 
-        public NfpPair[] PmapDeepNest(List<NfpPair> pairs)
+    private NfpPair[] PmapDeepNest(List<NfpPair> pairs)
         {
             NfpPair[] ret = new NfpPair[pairs.Count()];
             int cnt = 0;
@@ -1332,7 +1339,7 @@
             return ret.ToArray();
         }
 
-        public NfpPair Process(NfpPair pair)
+    private NfpPair Process(NfpPair pair)
         {
             var A = rotatePolygon(pair.A, pair.ARotation);
             var B = rotatePolygon(pair.B, pair.BRotation);
@@ -1429,17 +1436,17 @@
             List<IntPoint[]> clipperNfp = new List<IntPoint[]>();
 
             // children first
-            if (nfp.children != null && nfp.children.Count > 0)
+            if (nfp.Children != null && nfp.Children.Count > 0)
             {
-                for (var j = 0; j < nfp.children.Count; j++)
+                for (var j = 0; j < nfp.Children.Count; j++)
                 {
-                    if (GeometryUtil.polygonArea(nfp.children[j]) < 0)
+                    if (GeometryUtil.polygonArea(nfp.Children[j]) < 0)
                     {
-                        nfp.children[j].reverse();
+                        nfp.Children[j].reverse();
                     }
 
-                    // var childNfp = SvgNest.toClipperCoordinates(nfp.children[j]);
-                    var childNfp = _Clipper.ScaleUpPaths(nfp.children[j], config.ClipperScale);
+                    // var childNfp = SvgNest.toClipperCoordinates(nfp.Children[j]);
+                    var childNfp = _Clipper.ScaleUpPaths(nfp.Children[j], config.ClipperScale);
                     clipperNfp.Add(childNfp);
                 }
             }
@@ -1478,7 +1485,7 @@
 
         private static object lockobj = new object();
 
-        public static NFP GetOuterNfp(NFP A, NFP B, int type, bool inside = false) // todo:?inside def?
+    private static NFP GetOuterNfp(NFP A, NFP B, int type, bool inside = false) // todo:?inside def?
         {
             NFP[] nfp = null;
 
@@ -1509,7 +1516,7 @@
             }*/
 
             // not found in cache
-            if (inside || (A.children != null && A.children.Count > 0))
+            if (inside || (A.Children != null && A.Children.Count > 0))
             {
                 lock (lockobj)
                 {

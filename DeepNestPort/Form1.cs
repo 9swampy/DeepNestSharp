@@ -150,9 +150,9 @@
                 if (previewObject is NFP nfp)
                 {
                     gp.AddPolygon(nfp.Points.Select(z => ctx2.Transform(z.x, z.y)).ToArray());
-                    if (nfp.children != null)
+                    if (nfp.Children != null)
                     {
-                        foreach (var item in nfp.children)
+                        foreach (var item in nfp.Children)
                         {
                             gp.AddPolygon(item.Points.Select(z => ctx2.Transform(z.x, z.y)).ToArray());
                         }
@@ -258,9 +258,9 @@
                     m.TransformPoints(pnts);
 
                     path.AddPolygon(pnts.Select(z => ctx.Transform(z)).ToArray());
-                    if (item.children != null)
+                    if (item.Children != null)
                     {
-                        foreach (var citem in item.children)
+                        foreach (var citem in item.Children)
                         {
                             var pnts2 = citem.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
                             m.TransformPoints(pnts2);
@@ -358,9 +358,9 @@
                     m.TransformPoints(pnts);
 
                     path.AddPolygon(pnts.Select(z => ctx.Transform(z)).ToArray());
-                    if (item.children != null)
+                    if (item.Children != null)
                     {
-                        foreach (var citem in item.children)
+                        foreach (var citem in item.Children)
                         {
                             var pnts2 = citem.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
                             m.TransformPoints(pnts2);
@@ -1114,8 +1114,8 @@
                 pl.y = yy;
                 var hole = new NFP();
 
-                pl.children = new List<NFP>();
-                pl.children.Add(hole);
+                pl.Children = new List<NFP>();
+                pl.Children.Add(hole);
                 hole.Points = new SvgPoint[] { };
                 int gap = 10;
                 hole.AddPoint(new SvgPoint(0 + gap, 0 + gap));
@@ -1159,8 +1159,8 @@
                     var yy2 = (float)(rad2 * Math.Sin(ang * Math.PI / 180.0f));
                     hole.AddPoint(new SvgPoint(xx2, yy2));
                 }
-                pl.children = new List<NFP>();
-                pl.children.Add(hole);
+                pl.Children = new List<NFP>();
+                pl.Children.Add(hole);
                 pl.x = xx;
                 pl.y = yy;
 
@@ -1322,7 +1322,7 @@
             pl.AddPoint(new SvgPoint(0, 0 + hh));
             pl.x = xx;
             pl.y = yy;
-            pl.children = new List<NFP>();
+            pl.Children = new List<NFP>();
             int gap = 10;
             int szx = ww / 4;
             int szy = hh / 3;
@@ -1332,7 +1332,7 @@
                 {
                     var hole = new NFP();
 
-                    pl.children.Add(hole);
+                    pl.Children.Add(hole);
                     hole.Points = new SvgPoint[] { };
 
                     int hx = (i * ww / 4) + gap * (i + 1);
