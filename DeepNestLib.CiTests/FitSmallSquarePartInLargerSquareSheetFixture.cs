@@ -1,27 +1,28 @@
 ﻿namespace DeepNestLib.CiTests
 {
-    using System;
-    using System.Collections.Generic;
-    using FluentAssertions;
-    using IxMilia.Dxf.Entities;
-    using Xunit;
+  using System;
+  using System.Collections.Generic;
+  using FakeItEasy;
+  using FluentAssertions;
+  using IxMilia.Dxf.Entities;
+  using Xunit;
 
-    public class FitSmallSquarePartInLargerSquareSheetFixture
+  public class FitSmallSquarePartInLargerSquareSheetFixture
+  {
+    private static readonly DxfGenerator DxfGenerator = new DxfGenerator();
+
+    [Fact]
+    private void TesT()
     {
-        private static readonly DxfGenerator DxfGenerator = new DxfGenerator();
+      var nestingContext = new NestingContext(A.Fake<IMessageService>());
+      NFP sheet;
+      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { DxfGenerator.Rectangle(22D) }), 0, out sheet).Should().BeTrue();
+      NFP part;
+      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Rectangle(11D) }), 0, out part).Should().BeTrue();
 
-        [Fact]
-        private void TesT()
-        {
-            var nestingContext = new NestingContext();
-            NFP sheet;
-            nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { DxfGenerator.Rectangle(22D) }), 0, out sheet).Should().BeTrue();
-            NFP part;
-            nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Rectangle(11D) }), 0, out part).Should().BeTrue();
+      var frame = Background.getFrame(sheet);
 
-            var frame = Background.getFrame(sheet);
-
-            Background.Process2(frame, part, 0).Should().NotBeNull();
-        }
+      Background.Process2(frame, part, 0).Should().NotBeNull();
     }
+  }
 }
