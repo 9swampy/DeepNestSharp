@@ -12,7 +12,7 @@
     private static readonly DxfGenerator DxfGenerator = new DxfGenerator();
 
     [Fact]
-    private void TesT()
+    private void TestAnActualCallOutToMinkowskiBecauseWhyDoTestsWorkButApplicationCrashes()
     {
       var nestingContext = new NestingContext(A.Fake<IMessageService>());
       NFP sheet;

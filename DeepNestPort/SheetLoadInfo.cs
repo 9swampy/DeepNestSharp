@@ -1,9 +1,22 @@
 ﻿namespace DeepNestPort
 {
-    public class SheetLoadInfo
+  using DeepNestLib;
+
+  public class SheetLoadInfo
+  {
+    public int Width
     {
-        public int Width { get; set; }
-        public int Height { get; set; }
-        public int Quantity { get; set; }
+        get { return SvgNest.Config.SheetWidth; } set { SvgNest.Config.SheetWidth = value; }
     }
+
+    public int Height
+    {
+        get { return SvgNest.Config.SheetHeight; } set { SvgNest.Config.SheetHeight = value; }
+    }
+
+    public int Quantity
+    {
+        get { return SvgNest.Config.SheetQuantity; } set { SvgNest.Config.SheetQuantity = value; }
+    }
+  }
 }

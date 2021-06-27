@@ -581,7 +581,7 @@ return b.distance;
       return cleaned;
     }
 
-    public static NFP clipperToSvg(IList<IntPoint> polygon)
+    private static NFP clipperToSvg(IList<IntPoint> polygon)
     {
       List<SvgPoint> ret = new List<SvgPoint>();
 
@@ -593,7 +593,7 @@ return b.distance;
       return new NFP() { Points = ret.ToArray() };
     }
 
-    public int toTree(PolygonTreeItem[] list, int idstart = 0)
+    private int toTree(PolygonTreeItem[] list, int idstart = 0)
     {
       List<PolygonTreeItem> parents = new List<PolygonTreeItem>();
       int i, j;
@@ -660,7 +660,7 @@ return b.distance;
       return id;
     }
 
-    public static NFP cloneTree(NFP tree)
+    private static NFP cloneTree(NFP tree)
     {
       NFP newtree = new NFP();
       foreach (var t in tree.Points)
@@ -730,7 +730,7 @@ return b.distance;
           {
             if (!parts[i].IsSheet)
             {
-              for (int j = 0; j < parts[i].Quanity; j++)
+              for (int j = 0; j < parts[i].Quantity; j++)
               {
                 var poly = cloneTree(parts[i].Polygon); // deep copy
                 poly.Id = id; // id is the unique id of all parts that will be nested, including cloned duplicates
@@ -797,7 +797,7 @@ return b.distance;
           if (parts[i].IsSheet)
           {
             var poly = parts[i].Polygon;
-            for (int j = 0; j < parts[i].Quanity; j++)
+            for (int j = 0; j < parts[i].Quantity; j++)
             {
               var cln = cloneTree(poly);
               cln.Id = sid; // id is the unique id of all parts that will be nested, including cloned duplicates
@@ -1124,10 +1124,11 @@ return b.distance;
       AddPoint(new SvgPoint(x, y + Height));
     }
   }
+
   public class NestItem
   {
     public NFP Polygon;
-    public int Quanity;
+    public int Quantity;
     public bool IsSheet;
   }
 }

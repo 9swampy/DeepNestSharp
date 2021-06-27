@@ -146,14 +146,14 @@
         {
           Polygon = z.First(),
           IsSheet = false,
-          Quanity = z.Count()
+          Quantity = z.Count()
         });
 
         var p2 = lsheets.GroupBy(z => z.Source).Select(z => new NestItem()
         {
           Polygon = z.First(),
           IsSheet = true,
-          Quanity = z.Count()
+          Quantity = z.Count()
         });
 
 

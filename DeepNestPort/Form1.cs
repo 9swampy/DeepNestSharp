@@ -21,7 +21,7 @@
       InitializeComponent();
 
       LoadSettings();
-      sheetsInfos.Add(new SheetLoadInfo() { Width = 3000, Height = 1500, Quantity = 10 });
+      sheetsInfos.Add(new SheetLoadInfo() { Width = SvgNest.Config.SheetWidth, Height = SvgNest.Config.SheetHeight, Quantity = SvgNest.Config.SheetQuantity });
 
       //hack
       toolStripButton9.BackgroundImageLayout = ImageLayout.None;
@@ -140,24 +140,15 @@
 
         if (previewObject is RawDetail raw)
         {
-          foreach (var item in raw.Outers)
-          {
-            gp.AddPolygon(item.Points.Select(z => ctx2.Transform(z)).ToArray());
-            gp2.AddPolygon(item.Points.ToArray());
-          }
+          DrawOuters(ctx2, gp, gp2, raw);
+          AddApproximation(ctx2, raw);
         }
 
         if (previewObject is NFP nfp)
         {
-          gp.AddPolygon(nfp.Points.Select(z => ctx2.Transform(z.x, z.y)).ToArray());
-          if (nfp.Children != null)
-          {
-            foreach (var item in nfp.Children)
-            {
-              gp.AddPolygon(item.Points.Select(z => ctx2.Transform(z.x, z.y)).ToArray());
-            }
-          }
+          DrawNfp(ctx2, gp, nfp);
         }
+
         var bnd = gp2.GetBounds();
 
         ctx2.gr.FillPath(Brushes.LightBlue, gp);
@@ -170,8 +161,53 @@
 
         ctx2.gr.DrawString(cap, SystemFonts.DefaultFont, Brushes.Black, 5, 5);
       }
-      ctx2.Setup();
 
+      ctx2.Setup();
+    }
+
+    private static void DrawOuters(DrawingContext ctx2, GraphicsPath gp, GraphicsPath gp2, RawDetail raw)
+    {
+      foreach (var item in raw.Outers)
+      {
+        gp.AddPolygon(item.Points.Select(z => ctx2.Transform(z)).ToArray());
+        gp2.AddPolygon(item.Points.ToArray());
+      }
+    }
+
+    private static void DrawNfp(DrawingContext ctx2, GraphicsPath gp, NFP nfp)
+    {
+      gp.AddPolygon(nfp.Points.Select(z => ctx2.Transform(z.x, z.y)).ToArray());
+      if (nfp.Children != null)
+      {
+        foreach (var item in nfp.Children)
+        {
+          gp.AddPolygon(item.Points.Select(z => ctx2.Transform(z.x, z.y)).ToArray());
+        }
+      }
+    }
+
+    /// <summary>
+    /// Display the bounds that will be used by the nesting algorithym.
+    /// </summary>
+    /// <param name="ctx2">Drawing context upon which to draw.</param>
+    /// <param name="raw">The part to draw.</param>
+    private void AddApproximation(DrawingContext ctx2, RawDetail raw)
+    {
+      var nestingContext = new NestingContext(new MessageBoxService());
+      NFP part;
+      nestingContext.TryImportFromRawDetail(raw, 0, out part);
+
+      GraphicsPath gp = new GraphicsPath();
+      if (SvgNest.Config.Simplify)
+      {
+        DrawNfp(ctx2, gp, Background.GetHull(part));
+      }
+      else
+      {
+        DrawNfp(ctx2, gp, SvgNest.cleanPolygon2(part));
+      }
+
+      ctx2.gr.DrawPath(Pens.Red, gp);
     }
 
     public void Redraw()
