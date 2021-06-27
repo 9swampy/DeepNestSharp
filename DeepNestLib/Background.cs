@@ -284,9 +284,14 @@
             var arr1 = A.Children.Select(z => z.Points.Count() * 2).ToArray();
 
 #if x64
+            System.Diagnostics.Debug.Print("Minkowski_x64");
             long[] longs = arr1.Select(o => (long)o).ToArray();
             MinkowskiWrapper.setData(aa.Count, aa.ToArray(), A.Children.Count, longs, hdat.ToArray(), bb.Count, bb.ToArray());
+#elif x86
+            System.Diagnostics.Debug.Print("Minkowski_x86");
+            MinkowskiWrapper.setData(aa.Count, aa.ToArray(), A.Children.Count, arr1, hdat.ToArray(), bb.Count, bb.ToArray());
 #else
+            System.Diagnostics.Debug.Print("Minkowski_AnyCpu");
             MinkowskiWrapper.setData(aa.Count, aa.ToArray(), A.Children.Count, arr1, hdat.ToArray(), bb.Count, bb.ToArray());
 #endif
             MinkowskiWrapper.calculateNFP();
