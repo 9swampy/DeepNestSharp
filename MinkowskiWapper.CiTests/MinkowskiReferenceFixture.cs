@@ -1,4 +1,4 @@
-﻿namespace MinkowskiWapper.CiTests
+﻿namespace MinkowskiWrapper.CiTests
 {
     using FluentAssertions;
     using System;
