@@ -45,6 +45,7 @@
       panel1.Controls.Add(progressBar1);
 
       checkBox2.Checked = SvgNest.Config.Simplify;
+      checkBox3.Checked = SvgNest.Config.OffsetTreePhase;
       checkBox4.Checked = Background.UseParallel;
       this.numericUpDown1.Value = SvgNest.Config.PopulationSize;
       this.numericUpDown2.Value = SvgNest.Config.MutationRate;
@@ -141,18 +142,16 @@
         if (previewObject is RawDetail raw)
         {
           DrawOuters(ctx2, gp, gp2, raw);
+          ApplyInk(ctx2, gp);
           AddApproximation(ctx2, raw);
         }
-
-        if (previewObject is NFP nfp)
+        else if (previewObject is NFP nfp)
         {
           DrawNfp(ctx2, gp, nfp);
+          ApplyInk(ctx2, gp);
         }
 
         var bnd = gp2.GetBounds();
-
-        ctx2.gr.FillPath(Brushes.LightBlue, gp);
-        ctx2.gr.DrawPath(Pens.Black, gp);
 
         ctx2.gr.ResetTransform();
         var cap = $"{bnd.Width:N2} x {bnd.Height:N2}";
@@ -163,6 +162,12 @@
       }
 
       ctx2.Setup();
+    }
+
+    private static void ApplyInk(DrawingContext ctx2, GraphicsPath gp)
+    {
+      ctx2.gr.FillPath(Brushes.LightBlue, gp);
+      ctx2.gr.DrawPath(Pens.Black, gp);
     }
 
     private static void DrawOuters(DrawingContext ctx2, GraphicsPath gp, GraphicsPath gp2, RawDetail raw)
@@ -190,7 +195,7 @@
     /// Display the bounds that will be used by the nesting algorithym.
     /// </summary>
     /// <param name="ctx2">Drawing context upon which to draw.</param>
-    /// <param name="raw">The part to draw.</param>
+    /// <param name="raw">The part to approximate.</param>
     private void AddApproximation(DrawingContext ctx2, RawDetail raw)
     {
       var nestingContext = new NestingContext(new MessageBoxService());
@@ -198,16 +203,15 @@
       nestingContext.TryImportFromRawDetail(raw, 0, out part);
 
       GraphicsPath gp = new GraphicsPath();
-      if (SvgNest.Config.Simplify)
-      {
-        DrawNfp(ctx2, gp, Background.GetHull(part));
-      }
-      else
-      {
-        DrawNfp(ctx2, gp, SvgNest.cleanPolygon2(part));
-      }
+      var simplification = SvgNest.cleanPolygon2(part);
+      DrawNfp(ctx2, gp, SvgNest.simplifyFunction(simplification, false));
 
       ctx2.gr.DrawPath(Pens.Red, gp);
+      var pointsChange = $"{part.Points.Length} => {simplification.Points.Length} points";
+      var ms = ctx2.gr.MeasureString(pointsChange, SystemFonts.DefaultFont);
+      var topLeftY = (5 * 2) + ms.Height;
+      ctx2.gr.FillRectangle(new SolidBrush(Color.FromArgb(128, Color.Orange)), 5, topLeftY, ms.Width, ms.Height);
+      ctx2.gr.DrawString(pointsChange, SystemFonts.DefaultFont, Brushes.Black, 5, topLeftY);
     }
 
     public void Redraw()
@@ -517,7 +521,6 @@
 
       tt.Height = h;
       tt.Width = w;
-      tt.Points = new SvgPoint[] { };
       int x = 0;
       int y = 0;
       int _width = w;
@@ -538,11 +541,8 @@
 
       tt.Height = w;
       tt.Width = w;
-      tt.Points = new SvgPoint[] { };
       int x = 0;
       int y = 0;
-
-
 
       for (int i = 0; i < 360; i += 5)
       {
@@ -630,7 +630,6 @@
         polygons.Remove(pol);
         var b = GeometryUtil.getPolygonBounds(pol);
         Sheet sheet = new Sheet();
-        sheet.Points = new SvgPoint[] { };
         foreach (var item in pol.Points)
         {
           sheet.AddPoint(new SvgPoint(item.x - b.x, item.y - b.y));
@@ -763,36 +762,42 @@
       }
     }
 
-
     bool stop = false;
+
     public void RunDeepnest()
     {
       try
       {
-        if (th != null) return;
-
-        th = new Thread(() =>
+        if (this.th == null)
         {
-          context.StartNest();
-          UpdateNestsList();
-          Background.displayProgress = displayProgress;
-
-          while (true)
+          this.th = new Thread(() =>
           {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-
-            context.NestIterate();
+            this.context.StartNest();
             UpdateNestsList();
-            displayProgress(1.0f);
-            sw.Stop();
-            toolStripStatusLabel1.Text = "Nesting time: " + sw.ElapsedMilliseconds + "ms";
-            if (stop || context.IsErrored) break;
-          }
-          th = null;
-        });
-        th.IsBackground = true;
-        th.Start();
+            Background.displayProgress = displayProgress;
+
+            while (true)
+            {
+              Stopwatch sw = new Stopwatch();
+              sw.Start();
+
+              this.context.NestIterate();
+              UpdateNestsList();
+              displayProgress(1.0f);
+              sw.Stop();
+              _ = this.Invoke((MethodInvoker)(() => { this.toolStripStatusLabel1.Text = "Nesting time: " + sw.ElapsedMilliseconds + "ms"; }));
+              if (this.stop || this.context.IsErrored)
+              {
+                break;
+              }
+            }
+
+            this.th = null;
+          });
+
+          this.th.IsBackground = true;
+          this.th.Start();
+        }
       }
       catch (Exception ex)
       {
@@ -843,6 +848,11 @@
     private void checkBox2_CheckedChanged(object sender, EventArgs e)
     {
       SvgNest.Config.Simplify = checkBox2.Checked;
+    }
+
+    private void checkBox3_CheckedChanged(object sender, EventArgs e)
+    {
+      SvgNest.Config.OffsetTreePhase = checkBox3.Checked;
     }
 
     private void checkBox4_CheckedChanged(object sender, EventArgs e)
@@ -989,7 +999,6 @@
         pl.Source = src;
         pl.x = xx;
         pl.y = yy;
-        pl.Points = new SvgPoint[] { };
         pl.AddPoint(new SvgPoint(0, 0));
         pl.AddPoint(new SvgPoint(ww, 0));
         pl.AddPoint(new SvgPoint(ww, hh));
@@ -1014,19 +1023,17 @@
         {
           src = polygons.Max(z => z.Source.Value) + 1;
         }
+
         pl.Source = src;
         polygons.Add(pl);
         pl.x = xx;
         pl.y = yy;
-        pl.Points = new SvgPoint[] { };
         for (int ang = 0; ang < 360; ang += 15)
         {
           var xx1 = (float)(rad * Math.Cos(ang * Math.PI / 180.0f));
           var yy1 = (float)(rad * Math.Sin(ang * Math.PI / 180.0f));
           pl.AddPoint(new SvgPoint(xx1, yy1));
         }
-
-
       }
       UpdateList();
     }
@@ -1049,7 +1056,6 @@
         }
         pl.Source = src;
         polygons.Add(pl);
-        pl.Points = new SvgPoint[] { };
         pl.x = xx;
         pl.y = yy;
         pl.AddPoint(new SvgPoint(-ww, 0));
@@ -1076,14 +1082,15 @@
         {
           src = polygons.Max(z => z.Source.Value) + 1;
         }
+
         pl.Source = src;
         polygons.Add(pl);
-        pl.Points = new SvgPoint[] { };
         pl.AddPoint(new SvgPoint(xx, yy));
         pl.AddPoint(new SvgPoint(xx + ww, yy));
         pl.AddPoint(new SvgPoint(xx + ww, yy + hh));
         pl.AddPoint(new SvgPoint(xx, yy + hh));
       }
+
       UpdateList();
     }
 
@@ -1108,7 +1115,6 @@
 
           pl.Source = src;
           polygons.Add(pl);
-          pl.Points = new SvgPoint[] { };
           pl.x = xx;
           pl.y = yy;
           pl.AddPoint(new SvgPoint(0, 0));
@@ -1148,7 +1154,6 @@
         }
         polygons.Add(pl);
         pl.Source = src;
-        pl.Points = new SvgPoint[] { };
         pl.AddPoint(new SvgPoint(0, 0));
         pl.AddPoint(new SvgPoint(0 + ww, 0));
         pl.AddPoint(new SvgPoint(0 + ww, 0 + hh));
@@ -1159,7 +1164,6 @@
 
         pl.Children = new List<NFP>();
         pl.Children.Add(hole);
-        hole.Points = new SvgPoint[] { };
         int gap = 10;
         hole.AddPoint(new SvgPoint(0 + gap, 0 + gap));
         hole.AddPoint(new SvgPoint(0 + ww - gap, 0 + gap));
@@ -1190,7 +1194,6 @@
         }
         pl.Source = src;
         polygons.Add(pl);
-        pl.Points = new SvgPoint[] { };
 
         NFP hole = new NFP();
         for (int ang = 0; ang < 360; ang += 15)
@@ -1243,7 +1246,6 @@
       pl.Source = src;
       pl.x = xx;
       pl.y = yy;
-      pl.Points = new SvgPoint[] { };
       pl.AddPoint(new SvgPoint(0, 0));
       pl.AddPoint(new SvgPoint(ww, 0));
       pl.AddPoint(new SvgPoint(ww, hh));
@@ -1358,7 +1360,6 @@
       }
       polygons.Add(pl);
       pl.Source = src;
-      pl.Points = new SvgPoint[] { };
       pl.AddPoint(new SvgPoint(0, 0));
       pl.AddPoint(new SvgPoint(0 + ww, 0));
       pl.AddPoint(new SvgPoint(0 + ww, 0 + hh));
@@ -1376,7 +1377,6 @@
           var hole = new NFP();
 
           pl.Children.Add(hole);
-          hole.Points = new SvgPoint[] { };
 
           int hx = (i * ww / 4) + gap * (i + 1);
           int hy = (j * hh / 3) + gap * (j + 1);

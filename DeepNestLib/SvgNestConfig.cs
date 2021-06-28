@@ -2,7 +2,6 @@
 {
   public class SvgNestConfig
   {
-    public double CurveTolerance = 0.72;
     public double Scale = 25;
     public double ClipperScale = 10000000;
     public bool ExploreConcave = false;
@@ -11,6 +10,21 @@
     public bool UseHoles = false;
     public double TimeRatio = 0.5;
     public bool MergeLines = false;
+
+    public double CurveTolerance
+    {
+      get
+      {
+        return (double)Properties.Settings.Default["CurveTolerance"];
+      }
+
+      set
+      {
+        Properties.Settings.Default["CurveTolerance"] = value;
+        Properties.Settings.Default.Save();
+        Properties.Settings.Default.Upgrade();
+      }
+    }
 
     public int SaveAsFileTypeIndex
     {
@@ -97,6 +111,21 @@
       set
       {
         Properties.Settings.Default["Simplify"] = value;
+        Properties.Settings.Default.Save();
+        Properties.Settings.Default.Upgrade();
+      }
+    }
+
+    public bool OffsetTreePhase
+    {
+      get
+      {
+        return (bool)Properties.Settings.Default["OffsetTreePhase"];
+      }
+
+      set
+      {
+        Properties.Settings.Default["OffsetTreePhase"] = value;
         Properties.Settings.Default.Save();
         Properties.Settings.Default.Upgrade();
       }

@@ -130,5 +130,29 @@ namespace DeepNestLib.Properties {
                 this["SheetQuantity"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.72")]
+        public double CurveTolerance {
+            get {
+                return ((double)(this["CurveTolerance"]));
+            }
+            set {
+                this["CurveTolerance"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool OffsetTreePhase {
+            get {
+                return ((bool)(this["OffsetTreePhase"]));
+            }
+            set {
+                this["OffsetTreePhase"] = value;
+            }
+        }
     }
 }

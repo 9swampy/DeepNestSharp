@@ -29,5 +29,11 @@
     <Setting Name="SheetQuantity" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">10</Value>
     </Setting>
+    <Setting Name="CurveTolerance" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">0.72</Value>
+    </Setting>
+    <Setting Name="OffsetTreePhase" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
