@@ -352,7 +352,6 @@
       }
 
       NFP ret = new NFP();
-      ret.Points = new SvgPoint[] { };
       foreach (var item in Apts)
       {
         ret.AddPoint(new SvgPoint(item.X, item.Y));
@@ -361,7 +360,6 @@
       foreach (var item in holesout)
       {
         ret.Children.Add(new NFP());
-        ret.Children.Last().Points = new SvgPoint[] { };
         foreach (var hitem in item)
         {
           ret.Children.Last().AddPoint(new SvgPoint(hitem.X, hitem.Y));
@@ -510,7 +508,7 @@
         pp.Add(new SvgPoint(x1, y1));
       }
 
-      rotated.Points = pp.ToArray();
+      rotated.ReplacePoints(pp);
 
       if (polygon.Children != null && polygon.Children.Count > 0)
       {
@@ -816,7 +814,7 @@
           }
           else
           {
-            allpoints = GetHull(allpoints);
+            allpoints = GetHull(allpoints.Points);
           }
 
           for (j = 0; j < finalNfp.Count; j++)
@@ -885,9 +883,9 @@
                   localpoints.AddPoint(new SvgPoint(part[m].x + shiftvector.x, part[m].y + shiftvector.y));
                 }
 
-                area = Math.Abs(GeometryUtil.polygonArea(GetHull(localpoints)));
-                shiftvector.hull = GetHull(localpoints);
-                shiftvector.hullsheet = GetHull(sheet);
+                area = Math.Abs(GeometryUtil.polygonArea(GetHull(localpoints.Points)));
+                shiftvector.hull = GetHull(localpoints.Points);
+                shiftvector.hullsheet = GetHull(sheet.Points);
               }
 
               // console.timeEnd('evalbounds');
@@ -1359,9 +1357,9 @@
       var B = rotatePolygon(pair.B, pair.BRotation);
 
       ///////////////////
-      var Ac = _Clipper.ScaleUpPaths(A, 10000000);
+      var Ac = _Clipper.ScaleUpPaths(A.Points, 10000000);
 
-      var Bc = _Clipper.ScaleUpPaths(B, 10000000);
+      var Bc = _Clipper.ScaleUpPaths(B.Points, 10000000);
       for (var i = 0; i < Bc.Length; i++)
       {
         Bc[i].X *= -1;
@@ -1410,10 +1408,10 @@
              polygon[i].Y / scale));
       }
 
-      return new NFP() { Points = clone.ToArray() };
+      return new NFP(clone);
     }
 
-    public static NFP GetHull(NFP polygon)
+    public static NFP GetHull(SvgPoint[] polygon)
     {
       // convert to hulljs format
       /*var hull = new ConvexHullGrahamScan();
@@ -1432,7 +1430,7 @@
 
       if (hullpoints == null)
       {
-        return polygon;
+        return new NFP(polygon);
       }
 
       NFP hull = new NFP();
@@ -1460,7 +1458,7 @@
           }
 
           // var childNfp = SvgNest.toClipperCoordinates(nfp.Children[j]);
-          var childNfp = _Clipper.ScaleUpPaths(nfp.Children[j], config.ClipperScale);
+          var childNfp = _Clipper.ScaleUpPaths(nfp.Children[j].Points, config.ClipperScale);
           clipperNfp.Add(childNfp);
         }
       }
@@ -1473,7 +1471,7 @@
       // var outerNfp = SvgNest.toClipperCoordinates(nfp);
 
       // clipper js defines holes based on orientation
-      var outerNfp = _Clipper.ScaleUpPaths(nfp, config.ClipperScale);
+      var outerNfp = _Clipper.ScaleUpPaths(nfp.Points, config.ClipperScale);
 
       // var cleaned = ClipperLib.Clipper.CleanPolygon(outerNfp, 0.00001*config.clipperScale);
       clipperNfp.Add(outerNfp);
@@ -1539,9 +1537,9 @@
       }
       else
       {
-        var ac = _Clipper.ScaleUpPaths(A, 10000000);
+        var ac = _Clipper.ScaleUpPaths(A.Points, 10000000);
 
-        var bc = _Clipper.ScaleUpPaths(B, 10000000);
+        var bc = _Clipper.ScaleUpPaths(B.Points, 10000000);
         for (var i = 0; i < bc.Length; i++)
         {
           bc[i].X *= -1;
@@ -1569,7 +1567,7 @@
           clipperNfp[i].y += B[0].y;
         }
 
-        nfp = new NFP[] { new NFP() { Points = clipperNfp.Points } };
+        nfp = new NFP[] { new NFP(clipperNfp.Points) };
       }
 
       if (nfp == null || nfp.Length == 0)

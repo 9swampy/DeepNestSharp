@@ -415,8 +415,11 @@ namespace ClipperLib
 
     public override int GetHashCode()
     {
-      //simply prevents a compiler warning
-      return base.GetHashCode();
+      return HashCode.Combine(this.X, this.Y
+#if use_xyz
+    , this.Z
+#endif
+        );
     }
 
   }// end struct IntPoint

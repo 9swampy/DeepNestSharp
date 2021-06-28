@@ -49,7 +49,6 @@
       Iterations = 0;
     }
 
-    bool offsetTreePhase = true;
     public void NestIterate()
     {
       try
@@ -70,7 +69,7 @@
           NFP clone = new NFP();
           clone.Id = item.Id;
           clone.Source = item.Source;
-          clone.Points = item.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }).ToArray();
+          clone.ReplacePoints(item.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }));
           if (item.Children != null)
           {
             foreach (var citem in item.Children)
@@ -79,19 +78,19 @@
               var l = clone.Children.Last();
               l.Id = citem.Id;
               l.Source = citem.Source;
-              l.Points = citem.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }).ToArray();
+              l.ReplacePoints(citem.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }));
             }
           }
+
           lpoly.Add(clone);
         }
-
 
         foreach (var item in Sheets)
         {
           NFP clone = new NFP();
           clone.Id = item.Id;
           clone.Source = item.Source;
-          clone.Points = item.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }).ToArray();
+          clone.ReplacePoints(item.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }));
           if (item.Children != null)
           {
             foreach (var citem in item.Children)
@@ -100,13 +99,14 @@
               var l = clone.Children.Last();
               l.Id = citem.Id;
               l.Source = citem.Source;
-              l.Points = citem.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }).ToArray();
+              l.ReplacePoints(citem.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }));
             }
           }
+
           lsheets.Add(clone);
         }
 
-        if (offsetTreePhase)
+        if (SvgNest.Config.OffsetTreePhase)
         {
           var grps = lpoly.GroupBy(z => z.Source).ToArray();
           if (Background.UseParallel)
@@ -116,7 +116,7 @@
               SvgNest.OffsetTree(item.First(), 0.5 * SvgNest.Config.Spacing, SvgNest.Config);
               foreach (var zitem in item)
               {
-                zitem.Points = item.First().Points.ToArray();
+                zitem.ReplacePoints(item.First().Points);
               }
 
             });
@@ -129,7 +129,7 @@
               SvgNest.OffsetTree(item.First(), 0.5 * SvgNest.Config.Spacing, SvgNest.Config);
               foreach (var zitem in item)
               {
-                zitem.Points = item.First().Points.ToArray();
+                zitem.ReplacePoints(item.First().Points);
               }
             }
           }
@@ -384,6 +384,7 @@
       }
       return 0;
     }
+
     public void AddRectanglePart(int src, int ww = 50, int hh = 80)
     {
       int xx = 0;
@@ -392,12 +393,12 @@
 
       Polygons.Add(pl);
       pl.Source = src;
-      pl.Points = new SvgPoint[] { };
       pl.AddPoint(new SvgPoint(xx, yy));
       pl.AddPoint(new SvgPoint(xx + ww, yy));
       pl.AddPoint(new SvgPoint(xx + ww, yy + hh));
       pl.AddPoint(new SvgPoint(xx, yy + hh));
     }
+
     public void LoadXml(string v)
     {
       var d = XDocument.Load(v);

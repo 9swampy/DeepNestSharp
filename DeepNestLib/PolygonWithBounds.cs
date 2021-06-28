@@ -1,11 +1,18 @@
 ﻿namespace DeepNestLib
 {
-    public partial class GeometryUtil
+  using System.Collections.Generic;
+
+  public partial class GeometryUtil
+  {
+    public class PolygonWithBounds : NFP
     {
-        public class PolygonWithBounds : NFP
-        {
-            public double Width;
-            public double Height;
-        }
+      public PolygonWithBounds(IEnumerable<SvgPoint> points)
+        : base(points)
+      {
+      }
+
+      public double Width;
+      public double Height;
     }
+  }
 }
