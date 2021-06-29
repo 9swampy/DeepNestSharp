@@ -17,5 +17,10 @@ namespace DeepNestConsole
     {
       Console.WriteLine(message);
     }
+
+    public void DisplayMessage(Exception ex)
+    {
+      Console.WriteLine($"{ex.Message}/n{ex.StackTrace}");
+    }
   }
 }

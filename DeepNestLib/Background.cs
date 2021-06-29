@@ -400,7 +400,7 @@
       return frame;
     }
 
-    private static NFP[] getInnerNfp(NFP A, NFP B, int type, SvgNestConfig config)
+    private static NFP[] getInnerNfp(NFP A, NFP B, int type, double clipperScale)
     {
       if (A.Source != null && B.Source != null)
       {
@@ -449,8 +449,8 @@
         return nfp.Children.ToArray();
       }
 
-      var clipperNfp = InnerNfpToClipperCoordinates(nfp.Children.ToArray(), config.ClipperScale);
-      var clipperHoles = InnerNfpToClipperCoordinates(holes.ToArray(), config.ClipperScale);
+      var clipperNfp = InnerNfpToClipperCoordinates(nfp.Children.ToArray(), clipperScale);
+      var clipperHoles = InnerNfpToClipperCoordinates(holes.ToArray(), clipperScale);
 
       List<List<IntPoint>> finalNfp = new List<List<IntPoint>>();
       var clipper = new ClipperLib.Clipper();
@@ -471,7 +471,7 @@
       List<NFP> f = new List<NFP>();
       for (var i = 0; i < finalNfp.Count; i++)
       {
-        f.Add(ToNestCoordinates(finalNfp[i].ToArray(), config.ClipperScale));
+        f.Add(ToNestCoordinates(finalNfp[i].ToArray(), clipperScale));
       }
 
       if (A.Source != null && B.Source != null)
@@ -521,14 +521,13 @@
       return rotated;
     }
 
-    private static SheetPlacement PlaceParts(NFP[] sheets, NFP[] parts, SvgNestConfig config, int nestindex)
+    internal static SheetPlacement PlaceParts(NFP[] sheets, NFP[] parts, SvgNestConfig config, int nestindex)
     {
       if (sheets == null || sheets.Count() == 0)
       {
         return null;
       }
 
-      int i, j, k, m, n;
       double totalsheetarea = 0;
 
       NFP part = null;
@@ -538,7 +537,7 @@
 
       // rotate paths by given rotation
       var rotated = new List<NFP>();
-      for (i = 0; i < parts.Length; i++)
+      for (int i = 0; i < parts.Length; i++)
       {
         var r = rotatePolygon(parts[i], parts[i].Rotation);
         r.Rotation = parts[i].Rotation;
@@ -553,16 +552,14 @@
 
       double fitness = 0;
 
-      string key;
       NFP nfp;
       double sheetarea = -1;
       int totalPlaced = 0;
       int totalParts = parts.Count();
 
-      while (parts.Length > 0)
+      while (parts.Length > 0 && sheets.Count() > 0)
       {
         List<NFP> placed = new List<NFP>();
-
         List<PlacementItem> placements = new List<PlacementItem>();
 
         // open a new sheet
@@ -580,9 +577,9 @@
         var error = false;
         IntPoint[][] clipperSheetNfp = null;
         double? minwidth = null;
-        PlacementItem position = null;
+
         double? minarea = null;
-        for (i = 0; i < parts.Length; i++)
+        for (int i = 0; i < parts.Length; i++)
         {
           float prog = 0.66f + (0.34f * (totalPlaced / (float)totalParts));
           DisplayProgress(prog);
@@ -591,23 +588,16 @@
 
           // inner NFP
           NFP[] sheetNfp = null;
+          var canBePlaced = false;
 
           // try all possible rotations until it fits
           // (only do this for the first part of each sheet, to ensure that all parts that can be placed are, even if we have to to open a lot of sheets)
-          for (j = 0; j < (360f / config.Rotations); j++)
+          for (int j = 0; j < (360f / config.Rotations); j++)
           {
-            sheetNfp = getInnerNfp(sheet, part, 0, config);
-
-            if (sheetNfp != null && sheetNfp.Count() > 0)
+            if (CanBePlaced(sheet, part, config.ClipperScale, out sheetNfp))
             {
-              if (sheetNfp[0].Length == 0)
-              {
-                throw new ArgumentException();
-              }
-              else
-              {
-                break;
-              }
+              canBePlaced = true;
+              break;
             }
 
             var r = rotatePolygon(part, 360f / config.Rotations);
@@ -626,19 +616,18 @@
           }
 
           // part unplaceable, skip
-          if (sheetNfp == null || sheetNfp.Count() == 0)
+          if (!canBePlaced)
           {
             continue;
           }
 
-          position = null;
-
+          PlacementItem position = null;
           if (placed.Count == 0)
           {
             // first placement, put it on the top left corner
-            for (j = 0; j < sheetNfp.Count(); j++)
+            for (int j = 0; j < sheetNfp.Count(); j++)
             {
-              for (k = 0; k < sheetNfp[j].Length; k++)
+              for (int k = 0; k < sheetNfp[j].Length; k++)
               {
                 if (position == null ||
                     ((sheetNfp[j][k].x - part[0].x) < position.x) ||
@@ -690,7 +679,7 @@
             startindex = clipCache[clipkey].index;
           }
 
-          for (j = startindex; j < placed.Count; j++)
+          for (int j = startindex; j < placed.Count; j++)
           {
             nfp = GetOuterNfp(placed[j], part, 0);
 
@@ -702,7 +691,7 @@
             }
 
             // shift to placed location
-            for (m = 0; m < nfp.Length; m++)
+            for (int m = 0; m < nfp.Length; m++)
             {
               nfp[m].x += placements[j].x;
               nfp[m].y += placements[j].y;
@@ -710,7 +699,7 @@
 
             if (nfp.Children != null && nfp.Children.Count > 0)
             {
-              for (n = 0; n < nfp.Children.Count; n++)
+              for (int n = 0; n < nfp.Children.Count; n++)
               {
                 for (var o = 0; o < nfp.Children[n].Length; o++)
                 {
@@ -744,33 +733,31 @@
           // console.log('save cache', placed.length - 1);
 
           // difference with sheet polygon
-          List<List<IntPoint>> _finalNfp = new List<List<IntPoint>>();
+          List<List<IntPoint>> differenceWithSheetPolygonNfpPoints = new List<List<IntPoint>>();
           clipper = new ClipperLib.Clipper();
 
           clipper.AddPaths(combinedNfp, ClipperLib.PolyType.ptClip, true);
 
           clipper.AddPaths(clipperSheetNfp.Select(z => z.ToList()).ToList(), ClipperLib.PolyType.ptSubject, true);
 
-          if (!clipper.Execute(ClipperLib.ClipType.ctDifference, _finalNfp, ClipperLib.PolyFillType.pftEvenOdd, ClipperLib.PolyFillType.pftNonZero))
+          if (!clipper.Execute(ClipperLib.ClipType.ctDifference, differenceWithSheetPolygonNfpPoints, ClipperLib.PolyFillType.pftEvenOdd, ClipperLib.PolyFillType.pftNonZero))
           {
             continue;
           }
 
-          if (_finalNfp == null || _finalNfp.Count == 0)
+          if (differenceWithSheetPolygonNfpPoints == null || differenceWithSheetPolygonNfpPoints.Count == 0)
           {
             continue;
           }
 
-          List<NFP> f = new List<NFP>();
-          for (j = 0; j < _finalNfp.Count; j++)
+          List<NFP> differenceWithSheetPolygonNfp = new List<NFP>();
+          for (int j = 0; j < differenceWithSheetPolygonNfpPoints.Count; j++)
           {
             // back to normal scale
-            f.Add(Background.ToNestCoordinates(_finalNfp[j].ToArray(), config.ClipperScale));
+            differenceWithSheetPolygonNfp.Add(Background.ToNestCoordinates(differenceWithSheetPolygonNfpPoints[j].ToArray(), config.ClipperScale));
           }
 
-          var finalNfp = f;
-
-          // finalNfp = f;
+          var finalNfp = differenceWithSheetPolygonNfp;
 
           // choose placement that results in the smallest bounding box/hull etc
           // todo: generalize gravity direction
@@ -788,9 +775,9 @@
           PlacementItem shiftvector = null;
 
           NFP allpoints = new NFP();
-          for (m = 0; m < placed.Count; m++)
+          for (int m = 0; m < placed.Count; m++)
           {
-            for (n = 0; n < placed[m].Length; n++)
+            for (int n = 0; n < placed[m].Length; n++)
             {
               allpoints.AddPoint(
                   new SvgPoint(
@@ -805,7 +792,7 @@
             allbounds = GeometryUtil.getPolygonBounds(allpoints);
 
             NFP partpoints = new NFP();
-            for (m = 0; m < part.Length; m++)
+            for (int m = 0; m < part.Length; m++)
             {
               partpoints.AddPoint(new SvgPoint(part[m].x, part[m].y));
             }
@@ -817,12 +804,12 @@
             allpoints = GetHull(allpoints.Points);
           }
 
-          for (j = 0; j < finalNfp.Count; j++)
+          for (int j = 0; j < finalNfp.Count; j++)
           {
             nf = finalNfp[j];
 
             // console.log('evalnf',nf.length);
-            for (k = 0; k < nf.Length; k++)
+            for (int k = 0; k < nf.Length; k++)
             {
               shiftvector = new PlacementItem()
               {
@@ -832,6 +819,7 @@
                 source = part.Source.Value,
                 rotation = part.Rotation,
               };
+
               PolygonBounds rectbounds = null;
               if (config.PlacementType == PlacementTypeEnum.Gravity || config.PlacementType == PlacementTypeEnum.BoundingBox)
               {
@@ -840,33 +828,18 @@
                 poly.AddPoint(new SvgPoint(allbounds.x + allbounds.width, allbounds.y));
                 poly.AddPoint(new SvgPoint(allbounds.x + allbounds.width, allbounds.y + allbounds.height));
                 poly.AddPoint(new SvgPoint(allbounds.x, allbounds.y + allbounds.height));
-                /*
-             [
-                // allbounds points
-            { x: allbounds.x, y: allbounds.y},
-            { x: allbounds.x + allbounds.width, y: allbounds.y},
-            { x: allbounds.x + allbounds.width, y: allbounds.y + allbounds.height},
-            { x: allbounds.x, y: allbounds.y + allbounds.height},*/
 
                 poly.AddPoint(new SvgPoint(partbounds.x + shiftvector.x, partbounds.y + shiftvector.y));
                 poly.AddPoint(new SvgPoint(partbounds.x + partbounds.width + shiftvector.x, partbounds.y + shiftvector.y));
                 poly.AddPoint(new SvgPoint(partbounds.x + partbounds.width + shiftvector.x, partbounds.y + partbounds.height + shiftvector.y));
                 poly.AddPoint(new SvgPoint(partbounds.x + shiftvector.x, partbounds.y + partbounds.height + shiftvector.y));
-                /*
-                 [
 
-                // part points
-                { x: partbounds.x + shiftvector.x, y: partbounds.y + shiftvector.y},
-                { x: partbounds.x + partbounds.width + shiftvector.x, y: partbounds.y + shiftvector.y},
-                { x: partbounds.x + partbounds.width + shiftvector.x, y: partbounds.y + partbounds.height + shiftvector.y},
-                { x: partbounds.x + shiftvector.x, y: partbounds.y + partbounds.height + shiftvector.y}
-            ]*/
                 rectbounds = GeometryUtil.getPolygonBounds(poly);
 
                 // weigh width more, to help compress in direction of gravity
                 if (config.PlacementType == PlacementTypeEnum.Gravity)
                 {
-                  area = (rectbounds.width * 2) + rectbounds.height;
+                  area = (rectbounds.width * 3) + rectbounds.height;
                 }
                 else
                 {
@@ -878,7 +851,7 @@
                 // must be convex hull
                 var localpoints = clone(allpoints);
 
-                for (m = 0; m < part.Length; m++)
+                for (int m = 0; m < part.Length; m++)
                 {
                   localpoints.AddPoint(new SvgPoint(part[m].x + shiftvector.x, part[m].y + shiftvector.y));
                 }
@@ -899,7 +872,7 @@
                 var shiftedpart = shiftPolygon(part, shiftvector);
                 List<NFP> shiftedplaced = new List<NFP>();
 
-                for (m = 0; m < placed.Count; m++)
+                for (int m = 0; m < placed.Count; m++)
                 {
                   shiftedplaced.Add(shiftPolygon(placed[m], placements[m]));
                 }
@@ -953,7 +926,7 @@
 
           // send placement progress signal
           var placednum = placed.Count;
-          for (j = 0; j < allplacements.Count; j++)
+          for (int j = 0; j < allplacements.Count; j++)
           {
             placednum += allplacements[j].sheetplacements.Count;
           }
@@ -975,7 +948,7 @@
         }
 
         // }
-        for (i = 0; i < placed.Count; i++)
+        for (int i = 0; i < placed.Count; i++)
         {
           var index = Array.IndexOf(parts, placed[i]);
           if (index >= 0)
@@ -993,24 +966,22 @@
             sheetplacements = placements,
           });
 
+          // fitness += Add the unused space on each sheet to fitness; we want to use as much as possible within rectangle bounds, not just rectanglebounds
+          // fitness += placements.Sum(o=> o.hullsheet.Area
+
           // allplacements.Add({ sheet: sheet.source, sheetid: sheet.id, sheetplacements: placements});
         }
         else
         {
           break; // something went wrong
         }
-
-        if (sheets.Count() == 0)
-        {
-          break;
-        }
       }
 
       // there were parts that couldn't be placed
       // scale this value high - we really want to get all the parts in, even at the cost of opening new sheets
-      for (i = 0; i < parts.Count(); i++)
+      for (int noPlaceIdx = 0; noPlaceIdx < parts.Count(); noPlaceIdx++)
       {
-        fitness += 100000000 * (Math.Abs(GeometryUtil.polygonArea(parts[i])) / totalsheetarea);
+        fitness += 100000000 * (Math.Abs(GeometryUtil.polygonArea(parts[noPlaceIdx])) / totalsheetarea);
       }
 
       // send finish progerss signal
@@ -1026,6 +997,24 @@
       };
 
       // return { placements: allplacements, fitness: fitness, area: sheetarea, mergedLength: totalMerged };
+    }
+
+    private static bool CanBePlaced(NFP sheet, NFP part, double clipperScale, out NFP[] sheetNfp)
+    {
+      sheetNfp = getInnerNfp(sheet, part, 0, clipperScale);
+      if (sheetNfp != null && sheetNfp.Count() > 0)
+      {
+        if (sheetNfp[0].Length == 0)
+        {
+          throw new ArgumentException();
+        }
+        else
+        {
+          return true;
+        }
+      }
+
+      return false;
     }
 
     // jsClipper uses X/Y instead of x/y...
@@ -1237,7 +1226,7 @@
           var cbounds = GeometryUtil.getPolygonBounds(Achildren[j]);
           if (cbounds.width > bbounds.width && cbounds.height > bbounds.height)
           {
-            var n = getInnerNfp(Achildren[j], Brotated, 1, this.data.config);
+            var n = getInnerNfp(Achildren[j], Brotated, 1, this.data.config.ClipperScale);
             if (n != null && n.Count() > 0)
             {
               cnfp.AddRange(n);

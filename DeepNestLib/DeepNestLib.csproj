@@ -104,6 +104,7 @@
     <Compile Include="GeneticAlgorithm.cs" />
     <Compile Include="GeometryUtil.cs" />
     <Compile Include="IExport.cs" />
+    <Compile Include="IMessageService.cs" />
     <Compile Include="INfp.cs" />
     <Compile Include="LineElement.cs" />
     <Compile Include="NestingContext.cs" />

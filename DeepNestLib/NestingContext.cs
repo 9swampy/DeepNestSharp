@@ -8,11 +8,6 @@
   using System.Threading.Tasks;
   using System.Xml.Linq;
 
-  public interface IMessageService
-  {
-    void DisplayMessage(string message);
-  }
-
   public class NestingContext
   {
     private readonly IMessageService messageService;
@@ -28,13 +23,14 @@
 
     public List<NFP> Sheets { get; private set; } = new List<NFP>();
 
-
     public double MaterialUtilization { get; private set; } = 0;
+
     public int PlacedPartsCount { get; private set; } = 0;
 
-
     SheetPlacement current = null;
+    
     public SheetPlacement Current { get { return current; } }
+    
     public SvgNest Nest { get; private set; }
 
     public int Iterations { get; private set; } = 0;
@@ -165,7 +161,7 @@
           item.Polygon.Source = srcc++;
         }
 
-        Nest.launchWorkers(partsLocal.ToArray(), this.messageService);
+        Nest.launchWorkers(partsLocal.ToArray());
         var plcpr = Nest.nests.First();
 
         if (current == null || plcpr.fitness < current.fitness)
@@ -180,7 +176,7 @@
         if (!this.IsErrored)
         {
           this.IsErrored = true;
-          this.messageService.DisplayMessage(ex.Message);
+          this.messageService.DisplayMessage(ex);
         }
       }
     }

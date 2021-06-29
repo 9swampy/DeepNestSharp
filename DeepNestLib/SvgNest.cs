@@ -432,8 +432,12 @@
       clipper.AddPaths(clipperSubject.Select(z => z.ToList()).ToList(), PolyType.ptSubject, true);
 
       List<List<IntPoint>> finalNfp = new List<List<IntPoint>>();
-      clipper.Execute(ClipType.ctIntersection, finalNfp, PolyFillType.pftNonZero, PolyFillType.pftNonZero);
-      return Background.ToNestCoordinates(finalNfp[0].ToArray(), clipperScale);
+      if (clipper.Execute(ClipType.ctIntersection, finalNfp, PolyFillType.pftNonZero, PolyFillType.pftNonZero) && finalNfp != null && finalNfp.Count > 0)
+      {
+        return Background.ToNestCoordinates(finalNfp[0].ToArray(), clipperScale);
+      }
+
+      return subject;
     }
 
     /// <summary>
@@ -813,7 +817,7 @@
       }
     }
 
-    public void launchWorkers(NestItem[] parts, IMessageService messageService)
+    public void launchWorkers(NestItem[] parts)
     {
       try
       {
@@ -961,7 +965,7 @@
       }
       catch (Exception ex)
       {
-        this.messageService.DisplayMessage(ex.Message);
+        this.messageService.DisplayMessage(ex);
         this.setIsErrored();
       }
     }

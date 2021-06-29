@@ -13,13 +13,17 @@
 
   public class SampleProgram
   {
-    public NestingContext Context = new NestingContext(new ConsoleMessageService());
+    internal NestingContext Context { get; } = new NestingContext(new ConsoleMessageService());
 
-    public bool IsFinished()
+    private bool IsFinished()
     {
-      //insert you code here            
-      return Context.Iterations >= 3;
+      // Place code here to define when your Nest can be considered complete.
+      return this.Context?.Nest.nests.Count() >= 3;
+
+      // The example above considers the nest completed when the
+      // first response has been iteratively improved upon twice.
     }
+
     public void Run()
     {
       Background.UseParallel = true;
