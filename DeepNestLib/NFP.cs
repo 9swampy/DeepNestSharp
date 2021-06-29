@@ -156,8 +156,7 @@
 
     internal void Push(SvgPoint svgPoint)
     {
-      List<SvgPoint> points = new List<SvgPoint>();
-      points.Add(svgPoint);
+      this.points = this.points.Append(svgPoint).ToArray();
     }
 
     public NFP slice(int v)

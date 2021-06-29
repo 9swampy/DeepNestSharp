@@ -203,8 +203,9 @@
       nestingContext.TryImportFromRawDetail(raw, 0, out part);
 
       GraphicsPath gp = new GraphicsPath();
-      var simplification = SvgNest.cleanPolygon2(part);
-      DrawNfp(ctx2, gp, SvgNest.simplifyFunction(simplification, false));
+
+      var simplification = SvgNest.simplifyFunction(part, false);
+      DrawNfp(ctx2, gp, simplification);
 
       ctx2.gr.DrawPath(Pens.Red, gp);
       var pointsChange = $"{part.Points.Length} => {simplification.Points.Length} points";

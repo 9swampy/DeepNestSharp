@@ -117,7 +117,7 @@
     [Fact]
     public void SimplificationShouldHaveExpectedPointCount()
     {
-      this.simplifiedNfp.Points.Length.Should().Be(115);
+      this.simplifiedNfp.Points.Length.Should().Be(46);
     }
   }
 }

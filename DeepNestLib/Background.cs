@@ -449,8 +449,8 @@
         return nfp.Children.ToArray();
       }
 
-      var clipperNfp = InnerNfpToClipperCoordinates(nfp.Children.ToArray(), config);
-      var clipperHoles = InnerNfpToClipperCoordinates(holes.ToArray(), config);
+      var clipperNfp = InnerNfpToClipperCoordinates(nfp.Children.ToArray(), config.ClipperScale);
+      var clipperHoles = InnerNfpToClipperCoordinates(holes.ToArray(), config.ClipperScale);
 
       List<List<IntPoint>> finalNfp = new List<List<IntPoint>>();
       var clipper = new ClipperLib.Clipper();
@@ -672,7 +672,7 @@
             continue;
           }
 
-          clipperSheetNfp = InnerNfpToClipperCoordinates(sheetNfp, config);
+          clipperSheetNfp = InnerNfpToClipperCoordinates(sheetNfp, config.ClipperScale);
 
           clipper = new ClipperLib.Clipper();
           combinedNfp = new List<List<ClipperLib.IntPoint>>();
@@ -720,7 +720,7 @@
               }
             }
 
-            var clipperNfp = NfpToClipperCoordinates(nfp, config);
+            var clipperNfp = NfpToClipperCoordinates(nfp, config.ClipperScale);
 
             clipper.AddPaths(clipperNfp.Select(z => z.ToList()).ToList(), ClipperLib.PolyType.ptSubject, true);
           }
@@ -1443,7 +1443,7 @@
     }
 
     // returns clipper nfp. Remember that clipper nfp are a list of polygons, not a tree!
-    public static IntPoint[][] NfpToClipperCoordinates(NFP nfp, SvgNestConfig config)
+    public static IntPoint[][] NfpToClipperCoordinates(NFP nfp, double clipperScale)
     {
       List<IntPoint[]> clipperNfp = new List<IntPoint[]>();
 
@@ -1458,7 +1458,7 @@
           }
 
           // var childNfp = SvgNest.toClipperCoordinates(nfp.Children[j]);
-          var childNfp = _Clipper.ScaleUpPaths(nfp.Children[j].Points, config.ClipperScale);
+          var childNfp = _Clipper.ScaleUpPaths(nfp.Children[j].Points, clipperScale);
           clipperNfp.Add(childNfp);
         }
       }
@@ -1471,7 +1471,7 @@
       // var outerNfp = SvgNest.toClipperCoordinates(nfp);
 
       // clipper js defines holes based on orientation
-      var outerNfp = _Clipper.ScaleUpPaths(nfp.Points, config.ClipperScale);
+      var outerNfp = _Clipper.ScaleUpPaths(nfp.Points, clipperScale);
 
       // var cleaned = ClipperLib.Clipper.CleanPolygon(outerNfp, 0.00001*config.clipperScale);
       clipperNfp.Add(outerNfp);
@@ -1481,12 +1481,12 @@
     }
 
     // inner nfps can be an array of nfps, outer nfps are always singular
-    public static IntPoint[][] InnerNfpToClipperCoordinates(NFP[] nfp, SvgNestConfig config)
+    public static IntPoint[][] InnerNfpToClipperCoordinates(NFP[] nfp, double clipperScale)
     {
       List<IntPoint[]> clipperNfp = new List<IntPoint[]>();
       for (var i = 0; i < nfp.Count(); i++)
       {
-        var clip = NfpToClipperCoordinates(nfp[i], config);
+        var clip = NfpToClipperCoordinates(nfp[i], clipperScale);
         clipperNfp.AddRange(clip);
 
         // clipperNfp = clipperNfp.Concat(new[] { clip }).ToList();

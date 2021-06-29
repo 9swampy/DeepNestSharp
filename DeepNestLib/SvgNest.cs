@@ -126,7 +126,7 @@
 
     public static NFP simplifyFunction(NFP polygon, bool inside)
     {
-      var markExact = false;
+      var markExact = true;
       var straighten = true;
       var doSimplify = true;
       var selectiveReversalOfOffset = true;
@@ -137,6 +137,7 @@
       var fixedTolerance = 40 * Config.CurveTolerance * 40 * Config.CurveTolerance;
       int i, j, k;
 
+      var hull = Background.GetHull(polygon.Points);
       if (Config.Simplify)
       {
         /*
@@ -147,7 +148,7 @@
         }
 
         return hull.getHull();*/
-        var hull = Background.GetHull(polygon.Points);
+
         if (hull != null)
         {
           return hull;
@@ -209,7 +210,7 @@
       }
 
       // simplification process reduced poly to a line or point; or it came back just as complex as the original
-      if (simple == null || simple.Points.Count() > polygon.Points.Count() * 0.8)
+      if (simple == null || simple.Points.Count() > polygon.Points.Count() * 0.9)
       {
         simple = polygon;
       }
@@ -388,6 +389,8 @@
         offset = cleaned;
       }
 
+      offset = ClipSubject(offset, hull, Config.ClipperScale);
+
       if (markExact)
       {
         MarkExactSvg(polygon, offset);
@@ -400,9 +403,9 @@
 
       lock (cacheSyncLock)
       {
-        if (!cache.ContainsKey(new System.Tuple<SvgPoint[], double?, bool, bool>(offset.Points, SvgNest.Config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker)))
+        if (!cache.ContainsKey(new System.Tuple<SvgPoint[], double?, bool, bool>(polygon.Points, SvgNest.Config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker)))
         {
-          cache.Add(new System.Tuple<SvgPoint[], double?, bool, bool>(offset.Points, SvgNest.Config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker), offset.Points);
+          cache.Add(new System.Tuple<SvgPoint[], double?, bool, bool>(polygon.Points, SvgNest.Config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker), offset.Points);
         }
       }
 
@@ -410,10 +413,31 @@
     }
 
     /// <summary>
-    /// Mark any points that are exact (for line merge detection); but isn't writing anything to either polygon or offset; wtf.
+    /// Clip the subject so it stays inside the clipBounds.
+    /// </summary>
+    /// <param name="subject"></param>
+    /// <param name="clipBounds"></param>
+    /// <param name="clipperScale"></param>
+    /// <returns></returns>
+    internal static NFP ClipSubject(NFP subject, NFP clipBounds, double clipperScale)
+    {
+      var clipperSubject = Background.InnerNfpToClipperCoordinates(new NFP[] { subject }, clipperScale);
+      var clipperClip = Background.InnerNfpToClipperCoordinates(new NFP[] { clipBounds }, clipperScale);
+
+      var clipper = new Clipper();
+      clipper.AddPaths(clipperClip.Select(z => z.ToList()).ToList(), PolyType.ptClip, true);
+      clipper.AddPaths(clipperSubject.Select(z => z.ToList()).ToList(), PolyType.ptSubject, true);
+
+      List<List<IntPoint>> finalNfp = new List<List<IntPoint>>();
+      clipper.Execute(ClipType.ctIntersection, finalNfp, PolyFillType.pftNonZero, PolyFillType.pftNonZero);
+      return Background.ToNestCoordinates(finalNfp[0].ToArray(), clipperScale);
+    }
+
+    /// <summary>
+    /// Mark any points that are exact (for line merge detection).
     /// </summary>
     /// <param name="polygon">This is the one that's checked against.</param>
-    /// <param name="simple">This is the one that's iterated.</param>
+    /// <param name="offset">This is iterated and elements are marked exact when matched to a point in polygon.</param>
     private static void MarkExactSvg(NFP polygon, NFP offset)
     {
       int i;
@@ -441,10 +465,10 @@
     }
 
     /// <summary>
-    /// Mark any points that are exact; but isn't writing anything to either polygon or simple; wtf.
+    /// Mark any points that are exact.
     /// </summary>
     /// <param name="polygon">This is the one that's checked against.</param>
-    /// <param name="simple">This is the one that's iterated.</param>
+    /// <param name="simple">This is iterated and elements are marked exact when matched to a point in polygon.</param>
     private static void MarkExact(NFP polygon, NFP simple)
     {
       for (int i = 0; i < simple.Length; i++)
@@ -961,12 +985,14 @@
 
   public interface IDeprecatedClipper
   {
-    ClipperLib.IntPoint[] ScaleUpPaths(NFP p, double scale);
+    ClipperLib.IntPoint[] ScaleUpPathsOriginal(NFP p, double scale);
+
+    ClipperLib.IntPoint[] ScaleUpPathsSlowerParallel(SvgPoint[] points, double scale = 1);
   }
 
   public class _Clipper : IDeprecatedClipper
   {
-    ClipperLib.IntPoint[] IDeprecatedClipper.ScaleUpPaths(NFP p, double scale = 1)
+    ClipperLib.IntPoint[] IDeprecatedClipper.ScaleUpPathsOriginal(NFP p, double scale = 1)
     {
       List<ClipperLib.IntPoint> ret = new List<ClipperLib.IntPoint>();
 
@@ -981,7 +1007,7 @@
       return ret.ToArray();
     } // 5 secs
 
-    public static ClipperLib.IntPoint[] ScaleUpPathsAlt(SvgPoint[] points, double scale = 1)
+    ClipperLib.IntPoint[] IDeprecatedClipper.ScaleUpPathsSlowerParallel(SvgPoint[] points, double scale = 1)
     {
       var result = from point in points.AsParallel().AsSequential()
                    select new ClipperLib.IntPoint((long)Math.Round((decimal)point.x * (decimal)scale), (long)Math.Round((decimal)point.y * (decimal)scale));
