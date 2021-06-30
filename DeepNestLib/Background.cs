@@ -14,6 +14,13 @@
   {
     public static bool EnableCaches = true;
 
+    public Background()
+    {
+      this.cacheProcess = new Dictionary<string, NFP[]>();
+      this.window = new windowUnk();
+      this.callCounter = 0;
+    }
+
     public static NFP shiftPolygon(NFP p, PlacementItem shift)
     {
       NFP shifted = new NFP();
@@ -195,53 +202,51 @@
     {
       if (!inner)
       {
-        return new[] { clone(nfp.First()) };
+        return new[] { Clone(nfp.First()) };
       }
 
-      throw new NotImplementedException();
+      //throw new NotImplementedException();
+      System.Diagnostics.Debug.Print("Original source had marked this 'Background.cloneNfp' as not implemented; not sure why. . .");
 
       // inner nfp is actually an array of nfps
-      List<NFP> newnfp = new List<NFP>();
+      List<NFP> result = new List<NFP>();
       for (var i = 0; i < nfp.Count(); i++)
       {
-        // newnfp.push(clone(nfp[i]));
+        result.Add(Clone(nfp[i]));
       }
 
-      // return newnfp;
+      return result.ToArray();
     }
 
-    public static NFP clone(NFP nfp)
+    public static NFP Clone(NFP nfp, bool includeSourceInClone = true)
     {
-      NFP newnfp = new NFP();
-      newnfp.Source = nfp.Source;
+      NFP result = new NFP();
+      if (includeSourceInClone)
+      {
+        result.Source = nfp.Source;
+      }
+
       for (var i = 0; i < nfp.Length; i++)
       {
-        newnfp.AddPoint(new SvgPoint(nfp[i].x, nfp[i].y));
+        result.AddPoint(new SvgPoint(nfp[i].x, nfp[i].y));
       }
 
       if (nfp.Children != null && nfp.Children.Count > 0)
       {
-        for (int i = 0; i < nfp.Children.Count; i++)
+        foreach (var child in nfp.Children)
         {
-          var child = nfp.Children[i];
-          NFP newchild = new NFP();
-          for (var j = 0; j < child.Length; j++)
-          {
-            newchild.AddPoint(new SvgPoint(child[j].x, child[j].y));
-          }
-
-          newnfp.Children.Add(newchild);
+          result.Children.Add(Clone(child, false));
         }
       }
 
-      return newnfp;
+      return result;
     }
 
-    public static int callCounter = 0;
+    public int callCounter = 0;
 
-    public static Dictionary<string, NFP[]> cacheProcess = new Dictionary<string, NFP[]>();
+    public Dictionary<string, NFP[]> cacheProcess = new Dictionary<string, NFP[]>();
 
-    internal static NFP[] Process2(INfp A, INfp B, int type)
+    internal NFP[] Process2(INfp A, INfp B, int type)
     {
       var key = A.Source + ";" + B.Source + ";" + A.Rotation + ";" + B.Rotation;
       bool cacheAllow = type != 1;
@@ -297,7 +302,7 @@
 #endif
       MinkowskiWrapper.calculateNFP();
 
-      callCounter++;
+      this.callCounter++;
 
       int[] sizes = new int[2];
       MinkowskiWrapper.getSizes1(sizes);
@@ -400,22 +405,14 @@
       return frame;
     }
 
-    private static NFP[] getInnerNfp(NFP A, NFP B, int type, double clipperScale)
+    private NFP[] getInnerNfp(NFP A, NFP B, int type, double clipperScale)
     {
       if (A.Source != null && B.Source != null)
       {
-        var key = new DbCacheKey()
-        {
-          A = A.Source.Value,
-          B = B.Source.Value,
-          ARotation = 0,
-          BRotation = B.Rotation,
-
-          // Inside =true??
-        };
+        var key = new DbCacheKey(A.Source.Value, B.Source.Value, 0, B.Rotation);
 
         // var doc = window.db.find({ A: A.source, B: B.source, Arotation: 0, Brotation: B.rotation }, true);
-        var res = window.db.Find(key, true);
+        var res = window.Find(key, true);
         if (res != null)
         {
           return res;
@@ -478,15 +475,8 @@
       {
         // insert into db
         // console.log('inserting inner: ', A.source, B.source, B.rotation, f);
-        var doc = new DbCacheKey()
-        {
-          A = A.Source.Value,
-          B = B.Source.Value,
-          ARotation = 0,
-          BRotation = B.Rotation,
-          nfp = f.ToArray(),
-        };
-        window.db.Insert(doc, true);
+        var doc = new DbCacheKey(A.Source.Value, B.Source.Value, 0, B.Rotation, f.ToArray());
+        window.Insert(doc, true);
       }
 
       return f.ToArray();
@@ -521,12 +511,14 @@
       return rotated;
     }
 
-    internal static SheetPlacement PlaceParts(NFP[] sheets, NFP[] parts, SvgNestConfig config, int nestindex)
+    internal SheetPlacement PlaceParts(IEnumerable<NFP> sheets, NFP[] parts, SvgNestConfig config, int nestindex)
     {
       if (sheets == null || sheets.Count() == 0)
       {
         return null;
       }
+
+      Queue<NFP> unusedSheets = new Queue<NFP>(sheets);
 
       double totalsheetarea = 0;
 
@@ -557,14 +549,13 @@
       int totalPlaced = 0;
       int totalParts = parts.Count();
 
-      while (parts.Length > 0 && sheets.Count() > 0)
+      while (parts.Length > 0 && unusedSheets.Count > 0)
       {
         List<NFP> placed = new List<NFP>();
         List<PlacementItem> placements = new List<PlacementItem>();
 
         // open a new sheet
-        var sheet = sheets.First();
-        sheets = sheets.Skip(1).ToArray();
+        var sheet = unusedSheets.Dequeue();
         sheetarea = Math.Abs(GeometryUtil.polygonArea(sheet));
         totalsheetarea += sheetarea;
 
@@ -624,7 +615,7 @@
           PlacementItem position = null;
           if (placed.Count == 0)
           {
-            // first placement, put it on the top left corner
+            // first placement, put it on the bottom left corner
             for (int j = 0; j < sheetNfp.Count(); j++)
             {
               for (int k = 0; k < sheetNfp[j].Length; k++)
@@ -849,7 +840,7 @@
               else
               {
                 // must be convex hull
-                var localpoints = clone(allpoints);
+                var localpoints = Clone(allpoints);
 
                 for (int m = 0; m < part.Length; m++)
                 {
@@ -999,7 +990,7 @@
       // return { placements: allplacements, fitness: fitness, area: sheetarea, mergedLength: totalMerged };
     }
 
-    private static bool CanBePlaced(NFP sheet, NFP part, double clipperScale, out NFP[] sheetNfp)
+    private bool CanBePlaced(NFP sheet, NFP part, double clipperScale, out NFP[] sheetNfp)
     {
       sheetNfp = getInnerNfp(sheet, part, 0, clipperScale);
       if (sheetNfp != null && sheetNfp.Count() > 0)
@@ -1024,13 +1015,13 @@
     private int index;
 
     // run the placement synchronously
-    public static windowUnk window = new windowUnk();
+    public IWindowUnk window = new windowUnk();
 
     public Action<SheetPlacement> ResponseAction;
 
-    public static long LastPlacePartTime = 0;
+    public long LastPlacePartTime = 0;
 
-    private void Sync()
+    private void SyncPlaceParts()
     {
       // console.log('starting synchronous calculations', Object.keys(window.nfpCache).length);
       // console.log('in sync');
@@ -1052,7 +1043,7 @@
       // ipcRenderer.send('background-response', placement);
     }
 
-    public void BackgroundStart(DataInfo data)
+    internal void BackgroundStart(DataInfo data)
     {
       try
       {
@@ -1106,17 +1097,10 @@
                   Asource = A.Source.Value,
                   Bsource = B.Source.Value,
                 };
-                var doc = new DbCacheKey()
-                {
-                  A = A.Source.Value,
-                  B = B.Source.Value,
-
-                  ARotation = A.Rotation,
-                  BRotation = B.Rotation,
-                };
+                var doc = new DbCacheKey(A.Source.Value, B.Source.Value, A.Rotation, B.Rotation);
                 lock (lobj)
                 {
-                  if (!this.InPairs(key, pairs.ToArray()) && !window.db.Has(doc))
+                  if (!this.InPairs(key, pairs.ToArray()) && !window.Has(doc))
                   {
                     pairs.Add(key);
                   }
@@ -1142,15 +1126,8 @@
                 Asource = A.Source.Value,
                 Bsource = B.Source.Value,
               };
-              var doc = new DbCacheKey()
-              {
-                A = A.Source.Value,
-                B = B.Source.Value,
-
-                ARotation = A.Rotation,
-                BRotation = B.Rotation,
-              };
-              if (!this.InPairs(key, pairs.ToArray()) && !window.db.Has(doc))
+              var doc = new DbCacheKey(A.Source.Value, B.Source.Value, A.Rotation, B.Rotation);
+              if (!this.InPairs(key, pairs.ToArray()) && !window.Has(doc))
               {
                 pairs.Add(key);
               }
@@ -1168,7 +1145,7 @@
         }
         else
         {
-          this.Sync();
+          this.SyncPlaceParts();
         }
       }
       catch (DllNotFoundException)
@@ -1237,14 +1214,7 @@
         processed.nfp.Children = cnfp;
       }
 
-      DbCacheKey doc = new DbCacheKey()
-      {
-        A = processed.Asource,
-        B = processed.Bsource,
-        ARotation = processed.ARotation,
-        BRotation = processed.BRotation,
-        nfp = new[] { processed.nfp },
-      };
+      DbCacheKey doc = new DbCacheKey(processed.Asource, processed.Bsource, processed.ARotation, processed.BRotation, new[] { processed.nfp });
 
       /*var doc = {
               A: processed[i].Asource,
@@ -1254,7 +1224,7 @@
               nfp: processed[i].nfp
 
           };*/
-      window.db.Insert(doc);
+      window.Insert(doc);
     }
 
     public static Action<float> displayProgress;
@@ -1293,7 +1263,7 @@
 
       // console.timeEnd('Total');
       // console.log('before sync');
-      this.Sync();
+      this.SyncPlaceParts();
     }
 
     private bool InPairs(NfpPair key, NfpPair[] p)
@@ -1486,21 +1456,13 @@
 
     private static object lockobj = new object();
 
-    private static NFP GetOuterNfp(NFP A, NFP B, int type, bool inside = false) // todo:?inside def?
+    private NFP GetOuterNfp(NFP A, NFP B, int type, bool inside = false) // todo:?inside def?
     {
       NFP[] nfp = null;
 
-      var key = new DbCacheKey()
-      {
-        A = A.Source,
-        B = B.Source,
-        ARotation = A.Rotation,
-        BRotation = B.Rotation,
+      var key = new DbCacheKey(A.Source, B.Source, A.Rotation, B.Rotation);
 
-        // Type = type
-      };
-
-      var doc = window.db.Find(key);
+      var doc = window.Find(key);
       if (doc != null)
       {
         return doc.First();
@@ -1582,15 +1544,8 @@
       */
       if (!inside && A.Source != null && B.Source != null)
       {
-        var doc2 = new DbCacheKey()
-        {
-          A = A.Source.Value,
-          B = B.Source.Value,
-          ARotation = A.Rotation,
-          BRotation = B.Rotation,
-          nfp = nfp,
-        };
-        window.db.Insert(doc2);
+        var doc2 = new DbCacheKey(A.Source.Value, B.Source.Value, A.Rotation, B.Rotation, nfp);
+        window.Insert(doc2);
       }
 
       /*
@@ -1604,7 +1559,7 @@
       Brotation: B.rotation,
       nfp: nfp
 
-  };
+    };
           window.db.insert(doc);
       }
       */
@@ -1618,50 +1573,43 @@
     public IntPoint[][] nfpp;
   }
 
-  public class dbCache
+  public class dbCache : IDbCache
   {
-    public dbCache(windowUnk w)
+    public dbCache(IWindowUnk w)
     {
       window = w;
     }
-    public bool Has(DbCacheKey obj)
+
+    public bool Has(DbCacheKey dbCacheKey)
     {
       lock (lockobj)
       {
-        var key = getKey(obj);
-        //var key = "A" + obj.A + "B" + obj.B + "Arot" + (int)Math.Round(obj.ARotation)                + "Brot" + (int)Math.Round(obj.BRotation);
-        if (window.nfpCache.ContainsKey(key))
+        if (window.nfpCache.ContainsKey(dbCacheKey.Key))
         {
           return true;
         }
+
         return false;
       }
-
     }
 
-    public windowUnk window;
-    public object lockobj = new object();
+    public IWindowUnk window;
 
-    string getKey(DbCacheKey obj)
-    {
-      var key = "A" + obj.A + "B" + obj.B + "Arot" + (int)Math.Round(obj.ARotation * 10000) + "Brot" + (int)Math.Round((obj.BRotation * 10000)) + ";" + obj.Type;
-      return key;
-    }
-    internal void Insert(DbCacheKey obj, bool inner = false)
-    {
+    public static volatile object lockobj = new object();
 
-      var key = getKey(obj);
+    public void Insert(DbCacheKey obj, bool inner = false)
+    {
       //if (window.performance.memory.totalJSHeapSize < 0.8 * window.performance.memory.jsHeapSizeLimit)
       {
         lock (lockobj)
         {
-          if (!window.nfpCache.ContainsKey(key))
+          if (!window.nfpCache.ContainsKey(obj.Key))
           {
-            window.nfpCache.Add(key, Background.cloneNfp(obj.nfp, inner).ToList());
+            window.nfpCache.Add(obj.Key, Background.cloneNfp(obj.nfp, inner).ToList());
           }
           else
           {
-            throw new Exception("trouble .cache allready has such key");
+            throw new Exception("trouble .cache already has such key");
             //   window.nfpCache[key] = Background.cloneNfp(new[] { obj.nfp }, inner).ToList();
           }
         }
@@ -1669,31 +1617,48 @@
         //console.log('using', window.performance.memory.totalJSHeapSize/window.performance.memory.jsHeapSizeLimit);
       }
     }
+
     public NFP[] Find(DbCacheKey obj, bool inner = false)
     {
       lock (lockobj)
       {
-        var key = getKey(obj);
         //var key = "A" + obj.A + "B" + obj.B + "Arot" + (int)Math.Round(obj.ARotation) + "Brot" + (int)Math.Round((obj.BRotation));
 
         //console.log('key: ', key);
-        if (window.nfpCache.ContainsKey(key))
+        if (window.nfpCache.ContainsKey(obj.Key))
         {
-          return Background.cloneNfp(window.nfpCache[key].ToArray(), inner);
+          return Background.cloneNfp(window.nfpCache[obj.Key].ToArray(), inner);
         }
 
         return null;
       }
     }
-
   }
-  public class windowUnk
+
+  public class windowUnk : IWindowUnk
   {
     public windowUnk()
     {
       db = new dbCache(this);
     }
-    public Dictionary<string, List<NFP>> nfpCache = new Dictionary<string, List<NFP>>();
-    public dbCache db;
+
+    public Dictionary<string, List<NFP>> nfpCache { get; } = new Dictionary<string, List<NFP>>();
+
+    private IDbCache db { get; }
+
+    public NFP[] Find(DbCacheKey obj, bool inner = false)
+    {
+      return this.db.Find(obj, inner);
+    }
+
+    public bool Has(DbCacheKey dbCacheKey)
+    {
+      return this.db.Has(dbCacheKey);
+    }
+
+    public void Insert(DbCacheKey obj, bool inner = false)
+    {
+      this.db.Insert(obj, inner);
+    }
   }
 }

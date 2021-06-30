@@ -19,7 +19,13 @@
       nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { DxfGenerator.Rectangle(22D) }), 0, out sheet).Should().BeTrue();
       NFP part;
       nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Rectangle(11D) }), 0, out part).Should().BeTrue();
-      this.sheetPlacement = Background.PlaceParts(new NFP[] { sheet }, new NFP[] { part }, new SvgNestConfig(), 0);
+      this.sheetPlacement = new Background().PlaceParts(new NFP[] { sheet }, new NFP[] { part }, new SvgNestConfig(), 0);
+    }
+
+    [Fact]
+    public void GivenNullSheetsPassedInThenNullReturned()
+    {
+      new Background().PlaceParts(null, new NFP[] { new NFP() }, new SvgNestConfig(), 0).Should().BeNull();
     }
 
     [Fact]
@@ -33,7 +39,7 @@
 
       var frame = Background.getFrame(sheet);
 
-      Background.Process2(frame, part, 0).Should().NotBeNull();
+      new Background().Process2(frame, part, 0).Should().NotBeNull();
     }
 
     [Fact]

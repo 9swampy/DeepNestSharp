@@ -116,6 +116,10 @@
       }
     }
 
+    public bool ForceRotations { get; set; }
+
+    public float[] Rotations { get; } = new float[] { 90, 270 };
+
     public SvgPoint[] Points
     {
       get

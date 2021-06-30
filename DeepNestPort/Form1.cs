@@ -223,7 +223,7 @@
           yy += (int)Font.Size + gap;
         }
 
-        ctx.gr.DrawString($"Call counter: {Background.callCounter};  Last placing time: {Background.LastPlacePartTime}ms", Font, Brushes.DarkBlue, 0, yy);
+        ctx.gr.DrawString($"Call counter: {context.Background.callCounter};  Last placing time: {context.Background.LastPlacePartTime}ms", Font, Brushes.DarkBlue, 0, yy);
         yy += (int)Font.Size + gap;
       }
       else
@@ -783,7 +783,7 @@
           var nfp = (listView1.SelectedItems[0].Tag as NFP);
           for (int i = 0; i < qd.Qnt; i++)
           {
-            var r = Background.clone(nfp);
+            var r = Background.Clone(nfp);
             polygons.Add(r);
           }
 

@@ -1091,12 +1091,44 @@
 
   public class DbCacheKey
   {
-    public int? A;
-    public int? B;
-    public float ARotation;
-    public float BRotation;
-    public NFP[] nfp;
-    public int Type;
+    public DbCacheKey(int? a, int? b, float aRotation, float bRotation, IEnumerable<NFP> nfps)
+    {
+      A = a;
+      B = b;
+      ARotation = aRotation;
+      BRotation = bRotation;
+      nfp = nfps.ToArray();
+    }
+
+    public DbCacheKey(int? a, int? b, float aRotation, float bRotation)
+      // : this(a, b, aRotation, bRotation, null)
+    {
+      A = a;
+      B = b;
+      ARotation = aRotation;
+      BRotation = bRotation;
+    }
+
+    public int? A { get; }
+
+    public int? B { get; }
+
+    public float ARotation { get; }
+
+    public float BRotation { get; }
+
+    public NFP[] nfp { get; }
+
+    public int Type { get; }
+
+    public string Key
+    {
+      get
+      {
+        var key = "A" + this.A + "B" + this.B + "Arot" + (int)Math.Round(this.ARotation * 10000) + "Brot" + (int)Math.Round(this.BRotation * 10000) + ";" + this.Type;
+        return key;
+      }
+    }
   }
 
   public class NfpPair
