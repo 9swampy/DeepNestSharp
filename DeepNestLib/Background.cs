@@ -511,7 +511,7 @@
       return rotated;
     }
 
-    internal SheetPlacement PlaceParts(IEnumerable<NFP> sheets, NFP[] parts, SvgNestConfig config, int nestindex)
+    internal SheetPlacement PlaceParts(IEnumerable<NFP> sheets, NFP[] parts, ISvgNestConfig config, int nestindex)
     {
       if (sheets == null || sheets.Count() == 0)
       {
@@ -1039,8 +1039,6 @@
 
       placement.index = this.data.index;
       this.ResponseAction(placement);
-
-      // ipcRenderer.send('background-response', placement);
     }
 
     internal void BackgroundStart(DataInfo data)
@@ -1467,16 +1465,6 @@
       {
         return doc.First();
       }
-
-      /*
-
-      // try the file cache if the calculation will take a long time
-      var doc = window.db.find({ A: A.source, B: B.source, Arotation: A.rotation, Brotation: B.rotation });
-
-      if (doc)
-      {
-          return doc;
-      }*/
 
       // not found in cache
       if (inside || (A.Children != null && A.Children.Count > 0))

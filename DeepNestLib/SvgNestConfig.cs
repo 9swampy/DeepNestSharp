@@ -1,15 +1,22 @@
 ﻿namespace DeepNestLib
 {
-  public class SvgNestConfig
+  public class SvgNestConfig : ISvgNestConfig
   {
-    public double Scale = 25;
-    public double ClipperScale = 10000000;
-    public bool ExploreConcave = false;
-    public int Rotations = 4;
-    public double SheetSpacing = 0;
-    public bool UseHoles = false;
-    public double TimeRatio = 0.5;
-    public bool MergeLines = false;
+    public double Scale { get; set; } = 25;
+
+    public double ClipperScale { get; set; } = 10000000;
+
+    public bool ExploreConcave { get; set; } = false;
+
+    public int Rotations { get; set; } = 4;
+
+    public double SheetSpacing { get; set; } = 0;
+
+    public bool UseHoles { get; set; } = false;
+
+    public double TimeRatio { get; set; } = 0.5;
+
+    public bool MergeLines { get; set; } = false;
 
     /// <summary>
     /// Port feature; don't exist in the original DeepNest project.Disabled in the UI because it's not a part of the cache key so

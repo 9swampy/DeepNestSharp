@@ -8,7 +8,7 @@
 
   public class GeneticAlgorithm
   {
-    SvgNestConfig Config;
+    ISvgNestConfig Config;
     public List<PopulationItem> Population;
 
     public static bool StrictAngles = false;
@@ -25,7 +25,7 @@
 90
         };
 
-    public GeneticAlgorithm(NFP[] adam, SvgNestConfig config)
+    public GeneticAlgorithm(NFP[] adam, ISvgNestConfig config)
     {
 
       List<float> ang2 = new List<float>();

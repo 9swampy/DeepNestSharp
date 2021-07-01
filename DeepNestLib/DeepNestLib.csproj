@@ -107,6 +107,7 @@
     <Compile Include="IExport.cs" />
     <Compile Include="IMessageService.cs" />
     <Compile Include="INfp.cs" />
+    <Compile Include="ISvgNestConfig.cs" />
     <Compile Include="IWindowUnk.cs" />
     <Compile Include="LineElement.cs" />
     <Compile Include="NestingContext.cs" />

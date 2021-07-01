@@ -147,11 +147,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClipperFixture.cs" />
+    <Compile Include="ClipperIntersectFixture.cs" />
+    <Compile Include="DefaultSvgNestConfig.cs" />
     <Compile Include="DxfGenerator.cs" />
     <Compile Include="DxfParserPart5Fixture.cs" />
     <Compile Include="DxfParserPart1Fixture.cs" />
     <Compile Include="DxfParserFixture.cs" />
+    <Compile Include="FitFourSmallSquaresInOneLargerSquareSheetPerfectlyFixture.cs" />
     <Compile Include="FitSmallSquarePartInLargerSquareSheetFixture.cs" />
+    <Compile Include="FitOnlyOneOfTwoSmallSquaresPartInOneLargerSquareSheetsFixture.cs" />
+    <Compile Include="FitTwoSmallSquaresPartInTwoLargerSquareSheetsFixture.cs" />
+    <Compile Include="NpfFixture.cs" />
     <Compile Include="PolygonSimplificationDictionaryFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
