@@ -21,26 +21,20 @@
     {
       var nestingContext = new NestingContext(A.Fake<IMessageService>());
       NFP firstSheet;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { DxfGenerator.Rectangle(30D, false) }), firstSheetIdSrc, out firstSheet).Should().BeTrue();
-      NFP firstPart;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("First", new List<DxfEntity>() { DxfGenerator.Rectangle(11D, false) }), firstPartIdSrc, out firstPart).Should().BeTrue();
-      NFP secondPart;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Second", new List<DxfEntity>() { DxfGenerator.Rectangle(11D, false) }), secondPartIdSrc, out secondPart).Should().BeTrue();
-      NFP thirdPart;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Third", new List<DxfEntity>() { DxfGenerator.Rectangle(11D, false) }), thirdPartIdSrc, out thirdPart).Should().BeTrue();
-      NFP fourthPart;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Fourth", new List<DxfEntity>() { DxfGenerator.Rectangle(11D, false) }), fourthPartIdSrc, out fourthPart).Should().BeTrue();
+      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { DxfGenerator.Rectangle(23D, RectangleType.FileLoad) }), firstSheetIdSrc, out firstSheet).Should().BeTrue();
+      NFP firstPart = new NFP();
+      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("firstPart", new List<DxfEntity>() { DxfGenerator.Rectangle(11D, RectangleType.FitFour) }), firstPartIdSrc, out firstPart).Should().BeTrue();
+      firstPart.Rotation = 180;
+      NFP secondPart = new NFP();
+      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("firstPart", new List<DxfEntity>() { DxfGenerator.Rectangle(11D, RectangleType.FitFour) }), secondPartIdSrc, out secondPart).Should().BeTrue();
+      secondPart.Rotation = 180;
+      NFP thirdPart = new NFP();
+      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("firstPart", new List<DxfEntity>() { DxfGenerator.Rectangle(11D, RectangleType.FitFour) }), thirdPartIdSrc, out thirdPart).Should().BeTrue();
+      thirdPart.Rotation = 180;
+      NFP fourthPart = new NFP();
+      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("firstPart", new List<DxfEntity>() { DxfGenerator.Rectangle(11D, RectangleType.FitFour) }), fourthPartIdSrc, out fourthPart).Should().BeTrue();
+      fourthPart.Rotation = 180;
       var config = new DefaultSvgNestConfig();
-      config.Spacing = 0;
-      config.CurveTolerance = 0;
-      config.SheetSpacing = 0;
-      config.MutationRate = 100;
-      config.PlacementType = PlacementTypeEnum.BoundingBox;
-      config.SheetHeight = 30;
-      config.SheetWidth = 30;
-      config.SheetQuantity = 1;
-      config.PopulationSize = 80;
-      SvgNest.Config = config;
       this.sheetPlacement = new Background().PlaceParts(new NFP[] { firstSheet }, new NFP[] { firstPart, secondPart, thirdPart, fourthPart }, config, 0);
     }
 
@@ -59,7 +53,7 @@
     [Fact]
     public void ShouldHaveExpectedFitness()
     {
-      this.sheetPlacement.fitness.Should().BeApproximately(26890030.901111115, 100000);
+      this.sheetPlacement.fitness.Should().BeApproximately(617.04158790170129, 10);
     }
 
     [Fact]
@@ -71,7 +65,7 @@
     [Fact]
     public void ShouldHaveExpectedArea()
     {
-      this.sheetPlacement.area.Should().Be(900);
+      this.sheetPlacement.area.Should().Be(529);
     }
 
     [Fact]
@@ -113,19 +107,19 @@
     [Fact]
     public void ShouldHaveOnePartOnFirstPlacementWithExpectedX()
     {
-      this.sheetPlacement.placements[0][0].sheetplacements[0].x.Should().Be(0, "bottom left");
+      this.sheetPlacement.placements[0][0].sheetplacements[0].x.Should().Be(10.999999933643268, "bottom left");
     }
 
     [Fact]
     public void ShouldHaveOnePartOnFirstPlacementWithExpectedY()
     {
-      this.sheetPlacement.placements[0][0].sheetplacements[0].y.Should().Be(0, "bottom left");
+      this.sheetPlacement.placements[0][0].sheetplacements[0].y.Should().Be(10.999999933643265, "bottom left");
     }
 
     [Fact]
     public void ShouldHaveOnePartOnFirstPlacementWithExpectedRotation()
     {
-      this.sheetPlacement.placements[0][0].sheetplacements[0].rotation.Should().Be(0);
+      this.sheetPlacement.placements[0][0].sheetplacements[0].rotation.Should().Be(180);
     }
 
     //[Fact]

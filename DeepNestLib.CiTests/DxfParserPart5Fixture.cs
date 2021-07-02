@@ -31,7 +31,7 @@
           this.hasImportedRawDetail = this.nestingContext.TryImportFromRawDetail(this.loadedRawDetail, A.Dummy<int>(), out this.loadedNfp);
           var sw = new Stopwatch();
           sw.Start();
-          var config = new SvgNestConfig() { CurveTolerance = 0.72D };
+          var config = new DefaultSvgNestConfig() { CurveTolerance = 0.72D };
           this.simplifiedNfp = SvgNest.simplifyFunction(this.loadedNfp, false, config);
           sw.Stop();
           this.simplifiedNfpTime = sw.ElapsedMilliseconds;

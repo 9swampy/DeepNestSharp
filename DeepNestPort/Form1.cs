@@ -682,7 +682,7 @@
           int src = 0;
           if (polygons.Any())
           {
-            src = polygons.Max(z => z.Source.Value) + 1;
+            src = polygons.Max(z => z.Source) + 1;
           }
           for (int i = 0; i < q.Qnt; i++)
           {
@@ -717,7 +717,7 @@
           int src = 0;
           if (polygons.Any())
           {
-            src = polygons.Max(z => z.Source.Value) + 1;
+            src = polygons.Max(z => z.Source) + 1;
           }
           for (int i = 0; i < q.Qnt; i++)
           {
@@ -959,7 +959,7 @@
         int src = 0;
         if (polygons.Any())
         {
-          src = polygons.Max(z => z.Source.Value) + 1;
+          src = polygons.Max(z => z.Source) + 1;
         }
         polygons.Add(pl);
         pl.Source = src;
@@ -975,7 +975,6 @@
 
     private void button14_Click(object sender, EventArgs e)
     {
-
       Random r = new Random();
       for (int i = 0; i < 10; i++)
       {
@@ -987,7 +986,7 @@
         int src = 0;
         if (polygons.Any())
         {
-          src = polygons.Max(z => z.Source.Value) + 1;
+          src = polygons.Max(z => z.Source) + 1;
         }
 
         pl.Source = src;
@@ -1018,7 +1017,7 @@
         int src = 0;
         if (polygons.Any())
         {
-          src = polygons.Max(z => z.Source.Value) + 1;
+          src = polygons.Max(z => z.Source) + 1;
         }
         pl.Source = src;
         polygons.Add(pl);
@@ -1046,7 +1045,7 @@
         int src = 0;
         if (polygons.Any())
         {
-          src = polygons.Max(z => z.Source.Value) + 1;
+          src = polygons.Max(z => z.Source) + 1;
         }
 
         pl.Source = src;
@@ -1068,7 +1067,7 @@
       int src = 0;
       if (polygons.Any())
       {
-        src = polygons.Max(z => z.Source.Value) + 1;
+        src = polygons.Max(z => z.Source) + 1;
       }
       if (q.ShowDialog() == DialogResult.OK)
       {
@@ -1116,7 +1115,7 @@
         int src = 0;
         if (polygons.Any())
         {
-          src = polygons.Max(z => z.Source.Value) + 1;
+          src = polygons.Max(z => z.Source) + 1;
         }
         polygons.Add(pl);
         pl.Source = src;
@@ -1156,7 +1155,7 @@
         int src = 0;
         if (polygons.Any())
         {
-          src = polygons.Max(z => z.Source.Value) + 1;
+          src = polygons.Max(z => z.Source) + 1;
         }
         pl.Source = src;
         polygons.Add(pl);
@@ -1206,7 +1205,7 @@
       int src = 0;
       if (polygons.Any())
       {
-        src = polygons.Max(z => z.Source.Value) + 1;
+        src = polygons.Max(z => z.Source) + 1;
       }
       polygons.Add(pl);
       pl.Source = src;
@@ -1322,7 +1321,7 @@
       int src = 0;
       if (polygons.Any())
       {
-        src = polygons.Max(z => z.Source.Value) + 1;
+        src = polygons.Max(z => z.Source) + 1;
       }
       polygons.Add(pl);
       pl.Source = src;

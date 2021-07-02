@@ -948,7 +948,7 @@
               ids.Add(id);
 
               // sources[j] = source;
-              sources.Add(source.Value);
+              sources.Add(source);
 
               // children[j] = child;
               children.Add(child.ToList());

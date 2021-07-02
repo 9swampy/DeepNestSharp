@@ -334,7 +334,7 @@
     {
       if (Polygons.Any())
       {
-        return Polygons.Max(z => z.Source.Value) + 1;
+        return Polygons.Max(z => z.Source) + 1;
       }
       return 0;
     }
@@ -343,7 +343,7 @@
     {
       if (Sheets.Any())
       {
-        return Sheets.Max(z => z.Source.Value) + 1;
+        return Sheets.Max(z => z.Source) + 1;
       }
       return 0;
     }

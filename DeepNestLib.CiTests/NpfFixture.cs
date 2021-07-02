@@ -60,13 +60,13 @@
     }
 
     [Fact]
-    public void GivenNfpWhenClonedWhenHasChildrenThenChildrenSourceShouldBeNull()
+    public void GivenNfpWhenClonedWhenHasChildrenThenChildrenSourceShouldBeCopiedRefactoringBugFix()
     {
       var sut = new NFP();
       sut.Children.Add(new NFP() { Source = 1 });
       var clone = Background.Clone(sut);
 
-      clone.Children[0].Source.Should().Be(null, "child Source is not copied. Note this is a refactoring; I don't see why it shouldn't be cloned.");
+      clone.Children[0].Source.Should().Be(sut.Children[0].Source, "child Source wasn't originally copied. Note this is a refactoring; I had to remove nullable as a null would kill the PlaceParts logic; can't ever be valid; and then had to copy when there was a value.");
     }
   }
 }

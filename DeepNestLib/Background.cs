@@ -218,13 +218,10 @@
       return result.ToArray();
     }
 
-    public static NFP Clone(NFP nfp, bool includeSourceInClone = true)
+    public static NFP Clone(NFP nfp)
     {
       NFP result = new NFP();
-      if (includeSourceInClone)
-      {
-        result.Source = nfp.Source;
-      }
+      result.Source = nfp.Source;
 
       for (var i = 0; i < nfp.Length; i++)
       {
@@ -235,7 +232,7 @@
       {
         foreach (var child in nfp.Children)
         {
-          result.Children.Add(Clone(child, false));
+          result.Children.Add(Clone(child));
         }
       }
 
@@ -409,7 +406,7 @@
     {
       if (A.Source != null && B.Source != null)
       {
-        var key = new DbCacheKey(A.Source.Value, B.Source.Value, 0, B.Rotation);
+        var key = new DbCacheKey(A.Source, B.Source, 0, B.Rotation);
 
         // var doc = window.db.find({ A: A.source, B: B.source, Arotation: 0, Brotation: B.rotation }, true);
         var res = window.Find(key, true);
@@ -475,7 +472,7 @@
       {
         // insert into db
         // console.log('inserting inner: ', A.source, B.source, B.rotation, f);
-        var doc = new DbCacheKey(A.Source.Value, B.Source.Value, 0, B.Rotation, f.ToArray());
+        var doc = new DbCacheKey(A.Source, B.Source, 0, B.Rotation, f.ToArray());
         window.Insert(doc, true);
       }
 
@@ -632,7 +629,7 @@
                     y = sheetNfp[j][k].y - part[0].y,
                     id = part.Id,
                     rotation = part.Rotation,
-                    source = part.Source.Value,
+                    source = part.Source,
                   };
                 }
               }
@@ -807,7 +804,7 @@
                 id = part.Id,
                 x = nf[k].x - part[0].x,
                 y = nf[k].y - part[0].y,
-                source = part.Source.Value,
+                source = part.Source,
                 rotation = part.Rotation,
               };
 
@@ -953,7 +950,7 @@
           allplacements.Add(new SheetPlacementItem()
           {
             sheetId = sheet.Id,
-            sheetSource = sheet.Source.Value,
+            sheetSource = sheet.Source,
             sheetplacements = placements,
           });
 
@@ -1092,10 +1089,10 @@
                   B = B,
                   ARotation = A.Rotation,
                   BRotation = B.Rotation,
-                  Asource = A.Source.Value,
-                  Bsource = B.Source.Value,
+                  Asource = A.Source,
+                  Bsource = B.Source,
                 };
-                var doc = new DbCacheKey(A.Source.Value, B.Source.Value, A.Rotation, B.Rotation);
+                var doc = new DbCacheKey(A.Source, B.Source, A.Rotation, B.Rotation);
                 lock (lobj)
                 {
                   if (!this.InPairs(key, pairs.ToArray()) && !window.Has(doc))
@@ -1121,10 +1118,10 @@
                 B = B,
                 ARotation = A.Rotation,
                 BRotation = B.Rotation,
-                Asource = A.Source.Value,
-                Bsource = B.Source.Value,
+                Asource = A.Source,
+                Bsource = B.Source,
               };
-              var doc = new DbCacheKey(A.Source.Value, B.Source.Value, A.Rotation, B.Rotation);
+              var doc = new DbCacheKey(A.Source, B.Source, A.Rotation, B.Rotation);
               if (!this.InPairs(key, pairs.ToArray()) && !window.Has(doc))
               {
                 pairs.Add(key);
@@ -1532,7 +1529,7 @@
       */
       if (!inside && A.Source != null && B.Source != null)
       {
-        var doc2 = new DbCacheKey(A.Source.Value, B.Source.Value, A.Rotation, B.Rotation, nfp);
+        var doc2 = new DbCacheKey(A.Source, B.Source, A.Rotation, B.Rotation, nfp);
         window.Insert(doc2);
       }
 
