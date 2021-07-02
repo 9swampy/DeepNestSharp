@@ -923,7 +923,6 @@
         {
           // console.log('new generation!');
           // all individuals have been evaluated, start next generation
-
           this.ga.Generate();
         }
 

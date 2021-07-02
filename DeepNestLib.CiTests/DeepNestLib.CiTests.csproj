@@ -153,6 +153,7 @@
     <Compile Include="DxfParserPart5Fixture.cs" />
     <Compile Include="DxfParserPart1Fixture.cs" />
     <Compile Include="DxfParserFixture.cs" />
+    <Compile Include="FitFourSmallSquaresInOneLargerSquareSheetPerfectlyFixture - Copy.cs" />
     <Compile Include="FitFourSmallSquaresInOneLargerSquareSheetPerfectlyFixture.cs" />
     <Compile Include="FitSmallSquarePartInLargerSquareSheetFixture.cs" />
     <Compile Include="FitOnlyOneOfTwoSmallSquaresPartInOneLargerSquareSheetsFixture.cs" />
@@ -179,6 +180,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="DeepNestLib.CiTests.ruleset" />
+    <Content Include="LowerSwitchBack.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
     <Content Include="SquareInSquare.dxf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
