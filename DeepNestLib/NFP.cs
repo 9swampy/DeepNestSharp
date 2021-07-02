@@ -180,5 +180,56 @@
     {
       throw new NotImplementedException();
     }
+
+    public NFP Clone()
+    {
+      NFP result = new NFP();
+      result.Source = this.Source;
+      result.Rotation = this.Rotation;
+
+      for (var i = 0; i < this.Length; i++)
+      {
+        result.AddPoint(new SvgPoint(this[i].x, this[i].y));
+      }
+
+      if (this.Children != null && this.Children.Count > 0)
+      {
+        foreach (var child in this.Children)
+        {
+          result.Children.Add(child.Clone());
+        }
+      }
+
+      return result;
+    }
+
+    public NFP Rotate(float degrees)
+    {
+      var angle = degrees * Math.PI / 180;
+      List<SvgPoint> pp = new List<SvgPoint>();
+      for (var i = 0; i < this.Length; i++)
+      {
+        var x = this[i].x;
+        var y = this[i].y;
+        var x1 = (x * Math.Cos(angle)) - (y * Math.Sin(angle));
+        var y1 = (x * Math.Sin(angle)) + (y * Math.Cos(angle));
+
+        pp.Add(new SvgPoint(x1, y1));
+      }
+
+      NFP rotated = new NFP(pp);
+      /* rotated.Rotation += degrees;
+      rotated.Rotation = rotated.Rotation % 360f; */
+
+      if (this.Children != null && this.Children.Count > 0)
+      {
+        for (var j = 0; j < this.Children.Count; j++)
+        {
+          rotated.Children.Add(this.Children[j].Rotate(degrees));
+        }
+      }
+
+      return rotated;
+    }
   }
 }

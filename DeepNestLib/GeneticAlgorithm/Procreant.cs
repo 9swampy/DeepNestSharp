@@ -1,4 +1,4 @@
-﻿namespace DeepNestLib
+﻿namespace DeepNestLib.GeneticAlgorithm
 {
   using System;
   using System.Collections.Generic;
@@ -6,7 +6,7 @@
   using System.Linq;
   using System.Text;
 
-  public class GeneticAlgorithm
+  public class Procreant
   {
     private readonly ISvgNestConfig Config;
     public List<PopulationItem> Population;
@@ -25,20 +25,20 @@
 90
         };
 
-    public GeneticAlgorithm(NFP[] adam, ISvgNestConfig config)
+    public Procreant(NFP[] adam, ISvgNestConfig config)
     {
 
-      List<float> ang2 = new List<float>();
-      for (int i = 0; i < adam.Length; i++)
+      var ang2 = new List<float>();
+      for (var i = 0; i < adam.Length; i++)
       {
-        ang2.Add((i * 90) % 360);
+        ang2.Add(i * 90 % 360);
       }
       defaultAngles = ang2.ToArray();
       Config = config;
 
 
-      List<float> angles = new List<float>();
-      for (int i = 0; i < adam.Length; i++)
+      var angles = new List<float>();
+      for (var i = 0; i < adam.Length; i++)
       {
         if (StrictAngles)
         {
@@ -54,7 +54,7 @@
       }
 
       Population = new List<PopulationItem>();
-      Population.Add(new PopulationItem() { placements = adam.ToList(), Rotation = angles.ToArray() });
+      Population.Add(new PopulationItem(adam.ToList(), angles.ToArray()));
       while (Population.Count() < config.PopulationSize)
       {
         var mutant = this.mutate(Population[0]);
@@ -64,11 +64,8 @@
 
     private PopulationItem mutate(PopulationItem p)
     {
-      var clone = new PopulationItem();
-
-      clone.placements = p.placements.ToArray().ToList();
-      clone.Rotation = p.Rotation.Clone() as float[];
-      for (int i = 0; i < clone.placements.Count(); i++)
+      var clone = new PopulationItem(p.placements.ToArray().ToList(), p.Rotation.Clone() as float[]);
+      for (var i = 0; i < clone.placements.Count(); i++)
       {
         var rand = r.NextDouble();
         if (rand < 0.01 * Config.MutationRate)
@@ -120,7 +117,7 @@
 
       float lower = 0;
       var weight = 1 / (float)pop.Length;
-      float upper = weight;
+      var upper = weight;
 
       for (var i = 0; i < pop.Length; i++)
       {
@@ -147,7 +144,7 @@
       var gene2 = new List<NFP>(female.placements.Take(cutpoint).ToArray());
       var rot2 = new List<float>(female.Rotation.Take(cutpoint).ToArray());
 
-      int i = 0;
+      var i = 0;
 
       for (i = 0; i < female.placements.Count; i++)
       {
@@ -167,22 +164,21 @@
         }
       }
 
-
-
-
-      return new[] {new  PopulationItem() {
-                placements= gene1, Rotation= rot1.ToArray()},
-                new PopulationItem(){ placements= gene2, Rotation= rot2.ToArray()}};
+      return new[]
+      {
+        new PopulationItem(gene1, rot1.ToArray()),
+        new PopulationItem(gene2, rot2.ToArray()),
+      };
     }
 
-    public void Generation()
+    public void Generate()
     {
       // Individuals with higher fitness are more likely to be selected for mating
       Population = Population.OrderBy(z => z.fitness).ToList();
 
       // fittest individual is preserved in the new generation (elitism)
 
-      List<PopulationItem> newpopulation = new List<PopulationItem>();
+      var newpopulation = new List<PopulationItem>();
       newpopulation.Add(this.Population[0]);
       while (newpopulation.Count() < this.Population.Count)
       {

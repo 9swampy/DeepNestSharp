@@ -783,7 +783,7 @@
           var nfp = (listView1.SelectedItems[0].Tag as NFP);
           for (int i = 0; i < qd.Qnt; i++)
           {
-            var r = Background.Clone(nfp);
+            var r = nfp.Clone();
             polygons.Add(r);
           }
 

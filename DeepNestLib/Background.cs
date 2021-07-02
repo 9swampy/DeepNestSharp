@@ -202,41 +202,19 @@
     {
       if (!inner)
       {
-        return new[] { Clone(nfp.First()) };
+        return new[] { nfp.First().Clone() };
       }
 
-      //throw new NotImplementedException();
       System.Diagnostics.Debug.Print("Original source had marked this 'Background.cloneNfp' as not implemented; not sure why. . .");
 
       // inner nfp is actually an array of nfps
       List<NFP> result = new List<NFP>();
       for (var i = 0; i < nfp.Count(); i++)
       {
-        result.Add(Clone(nfp[i]));
+        result.Add(nfp[i].Clone());
       }
 
       return result.ToArray();
-    }
-
-    public static NFP Clone(NFP nfp)
-    {
-      NFP result = new NFP();
-      result.Source = nfp.Source;
-
-      for (var i = 0; i < nfp.Length; i++)
-      {
-        result.AddPoint(new SvgPoint(nfp[i].x, nfp[i].y));
-      }
-
-      if (nfp.Children != null && nfp.Children.Count > 0)
-      {
-        foreach (var child in nfp.Children)
-        {
-          result.Children.Add(Clone(child));
-        }
-      }
-
-      return result;
     }
 
     public int callCounter = 0;
@@ -479,35 +457,6 @@
       return f.ToArray();
     }
 
-    public static NFP rotatePolygon(NFP polygon, float degrees)
-    {
-      NFP rotated = new NFP();
-
-      var angle = degrees * Math.PI / 180;
-      List<SvgPoint> pp = new List<SvgPoint>();
-      for (var i = 0; i < polygon.Length; i++)
-      {
-        var x = polygon[i].x;
-        var y = polygon[i].y;
-        var x1 = (x * Math.Cos(angle)) - (y * Math.Sin(angle));
-        var y1 = (x * Math.Sin(angle)) + (y * Math.Cos(angle));
-
-        pp.Add(new SvgPoint(x1, y1));
-      }
-
-      rotated.ReplacePoints(pp);
-
-      if (polygon.Children != null && polygon.Children.Count > 0)
-      {
-        for (var j = 0; j < polygon.Children.Count; j++)
-        {
-          rotated.Children.Add(rotatePolygon(polygon.Children[j], degrees));
-        }
-      }
-
-      return rotated;
-    }
-
     internal SheetPlacement PlaceParts(IEnumerable<NFP> sheets, NFP[] parts, ISvgNestConfig config, int nestindex)
     {
       if (sheets == null || sheets.Count() == 0)
@@ -528,7 +477,7 @@
       var rotated = new List<NFP>();
       for (int i = 0; i < parts.Length; i++)
       {
-        var r = rotatePolygon(parts[i], parts[i].Rotation);
+        var r = parts[i].Rotate(parts[i].Rotation);
         r.Rotation = parts[i].Rotation;
         r.Source = parts[i].Source;
         r.Id = parts[i].Id;
@@ -588,7 +537,7 @@
               break;
             }
 
-            var r = rotatePolygon(part, 360f / config.Rotations);
+            var r = part.Rotate(360f / config.Rotations);
             r.Rotation = part.Rotation + (360f / config.Rotations);
             r.Source = part.Source;
             r.Id = part.Id;
@@ -837,7 +786,7 @@
               else
               {
                 // must be convex hull
-                var localpoints = Clone(allpoints);
+                var localpoints = allpoints.Clone();
 
                 for (int m = 0; m < part.Length; m++)
                 {
@@ -1183,13 +1132,13 @@
       {
         for (int j = 0; j < A.Children.Count; j++)
         {
-          Achildren.Add(rotatePolygon(A.Children[j], processed.ARotation));
+          Achildren.Add(A.Children[j].Rotate(processed.ARotation));
         }
       }
 
       if (Achildren.Count > 0)
       {
-        var Brotated = rotatePolygon(B, processed.BRotation);
+        var Brotated = B.Rotate(processed.BRotation);
         var bbounds = GeometryUtil.getPolygonBounds(Brotated);
         List<NFP> cnfp = new List<NFP>();
 
@@ -1307,8 +1256,8 @@
 
     private NfpPair Process(NfpPair pair)
     {
-      var A = rotatePolygon(pair.A, pair.ARotation);
-      var B = rotatePolygon(pair.B, pair.BRotation);
+      var A = pair.A.Rotate(pair.ARotation);
+      var B = pair.B.Rotate(pair.BRotation);
 
       ///////////////////
       var Ac = _Clipper.ScaleUpPaths(A.Points, 10000000);

@@ -5,6 +5,7 @@
   using System.Linq;
   using System.Threading.Tasks;
   using ClipperLib;
+  using DeepNestLib.GeneticAlgorithm;
 
   public class SvgNest
   {
@@ -796,7 +797,7 @@
 
     private PopulationItem individual = null;
     private NFP[] placelist;
-    private GeneticAlgorithm ga;
+    private GeneticAlgorithm.Procreant ga;
 
     public List<SheetPlacement> nests = new List<SheetPlacement>();
 
@@ -872,7 +873,7 @@
           adam.Insert(9, temp);
 
           #endregion*/
-          this.ga = new GeneticAlgorithm(adam.ToArray(), Config);
+          this.ga = new GeneticAlgorithm.Procreant(adam.ToArray(), Config);
         }
 
         this.individual = null;
@@ -892,7 +893,7 @@
         {
           // console.log('new generation!');
           // all individuals have been evaluated, start next generation
-          this.ga.Generation();
+          this.ga.Generate();
         }
 
         var running = this.ga.Population.Where((p) =>
@@ -1198,19 +1199,6 @@
     {
       return $"A:{AIndex} B:{BIndex} inside:{Inside} Arotation:{ARotation} Brotation:{BRotation}";
     }
-  }
-
-  public class PopulationItem
-  {
-    public object processing = null;
-
-    public double? fitness;
-
-    public float[] Rotation;
-    public List<NFP> placements;
-
-    public NFP[] paths;
-    public double area;
   }
 
   public class SheetPlacementItem
