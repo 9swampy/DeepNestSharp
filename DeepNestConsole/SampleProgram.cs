@@ -38,7 +38,7 @@
       do
       {
         var sw = Stopwatch.StartNew();
-        Context.NestIterate();
+        Context.NestIterate(null);
         sw.Stop();
         Console.WriteLine("Iteration: " + Context.Iterations + "; fitness: " + Context.Current.fitness + "; nesting time: " + sw.ElapsedMilliseconds + "ms");
       } while (!IsFinished());

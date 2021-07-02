@@ -157,7 +157,7 @@
     <Compile Include="FitSmallSquarePartInLargerSquareSheetFixture.cs" />
     <Compile Include="FitOnlyOneOfTwoSmallSquaresPartInOneLargerSquareSheetsFixture.cs" />
     <Compile Include="FitTwoSmallSquaresPartInTwoLargerSquareSheetsFixture.cs" />
-    <Compile Include="NpfFixture.cs" />
+    <Compile Include="NfpFixture.cs" />
     <Compile Include="PolygonSimplificationDictionaryFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

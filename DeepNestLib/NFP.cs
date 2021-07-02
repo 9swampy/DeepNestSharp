@@ -101,6 +101,8 @@
 
     public int Source { get; set; } = -1;
 
+    public int PlacementOrder { get; set; } = -1;
+
     private float rotation;
 
     public float Rotation
@@ -217,9 +219,10 @@
         pp.Add(new SvgPoint(x1, y1));
       }
 
-      NFP rotated = new NFP(pp);
-      /* rotated.Rotation += degrees;
-      rotated.Rotation = rotated.Rotation % 360f; */
+      NFP rotated = new NFP();
+      rotated.ReplacePoints(pp);
+      // rotated.Rotation += degrees;
+      // rotated.Rotation = rotated.Rotation % 360f;
 
       if (this.Children != null && this.Children.Count > 0)
       {

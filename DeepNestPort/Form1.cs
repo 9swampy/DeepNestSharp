@@ -243,6 +243,8 @@
           ctx.gr.DrawImage(bb, new RectangleF(pp.X, pp.Y, bb.Width * ctx.zoom, bb.Height * ctx.zoom), new Rectangle(0, 0, bb.Width, bb.Height), GraphicsUnit.Pixel);
         }
       }
+
+      int i = 0;
       foreach (var item in polygons.Union(sheets))
       {
         if (!checkBox1.Checked)
@@ -262,12 +264,19 @@
           m.Translate((float)item.x, (float)item.y);
           m.Rotate(item.Rotation);
 
-
-
           var pnts = item.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
           m.TransformPoints(pnts);
 
           path.AddPolygon(pnts.Select(z => ctx.Transform(z)).ToArray());
+
+          if (!(item is Sheet) && isInfoShow)
+          {
+            var label = $"{item.PlacementOrder} ({item.x:N0},{item.y:N0})@{item.Rotation}";
+            var ms = ctx2.gr.MeasureString(label, SystemFonts.DefaultFont);
+            var midPnt = new PointF(pnts.Average(o => o.X), pnts.Average(o => o.Y));
+            ctx.gr.DrawString(label, Font, Brushes.Black, ctx.Transform(midPnt));
+          }
+
           if (item.Children != null)
           {
             foreach (var citem in item.Children)
@@ -344,7 +353,6 @@
 
       foreach (var item in polygons.Union(sheets))
       {
-
         if (!(item is Sheet))
         {
           if (!item.fitted) continue;
@@ -364,6 +372,7 @@
           m.TransformPoints(pnts);
 
           path.AddPolygon(pnts.Select(z => ctx.Transform(z)).ToArray());
+
           if (item.Children != null)
           {
             foreach (var citem in item.Children)
@@ -371,7 +380,6 @@
               var pnts2 = citem.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
               m.TransformPoints(pnts2);
               path.AddPolygon(pnts2.Select(z => ctx.Transform(z)).ToArray());
-
             }
           }
           ctx.gr.ResetTransform();
@@ -427,14 +435,15 @@
       }
     }
 
-
     Thread th;
 
-    internal void displayProgress(float progress)
+    internal void displayProgress(int placedParts, int currentPopulation)
     {
-      progressVal = progress;
-
+      float progressPopulation = (0.66f * ((float)currentPopulation / (float)SvgNest.Config.PopulationSize));
+      float progressPlacements = (0.34f * ((float)placedParts / (float)this.polygons.Count));
+      this.progressVal = progressPopulation + progressPlacements;
     }
+
     public float progressVal = 0;
 
     private void listView1_SelectedIndexChanged(object sender, EventArgs e)
@@ -740,16 +749,14 @@
           {
             this.context.StartNest();
             UpdateNestsList();
-            Background.displayProgress = displayProgress;
 
             while (true)
             {
               Stopwatch sw = new Stopwatch();
               sw.Start();
 
-              this.context.NestIterate();
+              this.context.NestIterate(displayProgress);
               UpdateNestsList();
-              displayProgress(1.0f);
               sw.Stop();
               _ = this.Invoke((MethodInvoker)(() => { this.toolStripStatusLabel1.Text = "Nesting time: " + sw.ElapsedMilliseconds + "ms"; }));
               if (this.stop || this.context.IsErrored)

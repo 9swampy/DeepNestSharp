@@ -45,7 +45,7 @@
       Iterations = 0;
     }
 
-    public void NestIterate()
+    public void NestIterate(DisplayProgressDelegate displayProgress)
     {
       try
       {
@@ -161,7 +161,7 @@
           item.Polygon.Source = srcc++;
         }
 
-        Nest.launchWorkers(partsLocal.ToArray());
+        Nest.launchWorkers(partsLocal.ToArray(), displayProgress);
         var plcpr = Nest.nests.First();
 
         if (current == null || plcpr.fitness < current.fitness)
@@ -218,6 +218,7 @@
             poly.x = ssitem.x + sheet.x;
             poly.y = ssitem.y + sheet.y;
             poly.Rotation = ssitem.rotation;
+            poly.PlacementOrder = zitem.sheetplacements.IndexOf(ssitem);
           }
         }
       }

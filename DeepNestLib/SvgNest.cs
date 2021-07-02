@@ -828,12 +828,42 @@
           // displayCallback();
         }
       }
+
+      DisplayProgress(this.nests[0].placements[0][0].sheetplacements.Count, this.ga.Population.Count(o => o.fitness != null));
     }
 
-    public void launchWorkers(NestItem[] parts)
+    private static volatile object displayProgressLock = new object();
+    private DisplayProgressDelegate displayProgress;
+
+    private DisplayProgressDelegate DisplayProgress
+    {
+      get
+      {
+        lock (displayProgressLock)
+        {
+          if (this.displayProgress == null)
+          {
+            return (a, b) => a = b;
+          }
+
+          return this.displayProgress;
+        }
+      }
+
+      set
+      {
+        lock (displayProgressLock)
+        {
+          this.displayProgress = value;
+        }
+      }
+    }
+
+    public void launchWorkers(NestItem[] parts, DisplayProgressDelegate displayProgress)
     {
       try
       {
+        this.DisplayProgress = displayProgress;
         this.background.ResponseAction = this.ResponseProcessor;
 
         if (this.ga == null)
@@ -893,6 +923,7 @@
         {
           // console.log('new generation!');
           // all individuals have been evaluated, start next generation
+
           this.ga.Generate();
         }
 

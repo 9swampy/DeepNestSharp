@@ -518,9 +518,6 @@
         double? minarea = null;
         for (int i = 0; i < parts.Length; i++)
         {
-          float prog = 0.66f + (0.34f * (totalPlaced / (float)totalParts));
-          DisplayProgress(prog);
-
           part = parts[i];
 
           // inner NFP
@@ -1171,16 +1168,6 @@
       window.Insert(doc);
     }
 
-    public static Action<float> displayProgress;
-
-    private static void DisplayProgress(float p)
-    {
-      if (displayProgress != null)
-      {
-        displayProgress(p);
-      }
-    }
-
     private void ThenDeepNest(NfpPair[] processed, List<NFP> parts)
     {
       int cnt = 0;
@@ -1188,9 +1175,6 @@
       {
         Parallel.For(0, processed.Count(), (i) =>
         {
-          float progress = 0.33f + (0.33f * (cnt / (float)processed.Count()));
-          cnt++;
-          DisplayProgress(progress);
           this.ThenIterate(processed[i], parts);
         });
       }
@@ -1198,9 +1182,6 @@
       {
         for (var i = 0; i < processed.Count(); i++)
         {
-          float progress = 0.33f + (0.33f * (cnt / (float)processed.Count()));
-          cnt++;
-          DisplayProgress(progress);
           this.ThenIterate(processed[i], parts);
         }
       }
@@ -1228,15 +1209,11 @@
     private NfpPair[] PmapDeepNest(List<NfpPair> pairs)
     {
       NfpPair[] ret = new NfpPair[pairs.Count()];
-      int cnt = 0;
       if (UseParallel)
       {
         Parallel.For(0, pairs.Count, (i) =>
         {
           ret[i] = this.Process(pairs[i]);
-          float progress = 0.33f * (cnt / (float)pairs.Count);
-          cnt++;
-          DisplayProgress(progress);
         });
       }
       else
@@ -1245,9 +1222,6 @@
         {
           var item = pairs[i];
           ret[i] = this.Process(item);
-          float progress = 0.33f * (cnt / (float)pairs.Count);
-          cnt++;
-          DisplayProgress(progress);
         }
       }
 
