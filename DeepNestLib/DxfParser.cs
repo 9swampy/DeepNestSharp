@@ -5,22 +5,51 @@
     using System.Drawing;
     using System.IO;
     using System.Linq;
+    using System.Threading;
     using IxMilia.Dxf;
     using IxMilia.Dxf.Entities;
 
     public class DxfParser : IExport
     {
+        private static volatile object loadLock = new object();
+        private const int NumberOfRetries = 3;
+        private const int DelayOnRetry = 1000;
+
         public static RawDetail LoadDxf(string path)
         {
             FileInfo fi = new FileInfo(path);
-            DxfFile dxffile = DxfFile.Load(fi.FullName);
+            DxfFile dxffile;
+            lock (loadLock)
+            {
+                for (int i = 1; i <= NumberOfRetries; ++i)
+                {
+                    try
+                    {
+                        dxffile = DxfFile.Load(fi.FullName);
+                        IEnumerable<DxfEntity> entities = dxffile.Entities.ToArray();
+                        return ConvertDxfToRawDetail(fi.FullName, entities);
+                    }
+                    catch (IOException) when (i <= NumberOfRetries)
+                    {
+                        Thread.Sleep(DelayOnRetry);
+                    }
+                    catch (IOException)
+                    {
+                        throw;
+                    }
+                }
+            }
+
+            return default(RawDetail);
+        }
+
+        public static RawDetail ConvertDxfToRawDetail(string fullFilename, IEnumerable<DxfEntity> entities)
+        {
             RawDetail s = new RawDetail();
+            s.Name = fullFilename;
 
-            s.Name = fi.FullName;
-            IEnumerable<DxfEntity> entities = dxffile.Entities.ToArray();
-
-            LocalContour points = new LocalContour();
-            List<LineElement> elems = new List<LineElement>();
+            var points = new LocalContour();
+            var elems = new List<LineElement>();
 
             foreach (DxfEntity ent in entities)
             {
