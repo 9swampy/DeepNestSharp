@@ -8,11 +8,11 @@
 
   public class GeneticAlgorithm
   {
-    ISvgNestConfig Config;
+    private readonly ISvgNestConfig Config;
     public List<PopulationItem> Population;
 
-    public static bool StrictAngles = false;
-    float[] defaultAngles = new float[] {
+    private static bool StrictAngles = false;
+    private float[] defaultAngles = new float[] {
         0,
 0,
 90,
@@ -62,7 +62,7 @@
       }
     }
 
-    public PopulationItem mutate(PopulationItem p)
+    private PopulationItem mutate(PopulationItem p)
     {
       var clone = new PopulationItem();
 
@@ -92,7 +92,7 @@
       return clone;
     }
     Random r = new Random();
-    public float[] shuffleArray(float[] array)
+    private float[] shuffleArray(float[] array)
     {
       for (var i = array.Length - 1; i > 0; i--)
       {
@@ -106,7 +106,7 @@
 
 
     // returns a random individual from the population, weighted to the front of the list (lower fitness value is more likely to be selected)
-    public PopulationItem randomWeightedIndividual(PopulationItem exclude = null)
+    private PopulationItem randomWeightedIndividual(PopulationItem exclude = null)
     {
       //var pop = this.population.slice(0);
       var pop = this.Population.ToArray();
@@ -137,7 +137,7 @@
     }
 
     // single point crossover
-    public PopulationItem[] mate(PopulationItem male, PopulationItem female)
+    private PopulationItem[] mate(PopulationItem male, PopulationItem female)
     {
       var cutpoint = (int)Math.Round(Math.Min(Math.Max(r.NextDouble(), 0.1), 0.9) * (male.placements.Count - 1));
 
