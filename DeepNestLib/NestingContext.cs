@@ -62,22 +62,7 @@
         }
         foreach (var item in Polygons)
         {
-          NFP clone = new NFP();
-          clone.Id = item.Id;
-          clone.Source = item.Source;
-          clone.ReplacePoints(item.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }));
-          if (item.Children != null)
-          {
-            foreach (var citem in item.Children)
-            {
-              clone.Children.Add(new NFP());
-              var l = clone.Children.Last();
-              l.Id = citem.Id;
-              l.Source = citem.Source;
-              l.ReplacePoints(citem.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }));
-            }
-          }
-
+          NFP clone = item.CloneExact();
           lpoly.Add(clone);
         }
 
@@ -142,16 +127,15 @@
         {
           Polygon = z.First(),
           IsSheet = false,
-          Quantity = z.Count()
+          Quantity = z.Count(),
         });
 
         var p2 = lsheets.GroupBy(z => z.Source).Select(z => new NestItem()
         {
           Polygon = z.First(),
           IsSheet = true,
-          Quantity = z.Count()
+          Quantity = z.Count(),
         });
-
 
         partsLocal.AddRange(p1);
         partsLocal.AddRange(p2);
@@ -162,11 +146,14 @@
         }
 
         Nest.launchWorkers(partsLocal.ToArray(), displayProgress);
-        var plcpr = Nest.nests.First();
-
-        if (current == null || plcpr.fitness < current.fitness)
+        if (Nest != null & Nest.nests != null && Nest.nests.Count > 0)
         {
-          AssignPlacement(plcpr);
+          var plcpr = Nest.nests.First();
+
+          if (current == null || plcpr.fitness < current.fitness)
+          {
+            AssignPlacement(plcpr);
+          }
         }
 
         Iterations++;
@@ -312,18 +299,30 @@
       }
     }
 
+    public bool TryAddFromRawDetailToPolygons(RawDetail raw, int src)
+    {
+      NFP loadedNfp;
+      bool result = TryImportFromRawDetail(raw, src, out loadedNfp);
+      if (result)
+      {
+        Polygons.Add(loadedNfp);
+      }
+
+      return result;
+    }
+
     public bool TryImportFromRawDetail(RawDetail raw, int src, out NFP loadedNfp)
     {
       loadedNfp = raw.ToNfp();
       if (loadedNfp == null)
       {
         return false;
-      }
+        }
 
       loadedNfp.Source = src;
       Polygons.Add(loadedNfp);
-      return true;
-    }
+        return true;
+      }
 
     public int GetNextSource()
     {

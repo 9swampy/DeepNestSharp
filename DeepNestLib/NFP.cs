@@ -18,7 +18,7 @@
     public override string ToString()
     {
       var str1 = (this.points != null) ? this.points.Count() + string.Empty : "null";
-      return $"nfp: id: {this.Id}; source: {this.Source}; rotation: {this.rotation}; points: {str1}";
+      return $"nfp: id: {this.Id}; source: {this.Source}; rotation: {this.Rotation}; points: {str1}";
     }
 
     public NFP(IList<NFP> children)
@@ -160,6 +160,8 @@
       }
     }
 
+    public bool IsPrimary { get; set; }
+
     internal void Push(SvgPoint svgPoint)
     {
       this.points = this.points.Append(svgPoint).ToArray();
@@ -186,8 +188,10 @@
     public NFP Clone()
     {
       NFP result = new NFP();
+      result.Id = this.Id;
       result.Source = this.Source;
       result.Rotation = this.Rotation;
+      result.IsPrimary = this.IsPrimary;
 
       for (var i = 0; i < this.Length; i++)
       {
@@ -205,6 +209,31 @@
       return result;
     }
 
+    /// <summary>
+    /// Clone but only copy exact points.
+    /// </summary>
+    /// <returns>Clone but only copy exact points.</returns>
+    public NFP CloneExact()
+    {
+      NFP clone = new NFP();
+      clone.Id = this.Id;
+      clone.Source = this.Source;
+      clone.ReplacePoints(this.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }));
+      if (this.Children != null)
+      {
+        foreach (var citem in this.Children)
+        {
+          clone.Children.Add(new NFP());
+          var l = clone.Children.Last();
+          l.Id = citem.Id;
+          l.Source = citem.Source;
+          l.ReplacePoints(citem.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }));
+        }
+      }
+
+      return clone;
+    }
+
     public NFP Rotate(float degrees)
     {
       var angle = degrees * Math.PI / 180;
@@ -219,7 +248,8 @@
         pp.Add(new SvgPoint(x1, y1));
       }
 
-      NFP rotated = new NFP();
+      NFP rotated = this.Clone();
+      rotated.Rotation = 0;
       rotated.ReplacePoints(pp);
       // rotated.Rotation += degrees;
       // rotated.Rotation = rotated.Rotation % 360f;
