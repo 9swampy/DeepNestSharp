@@ -174,7 +174,9 @@
     }
 
     public static double RemoveThreshold = 10e-5;
-    public static double ClosingThreshold = 10e-4;
+    public static double ClosingThreshold = 10e-2;
+
+    public string SaveFileDialogFilter => "Dxf files (*.dxf)|*.dxf";
 
     public static LocalContour[] ConnectElements(LineElement[] elems)
     {

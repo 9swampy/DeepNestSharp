@@ -181,12 +181,6 @@
       }
     }
 
-    public void ExportSvg(string v)
-    {
-      new SvgParser().Export(v, Polygons, Sheets);
-    }
-
-
     public void AssignPlacement(SheetPlacement plcpr)
     {
       current = plcpr;
@@ -385,7 +379,20 @@
       {
         var cnt = int.Parse(item.Attribute("count").Value);
         var path = item.Attribute("path").Value;
-        var r = SvgParser.LoadSvg(path);
+        RawDetail r = null;
+        if (path.ToLower().EndsWith("svg"))
+        {
+          r = SvgParser.LoadSvg(path);
+        }
+        else if (path.ToLower().EndsWith("dxf"))
+        {
+          r = DxfParser.LoadDxf(path);
+        }
+        else
+        {
+          continue;
+        }
+
         var src = GetNextSource();
 
         for (int i = 0; i < cnt; i++)

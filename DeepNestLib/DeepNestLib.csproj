@@ -100,6 +100,7 @@
     <Compile Include="Background.cs" />
     <Compile Include="D3.cs" />
     <Compile Include="DxfParser.cs" />
+    <Compile Include="ExporterFactory.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GeneticAlgorithm.cs" />
     <Compile Include="GeometryUtil.cs" />

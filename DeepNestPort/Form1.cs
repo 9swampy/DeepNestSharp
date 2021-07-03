@@ -1271,18 +1271,8 @@
       }
       else
       {
-        IExport exporter;
-        if (polygons.ContainsDxfs())
-        {
-          sfd.Filter = "Dxf files (*.dxf)|*.dxf";
-          exporter = new DxfParser();
-        }
-        else
-        {
-          sfd.Filter = "Svg files (*.svg)|*.svg";
-          exporter = new SvgParser();
-        }
-
+        IExport exporter = ExporterFactory.GetExporter(polygons);
+        sfd.Filter = exporter.SaveFileDialogFilter;
         if (sfd.ShowDialog() == DialogResult.OK)
         {
           exporter.Export(sfd.FileName, polygons.ToArray(), sheets.ToArray());

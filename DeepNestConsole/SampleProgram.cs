@@ -44,8 +44,16 @@
       } while (!IsFinished());
 
       #region convert results
-      Context.ExportSvg("temp.svg");
-      Console.WriteLine("Results exported in: temp.svg");
+      string path = "output.dxf";
+
+      if (path.ToLower().EndsWith("svg"))
+        new SvgParser().Export(path, Context.Polygons, Context.Sheets);
+      else if (path.ToLower().EndsWith("dxf"))
+        new DxfParser().Export(path, Context.Polygons, Context.Sheets);
+      else
+        throw new NotImplementedException($"unknown format: {path}");
+
+      Console.WriteLine($"Results exported in: {path}");
       #endregion
     }
   }
