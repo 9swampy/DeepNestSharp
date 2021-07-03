@@ -352,7 +352,7 @@
                 poly.RemoveAt(0);
             }
 
-            return new NFP() { Points = poly.ToArray() };
+            return new NFP(poly);
         }
     }
 

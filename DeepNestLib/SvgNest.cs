@@ -3,6 +3,7 @@
   using System;
   using System.Collections.Generic;
   using System.Linq;
+  using System.Threading.Tasks;
   using ClipperLib;
 
   public class SvgNest
@@ -50,7 +51,7 @@
 
         inrange = inrange.OrderBy((b) =>
 {
-return b.distance;
+  return b.distance;
 }).ToList();
 
         target = inrange[0].point;
@@ -119,14 +120,24 @@ return b.distance;
       return false;
     }
 
+    private static readonly PolygonSimplificationDictionary cache = new PolygonSimplificationDictionary();
+
+    private static volatile object cacheSyncLock = new object();
+
     public static NFP simplifyFunction(NFP polygon, bool inside)
     {
+      var markExact = true;
+      var straighten = true;
+      var doSimplify = true;
+      var selectiveReversalOfOffset = true;
+
       var tolerance = 4 * Config.CurveTolerance;
 
       // give special treatment to line segments above this length (squared)
       var fixedTolerance = 40 * Config.CurveTolerance * 40 * Config.CurveTolerance;
       int i, j, k;
 
+      var hull = Background.GetHull(polygon.Points);
       if (Config.Simplify)
       {
         /*
@@ -137,7 +148,7 @@ return b.distance;
         }
 
         return hull.getHull();*/
-        var hull = Background.GetHull(polygon);
+
         if (hull != null)
         {
           return hull;
@@ -158,36 +169,48 @@ return b.distance;
         return polygon;
       }
 
-      // polygon to polyline
-      var copy = polygon.slice(0);
-      copy.Push(copy[0]);
-
-      // mark all segments greater than ~0.25 in to be kept
-      // the PD simplification algo doesn't care about the accuracy of long lines, only the absolute distance of each point
-      // we care a great deal
-      for (i = 0; i < copy.Length - 1; i++)
+      SvgPoint[] resultSource;
+      bool doSimplifyRadialDist = false;
+      bool doSimplifyDouglasPeucker = true;
+      if (cache.TryGetValue(new System.Tuple<SvgPoint[], double?, bool, bool>(polygon.Points, SvgNest.Config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker), out resultSource))
       {
-        var p1 = copy[i];
-        var p2 = copy[i + 1];
-        var sqd = ((p2.x - p1.x) * (p2.x - p1.x)) + ((p2.y - p1.y) * (p2.y - p1.y));
-        if (sqd > fixedTolerance)
-        {
-          p1.marked = true;
-          p2.marked = true;
-        }
+        return new NFP(resultSource);
       }
 
-      var simple = Simplify.simplify(copy, tolerance, true);
+      NFP simple = null;
+      if (doSimplify)
+      {
+        // polygon to polyline
+        var copy = polygon.slice(0);
+        copy.Push(copy[0]);
 
-      // now a polygon again
-      // simple.pop();
-      simple.Points = simple.Points.Take(simple.Points.Count() - 1).ToArray();
+        // mark all segments greater than ~0.25 in to be kept
+        // the PD simplification algo doesn't care about the accuracy of long lines, only the absolute distance of each point
+        // we care a great deal
+        for (i = 0; i < copy.Length - 1; i++)
+        {
+          var p1 = copy[i];
+          var p2 = copy[i + 1];
+          var sqd = ((p2.x - p1.x) * (p2.x - p1.x)) + ((p2.y - p1.y) * (p2.y - p1.y));
+          if (sqd > fixedTolerance)
+          {
+            p1.marked = true;
+            p2.marked = true;
+          }
+        }
 
-      // could be dirty again (self intersections and/or coincident points)
-      simple = cleanPolygon2(simple);
+        simple = Simplify.simplify(copy.Points, tolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker);
 
-      // simplification process reduced poly to a line or point
-      if (simple == null)
+        // now a polygon again
+        // simple.pop();
+        simple.ReplacePoints(simple.Points.Take(simple.Points.Count() - 1));
+
+        // could be dirty again (self intersections and/or coincident points)
+        simple = cleanPolygon2(simple);
+      }
+
+      // simplification process reduced poly to a line or point; or it came back just as complex as the original
+      if (simple == null || simple.Points.Count() > polygon.Points.Count() * 0.9)
       {
         simple = polygon;
       }
@@ -212,21 +235,9 @@ return b.distance;
         }
       }
 
-      // mark any points that are exact
-      for (i = 0; i < simple.Length; i++)
+      if (markExact)
       {
-        var seg = new NFP();
-        seg.AddPoint(simple[i]);
-        seg.AddPoint(simple[i + 1 == simple.Length ? 0 : i + 1]);
-
-        var index1 = find(seg[0], polygon);
-        var index2 = find(seg[1], polygon);
-
-        if (index1 + 1 == index2 || index2 + 1 == index1 || (index1 == 0 && index2 == polygon.Length - 1) || (index2 == 0 && index1 == polygon.Length - 1))
-        {
-          seg[0].exact = true;
-          seg[1].exact = true;
-        }
+        MarkExact(polygon, simple);
       }
 
       var numshells = 4;
@@ -252,121 +263,187 @@ return b.distance;
         return polygon;
       }
 
-      // selective reversal of offset
-      for (i = 0; i < offset.Length; i++)
+      if (selectiveReversalOfOffset)
       {
-        var o = offset[i];
-        var target = getTarget(o, simple, 2 * tolerance);
-
-        // reverse point offset and try to find exterior points
-        var test = clone(offset);
-        test.Points[i] = new SvgPoint(target.x, target.y);
-
-        if (!exterior(test, polygon, inside))
+        // selective reversal of offset
+        for (i = 0; i < offset.Length; i++)
         {
-          o.x = target.x;
-          o.y = target.y;
-        }
-        else
-        {
-          // a shell is an intermediate offset between simple and offset
-          for (j = 1; j < numshells; j++)
+          if (i % 10 == 0)
           {
-            if (shells[j] != null)
+            System.Diagnostics.Debug.Print($"{polygon.Name} selectiveReversalOfOffset {i} of {offset.Length}");
+          }
+
+          var o = offset[i];
+          var target = getTarget(o, simple, 2 * tolerance);
+
+          // reverse point offset and try to find exterior points
+          var test = clone(offset);
+          test.Points[i] = new SvgPoint(target.x, target.y);
+
+          if (!exterior(test, polygon, inside))
+          {
+            o.x = target.x;
+            o.y = target.y;
+          }
+          else
+          {
+            // a shell is an intermediate offset between simple and offset
+            for (j = 1; j < numshells; j++)
             {
-              var shell = shells[j];
-              var delta = j * (tolerance / numshells);
-              target = getTarget(o, shell, 2 * delta);
-              test = clone(offset);
-              test.Points[i] = new SvgPoint(target.x, target.y);
-              if (!exterior(test, polygon, inside))
+              if (shells[j] != null)
               {
-                o.x = target.x;
-                o.y = target.y;
-                break;
+                var shell = shells[j];
+                var delta = j * (tolerance / numshells);
+                target = getTarget(o, shell, 2 * delta);
+                test = clone(offset);
+                test.Points[i] = new SvgPoint(target.x, target.y);
+                if (!exterior(test, polygon, inside))
+                {
+                  o.x = target.x;
+                  o.y = target.y;
+                  break;
+                }
               }
             }
           }
         }
       }
 
-      // straighten long lines
-      // a rounded rectangle would still have issues at this point, as the long sides won't line up straight
-      var straightened = false;
-
-      for (i = 0; i < offset.Length; i++)
+      if (straighten)
       {
-        var p1 = offset[i];
-        var p2 = offset[i + 1 == offset.Length ? 0 : i + 1];
+        // straighten long lines
+        // a rounded rectangle would still have issues at this point, as the long sides won't line up straight
+        var straightened = false;
 
-        var sqd = ((p2.x - p1.x) * (p2.x - p1.x)) + ((p2.y - p1.y) * (p2.y - p1.y));
-
-        if (sqd < fixedTolerance)
+        for (i = 0; i < offset.Length; i++)
         {
-          continue;
-        }
+          var p1 = offset[i];
+          var p2 = offset[i + 1 == offset.Length ? 0 : i + 1];
 
-        for (j = 0; j < simple.Length; j++)
-        {
-          var s1 = simple[j];
-          var s2 = simple[j + 1 == simple.Length ? 0 : j + 1];
+          var sqd = ((p2.x - p1.x) * (p2.x - p1.x)) + ((p2.y - p1.y) * (p2.y - p1.y));
 
-          var sqds = ((p2.x - p1.x) * (p2.x - p1.x)) + ((p2.y - p1.y) * (p2.y - p1.y));
-
-          if (sqds < fixedTolerance)
+          if (sqd < fixedTolerance)
           {
             continue;
           }
 
-          if ((GeometryUtil._almostEqual(s1.x, s2.x) || GeometryUtil._almostEqual(s1.y, s2.y)) && // we only really care about vertical and horizontal lines
-          GeometryUtil._withinDistance(p1, s1, 2 * tolerance) &&
-          GeometryUtil._withinDistance(p2, s2, 2 * tolerance) &&
-          (!GeometryUtil._withinDistance(p1, s1, Config.CurveTolerance / 1000) ||
-          !GeometryUtil._withinDistance(p2, s2, Config.CurveTolerance / 1000)))
+          for (j = 0; j < simple.Length; j++)
           {
-            p1.x = s1.x;
-            p1.y = s1.y;
-            p2.x = s2.x;
-            p2.y = s2.y;
-            straightened = true;
+            var s1 = simple[j];
+            var s2 = simple[j + 1 == simple.Length ? 0 : j + 1];
+
+            var sqds = ((p2.x - p1.x) * (p2.x - p1.x)) + ((p2.y - p1.y) * (p2.y - p1.y));
+
+            if (sqds < fixedTolerance)
+            {
+              continue;
+            }
+
+            if ((GeometryUtil._almostEqual(s1.x, s2.x) || GeometryUtil._almostEqual(s1.y, s2.y)) && // we only really care about vertical and horizontal lines
+            GeometryUtil._withinDistance(p1, s1, 2 * tolerance) &&
+            GeometryUtil._withinDistance(p2, s2, 2 * tolerance) &&
+            (!GeometryUtil._withinDistance(p1, s1, Config.CurveTolerance / 1000) ||
+            !GeometryUtil._withinDistance(p2, s2, Config.CurveTolerance / 1000)))
+            {
+              p1.x = s1.x;
+              p1.y = s1.y;
+              p2.x = s2.x;
+              p2.y = s2.y;
+              straightened = true;
+            }
           }
         }
-      }
 
-      // if(straightened){
-      var Ac = _Clipper.ScaleUpPaths(offset, 10000000);
-      var Bc = _Clipper.ScaleUpPaths(polygon, 10000000);
-
-      var combined = new List<List<IntPoint>>();
-      var clipper = new ClipperLib.Clipper();
-
-      clipper.AddPath(Ac.ToList(), ClipperLib.PolyType.ptSubject, true);
-      clipper.AddPath(Bc.ToList(), ClipperLib.PolyType.ptSubject, true);
-
-      // the line straightening may have made the offset smaller than the simplified
-      if (clipper.Execute(ClipperLib.ClipType.ctUnion, combined, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero))
-      {
-        double? largestArea = null;
-        for (i = 0; i < combined.Count; i++)
+        if (straightened)
         {
-          var n = Background.ToNestCoordinates(combined[i].ToArray(), 10000000);
-          var sarea = -GeometryUtil.polygonArea(n);
-          if (largestArea == null || largestArea < sarea)
+          var Ac = _Clipper.ScaleUpPaths(offset.Points, 10000000);
+          var Bc = _Clipper.ScaleUpPaths(polygon.Points, 10000000);
+
+          var combined = new List<List<IntPoint>>();
+          var clipper = new ClipperLib.Clipper();
+
+          clipper.AddPath(Ac.ToList(), ClipperLib.PolyType.ptSubject, true);
+          clipper.AddPath(Bc.ToList(), ClipperLib.PolyType.ptSubject, true);
+
+          // the line straightening may have made the offset smaller than the simplified
+          if (clipper.Execute(ClipperLib.ClipType.ctUnion, combined, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero))
           {
-            offset = n;
-            largestArea = sarea;
+            double? largestArea = null;
+            for (i = 0; i < combined.Count; i++)
+            {
+              var n = Background.ToNestCoordinates(combined[i].ToArray(), 10000000);
+              var sarea = -GeometryUtil.polygonArea(n);
+              if (largestArea == null || largestArea < sarea)
+              {
+                offset = n;
+                largestArea = sarea;
+              }
+            }
           }
         }
       }
 
-      // }
       cleaned = cleanPolygon2(offset);
       if (cleaned != null && cleaned.Length > 1)
       {
         offset = cleaned;
       }
 
-      // mark any points that are exact (for line merge detection)
+      if (Config.ClipByHull)
+      {
+        offset = ClipSubject(offset, hull, Config.ClipperScale);
+      }
+
+      if (markExact)
+      {
+        MarkExactSvg(polygon, offset);
+      }
+
+      if (!inside && holes != null && holes.Count > 0)
+      {
+        offset.Children = holes;
+      }
+
+      lock (cacheSyncLock)
+      {
+        if (!cache.ContainsKey(new System.Tuple<SvgPoint[], double?, bool, bool>(polygon.Points, SvgNest.Config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker)))
+        {
+          cache.Add(new System.Tuple<SvgPoint[], double?, bool, bool>(polygon.Points, SvgNest.Config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker), offset.Points);
+        }
+      }
+
+      return offset;
+    }
+
+    /// <summary>
+    /// Clip the subject so it stays inside the clipBounds.
+    /// </summary>
+    /// <param name="subject"></param>
+    /// <param name="clipBounds"></param>
+    /// <param name="clipperScale"></param>
+    /// <returns></returns>
+    internal static NFP ClipSubject(NFP subject, NFP clipBounds, double clipperScale)
+    {
+      var clipperSubject = Background.InnerNfpToClipperCoordinates(new NFP[] { subject }, clipperScale);
+      var clipperClip = Background.InnerNfpToClipperCoordinates(new NFP[] { clipBounds }, clipperScale);
+
+      var clipper = new Clipper();
+      clipper.AddPaths(clipperClip.Select(z => z.ToList()).ToList(), PolyType.ptClip, true);
+      clipper.AddPaths(clipperSubject.Select(z => z.ToList()).ToList(), PolyType.ptSubject, true);
+
+      List<List<IntPoint>> finalNfp = new List<List<IntPoint>>();
+      clipper.Execute(ClipType.ctIntersection, finalNfp, PolyFillType.pftNonZero, PolyFillType.pftNonZero);
+      return Background.ToNestCoordinates(finalNfp[0].ToArray(), clipperScale);
+    }
+
+    /// <summary>
+    /// Mark any points that are exact (for line merge detection).
+    /// </summary>
+    /// <param name="polygon">This is the one that's checked against.</param>
+    /// <param name="offset">This is iterated and elements are marked exact when matched to a point in polygon.</param>
+    private static void MarkExactSvg(NFP polygon, NFP offset)
+    {
+      int i;
       for (i = 0; i < offset.Length; i++)
       {
         var seg = new SvgPoint[] { offset[i], offset[i + 1 == offset.Length ? 0 : i + 1] };
@@ -382,21 +459,41 @@ return b.distance;
           index2 = 0;
         }
 
-        if (index1 + 1 == index2 || index2 + 1 == index1
-            || (index1 == 0 && index2 == polygon.Length - 1) ||
-            (index2 == 0 && index1 == polygon.Length - 1))
+        if (IsExactMatch(polygon, index1, index2))
         {
           seg[0].exact = true;
           seg[1].exact = true;
         }
       }
+    }
 
-      if (!inside && holes != null && holes.Count > 0)
+    /// <summary>
+    /// Mark any points that are exact.
+    /// </summary>
+    /// <param name="polygon">This is the one that's checked against.</param>
+    /// <param name="simple">This is iterated and elements are marked exact when matched to a point in polygon.</param>
+    private static void MarkExact(NFP polygon, NFP simple)
+    {
+      for (int i = 0; i < simple.Length; i++)
       {
-        offset.Children = holes;
-      }
+        var seg = new NFP();
+        seg.AddPoint(simple[i]);
+        seg.AddPoint(simple[i + 1 == simple.Length ? 0 : i + 1]);
 
-      return offset;
+        var index1 = find(seg[0], polygon);
+        var index2 = find(seg[1], polygon);
+
+        if (IsExactMatch(polygon, index1, index2))
+        {
+          seg[0].exact = true;
+          seg[1].exact = true;
+        }
+      }
+    }
+
+    private static bool IsExactMatch(NFP polygon, int? index1, int? index2)
+    {
+      return index1 + 1 == index2 || index2 + 1 == index1 || (index1 == 0 && index2 == polygon.Length - 1) || (index2 == 0 && index1 == polygon.Length - 1);
     }
 
     public static int? find(SvgPoint v, NFP p)
@@ -427,7 +524,7 @@ return b.distance;
         List<SvgPoint> rett = new List<SvgPoint>();
         rett.AddRange(offsetpaths[0].Points);
         rett.AddRange(t.Points.Skip(t.Length));
-        t.Points = rett.ToArray();
+        t.ReplacePoints(rett);
 
         // replace array items in place
 
@@ -486,14 +583,14 @@ return b.distance;
     // converts a polygon from normal float coordinates to integer coordinates used by clipper, as well as x/y -> X/Y
     public static IntPoint[] svgToClipper2(NFP polygon, double? scale = null)
     {
-      var d = _Clipper.ScaleUpPaths(polygon, scale == null ? Config.ClipperScale : scale.Value);
+      var d = _Clipper.ScaleUpPaths(polygon.Points, scale == null ? Config.ClipperScale : scale.Value);
       return d.ToArray();
     }
 
     // converts a polygon from normal float coordinates to integer coordinates used by clipper, as well as x/y -> X/Y
     public static ClipperLib.IntPoint[] svgToClipper(NFP polygon)
     {
-      var d = _Clipper.ScaleUpPaths(polygon, Config.ClipperScale);
+      var d = _Clipper.ScaleUpPaths(polygon.Points, Config.ClipperScale);
       return d.ToArray();
 
       return polygon.Points.Select(z => new IntPoint((long)z.x, (long)z.y)).ToArray();
@@ -575,13 +672,13 @@ return b.distance;
       if (start == end || (GeometryUtil._almostEqual(start.x, end.x)
           && GeometryUtil._almostEqual(start.y, end.y)))
       {
-        cleaned.Points = cleaned.Points.Take(cleaned.Points.Count() - 1).ToArray();
+        cleaned.ReplacePoints(cleaned.Points.Take(cleaned.Points.Count() - 1));
       }
 
       return cleaned;
     }
 
-    public static NFP clipperToSvg(IList<IntPoint> polygon)
+    private static NFP clipperToSvg(IList<IntPoint> polygon)
     {
       List<SvgPoint> ret = new List<SvgPoint>();
 
@@ -590,10 +687,10 @@ return b.distance;
         ret.Add(new SvgPoint(polygon[i].X / Config.ClipperScale, polygon[i].Y / Config.ClipperScale));
       }
 
-      return new NFP() { Points = ret.ToArray() };
+      return new NFP(ret);
     }
 
-    public int toTree(PolygonTreeItem[] list, int idstart = 0)
+    private int toTree(PolygonTreeItem[] list, int idstart = 0)
     {
       List<PolygonTreeItem> parents = new List<PolygonTreeItem>();
       int i, j;
@@ -660,7 +757,7 @@ return b.distance;
       return id;
     }
 
-    public static NFP cloneTree(NFP tree)
+    private static NFP cloneTree(NFP tree)
     {
       NFP newtree = new NFP();
       foreach (var t in tree.Points)
@@ -730,7 +827,7 @@ return b.distance;
           {
             if (!parts[i].IsSheet)
             {
-              for (int j = 0; j < parts[i].Quanity; j++)
+              for (int j = 0; j < parts[i].Quantity; j++)
               {
                 var poly = cloneTree(parts[i].Polygon); // deep copy
                 poly.Id = id; // id is the unique id of all parts that will be nested, including cloned duplicates
@@ -797,7 +894,7 @@ return b.distance;
           if (parts[i].IsSheet)
           {
             var poly = parts[i].Polygon;
-            for (int j = 0; j < parts[i].Quanity; j++)
+            for (int j = 0; j < parts[i].Quantity; j++)
             {
               var cln = cloneTree(poly);
               cln.Id = sid; // id is the unique id of all parts that will be nested, including cloned duplicates
@@ -889,24 +986,47 @@ return b.distance;
     public bool searchEdges;
   }
 
-
-  public class _Clipper
+  public interface IDeprecatedClipper
   {
-    public static ClipperLib.IntPoint[] ScaleUpPaths(NFP p, double scale = 1)
+    ClipperLib.IntPoint[] ScaleUpPathsOriginal(NFP p, double scale);
+
+    ClipperLib.IntPoint[] ScaleUpPathsSlowerParallel(SvgPoint[] points, double scale = 1);
+  }
+
+  public class _Clipper : IDeprecatedClipper
+  {
+    ClipperLib.IntPoint[] IDeprecatedClipper.ScaleUpPathsOriginal(NFP p, double scale = 1)
     {
       List<ClipperLib.IntPoint> ret = new List<ClipperLib.IntPoint>();
 
-      for (int i = 0; i < p.Points.Count(); i++)
+      for (int i = 0; i < p.Points.Length; i++)
       {
-        //p.Points[i] = new SvgNestPort.SvgPoint((float)Math.Round(p.Points[i].x * scale), (float)Math.Round(p.Points[i].y * scale));
+        // p.Points[i] = new SvgNestPort.SvgPoint((float)Math.Round(p.Points[i].x * scale), (float)Math.Round(p.Points[i].y * scale));
         ret.Add(new ClipperLib.IntPoint(
             (long)Math.Round((decimal)p.Points[i].x * (decimal)scale),
-            (long)Math.Round((decimal)p.Points[i].y * (decimal)scale)
-        ));
-
+            (long)Math.Round((decimal)p.Points[i].y * (decimal)scale)));
       }
+
       return ret.ToArray();
-    }
+    } // 5 secs
+
+    ClipperLib.IntPoint[] IDeprecatedClipper.ScaleUpPathsSlowerParallel(SvgPoint[] points, double scale = 1)
+    {
+      var result = from point in points.AsParallel().AsSequential()
+                   select new ClipperLib.IntPoint((long)Math.Round((decimal)point.x * (decimal)scale), (long)Math.Round((decimal)point.y * (decimal)scale));
+
+      return result.ToArray();
+    } // 2 secs
+
+    public static ClipperLib.IntPoint[] ScaleUpPaths(SvgPoint[] points, double scale = 1)
+    {
+      var result = new ClipperLib.IntPoint[points.Length];
+
+      Parallel.For(0, points.Length, i => result[i] = new ClipperLib.IntPoint((long)Math.Round((decimal)points[i].x * (decimal)scale), (long)Math.Round((decimal)points[i].y * (decimal)scale)));
+
+      return result.ToArray();
+    } // 2 secs
+
     /*public static IntPoint[] ScaleUpPath(IntPoint[] p, double scale = 1)
     {
         for (int i = 0; i < p.Length; i++)
@@ -1033,26 +1153,6 @@ return b.distance;
     }
   }
 
-
-  public class SvgPoint
-  {
-    public bool exact = true;
-    public override string ToString()
-    {
-      return "x: " + x + "; y: " + y;
-    }
-    public int id;
-    public SvgPoint(double _x, double _y)
-    {
-      x = _x;
-      y = _y;
-    }
-    public bool marked;
-    public double x;
-    public double y;
-
-  }
-
   public class PopulationItem
   {
     public object processing = null;
@@ -1065,7 +1165,6 @@ return b.distance;
     public NFP[] paths;
     public double area;
   }
-
 
   public class SheetPlacementItem
   {
@@ -1104,8 +1203,6 @@ return b.distance;
     internal int index;
   }
 
-
-
   public class Sheet : NFP
   {
     public double Width;
@@ -1114,20 +1211,22 @@ return b.distance;
 
   public class RectangleSheet : Sheet
   {
-
     public void Rebuild()
     {
-      Points = new SvgPoint[] { };
-      AddPoint(new SvgPoint(x, y));
-      AddPoint(new SvgPoint(x + Width, y));
-      AddPoint(new SvgPoint(x + Width, y + Height));
-      AddPoint(new SvgPoint(x, y + Height));
+      this.ReplacePoints(new SvgPoint[4]
+      {
+        new SvgPoint(x, y),
+        new SvgPoint(x + Width, y),
+        new SvgPoint(x + Width, y + Height),
+        new SvgPoint(x, y + Height),
+      });
     }
   }
+
   public class NestItem
   {
     public NFP Polygon;
-    public int Quanity;
+    public int Quantity;
     public bool IsSheet;
   }
 }

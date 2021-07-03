@@ -285,12 +285,12 @@
       var arr1 = A.Children.Select(z => z.Points.Count() * 2).ToArray();
 
 #if x64
-            System.Diagnostics.Debug.Print("Minkowski_x64");
-            long[] longs = arr1.Select(o => (long)o).ToArray();
-            MinkowskiWrapper.setData(aa.Count, aa.ToArray(), A.Children.Count, longs, hdat.ToArray(), bb.Count, bb.ToArray());
+      System.Diagnostics.Debug.Print("Minkowski_x64");
+      long[] longs = arr1.Select(o => (long)o).ToArray();
+      MinkowskiWrapper.setData(aa.Count, aa.ToArray(), A.Children.Count, longs, hdat.ToArray(), bb.Count, bb.ToArray());
 #elif x86
-            System.Diagnostics.Debug.Print("Minkowski_x86");
-            MinkowskiWrapper.setData(aa.Count, aa.ToArray(), A.Children.Count, arr1, hdat.ToArray(), bb.Count, bb.ToArray());
+      System.Diagnostics.Debug.Print("Minkowski_x86");
+      MinkowskiWrapper.setData(aa.Count, aa.ToArray(), A.Children.Count, arr1, hdat.ToArray(), bb.Count, bb.ToArray());
 #else
       System.Diagnostics.Debug.Print("Minkowski_AnyCpu");
       MinkowskiWrapper.setData(aa.Count, aa.ToArray(), A.Children.Count, arr1, hdat.ToArray(), bb.Count, bb.ToArray());
@@ -352,7 +352,6 @@
       }
 
       NFP ret = new NFP();
-      ret.Points = new SvgPoint[] { };
       foreach (var item in Apts)
       {
         ret.AddPoint(new SvgPoint(item.X, item.Y));
@@ -361,7 +360,6 @@
       foreach (var item in holesout)
       {
         ret.Children.Add(new NFP());
-        ret.Children.Last().Points = new SvgPoint[] { };
         foreach (var hitem in item)
         {
           ret.Children.Last().AddPoint(new SvgPoint(hitem.X, hitem.Y));
@@ -451,8 +449,8 @@
         return nfp.Children.ToArray();
       }
 
-      var clipperNfp = InnerNfpToClipperCoordinates(nfp.Children.ToArray(), config);
-      var clipperHoles = InnerNfpToClipperCoordinates(holes.ToArray(), config);
+      var clipperNfp = InnerNfpToClipperCoordinates(nfp.Children.ToArray(), config.ClipperScale);
+      var clipperHoles = InnerNfpToClipperCoordinates(holes.ToArray(), config.ClipperScale);
 
       List<List<IntPoint>> finalNfp = new List<List<IntPoint>>();
       var clipper = new ClipperLib.Clipper();
@@ -510,7 +508,7 @@
         pp.Add(new SvgPoint(x1, y1));
       }
 
-      rotated.Points = pp.ToArray();
+      rotated.ReplacePoints(pp);
 
       if (polygon.Children != null && polygon.Children.Count > 0)
       {
@@ -674,7 +672,7 @@
             continue;
           }
 
-          clipperSheetNfp = InnerNfpToClipperCoordinates(sheetNfp, config);
+          clipperSheetNfp = InnerNfpToClipperCoordinates(sheetNfp, config.ClipperScale);
 
           clipper = new ClipperLib.Clipper();
           combinedNfp = new List<List<ClipperLib.IntPoint>>();
@@ -722,7 +720,7 @@
               }
             }
 
-            var clipperNfp = NfpToClipperCoordinates(nfp, config);
+            var clipperNfp = NfpToClipperCoordinates(nfp, config.ClipperScale);
 
             clipper.AddPaths(clipperNfp.Select(z => z.ToList()).ToList(), ClipperLib.PolyType.ptSubject, true);
           }
@@ -816,7 +814,7 @@
           }
           else
           {
-            allpoints = GetHull(allpoints);
+            allpoints = GetHull(allpoints.Points);
           }
 
           for (j = 0; j < finalNfp.Count; j++)
@@ -885,9 +883,9 @@
                   localpoints.AddPoint(new SvgPoint(part[m].x + shiftvector.x, part[m].y + shiftvector.y));
                 }
 
-                area = Math.Abs(GeometryUtil.polygonArea(GetHull(localpoints)));
-                shiftvector.hull = GetHull(localpoints);
-                shiftvector.hullsheet = GetHull(sheet);
+                area = Math.Abs(GeometryUtil.polygonArea(GetHull(localpoints.Points)));
+                shiftvector.hull = GetHull(localpoints.Points);
+                shiftvector.hullsheet = GetHull(sheet.Points);
               }
 
               // console.timeEnd('evalbounds');
@@ -1359,9 +1357,9 @@
       var B = rotatePolygon(pair.B, pair.BRotation);
 
       ///////////////////
-      var Ac = _Clipper.ScaleUpPaths(A, 10000000);
+      var Ac = _Clipper.ScaleUpPaths(A.Points, 10000000);
 
-      var Bc = _Clipper.ScaleUpPaths(B, 10000000);
+      var Bc = _Clipper.ScaleUpPaths(B.Points, 10000000);
       for (var i = 0; i < Bc.Length; i++)
       {
         Bc[i].X *= -1;
@@ -1410,10 +1408,10 @@
              polygon[i].Y / scale));
       }
 
-      return new NFP() { Points = clone.ToArray() };
+      return new NFP(clone);
     }
 
-    public static NFP GetHull(NFP polygon)
+    public static NFP GetHull(SvgPoint[] polygon)
     {
       // convert to hulljs format
       /*var hull = new ConvexHullGrahamScan();
@@ -1432,7 +1430,7 @@
 
       if (hullpoints == null)
       {
-        return polygon;
+        return new NFP(polygon);
       }
 
       NFP hull = new NFP();
@@ -1445,7 +1443,7 @@
     }
 
     // returns clipper nfp. Remember that clipper nfp are a list of polygons, not a tree!
-    public static IntPoint[][] NfpToClipperCoordinates(NFP nfp, SvgNestConfig config)
+    public static IntPoint[][] NfpToClipperCoordinates(NFP nfp, double clipperScale)
     {
       List<IntPoint[]> clipperNfp = new List<IntPoint[]>();
 
@@ -1460,7 +1458,7 @@
           }
 
           // var childNfp = SvgNest.toClipperCoordinates(nfp.Children[j]);
-          var childNfp = _Clipper.ScaleUpPaths(nfp.Children[j], config.ClipperScale);
+          var childNfp = _Clipper.ScaleUpPaths(nfp.Children[j].Points, clipperScale);
           clipperNfp.Add(childNfp);
         }
       }
@@ -1473,7 +1471,7 @@
       // var outerNfp = SvgNest.toClipperCoordinates(nfp);
 
       // clipper js defines holes based on orientation
-      var outerNfp = _Clipper.ScaleUpPaths(nfp, config.ClipperScale);
+      var outerNfp = _Clipper.ScaleUpPaths(nfp.Points, clipperScale);
 
       // var cleaned = ClipperLib.Clipper.CleanPolygon(outerNfp, 0.00001*config.clipperScale);
       clipperNfp.Add(outerNfp);
@@ -1483,12 +1481,12 @@
     }
 
     // inner nfps can be an array of nfps, outer nfps are always singular
-    public static IntPoint[][] InnerNfpToClipperCoordinates(NFP[] nfp, SvgNestConfig config)
+    public static IntPoint[][] InnerNfpToClipperCoordinates(NFP[] nfp, double clipperScale)
     {
       List<IntPoint[]> clipperNfp = new List<IntPoint[]>();
       for (var i = 0; i < nfp.Count(); i++)
       {
-        var clip = NfpToClipperCoordinates(nfp[i], config);
+        var clip = NfpToClipperCoordinates(nfp[i], clipperScale);
         clipperNfp.AddRange(clip);
 
         // clipperNfp = clipperNfp.Concat(new[] { clip }).ToList();
@@ -1539,9 +1537,9 @@
       }
       else
       {
-        var ac = _Clipper.ScaleUpPaths(A, 10000000);
+        var ac = _Clipper.ScaleUpPaths(A.Points, 10000000);
 
-        var bc = _Clipper.ScaleUpPaths(B, 10000000);
+        var bc = _Clipper.ScaleUpPaths(B.Points, 10000000);
         for (var i = 0; i < bc.Length; i++)
         {
           bc[i].X *= -1;
@@ -1569,7 +1567,7 @@
           clipperNfp[i].y += B[0].y;
         }
 
-        nfp = new NFP[] { new NFP() { Points = clipperNfp.Points } };
+        nfp = new NFP[] { new NFP(clipperNfp.Points) };
       }
 
       if (nfp == null || nfp.Length == 0)

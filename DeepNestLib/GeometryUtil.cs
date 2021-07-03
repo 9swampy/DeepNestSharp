@@ -85,16 +85,13 @@
 
             var pnts = new NFP[]
             {
-                new NFP()
-            {
-                Points = new SvgPoint[]
-            {
-                new SvgPoint(minAx - minBx + B[0].x, minAy - minBy + B[0].y),
-                new SvgPoint(maxAx - maxBx + B[0].x, minAy - minBy + B[0].y),
-                new SvgPoint(maxAx - maxBx + B[0].x, maxAy - maxBy + B[0].y),
-                new SvgPoint(minAx - minBx + B[0].x, maxAy - maxBy + B[0].y),
-            },
-            },
+                new NFP(new SvgPoint[]
+                {
+                    new SvgPoint(minAx - minBx + B[0].x, minAy - minBy + B[0].y),
+                    new SvgPoint(maxAx - maxBx + B[0].x, minAy - minBy + B[0].y),
+                    new SvgPoint(maxAx - maxBx + B[0].x, maxAy - maxBy + B[0].y),
+                    new SvgPoint(minAx - minBx + B[0].x, maxAy - maxBy + B[0].y),
+                }),
             };
             return pnts;
         }
@@ -192,10 +189,7 @@
             // reset bounding box
             RectangleF rr = default(RectangleF);
 
-            var ret = new PolygonWithBounds()
-            {
-                Points = rotated.ToArray(),
-            };
+            var ret = new PolygonWithBounds(rotated);
             var bounds = GeometryUtil.getPolygonBounds(ret);
             ret.x = bounds.x;
             ret.y = bounds.y;

@@ -9,9 +9,9 @@
   using IxMilia.Dxf.Entities;
   using Xunit;
 
-  public class DxfParserFixture
+  public class DxfParserPart1Fixture
   {
-    private const string DxfTestFilename = "OneSquare.dxf";
+    private const string DxfTestFilename = "_1.dxf";
 
     private static readonly DxfGenerator DxfGenerator = new DxfGenerator();
 
@@ -20,7 +20,7 @@
     private NFP loadedNfp;
     private bool hasImportedRawDetail;
 
-    public DxfParserFixture()
+    public DxfParserPart1Fixture()
     {
       this.loadedRawDetail = DxfParser.LoadDxf(DxfTestFilename);
       this.nestingContext = new NestingContext(A.Fake<IMessageService>());
@@ -64,7 +64,7 @@
     [Fact]
     public void ShouldHaveExpectedArea()
     {
-      this.loadedNfp.Area.Should().Be(121F);
+      this.loadedNfp.Area.Should().Be(2500F);
     }
 
     [Fact]
@@ -83,13 +83,6 @@
     public void ShouldHaveNoNullPoints()
     {
       this.loadedNfp.Points.Where(o => o == null).Should().BeEmpty();
-    }
-
-    [Fact]
-    public void GivenCreatedOneSquareWhenComparedToLoadedOneSquareThenShouldBeEquivalent()
-    {
-      var created = DxfParser.ConvertDxfToRawDetail(this.loadedNfp.Name, new List<DxfEntity>() { DxfGenerator.Rectangle(11D) });
-      created.Should().BeEquivalentTo(this.loadedRawDetail);
     }
   }
 }

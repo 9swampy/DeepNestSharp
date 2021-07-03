@@ -21,7 +21,7 @@
       InitializeComponent();
 
       LoadSettings();
-      sheetsInfos.Add(new SheetLoadInfo() { Width = 3000, Height = 1500, Quantity = 10 });
+      sheetsInfos.Add(new SheetLoadInfo() { Width = SvgNest.Config.SheetWidth, Height = SvgNest.Config.SheetHeight, Quantity = SvgNest.Config.SheetQuantity });
 
       //hack
       toolStripButton9.BackgroundImageLayout = ImageLayout.None;
@@ -45,11 +45,16 @@
       panel1.Controls.Add(progressBar1);
 
       checkBox2.Checked = SvgNest.Config.Simplify;
+      checkBox3.Checked = SvgNest.Config.OffsetTreePhase;
       checkBox4.Checked = Background.UseParallel;
       this.numericUpDown1.Value = SvgNest.Config.PopulationSize;
       this.numericUpDown2.Value = SvgNest.Config.MutationRate;
       this.comboBox1.SelectedItem = SvgNest.Config.PlacementType.ToString();
       this.textBox1.Text = SvgNest.Config.Spacing.ToString();
+      this.textBox6.Text = SvgNest.Config.CurveTolerance.ToString();
+
+      this.checkBox5.Checked = SvgNest.Config.DrawSimplification;
+      this.checkBox6.Checked = SvgNest.Config.ClipByHull;
 
       UpdateFilesList(@"dxfs");
       Load += Form1_Load;
@@ -126,52 +131,57 @@
     public void RedrawPreview(DrawingContext ctx2, object previewObject)
     {
       ctx2.Update();
+      ctx2.Clear(Color.White);
 
-      ctx2.gr.Clear(Color.White);
-
-      //ctx2.gr.DrawLine(Pens.Blue, ctx2.Transform(new PointF(0, 0)), ctx2.Transform(100, 0));
-      //ctx2.gr.DrawLine(Pens.Red, ctx2.Transform(new PointF(0, 0)), ctx2.Transform(0, 100));
+      // ctx2.gr.DrawLine(Pens.Blue, ctx2.Transform(new PointF(0, 0)), ctx2.Transform(100, 0));
+      // ctx2.gr.DrawLine(Pens.Red, ctx2.Transform(new PointF(0, 0)), ctx2.Transform(0, 100));
+      ctx2.Reset();
 
       if (previewObject != null)
       {
-        ctx2.gr.ResetTransform();
-        GraphicsPath gp = new GraphicsPath();
-        GraphicsPath gp2 = new GraphicsPath();
-
-        if (previewObject is RawDetail raw)
+        RectangleF bnd;
+        if (previewObject is RawDetail || previewObject is NFP)
         {
-          foreach (var item in raw.Outers)
+          if (previewObject is RawDetail raw)
           {
-            gp.AddPolygon(item.Points.Select(z => ctx2.Transform(z)).ToArray());
-            gp2.AddPolygon(item.Points.ToArray());
-          }
-        }
-
-        if (previewObject is NFP nfp)
-        {
-          gp.AddPolygon(nfp.Points.Select(z => ctx2.Transform(z.x, z.y)).ToArray());
-          if (nfp.Children != null)
-          {
-            foreach (var item in nfp.Children)
+            ctx2.Draw(raw, Pens.Black, Brushes.LightBlue);
+            if (SvgNest.Config.DrawSimplification)
             {
-              gp.AddPolygon(item.Points.Select(z => ctx2.Transform(z.x, z.y)).ToArray());
+              AddApproximation(ctx2, raw);
             }
+
+            bnd = raw.BoundingBox();
           }
+          else
+          {
+            var g = ctx2.Draw(previewObject as NFP, Pens.Black, Brushes.LightBlue);
+            bnd = g.GetBounds();
+          }
+
+          var cap = $"{bnd.Width:N2} x {bnd.Height:N2}";
+          ctx2.DrawLabel(cap, Brushes.Black, Color.LightGreen, 5, 5);
         }
-        var bnd = gp2.GetBounds();
-
-        ctx2.gr.FillPath(Brushes.LightBlue, gp);
-        ctx2.gr.DrawPath(Pens.Black, gp);
-
-        ctx2.gr.ResetTransform();
-        var cap = $"{bnd.Width:N2} x {bnd.Height:N2}";
-        var ms = ctx2.gr.MeasureString(cap, SystemFonts.DefaultFont);
-        ctx2.gr.FillRectangle(new SolidBrush(Color.FromArgb(128, Color.LightGreen)), 5, 5, ms.Width, ms.Height);
-
-        ctx2.gr.DrawString(cap, SystemFonts.DefaultFont, Brushes.Black, 5, 5);
       }
-      ctx2.Setup();
 
+      ctx2.Setup();
+    }
+
+    /// <summary>
+    /// Display the bounds that will be used by the nesting algorithym.
+    /// </summary>
+    /// <param name="ctx">Drawing context upon which to draw.</param>
+    /// <param name="raw">The part to approximate.</param>
+    private void AddApproximation(DrawingContext ctx, RawDetail raw)
+    {
+      var nestingContext = new NestingContext(new MessageBoxService());
+      NFP part;
+      nestingContext.TryImportFromRawDetail(raw, 0, out part);
+
+      var simplification = SvgNest.simplifyFunction(part, false);
+      ctx.Draw(simplification, Pens.Red);
+
+      var pointsChange = $"{part.Points.Length} => {simplification.Points.Length} points";
+      ctx.DrawLabel(pointsChange, Brushes.Black, Color.Orange, 5, (int)(10 + ctx.GetLabelHeight()));
     }
 
     public void Redraw()
@@ -190,9 +200,9 @@
       #endregion
 
       ctx.gr.SmoothingMode = SmoothingMode.AntiAlias;
-      ctx.gr.Clear(Color.White);
+      ctx.Clear(Color.White);
 
-      ctx.gr.ResetTransform();
+      ctx.Reset();
 
       ctx.gr.DrawLine(Pens.Red, ctx.Transform(new PointF(0, 0)), ctx.Transform(new PointF(1000, 0)));
       ctx.gr.DrawLine(Pens.Blue, ctx.Transform(new PointF(0, 0)), ctx.Transform(new PointF(0, 1000)));
@@ -295,7 +305,6 @@
               bool was = false;
               foreach (var zitem in fr.placements.First())
               {
-
                 var sheetid = zitem.sheetId;
                 if (sheetid != item.Id) continue;
                 var sheet = sheets.FirstOrDefault(z => z.Id == sheetid);
@@ -305,7 +314,6 @@
                   was = true;
                   foreach (var ssitem in zitem.sheetplacements)
                   {
-
                     var poly = polygons.FirstOrDefault(z => z.Id == ssitem.id);
                     if (poly != null)
                     {
@@ -331,10 +339,8 @@
     public void RenderSheet()
     {
       ctx.gr.SmoothingMode = SmoothingMode.AntiAlias;
-      ctx.gr.Clear(Color.White);
-
-      ctx.gr.ResetTransform();
-
+      ctx.Clear(Color.White);
+      ctx.Reset();
 
       foreach (var item in polygons.Union(sheets))
       {
@@ -481,7 +487,6 @@
 
       tt.Height = h;
       tt.Width = w;
-      tt.Points = new SvgPoint[] { };
       int x = 0;
       int y = 0;
       int _width = w;
@@ -502,11 +507,8 @@
 
       tt.Height = w;
       tt.Width = w;
-      tt.Points = new SvgPoint[] { };
       int x = 0;
       int y = 0;
-
-
 
       for (int i = 0; i < 360; i += 5)
       {
@@ -594,7 +596,6 @@
         polygons.Remove(pol);
         var b = GeometryUtil.getPolygonBounds(pol);
         Sheet sheet = new Sheet();
-        sheet.Points = new SvgPoint[] { };
         foreach (var item in pol.Points)
         {
           sheet.AddPoint(new SvgPoint(item.x - b.x, item.y - b.y));
@@ -727,36 +728,42 @@
       }
     }
 
-
     bool stop = false;
+
     public void RunDeepnest()
     {
       try
       {
-        if (th != null) return;
-
-        th = new Thread(() =>
+        if (this.th == null)
         {
-          context.StartNest();
-          UpdateNestsList();
-          Background.displayProgress = displayProgress;
-
-          while (true)
+          this.th = new Thread(() =>
           {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-
-            context.NestIterate();
+            this.context.StartNest();
             UpdateNestsList();
-            displayProgress(1.0f);
-            sw.Stop();
-            toolStripStatusLabel1.Text = "Nesting time: " + sw.ElapsedMilliseconds + "ms";
-            if (stop || context.IsErrored) break;
-          }
-          th = null;
-        });
-        th.IsBackground = true;
-        th.Start();
+            Background.displayProgress = displayProgress;
+
+            while (true)
+            {
+              Stopwatch sw = new Stopwatch();
+              sw.Start();
+
+              this.context.NestIterate();
+              UpdateNestsList();
+              displayProgress(1.0f);
+              sw.Stop();
+              _ = this.Invoke((MethodInvoker)(() => { this.toolStripStatusLabel1.Text = "Nesting time: " + sw.ElapsedMilliseconds + "ms"; }));
+              if (this.stop || this.context.IsErrored)
+              {
+                break;
+              }
+            }
+
+            this.th = null;
+          });
+
+          this.th.IsBackground = true;
+          this.th.Start();
+        }
       }
       catch (Exception ex)
       {
@@ -807,6 +814,11 @@
     private void checkBox2_CheckedChanged(object sender, EventArgs e)
     {
       SvgNest.Config.Simplify = checkBox2.Checked;
+    }
+
+    private void checkBox3_CheckedChanged(object sender, EventArgs e)
+    {
+      SvgNest.Config.OffsetTreePhase = checkBox3.Checked;
     }
 
     private void checkBox4_CheckedChanged(object sender, EventArgs e)
@@ -953,7 +965,6 @@
         pl.Source = src;
         pl.x = xx;
         pl.y = yy;
-        pl.Points = new SvgPoint[] { };
         pl.AddPoint(new SvgPoint(0, 0));
         pl.AddPoint(new SvgPoint(ww, 0));
         pl.AddPoint(new SvgPoint(ww, hh));
@@ -978,19 +989,17 @@
         {
           src = polygons.Max(z => z.Source.Value) + 1;
         }
+
         pl.Source = src;
         polygons.Add(pl);
         pl.x = xx;
         pl.y = yy;
-        pl.Points = new SvgPoint[] { };
         for (int ang = 0; ang < 360; ang += 15)
         {
           var xx1 = (float)(rad * Math.Cos(ang * Math.PI / 180.0f));
           var yy1 = (float)(rad * Math.Sin(ang * Math.PI / 180.0f));
           pl.AddPoint(new SvgPoint(xx1, yy1));
         }
-
-
       }
       UpdateList();
     }
@@ -1013,7 +1022,6 @@
         }
         pl.Source = src;
         polygons.Add(pl);
-        pl.Points = new SvgPoint[] { };
         pl.x = xx;
         pl.y = yy;
         pl.AddPoint(new SvgPoint(-ww, 0));
@@ -1040,14 +1048,15 @@
         {
           src = polygons.Max(z => z.Source.Value) + 1;
         }
+
         pl.Source = src;
         polygons.Add(pl);
-        pl.Points = new SvgPoint[] { };
         pl.AddPoint(new SvgPoint(xx, yy));
         pl.AddPoint(new SvgPoint(xx + ww, yy));
         pl.AddPoint(new SvgPoint(xx + ww, yy + hh));
         pl.AddPoint(new SvgPoint(xx, yy + hh));
       }
+
       UpdateList();
     }
 
@@ -1072,7 +1081,6 @@
 
           pl.Source = src;
           polygons.Add(pl);
-          pl.Points = new SvgPoint[] { };
           pl.x = xx;
           pl.y = yy;
           pl.AddPoint(new SvgPoint(0, 0));
@@ -1112,7 +1120,6 @@
         }
         polygons.Add(pl);
         pl.Source = src;
-        pl.Points = new SvgPoint[] { };
         pl.AddPoint(new SvgPoint(0, 0));
         pl.AddPoint(new SvgPoint(0 + ww, 0));
         pl.AddPoint(new SvgPoint(0 + ww, 0 + hh));
@@ -1123,7 +1130,6 @@
 
         pl.Children = new List<NFP>();
         pl.Children.Add(hole);
-        hole.Points = new SvgPoint[] { };
         int gap = 10;
         hole.AddPoint(new SvgPoint(0 + gap, 0 + gap));
         hole.AddPoint(new SvgPoint(0 + ww - gap, 0 + gap));
@@ -1154,7 +1160,6 @@
         }
         pl.Source = src;
         polygons.Add(pl);
-        pl.Points = new SvgPoint[] { };
 
         NFP hole = new NFP();
         for (int ang = 0; ang < 360; ang += 15)
@@ -1207,7 +1212,6 @@
       pl.Source = src;
       pl.x = xx;
       pl.y = yy;
-      pl.Points = new SvgPoint[] { };
       pl.AddPoint(new SvgPoint(0, 0));
       pl.AddPoint(new SvgPoint(ww, 0));
       pl.AddPoint(new SvgPoint(ww, hh));
@@ -1322,7 +1326,6 @@
       }
       polygons.Add(pl);
       pl.Source = src;
-      pl.Points = new SvgPoint[] { };
       pl.AddPoint(new SvgPoint(0, 0));
       pl.AddPoint(new SvgPoint(0 + ww, 0));
       pl.AddPoint(new SvgPoint(0 + ww, 0 + hh));
@@ -1340,7 +1343,6 @@
           var hole = new NFP();
 
           pl.Children.Add(hole);
-          hole.Points = new SvgPoint[] { };
 
           int hx = (i * ww / 4) + gap * (i + 1);
           int hy = (j * hh / 3) + gap * (j + 1);
@@ -1601,6 +1603,16 @@
         (item as DetailLoadInfo).Quantity /= q.Qnt;
       }
       objectListView1.RefreshObjects(objectListView1.SelectedObjects);
+    }
+
+    private void checkBox5_CheckedChanged(object sender, EventArgs e)
+    {
+      SvgNest.Config.DrawSimplification = checkBox5.Checked;
+    }
+
+    private void checkBox6_CheckedChanged(object sender, EventArgs e)
+    {
+      SvgNest.Config.ClipByHull = checkBox6.Checked;
     }
   }
 }
