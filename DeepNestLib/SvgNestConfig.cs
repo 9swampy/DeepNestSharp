@@ -11,6 +11,9 @@
     public double TimeRatio = 0.5;
     public bool MergeLines = false;
 
+    // port features (don't exist in the original DeepNest project)
+    public bool clipByHull = false;
+
     public double CurveTolerance
     {
       get

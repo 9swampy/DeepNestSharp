@@ -323,49 +323,15 @@
 
     public bool TryImportFromRawDetail(RawDetail raw, int src, out NFP loadedNfp)
     {
-      NFP po = null;
-      List<NFP> nfps = new List<NFP>();
-      foreach (var item in raw.Outers)
+      loadedNfp = raw.ToNfp();
+      if (loadedNfp == null)
       {
-        var nn = new NFP();
-        nfps.Add(nn);
-        foreach (var pitem in item.Points)
-        {
-          nn.AddPoint(new SvgPoint(pitem.X, pitem.Y));
-        }
-      }
-
-      if (nfps.Any())
-      {
-        var tt = nfps.OrderByDescending(z => z.Area).First();
-        po = tt; // Reference caution needed here; should be cloning not messing with the original object?
-        po.Name = raw.Name;
-
-        foreach (var r in nfps)
-        {
-          if (r == tt)
-          {
-            continue;
-          }
-
-          if (po.Children == null)
-          {
-            po.Children = new List<NFP>();
-          }
-
-          po.Children.Add(r);
-        }
-
-        po.Source = src;
-        Polygons.Add(po);
-        loadedNfp = po;
-        return true;
-      }
-      else
-      {
-        loadedNfp = null;
         return false;
       }
+
+      loadedNfp.Source = src;
+      Polygons.Add(loadedNfp);
+      return true;
     }
 
     public int GetNextSource()
@@ -376,6 +342,7 @@
       }
       return 0;
     }
+
     public int GetNextSheetSource()
     {
       if (Sheets.Any())

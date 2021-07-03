@@ -16,6 +16,8 @@
 
   public partial class Form1 : Form
   {
+    bool drawSimplification = true;
+
     public Form1()
     {
       InitializeComponent();
@@ -51,6 +53,8 @@
       this.numericUpDown2.Value = SvgNest.Config.MutationRate;
       this.comboBox1.SelectedItem = SvgNest.Config.PlacementType.ToString();
       this.textBox1.Text = SvgNest.Config.Spacing.ToString();
+
+      this.checkBox6.Checked = SvgNest.Config.clipByHull;
 
       UpdateFilesList(@"dxfs");
       Load += Form1_Load;
@@ -127,92 +131,57 @@
     public void RedrawPreview(DrawingContext ctx2, object previewObject)
     {
       ctx2.Update();
+      ctx2.Clear(Color.White);
 
-      ctx2.gr.Clear(Color.White);
-
-      //ctx2.gr.DrawLine(Pens.Blue, ctx2.Transform(new PointF(0, 0)), ctx2.Transform(100, 0));
-      //ctx2.gr.DrawLine(Pens.Red, ctx2.Transform(new PointF(0, 0)), ctx2.Transform(0, 100));
+      // ctx2.gr.DrawLine(Pens.Blue, ctx2.Transform(new PointF(0, 0)), ctx2.Transform(100, 0));
+      // ctx2.gr.DrawLine(Pens.Red, ctx2.Transform(new PointF(0, 0)), ctx2.Transform(0, 100));
+      ctx2.Reset();
 
       if (previewObject != null)
       {
-        ctx2.gr.ResetTransform();
-        GraphicsPath gp = new GraphicsPath();
-        GraphicsPath gp2 = new GraphicsPath();
-
-        if (previewObject is RawDetail raw)
+        RectangleF bnd;
+        if (previewObject is RawDetail || previewObject is NFP)
         {
-          DrawOuters(ctx2, gp, gp2, raw);
-          ApplyInk(ctx2, gp);
-          AddApproximation(ctx2, raw);
+          if (previewObject is RawDetail raw)
+          {
+            ctx2.Draw(raw, Pens.Black, Brushes.LightBlue);
+            if (this.drawSimplification)
+            {
+              AddApproximation(ctx2, raw);
+            }
+
+            bnd = raw.BoundingBox();
+          }
+          else
+          {
+            var g = ctx2.Draw(previewObject as NFP, Pens.Black, Brushes.LightBlue);
+            bnd = g.GetBounds();
+          }
+
+          var cap = $"{bnd.Width:N2} x {bnd.Height:N2}";
+          ctx2.DrawLabel(cap, Brushes.Black, Color.LightGreen, 5, 5);
         }
-        else if (previewObject is NFP nfp)
-        {
-          DrawNfp(ctx2, gp, nfp);
-          ApplyInk(ctx2, gp);
-        }
-
-        var bnd = gp2.GetBounds();
-
-        ctx2.gr.ResetTransform();
-        var cap = $"{bnd.Width:N2} x {bnd.Height:N2}";
-        var ms = ctx2.gr.MeasureString(cap, SystemFonts.DefaultFont);
-        ctx2.gr.FillRectangle(new SolidBrush(Color.FromArgb(128, Color.LightGreen)), 5, 5, ms.Width, ms.Height);
-
-        ctx2.gr.DrawString(cap, SystemFonts.DefaultFont, Brushes.Black, 5, 5);
       }
 
       ctx2.Setup();
     }
 
-    private static void ApplyInk(DrawingContext ctx2, GraphicsPath gp)
-    {
-      ctx2.gr.FillPath(Brushes.LightBlue, gp);
-      ctx2.gr.DrawPath(Pens.Black, gp);
-    }
-
-    private static void DrawOuters(DrawingContext ctx2, GraphicsPath gp, GraphicsPath gp2, RawDetail raw)
-    {
-      foreach (var item in raw.Outers)
-      {
-        gp.AddPolygon(item.Points.Select(z => ctx2.Transform(z)).ToArray());
-        gp2.AddPolygon(item.Points.ToArray());
-      }
-    }
-
-    private static void DrawNfp(DrawingContext ctx2, GraphicsPath gp, NFP nfp)
-    {
-      gp.AddPolygon(nfp.Points.Select(z => ctx2.Transform(z.x, z.y)).ToArray());
-      if (nfp.Children != null)
-      {
-        foreach (var item in nfp.Children)
-        {
-          gp.AddPolygon(item.Points.Select(z => ctx2.Transform(z.x, z.y)).ToArray());
-        }
-      }
-    }
-
     /// <summary>
     /// Display the bounds that will be used by the nesting algorithym.
     /// </summary>
-    /// <param name="ctx2">Drawing context upon which to draw.</param>
+    /// <param name="ctx">Drawing context upon which to draw.</param>
     /// <param name="raw">The part to approximate.</param>
-    private void AddApproximation(DrawingContext ctx2, RawDetail raw)
+    private void AddApproximation(DrawingContext ctx, RawDetail raw)
     {
       var nestingContext = new NestingContext(new MessageBoxService());
       NFP part;
       nestingContext.TryImportFromRawDetail(raw, 0, out part);
 
-      GraphicsPath gp = new GraphicsPath();
-
       var simplification = SvgNest.simplifyFunction(part, false);
-      DrawNfp(ctx2, gp, simplification);
+      ctx.Draw(simplification, Pens.Red);
 
-      ctx2.gr.DrawPath(Pens.Red, gp);
       var pointsChange = $"{part.Points.Length} => {simplification.Points.Length} points";
-      var ms = ctx2.gr.MeasureString(pointsChange, SystemFonts.DefaultFont);
-      var topLeftY = (5 * 2) + ms.Height;
-      ctx2.gr.FillRectangle(new SolidBrush(Color.FromArgb(128, Color.Orange)), 5, topLeftY, ms.Width, ms.Height);
-      ctx2.gr.DrawString(pointsChange, SystemFonts.DefaultFont, Brushes.Black, 5, topLeftY);
+      ctx.DrawLabel(pointsChange, Brushes.Black, Color.Orange, 5, (int)(10 + ctx.GetLabelHeight()));
     }
 
     public void Redraw()
@@ -231,9 +200,9 @@
       #endregion
 
       ctx.gr.SmoothingMode = SmoothingMode.AntiAlias;
-      ctx.gr.Clear(Color.White);
+      ctx.Clear(Color.White);
 
-      ctx.gr.ResetTransform();
+      ctx.Reset();
 
       ctx.gr.DrawLine(Pens.Red, ctx.Transform(new PointF(0, 0)), ctx.Transform(new PointF(1000, 0)));
       ctx.gr.DrawLine(Pens.Blue, ctx.Transform(new PointF(0, 0)), ctx.Transform(new PointF(0, 1000)));
@@ -336,7 +305,6 @@
               bool was = false;
               foreach (var zitem in fr.placements.First())
               {
-
                 var sheetid = zitem.sheetId;
                 if (sheetid != item.Id) continue;
                 var sheet = sheets.FirstOrDefault(z => z.Id == sheetid);
@@ -346,7 +314,6 @@
                   was = true;
                   foreach (var ssitem in zitem.sheetplacements)
                   {
-
                     var poly = polygons.FirstOrDefault(z => z.Id == ssitem.id);
                     if (poly != null)
                     {
@@ -372,10 +339,8 @@
     public void RenderSheet()
     {
       ctx.gr.SmoothingMode = SmoothingMode.AntiAlias;
-      ctx.gr.Clear(Color.White);
-
-      ctx.gr.ResetTransform();
-
+      ctx.Clear(Color.White);
+      ctx.Reset();
 
       foreach (var item in polygons.Union(sheets))
       {
@@ -1638,6 +1603,16 @@
         (item as DetailLoadInfo).Quantity /= q.Qnt;
       }
       objectListView1.RefreshObjects(objectListView1.SelectedObjects);
+    }
+
+    private void checkBox5_CheckedChanged(object sender, EventArgs e)
+    {
+      drawSimplification = checkBox5.Checked;
+    }
+
+    private void checkBox6_CheckedChanged(object sender, EventArgs e)
+    {
+      SvgNest.Config.clipByHull = checkBox6.Checked;
     }
   }
 }
