@@ -165,11 +165,11 @@
     /// <returns>List of <see cref="LineElement"/> connecting the dots.</returns>
     private static IEnumerable<LineElement> ConnectTheDots(IList<PointF> points)
     {
-      for (int i = 1; i < points.Count; i++)
+      for (int i = 0; i < points.Count; i++)
       {
-        var p1 = points[i - 1];
-        var p2 = points[i];
-        yield return new LineElement() { Start = p1, End = p2 };
+        var p0 = points[i];
+        var p1 = points[(i + 1) % points.Count];
+        yield return new LineElement() { Start = p0, End = p1 };
       }
     }
 
