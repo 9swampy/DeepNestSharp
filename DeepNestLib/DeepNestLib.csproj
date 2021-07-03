@@ -103,8 +103,12 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="GeneticAlgorithm.cs" />
     <Compile Include="GeometryUtil.cs" />
+    <Compile Include="IDbCache.cs" />
     <Compile Include="IExport.cs" />
+    <Compile Include="IMessageService.cs" />
     <Compile Include="INfp.cs" />
+    <Compile Include="ISvgNestConfig.cs" />
+    <Compile Include="IWindowUnk.cs" />
     <Compile Include="LineElement.cs" />
     <Compile Include="NestingContext.cs" />
     <Compile Include="NFP.cs" />

@@ -6,7 +6,7 @@
     {
         float Rotation { get; }
 
-        int? Source { get; }
+        int Source { get; }
 
         SvgPoint[] Points { get; }
 

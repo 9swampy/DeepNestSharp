@@ -99,7 +99,7 @@
     public double? Offsetx;
     public double? Offsety;
 
-    public int? Source { get; set; } = null;
+    public int Source { get; set; } = -1;
 
     private float rotation;
 
@@ -115,6 +115,10 @@
         this.rotation = value;
       }
     }
+
+    public bool ForceRotations { get; set; }
+
+    public float[] Rotations { get; } = new float[] { 90, 270 };
 
     public SvgPoint[] Points
     {

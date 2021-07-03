@@ -223,7 +223,7 @@
           yy += (int)Font.Size + gap;
         }
 
-        ctx.gr.DrawString($"Call counter: {Background.callCounter};  Last placing time: {Background.LastPlacePartTime}ms", Font, Brushes.DarkBlue, 0, yy);
+        ctx.gr.DrawString($"Call counter: {context.Background.callCounter};  Last placing time: {context.Background.LastPlacePartTime}ms", Font, Brushes.DarkBlue, 0, yy);
         yy += (int)Font.Size + gap;
       }
       else
@@ -682,7 +682,7 @@
           int src = 0;
           if (polygons.Any())
           {
-            src = polygons.Max(z => z.Source.Value) + 1;
+            src = polygons.Max(z => z.Source) + 1;
           }
           for (int i = 0; i < q.Qnt; i++)
           {
@@ -717,7 +717,7 @@
           int src = 0;
           if (polygons.Any())
           {
-            src = polygons.Max(z => z.Source.Value) + 1;
+            src = polygons.Max(z => z.Source) + 1;
           }
           for (int i = 0; i < q.Qnt; i++)
           {
@@ -783,7 +783,7 @@
           var nfp = (listView1.SelectedItems[0].Tag as NFP);
           for (int i = 0; i < qd.Qnt; i++)
           {
-            var r = Background.clone(nfp);
+            var r = Background.Clone(nfp);
             polygons.Add(r);
           }
 
@@ -959,7 +959,7 @@
         int src = 0;
         if (polygons.Any())
         {
-          src = polygons.Max(z => z.Source.Value) + 1;
+          src = polygons.Max(z => z.Source) + 1;
         }
         polygons.Add(pl);
         pl.Source = src;
@@ -975,7 +975,6 @@
 
     private void button14_Click(object sender, EventArgs e)
     {
-
       Random r = new Random();
       for (int i = 0; i < 10; i++)
       {
@@ -987,7 +986,7 @@
         int src = 0;
         if (polygons.Any())
         {
-          src = polygons.Max(z => z.Source.Value) + 1;
+          src = polygons.Max(z => z.Source) + 1;
         }
 
         pl.Source = src;
@@ -1018,7 +1017,7 @@
         int src = 0;
         if (polygons.Any())
         {
-          src = polygons.Max(z => z.Source.Value) + 1;
+          src = polygons.Max(z => z.Source) + 1;
         }
         pl.Source = src;
         polygons.Add(pl);
@@ -1046,7 +1045,7 @@
         int src = 0;
         if (polygons.Any())
         {
-          src = polygons.Max(z => z.Source.Value) + 1;
+          src = polygons.Max(z => z.Source) + 1;
         }
 
         pl.Source = src;
@@ -1068,7 +1067,7 @@
       int src = 0;
       if (polygons.Any())
       {
-        src = polygons.Max(z => z.Source.Value) + 1;
+        src = polygons.Max(z => z.Source) + 1;
       }
       if (q.ShowDialog() == DialogResult.OK)
       {
@@ -1116,7 +1115,7 @@
         int src = 0;
         if (polygons.Any())
         {
-          src = polygons.Max(z => z.Source.Value) + 1;
+          src = polygons.Max(z => z.Source) + 1;
         }
         polygons.Add(pl);
         pl.Source = src;
@@ -1156,7 +1155,7 @@
         int src = 0;
         if (polygons.Any())
         {
-          src = polygons.Max(z => z.Source.Value) + 1;
+          src = polygons.Max(z => z.Source) + 1;
         }
         pl.Source = src;
         polygons.Add(pl);
@@ -1206,7 +1205,7 @@
       int src = 0;
       if (polygons.Any())
       {
-        src = polygons.Max(z => z.Source.Value) + 1;
+        src = polygons.Max(z => z.Source) + 1;
       }
       polygons.Add(pl);
       pl.Source = src;
@@ -1322,7 +1321,7 @@
       int src = 0;
       if (polygons.Any())
       {
-        src = polygons.Max(z => z.Source.Value) + 1;
+        src = polygons.Max(z => z.Source) + 1;
       }
       polygons.Add(pl);
       pl.Source = src;

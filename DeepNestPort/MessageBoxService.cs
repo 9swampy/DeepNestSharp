@@ -1,5 +1,6 @@
 ﻿namespace DeepNestPort
 {
+  using System;
   using System.Windows.Forms;
   using DeepNestLib;
 
@@ -8,6 +9,11 @@
     public void DisplayMessage(string message)
     {
       MessageBox.Show(message);
+    }
+
+    public void DisplayMessage(Exception ex)
+    {
+      MessageBox.Show($"{ex.Message}/n{ex.StackTrace}");
     }
   }
 }

@@ -74,7 +74,7 @@
       return target;
     }
 
-    public static SvgNestConfig Config = new SvgNestConfig();
+    public static ISvgNestConfig Config = new SvgNestConfig();
 
     public static NFP clone(NFP p)
     {
@@ -100,18 +100,18 @@
     }
 
     // returns true if any complex vertices fall outside the simple polygon
-    public static bool exterior(NFP simple, NFP complex, bool inside)
+    private static bool exterior(NFP simple, NFP complex, bool inside, ISvgNestConfig config)
     {
       // find all protruding vertices
       for (var i = 0; i < complex.Length; i++)
       {
         var v = complex[i];
-        if (!inside && !pointInPolygon(v, simple) && find(v, simple) == null)
+        if (!inside && !pointInPolygon(v, simple) && find(v, simple, config) == null)
         {
           return true;
         }
 
-        if (inside && pointInPolygon(v, simple) && find(v, simple) != null)
+        if (inside && pointInPolygon(v, simple) && find(v, simple, config) != null)
         {
           return true;
         }
@@ -126,15 +126,27 @@
 
     public static NFP simplifyFunction(NFP polygon, bool inside)
     {
+      return simplifyFunction(polygon, inside, Config);
+    }
+
+    /// <summary>
+    /// Override specifically added for Tests so the curveTolerance can be passed in.
+    /// </summary>
+    /// <param name="polygon"></param>
+    /// <param name="inside"></param>
+    /// <param name="curveTolerance"></param>
+    /// <returns></returns>
+    internal static NFP simplifyFunction(NFP polygon, bool inside, ISvgNestConfig config)
+    {
       var markExact = true;
       var straighten = true;
       var doSimplify = true;
       var selectiveReversalOfOffset = true;
 
-      var tolerance = 4 * Config.CurveTolerance;
+      var tolerance = 4 * config.CurveTolerance;
 
       // give special treatment to line segments above this length (squared)
-      var fixedTolerance = 40 * Config.CurveTolerance * 40 * Config.CurveTolerance;
+      var fixedTolerance = 40 * config.CurveTolerance * 40 * config.CurveTolerance;
       int i, j, k;
 
       var hull = Background.GetHull(polygon.Points);
@@ -172,7 +184,7 @@
       SvgPoint[] resultSource;
       bool doSimplifyRadialDist = false;
       bool doSimplifyDouglasPeucker = true;
-      if (cache.TryGetValue(new System.Tuple<SvgPoint[], double?, bool, bool>(polygon.Points, SvgNest.Config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker), out resultSource))
+      if (cache.TryGetValue(new System.Tuple<SvgPoint[], double?, bool, bool>(polygon.Points, config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker), out resultSource))
       {
         return new NFP(resultSource);
       }
@@ -237,7 +249,7 @@
 
       if (markExact)
       {
-        MarkExact(polygon, simple);
+        MarkExact(polygon, simple, config);
       }
 
       var numshells = 4;
@@ -280,7 +292,7 @@
           var test = clone(offset);
           test.Points[i] = new SvgPoint(target.x, target.y);
 
-          if (!exterior(test, polygon, inside))
+          if (!exterior(test, polygon, inside, config))
           {
             o.x = target.x;
             o.y = target.y;
@@ -297,7 +309,7 @@
                 target = getTarget(o, shell, 2 * delta);
                 test = clone(offset);
                 test.Points[i] = new SvgPoint(target.x, target.y);
-                if (!exterior(test, polygon, inside))
+                if (!exterior(test, polygon, inside, config))
                 {
                   o.x = target.x;
                   o.y = target.y;
@@ -342,8 +354,8 @@
             if ((GeometryUtil._almostEqual(s1.x, s2.x) || GeometryUtil._almostEqual(s1.y, s2.y)) && // we only really care about vertical and horizontal lines
             GeometryUtil._withinDistance(p1, s1, 2 * tolerance) &&
             GeometryUtil._withinDistance(p2, s2, 2 * tolerance) &&
-            (!GeometryUtil._withinDistance(p1, s1, Config.CurveTolerance / 1000) ||
-            !GeometryUtil._withinDistance(p2, s2, Config.CurveTolerance / 1000)))
+            (!GeometryUtil._withinDistance(p1, s1, config.CurveTolerance / 1000) ||
+            !GeometryUtil._withinDistance(p2, s2, config.CurveTolerance / 1000)))
             {
               p1.x = s1.x;
               p1.y = s1.y;
@@ -396,7 +408,7 @@
 
       if (markExact)
       {
-        MarkExactSvg(polygon, offset);
+        MarkExactSvg(polygon, offset, config);
       }
 
       if (!inside && holes != null && holes.Count > 0)
@@ -406,9 +418,9 @@
 
       lock (cacheSyncLock)
       {
-        if (!cache.ContainsKey(new System.Tuple<SvgPoint[], double?, bool, bool>(polygon.Points, SvgNest.Config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker)))
+        if (!cache.ContainsKey(new System.Tuple<SvgPoint[], double?, bool, bool>(polygon.Points, config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker)))
         {
-          cache.Add(new System.Tuple<SvgPoint[], double?, bool, bool>(polygon.Points, SvgNest.Config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker), offset.Points);
+          cache.Add(new System.Tuple<SvgPoint[], double?, bool, bool>(polygon.Points, config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker), offset.Points);
         }
       }
 
@@ -432,8 +444,12 @@
       clipper.AddPaths(clipperSubject.Select(z => z.ToList()).ToList(), PolyType.ptSubject, true);
 
       List<List<IntPoint>> finalNfp = new List<List<IntPoint>>();
-      clipper.Execute(ClipType.ctIntersection, finalNfp, PolyFillType.pftNonZero, PolyFillType.pftNonZero);
-      return Background.ToNestCoordinates(finalNfp[0].ToArray(), clipperScale);
+      if (clipper.Execute(ClipType.ctIntersection, finalNfp, PolyFillType.pftNonZero, PolyFillType.pftNonZero) && finalNfp != null && finalNfp.Count > 0)
+      {
+        return Background.ToNestCoordinates(finalNfp[0].ToArray(), clipperScale);
+      }
+
+      return subject;
     }
 
     /// <summary>
@@ -441,14 +457,14 @@
     /// </summary>
     /// <param name="polygon">This is the one that's checked against.</param>
     /// <param name="offset">This is iterated and elements are marked exact when matched to a point in polygon.</param>
-    private static void MarkExactSvg(NFP polygon, NFP offset)
+    private static void MarkExactSvg(NFP polygon, NFP offset, ISvgNestConfig config)
     {
       int i;
       for (i = 0; i < offset.Length; i++)
       {
         var seg = new SvgPoint[] { offset[i], offset[i + 1 == offset.Length ? 0 : i + 1] };
-        var index1 = find(seg[0], polygon);
-        var index2 = find(seg[1], polygon);
+        var index1 = find(seg[0], polygon, config);
+        var index2 = find(seg[1], polygon, config);
         if (index1 == null)
         {
           index1 = 0;
@@ -472,7 +488,7 @@
     /// </summary>
     /// <param name="polygon">This is the one that's checked against.</param>
     /// <param name="simple">This is iterated and elements are marked exact when matched to a point in polygon.</param>
-    private static void MarkExact(NFP polygon, NFP simple)
+    private static void MarkExact(NFP polygon, NFP simple, ISvgNestConfig config)
     {
       for (int i = 0; i < simple.Length; i++)
       {
@@ -480,8 +496,8 @@
         seg.AddPoint(simple[i]);
         seg.AddPoint(simple[i + 1 == simple.Length ? 0 : i + 1]);
 
-        var index1 = find(seg[0], polygon);
-        var index2 = find(seg[1], polygon);
+        var index1 = find(seg[0], polygon, config);
+        var index2 = find(seg[1], polygon, config);
 
         if (IsExactMatch(polygon, index1, index2))
         {
@@ -496,11 +512,11 @@
       return index1 + 1 == index2 || index2 + 1 == index1 || (index1 == 0 && index2 == polygon.Length - 1) || (index2 == 0 && index1 == polygon.Length - 1);
     }
 
-    public static int? find(SvgPoint v, NFP p)
+    private static int? find(SvgPoint v, NFP p, ISvgNestConfig config)
     {
       for (var i = 0; i < p.Length; i++)
       {
-        if (GeometryUtil._withinDistance(v, p[i], Config.CurveTolerance / 1000))
+        if (GeometryUtil._withinDistance(v, p[i], config.CurveTolerance / 1000))
         {
           return i;
         }
@@ -510,7 +526,7 @@
     }
 
     // offset tree recursively
-    public static void OffsetTree(NFP t, double offset, SvgNestConfig config, bool? inside = null)
+    public static void OffsetTree(NFP t, double offset, ISvgNestConfig config, bool? inside = null)
     {
       var simple = simplifyFunction(t, (inside == null) ? false : inside.Value);
       var offsetpaths = new NFP[] { simple };
@@ -813,7 +829,7 @@
       }
     }
 
-    public void launchWorkers(NestItem[] parts, IMessageService messageService)
+    public void launchWorkers(NestItem[] parts)
     {
       try
       {
@@ -932,7 +948,7 @@
               ids.Add(id);
 
               // sources[j] = source;
-              sources.Add(source.Value);
+              sources.Add(source);
 
               // children[j] = child;
               children.Add(child.ToList());
@@ -961,7 +977,7 @@
       }
       catch (Exception ex)
       {
-        this.messageService.DisplayMessage(ex.Message);
+        this.messageService.DisplayMessage(ex);
         this.setIsErrored();
       }
     }
@@ -1056,21 +1072,20 @@
 
   public class DataInfo
   {
-
     public int index;
     public List<NFP> sheets;
     public int[] sheetids;
     public int[] sheetsources;
     public List<List<NFP>> sheetchildren;
     public PopulationItem individual;
-    public SvgNestConfig config;
+    public ISvgNestConfig config;
     public int[] ids;
     public int[] sources;
     public List<List<NFP>> children;
     //ipcRenderer.send('background-start', { index: i, sheets: sheets, sheetids: sheetids, sheetsources: sheetsources, sheetchildren: sheetchildren, 
     //individual: GA.population[i], config: config, ids: ids, sources: sources, children: children});
-
   }
+
   public class PolygonTreeItem
   {
     public NFP Polygon;
@@ -1087,12 +1102,44 @@
 
   public class DbCacheKey
   {
-    public int? A;
-    public int? B;
-    public float ARotation;
-    public float BRotation;
-    public NFP[] nfp;
-    public int Type;
+    public DbCacheKey(int? a, int? b, float aRotation, float bRotation, IEnumerable<NFP> nfps)
+    {
+      A = a;
+      B = b;
+      ARotation = aRotation;
+      BRotation = bRotation;
+      nfp = nfps.ToArray();
+    }
+
+    public DbCacheKey(int? a, int? b, float aRotation, float bRotation)
+    // : this(a, b, aRotation, bRotation, null)
+    {
+      A = a;
+      B = b;
+      ARotation = aRotation;
+      BRotation = bRotation;
+    }
+
+    public int? A { get; }
+
+    public int? B { get; }
+
+    public float ARotation { get; }
+
+    public float BRotation { get; }
+
+    public NFP[] nfp { get; }
+
+    public int Type { get; }
+
+    public string Key
+    {
+      get
+      {
+        var key = "A" + this.A + "B" + this.B + "Arot" + (int)Math.Round(this.ARotation * 10000) + "Brot" + (int)Math.Round(this.BRotation * 10000) + ";" + this.Type;
+        return key;
+      }
+    }
   }
 
   public class NfpPair

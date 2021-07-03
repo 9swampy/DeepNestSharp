@@ -8,11 +8,6 @@
   using System.Threading.Tasks;
   using System.Xml.Linq;
 
-  public interface IMessageService
-  {
-    void DisplayMessage(string message);
-  }
-
   public class NestingContext
   {
     private readonly IMessageService messageService;
@@ -28,24 +23,25 @@
 
     public List<NFP> Sheets { get; private set; } = new List<NFP>();
 
-
     public double MaterialUtilization { get; private set; } = 0;
+
     public int PlacedPartsCount { get; private set; } = 0;
 
-
     SheetPlacement current = null;
+
     public SheetPlacement Current { get { return current; } }
+
     public SvgNest Nest { get; private set; }
+
+    public Background Background { get; private set; }
 
     public int Iterations { get; private set; } = 0;
 
     public void StartNest()
     {
-      current = null;
+      this.current = null;
       Nest = new SvgNest(this.messageService, () => this.IsErrored = true);
-      Background.cacheProcess = new Dictionary<string, NFP[]>();
-      Background.window = new windowUnk();
-      Background.callCounter = 0;
+      this.Background = new Background();
       Iterations = 0;
     }
 
@@ -165,7 +161,7 @@
           item.Polygon.Source = srcc++;
         }
 
-        Nest.launchWorkers(partsLocal.ToArray(), this.messageService);
+        Nest.launchWorkers(partsLocal.ToArray());
         var plcpr = Nest.nests.First();
 
         if (current == null || plcpr.fitness < current.fitness)
@@ -180,7 +176,7 @@
         if (!this.IsErrored)
         {
           this.IsErrored = true;
-          this.messageService.DisplayMessage(ex.Message);
+          this.messageService.DisplayMessage(ex);
         }
       }
     }
@@ -338,7 +334,7 @@
     {
       if (Polygons.Any())
       {
-        return Polygons.Max(z => z.Source.Value) + 1;
+        return Polygons.Max(z => z.Source) + 1;
       }
       return 0;
     }
@@ -347,7 +343,7 @@
     {
       if (Sheets.Any())
       {
-        return Sheets.Max(z => z.Source.Value) + 1;
+        return Sheets.Max(z => z.Source) + 1;
       }
       return 0;
     }
