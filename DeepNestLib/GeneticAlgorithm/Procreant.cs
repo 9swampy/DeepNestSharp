@@ -11,29 +11,29 @@
     private readonly ISvgNestConfig Config;
     public List<PopulationItem> Population;
 
-    private static bool StrictAngles = false;
+    private static bool StrictAngles = true;
     private float[] defaultAngles = new float[] {
         0,
 0,
-90,
-0,
-0,
-270,
 180,
-180,
-180,
-90
+//0,
+//0,
+//270,
+//180,
+//180,
+//180,
+//90
         };
 
     public Procreant(NFP[] adam, ISvgNestConfig config)
     {
 
-      var ang2 = new List<float>();
-      for (var i = 0; i < adam.Length; i++)
-      {
-        ang2.Add(i * 90 % 360);
-      }
-      defaultAngles = ang2.ToArray();
+      //var ang2 = new List<float>();
+      //for (var i = 0; i < adam.Length; i++)
+      //{
+      //  ang2.Add(i * 90 % 360);
+      //}
+      //defaultAngles = ang2.ToArray();
       Config = config;
 
 
@@ -42,7 +42,7 @@
       {
         if (StrictAngles)
         {
-          angles.Add(defaultAngles[i]);
+          angles.Add(defaultAngles[i % 2]);
         }
         else
         {
@@ -61,6 +61,8 @@
         Population.Add(mutant);
       }
     }
+
+    private readonly Random random = new Random();
 
     private PopulationItem mutate(PopulationItem p)
     {
@@ -81,7 +83,8 @@
         rand = r.NextDouble();
         if (rand < 0.01 * Config.MutationRate)
         {
-          clone.Rotation[i] = (float)Math.Floor(r.NextDouble() * Config.Rotations) * (360f / Config.Rotations);
+          // clone.Rotation[i] = (float)Math.Floor(r.NextDouble() * Config.Rotations) * (360f / Config.Rotations);
+          clone.Rotation[i] = defaultAngles[random.Next() % 3];
         }
       }
 
@@ -176,10 +179,10 @@
       // Individuals with higher fitness are more likely to be selected for mating
       Population = Population.OrderBy(z => z.fitness).ToList();
 
-      // fittest individual is preserved in the new generation (elitism)
-
+      // fittest individuals are preserved in the new generation (elitism)
       var newpopulation = new List<PopulationItem>();
-      newpopulation.Add(this.Population[0]);
+      var fittestSurvivors = Config.PopulationSize / 10;
+      newpopulation.AddRange(this.Population.Take(this.Population.Count() < fittestSurvivors ? this.Population.Count() : fittestSurvivors));
       while (newpopulation.Count() < this.Population.Count)
       {
         var male = randomWeightedIndividual();

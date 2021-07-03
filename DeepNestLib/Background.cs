@@ -591,284 +591,294 @@
             placements.Add(position);
             placed.Add(part);
             totalPlaced++;
-
-            continue;
-          }
-
-          clipperSheetNfp = InnerNfpToClipperCoordinates(sheetNfp, config.ClipperScale);
-
-          clipper = new ClipperLib.Clipper();
-          combinedNfp = new List<List<ClipperLib.IntPoint>>();
-
-          error = false;
-
-          // check if stored in clip cache
-          // var startindex = 0;
-          clipkey = "s:" + part.Source + "r:" + part.Rotation;
-          var startindex = 0;
-          if (EnableCaches && clipCache.ContainsKey(clipkey))
-          {
-            var prevNfp = clipCache[clipkey].nfpp;
-            clipper.AddPaths(prevNfp.Select(z => z.ToList()).ToList(), ClipperLib.PolyType.ptSubject, true);
-            startindex = clipCache[clipkey].index;
-          }
-
-          for (int j = startindex; j < placed.Count; j++)
-          {
-            nfp = GetOuterNfp(placed[j], part, 0);
-
-            // minkowski difference failed. very rare but could happen
-            if (nfp == null)
-            {
-              error = true;
-              break;
-            }
-
-            // shift to placed location
-            for (int m = 0; m < nfp.Length; m++)
-            {
-              nfp[m].x += placements[j].x;
-              nfp[m].y += placements[j].y;
-            }
-
-            if (nfp.Children != null && nfp.Children.Count > 0)
-            {
-              for (int n = 0; n < nfp.Children.Count; n++)
-              {
-                for (var o = 0; o < nfp.Children[n].Length; o++)
-                {
-                  nfp.Children[n][o].x += placements[j].x;
-                  nfp.Children[n][o].y += placements[j].y;
-                }
-              }
-            }
-
-            var clipperNfp = NfpToClipperCoordinates(nfp, config.ClipperScale);
-
-            clipper.AddPaths(clipperNfp.Select(z => z.ToList()).ToList(), ClipperLib.PolyType.ptSubject, true);
-          }
-
-          // TODO: a lot here to insert
-          if (error || !clipper.Execute(ClipperLib.ClipType.ctUnion, combinedNfp, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero))
-          {
-            // console.log('clipper error', error);
-            continue;
-          }
-
-          if (EnableCaches)
-          {
-            clipCache[clipkey] = new ClipCacheItem()
-            {
-              index = placed.Count - 1,
-              nfpp = combinedNfp.Select(z => z.ToArray()).ToArray(),
-            };
-          }
-
-          // console.log('save cache', placed.length - 1);
-
-          // difference with sheet polygon
-          List<List<IntPoint>> differenceWithSheetPolygonNfpPoints = new List<List<IntPoint>>();
-          clipper = new ClipperLib.Clipper();
-
-          clipper.AddPaths(combinedNfp, ClipperLib.PolyType.ptClip, true);
-
-          clipper.AddPaths(clipperSheetNfp.Select(z => z.ToList()).ToList(), ClipperLib.PolyType.ptSubject, true);
-
-          if (!clipper.Execute(ClipperLib.ClipType.ctDifference, differenceWithSheetPolygonNfpPoints, ClipperLib.PolyFillType.pftEvenOdd, ClipperLib.PolyFillType.pftNonZero))
-          {
-            continue;
-          }
-
-          if (differenceWithSheetPolygonNfpPoints == null || differenceWithSheetPolygonNfpPoints.Count == 0)
-          {
-            continue;
-          }
-
-          List<NFP> differenceWithSheetPolygonNfp = new List<NFP>();
-          for (int j = 0; j < differenceWithSheetPolygonNfpPoints.Count; j++)
-          {
-            // back to normal scale
-            differenceWithSheetPolygonNfp.Add(Background.ToNestCoordinates(differenceWithSheetPolygonNfpPoints[j].ToArray(), config.ClipperScale));
-          }
-
-          var finalNfp = differenceWithSheetPolygonNfp;
-
-          // choose placement that results in the smallest bounding box/hull etc
-          // todo: generalize gravity direction
-          /*var minwidth = null;
-          var minarea = null;
-          var minx = null;
-          var miny = null;
-          var nf, area, shiftvector;*/
-          minwidth = null;
-          minarea = null;
-          double? minx = null;
-          double? miny = null;
-          NFP nf;
-          double area;
-          PlacementItem shiftvector = null;
-
-          NFP allpoints = new NFP();
-          for (int m = 0; m < placed.Count; m++)
-          {
-            for (int n = 0; n < placed[m].Length; n++)
-            {
-              allpoints.AddPoint(
-                  new SvgPoint(
-                   placed[m][n].x + placements[m].x, placed[m][n].y + placements[m].y));
-            }
-          }
-
-          PolygonBounds allbounds = null;
-          PolygonBounds partbounds = null;
-          if (config.PlacementType == PlacementTypeEnum.Gravity || config.PlacementType == PlacementTypeEnum.BoundingBox)
-          {
-            allbounds = GeometryUtil.getPolygonBounds(allpoints);
-
-            NFP partpoints = new NFP();
-            for (int m = 0; m < part.Length; m++)
-            {
-              partpoints.AddPoint(new SvgPoint(part[m].x, part[m].y));
-            }
-
-            partbounds = GeometryUtil.getPolygonBounds(partpoints);
           }
           else
           {
-            allpoints = GetHull(allpoints.Points);
-          }
+            clipperSheetNfp = InnerNfpToClipperCoordinates(sheetNfp, config.ClipperScale);
 
-          for (int j = 0; j < finalNfp.Count; j++)
-          {
-            nf = finalNfp[j];
+            clipper = new ClipperLib.Clipper();
+            combinedNfp = new List<List<ClipperLib.IntPoint>>();
 
-            // console.log('evalnf',nf.length);
-            for (int k = 0; k < nf.Length; k++)
+            error = false;
+
+            // check if stored in clip cache
+            // var startindex = 0;
+            clipkey = "s:" + part.Source + "r:" + part.Rotation;
+            var startindex = 0;
+            if (EnableCaches && clipCache.ContainsKey(clipkey))
             {
-              shiftvector = new PlacementItem()
+              var prevNfp = clipCache[clipkey].nfpp;
+              clipper.AddPaths(prevNfp.Select(z => z.ToList()).ToList(), ClipperLib.PolyType.ptSubject, true);
+              startindex = clipCache[clipkey].index;
+            }
+
+            for (int j = startindex; j < placed.Count; j++)
+            {
+              nfp = GetOuterNfp(placed[j], part, 0);
+
+              // minkowski difference failed. very rare but could happen
+              if (nfp == null)
               {
-                id = part.Id,
-                x = nf[k].x - part[0].x,
-                y = nf[k].y - part[0].y,
-                source = part.Source,
-                rotation = part.Rotation,
-              };
+                error = true;
+                break;
+              }
 
-              PolygonBounds rectbounds = null;
-              if (config.PlacementType == PlacementTypeEnum.Gravity || config.PlacementType == PlacementTypeEnum.BoundingBox)
+              // shift to placed location
+              for (int m = 0; m < nfp.Length; m++)
               {
-                NFP poly = new NFP();
-                poly.AddPoint(new SvgPoint(allbounds.x, allbounds.y));
-                poly.AddPoint(new SvgPoint(allbounds.x + allbounds.width, allbounds.y));
-                poly.AddPoint(new SvgPoint(allbounds.x + allbounds.width, allbounds.y + allbounds.height));
-                poly.AddPoint(new SvgPoint(allbounds.x, allbounds.y + allbounds.height));
+                nfp[m].x += placements[j].x;
+                nfp[m].y += placements[j].y;
+              }
 
-                poly.AddPoint(new SvgPoint(partbounds.x + shiftvector.x, partbounds.y + shiftvector.y));
-                poly.AddPoint(new SvgPoint(partbounds.x + partbounds.width + shiftvector.x, partbounds.y + shiftvector.y));
-                poly.AddPoint(new SvgPoint(partbounds.x + partbounds.width + shiftvector.x, partbounds.y + partbounds.height + shiftvector.y));
-                poly.AddPoint(new SvgPoint(partbounds.x + shiftvector.x, partbounds.y + partbounds.height + shiftvector.y));
-
-                rectbounds = GeometryUtil.getPolygonBounds(poly);
-
-                // weigh width more, to help compress in direction of gravity
-                if (config.PlacementType == PlacementTypeEnum.Gravity)
+              if (nfp.Children != null && nfp.Children.Count > 0)
+              {
+                for (int n = 0; n < nfp.Children.Count; n++)
                 {
-                  area = (rectbounds.width * 3) + rectbounds.height;
+                  for (var o = 0; o < nfp.Children[n].Length; o++)
+                  {
+                    nfp.Children[n][o].x += placements[j].x;
+                    nfp.Children[n][o].y += placements[j].y;
+                  }
+                }
+              }
+
+              var clipperNfp = NfpToClipperCoordinates(nfp, config.ClipperScale);
+
+              clipper.AddPaths(clipperNfp.Select(z => z.ToList()).ToList(), ClipperLib.PolyType.ptSubject, true);
+            }
+
+            // TODO: a lot here to insert
+            if (error || !clipper.Execute(ClipperLib.ClipType.ctUnion, combinedNfp, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero))
+            {
+              // console.log('clipper error', error);
+              continue;
+            }
+
+            if (EnableCaches)
+            {
+              clipCache[clipkey] = new ClipCacheItem()
+              {
+                index = placed.Count - 1,
+                nfpp = combinedNfp.Select(z => z.ToArray()).ToArray(),
+              };
+            }
+
+            // console.log('save cache', placed.length - 1);
+
+            // difference with sheet polygon
+            List<List<IntPoint>> differenceWithSheetPolygonNfpPoints = new List<List<IntPoint>>();
+            clipper = new ClipperLib.Clipper();
+
+            clipper.AddPaths(combinedNfp, ClipperLib.PolyType.ptClip, true);
+
+            clipper.AddPaths(clipperSheetNfp.Select(z => z.ToList()).ToList(), ClipperLib.PolyType.ptSubject, true);
+
+            if (!clipper.Execute(ClipperLib.ClipType.ctDifference, differenceWithSheetPolygonNfpPoints, ClipperLib.PolyFillType.pftEvenOdd, ClipperLib.PolyFillType.pftNonZero))
+            {
+              continue;
+            }
+
+            if (differenceWithSheetPolygonNfpPoints == null || differenceWithSheetPolygonNfpPoints.Count == 0)
+            {
+              if (part.IsPrimary)
+              {
+                break; // Failed to fit a Primary part; add another sheet - we'll leave additional space on the first sheet though that won't get used again as everything remaining will be fit to the consequent sheet.
+              }
+
+              continue; // Part can't be fitted but it wasn't a primary, so move on to the next part
+            }
+
+            List<NFP> differenceWithSheetPolygonNfp = new List<NFP>();
+            for (int j = 0; j < differenceWithSheetPolygonNfpPoints.Count; j++)
+            {
+              // back to normal scale
+              differenceWithSheetPolygonNfp.Add(Background.ToNestCoordinates(differenceWithSheetPolygonNfpPoints[j].ToArray(), config.ClipperScale));
+            }
+
+            var finalNfp = differenceWithSheetPolygonNfp;
+
+            // choose placement that results in the smallest bounding box/hull etc
+            // todo: generalize gravity direction
+            /*var minwidth = null;
+            var minarea = null;
+            var minx = null;
+            var miny = null;
+            var nf, area, shiftvector;*/
+            minwidth = null;
+            minarea = null;
+            double? minx = null;
+            double? miny = null;
+            NFP nf;
+            double area;
+            PlacementItem shiftvector = null;
+
+            NFP allpoints = new NFP();
+            for (int m = 0; m < placed.Count; m++)
+            {
+              for (int n = 0; n < placed[m].Length; n++)
+              {
+                allpoints.AddPoint(
+                    new SvgPoint(
+                     placed[m][n].x + placements[m].x, placed[m][n].y + placements[m].y));
+              }
+            }
+
+            PolygonBounds allbounds = null;
+            PolygonBounds partbounds = null;
+            if (config.PlacementType == PlacementTypeEnum.Gravity || config.PlacementType == PlacementTypeEnum.BoundingBox)
+            {
+              allbounds = GeometryUtil.getPolygonBounds(allpoints);
+
+              NFP partpoints = new NFP();
+              for (int m = 0; m < part.Length; m++)
+              {
+                partpoints.AddPoint(new SvgPoint(part[m].x, part[m].y));
+              }
+
+              partbounds = GeometryUtil.getPolygonBounds(partpoints);
+            }
+            else
+            {
+              allpoints = GetHull(allpoints.Points);
+            }
+
+            for (int j = 0; j < finalNfp.Count; j++)
+            {
+              nf = finalNfp[j];
+
+              // console.log('evalnf',nf.length);
+              for (int k = 0; k < nf.Length; k++)
+              {
+                shiftvector = new PlacementItem()
+                {
+                  id = part.Id,
+                  x = nf[k].x - part[0].x,
+                  y = nf[k].y - part[0].y,
+                  source = part.Source,
+                  rotation = part.Rotation,
+                };
+
+                PolygonBounds rectbounds = null;
+                if (config.PlacementType == PlacementTypeEnum.Gravity || config.PlacementType == PlacementTypeEnum.BoundingBox)
+                {
+                  NFP poly = new NFP();
+                  poly.AddPoint(new SvgPoint(allbounds.x, allbounds.y));
+                  poly.AddPoint(new SvgPoint(allbounds.x + allbounds.width, allbounds.y));
+                  poly.AddPoint(new SvgPoint(allbounds.x + allbounds.width, allbounds.y + allbounds.height));
+                  poly.AddPoint(new SvgPoint(allbounds.x, allbounds.y + allbounds.height));
+
+                  poly.AddPoint(new SvgPoint(partbounds.x + shiftvector.x, partbounds.y + shiftvector.y));
+                  poly.AddPoint(new SvgPoint(partbounds.x + partbounds.width + shiftvector.x, partbounds.y + shiftvector.y));
+                  poly.AddPoint(new SvgPoint(partbounds.x + partbounds.width + shiftvector.x, partbounds.y + partbounds.height + shiftvector.y));
+                  poly.AddPoint(new SvgPoint(partbounds.x + shiftvector.x, partbounds.y + partbounds.height + shiftvector.y));
+
+                  rectbounds = GeometryUtil.getPolygonBounds(poly);
+
+                  // weigh width more, to help compress in direction of gravity
+                  if (config.PlacementType == PlacementTypeEnum.Gravity)
+                  {
+                    area = (rectbounds.width * 3) + rectbounds.height;
+                  }
+                  else
+                  {
+                    area = rectbounds.width * rectbounds.height;
+                  }
                 }
                 else
                 {
-                  area = rectbounds.width * rectbounds.height;
-                }
-              }
-              else
-              {
-                // must be convex hull
-                var localpoints = allpoints.Clone();
+                  // must be convex hull
+                  var localpoints = allpoints.Clone();
 
-                for (int m = 0; m < part.Length; m++)
-                {
-                  localpoints.AddPoint(new SvgPoint(part[m].x + shiftvector.x, part[m].y + shiftvector.y));
-                }
+                  for (int m = 0; m < part.Length; m++)
+                  {
+                    localpoints.AddPoint(new SvgPoint(part[m].x + shiftvector.x, part[m].y + shiftvector.y));
+                  }
 
-                area = Math.Abs(GeometryUtil.polygonArea(GetHull(localpoints.Points)));
-                shiftvector.hull = GetHull(localpoints.Points);
-                shiftvector.hullsheet = GetHull(sheet.Points);
-              }
-
-              // console.timeEnd('evalbounds');
-              // console.time('evalmerge');
-              MergedResult merged = null;
-              if (config.MergeLines)
-              {
-                throw new NotImplementedException();
-
-                // if lines can be merged, subtract savings from area calculation
-                var shiftedpart = shiftPolygon(part, shiftvector);
-                List<NFP> shiftedplaced = new List<NFP>();
-
-                for (int m = 0; m < placed.Count; m++)
-                {
-                  shiftedplaced.Add(shiftPolygon(placed[m], placements[m]));
+                  area = Math.Abs(GeometryUtil.polygonArea(GetHull(localpoints.Points)));
+                  shiftvector.hull = GetHull(localpoints.Points);
+                  shiftvector.hullsheet = GetHull(sheet.Points);
                 }
 
-                // don't check small lines, cut off at about 1/2 in
-                double minlength = 0.5 * config.Scale;
-                merged = mergedLength(shiftedplaced.ToArray(), shiftedpart, minlength, 0.1 * config.CurveTolerance);
-                area -= merged.totalLength * config.TimeRatio;
-              }
-
-              // console.timeEnd('evalmerge');
-              if (
-      minarea == null ||
-      area < minarea ||
-      (GeometryUtil._almostEqual(minarea, area) && (minx == null || shiftvector.x < minx)) ||
-      (GeometryUtil._almostEqual(minarea, area) && (minx != null && GeometryUtil._almostEqual(shiftvector.x, minx) && shiftvector.y < miny)))
-              {
-                minarea = area;
-
-                minwidth = rectbounds != null ? rectbounds.width : 0;
-                position = shiftvector;
-                if (minx == null || shiftvector.x < minx)
-                {
-                  minx = shiftvector.x;
-                }
-
-                if (miny == null || shiftvector.y < miny)
-                {
-                  miny = shiftvector.y;
-                }
-
+                // console.timeEnd('evalbounds');
+                // console.time('evalmerge');
+                MergedResult merged = null;
                 if (config.MergeLines)
                 {
-                  position.mergedLength = merged.totalLength;
-                  position.mergedSegments = merged.segments;
+                  throw new NotImplementedException();
+
+                  // if lines can be merged, subtract savings from area calculation
+                  var shiftedpart = shiftPolygon(part, shiftvector);
+                  List<NFP> shiftedplaced = new List<NFP>();
+
+                  for (int m = 0; m < placed.Count; m++)
+                  {
+                    shiftedplaced.Add(shiftPolygon(placed[m], placements[m]));
+                  }
+
+                  // don't check small lines, cut off at about 1/2 in
+                  double minlength = 0.5 * config.Scale;
+                  merged = mergedLength(shiftedplaced.ToArray(), shiftedpart, minlength, 0.1 * config.CurveTolerance);
+                  area -= merged.totalLength * config.TimeRatio;
+                }
+
+                // console.timeEnd('evalmerge');
+                if (
+        minarea == null ||
+        area < minarea ||
+        (GeometryUtil._almostEqual(minarea, area) && (minx == null || shiftvector.x < minx)) ||
+        (GeometryUtil._almostEqual(minarea, area) && (minx != null && GeometryUtil._almostEqual(shiftvector.x, minx) && shiftvector.y < miny)))
+                {
+                  minarea = area;
+
+                  minwidth = rectbounds != null ? rectbounds.width : 0;
+                  position = shiftvector;
+                  if (minx == null || shiftvector.x < minx)
+                  {
+                    minx = shiftvector.x;
+                  }
+
+                  if (miny == null || shiftvector.y < miny)
+                  {
+                    miny = shiftvector.y;
+                  }
+
+                  if (config.MergeLines)
+                  {
+                    position.mergedLength = merged.totalLength;
+                    position.mergedSegments = merged.segments;
+                  }
                 }
               }
             }
-          }
 
-          if (position != null)
-          {
-            placed.Add(part);
-            totalPlaced++;
-            placements.Add(position);
-            if (position.mergedLength != null)
+
+            if (position != null)
             {
-              totalMerged += position.mergedLength.Value;
+              placed.Add(part);
+              totalPlaced++;
+              placements.Add(position);
+              if (position.mergedLength != null)
+              {
+                totalMerged += position.mergedLength.Value;
+              }
             }
+            else if (part.IsPrimary)
+            {
+              break; // Should go to line 921
+            }
+
+            // send placement progress signal
+            var placednum = placed.Count;
+            for (int j = 0; j < allplacements.Count; j++)
+            {
+              placednum += allplacements[j].sheetplacements.Count;
+            }
+
+            // console.log(placednum, totalnum);
+            // ipcRenderer.send('background-progress', { index: nestindex, progress: 0.5 + 0.5 * (placednum / totalnum)});
+
+            // console.timeEnd('placement');
           }
-
-          // send placement progress signal
-          var placednum = placed.Count;
-          for (int j = 0; j < allplacements.Count; j++)
-          {
-            placednum += allplacements[j].sheetplacements.Count;
-          }
-
-          // console.log(placednum, totalnum);
-          // ipcRenderer.send('background-progress', { index: nestindex, progress: 0.5 + 0.5 * (placednum / totalnum)});
-
-          // console.timeEnd('placement');
         }
 
         // if(minwidth){

@@ -813,23 +813,43 @@
       this.ga.Population[payload.index].processing = null;
       this.ga.Population[payload.index].fitness = payload.fitness;
 
-      // render placement
-      if (this.nests.Count == 0 || this.nests[0].fitness > payload.fitness)
+      if (this.nests.Count == 0)
       {
         this.nests.Insert(0, payload);
-
-        if (this.nests.Count > Config.PopulationSize)
+      }
+      else
+      {
+        for (int i = 0; i < this.nests.Count; i++)
         {
-          this.nests.RemoveAt(this.nests.Count - 1);
-        }
+          if (i > Config.PopulationSize / 10)
+          {
+            break;
+          }
 
-        // if (displayCallback)
-        {
-          // displayCallback();
+          if (i == this.nests.Count || this.nests[i].fitness > payload.fitness)
+          {
+            this.nests.Insert(i, payload);
+            break;
+          }
+          else if (this.nests[i].fitness == payload.fitness)
+          {
+            break;
+          }
+
+          if (this.nests.Count > Config.PopulationSize)
+          {
+            this.nests.RemoveAt(this.nests.Count - 1);
+          }
         }
       }
 
-      DisplayProgress(this.nests[0].placements[0][0].sheetplacements.Count, this.ga.Population.Count(o => o.fitness != null));
+      int currentPlacements = 0;
+      if (this.nests.Count > 0 && this.nests[0].placements.Length > 0 && this.nests[0].placements[0].Count > 0)
+      {
+        currentPlacements = this.nests[0].placements[0][0].sheetplacements.Count;
+      }
+
+      DisplayProgress(currentPlacements, this.ga.Population.Count(o => o.fitness != null));
     }
 
     private static volatile object displayProgressLock = new object();
@@ -1043,7 +1063,7 @@
 
   public class _Clipper : IDeprecatedClipper
   {
-    ClipperLib.IntPoint[] IDeprecatedClipper.ScaleUpPathsOriginal(NFP p, double scale = 1)
+    ClipperLib.IntPoint[] IDeprecatedClipper.ScaleUpPathsOriginal(NFP p, double scale)
     {
       List<ClipperLib.IntPoint> ret = new List<ClipperLib.IntPoint>();
 
@@ -1058,7 +1078,7 @@
       return ret.ToArray();
     } // 5 secs
 
-    ClipperLib.IntPoint[] IDeprecatedClipper.ScaleUpPathsSlowerParallel(SvgPoint[] points, double scale = 1)
+    ClipperLib.IntPoint[] IDeprecatedClipper.ScaleUpPathsSlowerParallel(SvgPoint[] points, double scale)
     {
       var result = from point in points.AsParallel().AsSequential()
                    select new ClipperLib.IntPoint((long)Math.Round((decimal)point.x * (decimal)scale), (long)Math.Round((decimal)point.y * (decimal)scale));

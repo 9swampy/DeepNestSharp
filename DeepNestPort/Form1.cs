@@ -133,8 +133,8 @@
       ctx2.Update();
       ctx2.Clear(Color.White);
 
-      // ctx2.gr.DrawLine(Pens.Blue, ctx2.Transform(new PointF(0, 0)), ctx2.Transform(100, 0));
-      // ctx2.gr.DrawLine(Pens.Red, ctx2.Transform(new PointF(0, 0)), ctx2.Transform(0, 100));
+      //ctx2.gr.DrawLine(Pens.Blue, ctx2.Transform(new PointF(0, 0)), ctx2.Transform(100, 0));
+      //ctx2.gr.DrawLine(Pens.Red, ctx2.Transform(new PointF(0, 0)), ctx2.Transform(0, 100));
       ctx2.Reset();
 
       if (previewObject != null)
@@ -173,13 +173,9 @@
     /// <param name="raw">The part to approximate.</param>
     private void AddApproximation(DrawingContext ctx, RawDetail raw)
     {
-      var nestingContext = new NestingContext(new MessageBoxService());
-      NFP part;
-      nestingContext.TryImportFromRawDetail(raw, 0, out part);
-
+      NFP part = raw.ToNfp();
       var simplification = SvgNest.simplifyFunction(part, false);
       ctx.Draw(simplification, Pens.Red);
-
       var pointsChange = $"{part.Points.Length} => {simplification.Points.Length} points";
       ctx.DrawLabel(pointsChange, Brushes.Black, Color.Orange, 5, (int)(10 + ctx.GetLabelHeight()));
     }
@@ -678,30 +674,34 @@
         QntDialog q = new QntDialog();
         if (q.ShowDialog() == DialogResult.OK)
         {
-          RawDetail det = null;
-          if (f.Extension == ".svg")
-          {
-            det = SvgParser.LoadSvg(f.FullName);
-          }
-          if (f.Extension == ".dxf")
-          {
-            det = DxfParser.LoadDxf(f.FullName);
-          }
+          RawDetail det = LoadRawDetail(f);
 
           int src = 0;
           if (polygons.Any())
           {
             src = polygons.Max(z => z.Source) + 1;
           }
-          for (int i = 0; i < q.Qnt; i++)
-          {
-            context.TryImportFromRawDetail(det, src, out _);
-          }
 
+          AddToPolygons(src, det, q.Qnt);
           UpdateList();
 
         }
       }
+    }
+
+    private static RawDetail LoadRawDetail(FileInfo f)
+    {
+      RawDetail det = null;
+      if (f.Extension == ".svg")
+      {
+        det = SvgParser.LoadSvg(f.FullName);
+      }
+      if (f.Extension == ".dxf")
+      {
+        det = DxfParser.LoadDxf(f.FullName);
+      }
+
+      return det;
     }
 
     private void importSelectedToolStripMenuItem_Click(object sender, EventArgs e)
@@ -714,25 +714,17 @@
         foreach (var item in listView3.SelectedItems)
         {
           var t = (item as ListViewItem).Tag as FileInfo;
-          RawDetail det = null;
-          if (t.Extension == ".svg")
-          {
-            det = SvgParser.LoadSvg(t.FullName);
-          }
-          if (t.Extension == ".dxf")
-          {
-            det = DxfParser.LoadDxf(t.FullName);
-          }
+          var det = LoadRawDetail(t);
+
           int src = 0;
           if (polygons.Any())
           {
             src = polygons.Max(z => z.Source) + 1;
           }
-          for (int i = 0; i < q.Qnt; i++)
-          {
-            context.TryImportFromRawDetail(det, src, out _);
-          }
+
+          AddToPolygons(src, det, q.Qnt);
         }
+
         UpdateList();
       }
     }
@@ -1385,7 +1377,7 @@
           if (fr != null)
             fr.Quantity++;
           else
-            Infos.Add(new DetailLoadInfo() { Quantity = 1, Name = new FileInfo(ofd.FileNames[i]).Name, Path = ofd.FileNames[i] });
+            Infos.Add(new DetailLoadInfo() { Quantity = 1, Name = new FileInfo(ofd.FileNames[i]).Name, Path = ofd.FileNames[i], IsIncluded = true, IsPrimary = false });
 
         }
         catch (Exception ex)
@@ -1422,41 +1414,52 @@
       context.ReorderSheets();
 
       src = 0;
-      foreach (var item in Infos)
+      foreach (var item in Infos.Where(o => o.IsIncluded))
       {
-        RawDetail det = null;
-        if (item.Path.ToLower().EndsWith("dxf"))
-        {
-          det = DxfParser.LoadDxf(item.Path);
-        }
-        else if (item.Path.ToLower().EndsWith("svg"))
-        {
-          det = SvgParser.LoadSvg(item.Path);
-        }
+        var det = LoadRawDetail(new FileInfo(item.Path));
 
-        for (int i = 0; i < item.Quantity; i++)
-        {
-          context.TryImportFromRawDetail(det, src, out _);
-        }
+        AddToPolygons(src, det, item);
 
         src++;
       }
 
-      run();
+      if (src == 0)
+      {
+        MessageBox.Show("No parts to nest.", "DeepNest", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+      }
+      else
+      {
+        run();
+      }
+    }
+
+    private void AddToPolygons(int src, RawDetail det, int quantity, bool isIncluded = true, bool isPrimary = false)
+    {
+      var item = new DetailLoadInfo() { Quantity = quantity, IsIncluded = isIncluded, IsPrimary = isPrimary };
+      AddToPolygons(src, det, item);
+    }
+
+    private void AddToPolygons(int src, RawDetail det, DetailLoadInfo item)
+    {
+      NFP loadedNfp;
+      if (context.TryImportFromRawDetail(det, src, out loadedNfp))
+      {
+        loadedNfp.IsPrimary = item.IsPrimary;
+        for (int i = 0; i < item.Quantity; i++)
+        {
+          context.Polygons.Add(loadedNfp.Clone());
+        }
+      }
+      else
+      {
+        MessageBox.Show($"Failed to import {det.Name}.");
+      }
     }
 
     private void objectListView1_SelectedIndexChanged(object sender, EventArgs e)
     {
       if (objectListView1.SelectedObject == null) return;
-      var path = (objectListView1.SelectedObject as DetailLoadInfo).Path.ToLower();
-      if (path.EndsWith("dxf"))
-      {
-        Preview = DxfParser.LoadDxf(path);
-      }
-      else if (path.EndsWith("svg"))
-      {
-        Preview = SvgParser.LoadSvg(path);
-      }
+      Preview = LoadRawDetail(new FileInfo((objectListView1.SelectedObject as DetailLoadInfo).Path));
       if (autoFit) fitAll();
     }
 
@@ -1572,6 +1575,7 @@
       {
         (item as DetailLoadInfo).Quantity = q.Qnt;
       }
+
       objectListView1.RefreshObjects(objectListView1.SelectedObjects);
     }
 

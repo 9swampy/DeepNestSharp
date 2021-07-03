@@ -7,7 +7,7 @@
   {
     Normal,
     FileLoad,
-    FitFour
+    FitFour,
   }
 
   public class DxfGenerator
