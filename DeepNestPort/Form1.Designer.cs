@@ -401,19 +401,19 @@
             this.deleteToolStripMenuItem2,
             this.quantityToolStripMenuItem});
       this.contextMenuStrip4.Name = "contextMenuStrip4";
-      this.contextMenuStrip4.Size = new System.Drawing.Size(119, 70);
+      this.contextMenuStrip4.Size = new System.Drawing.Size(133, 76);
       // 
       // clearToolStripMenuItem
       // 
       this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
-      this.clearToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+      this.clearToolStripMenuItem.Size = new System.Drawing.Size(132, 24);
       this.clearToolStripMenuItem.Text = "clear";
       this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
       // 
       // deleteToolStripMenuItem2
       // 
       this.deleteToolStripMenuItem2.Name = "deleteToolStripMenuItem2";
-      this.deleteToolStripMenuItem2.Size = new System.Drawing.Size(118, 22);
+      this.deleteToolStripMenuItem2.Size = new System.Drawing.Size(132, 24);
       this.deleteToolStripMenuItem2.Text = "delete";
       this.deleteToolStripMenuItem2.Click += new System.EventHandler(this.deleteToolStripMenuItem2_Click);
       // 
@@ -424,27 +424,27 @@
             this.multiplyToolStripMenuItem,
             this.divideToolStripMenuItem});
       this.quantityToolStripMenuItem.Name = "quantityToolStripMenuItem";
-      this.quantityToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+      this.quantityToolStripMenuItem.Size = new System.Drawing.Size(132, 24);
       this.quantityToolStripMenuItem.Text = "quantity";
       // 
       // setToToolStripMenuItem
       // 
       this.setToToolStripMenuItem.Name = "setToToolStripMenuItem";
-      this.setToToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+      this.setToToolStripMenuItem.Size = new System.Drawing.Size(146, 26);
       this.setToToolStripMenuItem.Text = "set to";
       this.setToToolStripMenuItem.Click += new System.EventHandler(this.setToToolStripMenuItem_Click);
       // 
       // multiplyToolStripMenuItem
       // 
       this.multiplyToolStripMenuItem.Name = "multiplyToolStripMenuItem";
-      this.multiplyToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+      this.multiplyToolStripMenuItem.Size = new System.Drawing.Size(146, 26);
       this.multiplyToolStripMenuItem.Text = "multiply";
       this.multiplyToolStripMenuItem.Click += new System.EventHandler(this.multiplyToolStripMenuItem_Click);
       // 
       // divideToolStripMenuItem
       // 
       this.divideToolStripMenuItem.Name = "divideToolStripMenuItem";
-      this.divideToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+      this.divideToolStripMenuItem.Size = new System.Drawing.Size(146, 26);
       this.divideToolStripMenuItem.Text = "divide";
       this.divideToolStripMenuItem.Click += new System.EventHandler(this.divideToolStripMenuItem_Click);
       // 
@@ -524,9 +524,10 @@
       // checkBox6
       // 
       this.checkBox6.AutoSize = true;
+      this.checkBox6.Enabled = false;
       this.checkBox6.Location = new System.Drawing.Point(6, 21);
       this.checkBox6.Name = "checkBox6";
-      this.checkBox6.Size = new System.Drawing.Size(169, 17);
+      this.checkBox6.Size = new System.Drawing.Size(199, 19);
       this.checkBox6.TabIndex = 33;
       this.checkBox6.Text = "clip by hull during simplification";
       this.checkBox6.UseVisualStyleBackColor = true;
@@ -537,7 +538,7 @@
       this.checkBox5.AutoSize = true;
       this.checkBox5.Location = new System.Drawing.Point(389, 11);
       this.checkBox5.Name = "checkBox5";
-      this.checkBox5.Size = new System.Drawing.Size(111, 17);
+      this.checkBox5.Size = new System.Drawing.Size(131, 19);
       this.checkBox5.TabIndex = 31;
       this.checkBox5.Text = "simplification draw";
       this.checkBox5.UseVisualStyleBackColor = true;

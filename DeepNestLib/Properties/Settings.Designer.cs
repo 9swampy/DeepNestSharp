@@ -154,5 +154,29 @@ namespace DeepNestLib.Properties {
                 this["OffsetTreePhase"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ClipByHull {
+            get {
+                return ((bool)(this["ClipByHull"]));
+            }
+            set {
+                this["ClipByHull"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool DrawSimplification {
+            get {
+                return ((bool)(this["DrawSimplification"]));
+            }
+            set {
+                this["DrawSimplification"] = value;
+            }
+        }
     }
 }

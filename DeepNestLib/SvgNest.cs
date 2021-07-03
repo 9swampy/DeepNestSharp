@@ -389,7 +389,10 @@
         offset = cleaned;
       }
 
-      offset = ClipSubject(offset, hull, Config.ClipperScale);
+      if (Config.ClipByHull)
+      {
+        offset = ClipSubject(offset, hull, Config.ClipperScale);
+      }
 
       if (markExact)
       {

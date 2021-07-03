@@ -11,8 +11,24 @@
     public double TimeRatio = 0.5;
     public bool MergeLines = false;
 
-    // port features (don't exist in the original DeepNest project)
-    public bool clipByHull = false;
+    /// <summary>
+    /// Port feature; don't exist in the original DeepNest project.Disabled in the UI because it's not a part of the cache key so
+    /// doesn't make sense to change during the litetime of the application.
+    /// </summary>
+    public bool ClipByHull
+    {
+      get
+      {
+        return (bool)Properties.Settings.Default["ClipByHull"];
+      }
+
+      set
+      {
+        Properties.Settings.Default["ClipByHull"] = value;
+        Properties.Settings.Default.Save();
+        Properties.Settings.Default.Upgrade();
+      }
+    }
 
     public double CurveTolerance
     {
@@ -174,6 +190,21 @@
       set
       {
         Properties.Settings.Default["MutationRate"] = value;
+        Properties.Settings.Default.Save();
+        Properties.Settings.Default.Upgrade();
+      }
+    }
+
+    public bool DrawSimplification
+    {
+      get
+      {
+        return (bool)Properties.Settings.Default["DrawSimplification"];
+      }
+
+      set
+      {
+        Properties.Settings.Default["DrawSimplification"] = value;
         Properties.Settings.Default.Save();
         Properties.Settings.Default.Upgrade();
       }

@@ -16,8 +16,6 @@
 
   public partial class Form1 : Form
   {
-    bool drawSimplification = true;
-
     public Form1()
     {
       InitializeComponent();
@@ -53,8 +51,10 @@
       this.numericUpDown2.Value = SvgNest.Config.MutationRate;
       this.comboBox1.SelectedItem = SvgNest.Config.PlacementType.ToString();
       this.textBox1.Text = SvgNest.Config.Spacing.ToString();
+      this.textBox6.Text = SvgNest.Config.CurveTolerance.ToString();
 
-      this.checkBox6.Checked = SvgNest.Config.clipByHull;
+      this.checkBox5.Checked = SvgNest.Config.DrawSimplification;
+      this.checkBox6.Checked = SvgNest.Config.ClipByHull;
 
       UpdateFilesList(@"dxfs");
       Load += Form1_Load;
@@ -145,7 +145,7 @@
           if (previewObject is RawDetail raw)
           {
             ctx2.Draw(raw, Pens.Black, Brushes.LightBlue);
-            if (this.drawSimplification)
+            if (SvgNest.Config.DrawSimplification)
             {
               AddApproximation(ctx2, raw);
             }
@@ -1607,12 +1607,12 @@
 
     private void checkBox5_CheckedChanged(object sender, EventArgs e)
     {
-      drawSimplification = checkBox5.Checked;
+      SvgNest.Config.DrawSimplification = checkBox5.Checked;
     }
 
     private void checkBox6_CheckedChanged(object sender, EventArgs e)
     {
-      SvgNest.Config.clipByHull = checkBox6.Checked;
+      SvgNest.Config.ClipByHull = checkBox6.Checked;
     }
   }
 }
