@@ -14,11 +14,30 @@
   {
     public static bool EnableCaches = true;
 
-    public Background()
+    // jsClipper uses X/Y instead of x/y...
+    public DataInfo data;
+
+    private NFP[] parts;
+
+    private int index;
+
+    // run the placement synchronously
+    private IWindowUnk window = new windowUnk();
+
+    public Action<SheetPlacement> ResponseAction;
+
+    private static object lockobj = new object();
+    private readonly IProgressDisplayer progressDisplayer;
+
+
+    public long LastPlacePartTime { get; private set; } = 0;
+
+    public Background(IProgressDisplayer progressDisplayer)
     {
       this.cacheProcess = new Dictionary<string, NFP[]>();
       this.window = new windowUnk();
       this.callCounter = 0;
+      this.progressDisplayer = progressDisplayer;
     }
 
     public static NFP shiftPolygon(NFP p, PlacementItem shift)
@@ -443,7 +462,7 @@
       List<NFP> f = new List<NFP>();
       for (var i = 0; i < finalNfp.Count; i++)
       {
-        f.Add(ToNestCoordinates(finalNfp[i].ToArray(), clipperScale));
+        f.Add(finalNfp[i].ToArray().ToNestCoordinates(clipperScale));
       }
 
       if (A.Source != null && B.Source != null)
@@ -692,7 +711,7 @@
             for (int j = 0; j < differenceWithSheetPolygonNfpPoints.Count; j++)
             {
               // back to normal scale
-              differenceWithSheetPolygonNfp.Add(Background.ToNestCoordinates(differenceWithSheetPolygonNfpPoints[j].ToArray(), config.ClipperScale));
+              differenceWithSheetPolygonNfp.Add(differenceWithSheetPolygonNfpPoints[j].ToArray().ToNestCoordinates(config.ClipperScale));
             }
 
             var finalNfp = differenceWithSheetPolygonNfp;
@@ -961,19 +980,6 @@
       return false;
     }
 
-    // jsClipper uses X/Y instead of x/y...
-    public DataInfo data;
-    private NFP[] parts;
-
-    private int index;
-
-    // run the placement synchronously
-    public IWindowUnk window = new windowUnk();
-
-    public Action<SheetPlacement> ResponseAction;
-
-    public long LastPlacePartTime = 0;
-
     private void SyncPlaceParts()
     {
       // console.log('starting synchronous calculations', Object.keys(window.nfpCache).length);
@@ -994,7 +1000,7 @@
       this.ResponseAction(placement);
     }
 
-    internal void BackgroundStart(DataInfo data)
+    internal void BackgroundStart(DataInfo data, ISvgNestConfig config)
     {
       try
       {
@@ -1027,72 +1033,16 @@
         }
 
         // preprocess
-        List<NfpPair> pairs = new List<NfpPair>();
-
-        if (Background.UseParallel)
-        {
-          object lobj = new object();
-          Parallel.For(0, parts.Count, i =>
-          {
-            {
-              var B = parts[i];
-              for (var j = 0; j < i; j++)
-              {
-                var A = parts[j];
-                var key = new NfpPair()
-                {
-                  A = A,
-                  B = B,
-                  ARotation = A.Rotation,
-                  BRotation = B.Rotation,
-                  Asource = A.Source,
-                  Bsource = B.Source,
-                };
-                var doc = new DbCacheKey(A.Source, B.Source, A.Rotation, B.Rotation);
-                lock (lobj)
-                {
-                  if (!this.InPairs(key, pairs.ToArray()) && !window.Has(doc))
-                  {
-                    pairs.Add(key);
-                  }
-                }
-              }
-            }
-          });
-        }
-        else
-        {
-          for (var i = 0; i < parts.Count; i++)
-          {
-            var B = parts[i];
-            for (var j = 0; j < i; j++)
-            {
-              var A = parts[j];
-              var key = new NfpPair()
-              {
-                A = A,
-                B = B,
-                ARotation = A.Rotation,
-                BRotation = B.Rotation,
-                Asource = A.Source,
-                Bsource = B.Source,
-              };
-              var doc = new DbCacheKey(A.Source, B.Source, A.Rotation, B.Rotation);
-              if (!this.InPairs(key, pairs.ToArray()) && !window.Has(doc))
-              {
-                pairs.Add(key);
-              }
-            }
-          }
-        }
+        List<NfpPair> pairs = new NfpPairsFactory(window).Generate(config.UseParallel, parts);
 
         // console.log('pairs: ', pairs.length);
         // console.time('Total');
         this.parts = parts.ToArray();
         if (pairs.Count > 0)
         {
-          var ret1 = this.PmapDeepNest(pairs);
-          this.ThenDeepNest(ret1, parts);
+          var pmapWorker = new PmapWorker(pairs, progressDisplayer, config.UseParallel);
+          var pmapResult = pmapWorker.PmapDeepNest();
+          this.ThenDeepNest(config.UseParallel, pmapResult, parts);
         }
         else
         {
@@ -1178,124 +1128,27 @@
       window.Insert(doc);
     }
 
-    private void ThenDeepNest(NfpPair[] processed, List<NFP> parts)
+    private void ThenDeepNest(bool useParallel, NfpPair[] nfpPairs, List<NFP> parts)
     {
       int cnt = 0;
-      if (UseParallel)
+      if (useParallel)
       {
-        Parallel.For(0, processed.Count(), (i) =>
+        Parallel.For(0, nfpPairs.Count(), (i) =>
         {
-          this.ThenIterate(processed[i], parts);
+          this.ThenIterate(nfpPairs[i], parts);
         });
       }
       else
       {
-        for (var i = 0; i < processed.Count(); i++)
+        for (var i = 0; i < nfpPairs.Count(); i++)
         {
-          this.ThenIterate(processed[i], parts);
+          this.ThenIterate(nfpPairs[i], parts);
         }
       }
 
       // console.timeEnd('Total');
       // console.log('before sync');
       this.SyncPlaceParts();
-    }
-
-    private bool InPairs(NfpPair key, NfpPair[] p)
-    {
-      for (var i = 0; i < p.Length; i++)
-      {
-        if (p[i].Asource == key.Asource && p[i].Bsource == key.Bsource && p[i].ARotation == key.ARotation && p[i].BRotation == key.BRotation)
-        {
-          return true;
-        }
-      }
-
-      return false;
-    }
-
-    public static bool UseParallel = false;
-
-    private NfpPair[] PmapDeepNest(List<NfpPair> pairs)
-    {
-      NfpPair[] ret = new NfpPair[pairs.Count()];
-      if (UseParallel)
-      {
-        Parallel.For(0, pairs.Count, (i) =>
-        {
-          ret[i] = this.Process(pairs[i]);
-        });
-      }
-      else
-      {
-        for (int i = 0; i < pairs.Count; i++)
-        {
-          var item = pairs[i];
-          ret[i] = this.Process(item);
-        }
-      }
-
-      return ret.ToArray();
-    }
-
-    private NfpPair Process(NfpPair pair)
-    {
-      var A = pair.A.Rotate(pair.ARotation);
-      var B = pair.B.Rotate(pair.BRotation);
-
-      ///////////////////
-      var Ac = _Clipper.ScaleUpPaths(A.Points, 10000000);
-
-      var Bc = _Clipper.ScaleUpPaths(B.Points, 10000000);
-      for (var i = 0; i < Bc.Length; i++)
-      {
-        Bc[i].X *= -1;
-        Bc[i].Y *= -1;
-      }
-
-      var solution = ClipperLib.Clipper.MinkowskiSum(new List<IntPoint>(Ac), new List<IntPoint>(Bc), true);
-      NFP clipperNfp = null;
-
-      double? largestArea = null;
-      for (int i = 0; i < solution.Count(); i++)
-      {
-        var n = ToNestCoordinates(solution[i].ToArray(), 10000000);
-        var sarea = -GeometryUtil.polygonArea(n);
-        if (largestArea == null || largestArea < sarea)
-        {
-          clipperNfp = n;
-          largestArea = sarea;
-        }
-      }
-
-      for (var i = 0; i < clipperNfp.Length; i++)
-      {
-        clipperNfp[i].x += B[0].x;
-        clipperNfp[i].y += B[0].y;
-      }
-
-      // return new SvgNestPort.NFP[] { new SvgNestPort.NFP() { Points = clipperNfp.Points } };
-
-      //////////////
-
-      pair.A = null;
-      pair.B = null;
-      pair.nfp = clipperNfp;
-      return pair;
-    }
-
-    public static NFP ToNestCoordinates(IntPoint[] polygon, double scale)
-    {
-      var clone = new List<SvgPoint>();
-
-      for (var i = 0; i < polygon.Count(); i++)
-      {
-        clone.Add(new SvgPoint(
-             polygon[i].X / scale,
-             polygon[i].Y / scale));
-      }
-
-      return new NFP(clone);
     }
 
     public static NFP GetHull(SvgPoint[] polygon)
@@ -1382,8 +1235,6 @@
       return clipperNfp.ToArray();
     }
 
-    private static object lockobj = new object();
-
     private NFP GetOuterNfp(NFP A, NFP B, int type, bool inside = false) // todo:?inside def?
     {
       NFP[] nfp = null;
@@ -1421,7 +1272,7 @@
         double? largestArea = null;
         for (int i = 0; i < solution.Count(); i++)
         {
-          var n = Background.ToNestCoordinates(solution[i].ToArray(), 10000000);
+          var n = solution[i].ToArray().ToNestCoordinates(10000000);
           var sarea = GeometryUtil.polygonArea(n);
           if (largestArea == null || largestArea > sarea)
           {

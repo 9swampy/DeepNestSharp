@@ -19,7 +19,7 @@
 
     public FitFourSmallSquaresInOneLargerSquareSheetPerfectlyFixture()
     {
-      var nestingContext = new NestingContext(A.Fake<IMessageService>());
+      var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
       NFP firstSheet;
       nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { DxfGenerator.Rectangle(23D, RectangleType.FileLoad) }), firstSheetIdSrc, out firstSheet).Should().BeTrue();
       NFP firstPart;
@@ -39,7 +39,7 @@
       // fourthPart = fourthPart.Rotate(180);
       fourthPart.Rotation = 180;
       var config = new DefaultSvgNestConfig();
-      this.sheetPlacement = new Background().PlaceParts(new NFP[] { firstSheet }, new NFP[] { firstPart, secondPart, thirdPart, fourthPart }, config, 0);
+      this.sheetPlacement = new Background(A.Fake<IProgressDisplayer>()).PlaceParts(new NFP[] { firstSheet }, new NFP[] { firstPart, secondPart, thirdPart, fourthPart }, config, 0);
     }
 
     [Fact]

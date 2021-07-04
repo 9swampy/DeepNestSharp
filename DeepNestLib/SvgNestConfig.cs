@@ -216,5 +216,20 @@
         Properties.Settings.Default.Upgrade();
       }
     }
+
+    public bool UseParallel
+    {
+      get
+      {
+        return (bool)Properties.Settings.Default["UseParallel"];
+      }
+
+      set
+      {
+        Properties.Settings.Default["UseParallel"] = value;
+        Properties.Settings.Default.Save();
+        Properties.Settings.Default.Upgrade();
+      }
+    }
   }
 }

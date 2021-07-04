@@ -53,5 +53,7 @@
     public bool ClipByHull { get; set; } = true;
 
     public bool DrawSimplification { get; set; } = true;
+
+    public bool UseParallel { get; set; } = false;
   }
 }

@@ -16,6 +16,10 @@
 
   public partial class Form1 : Form
   {
+    private NestingContext context;
+    MessageFilter mf = null;
+    private volatile static object contextSyncLock = new object();
+
     public Form1()
     {
       InitializeComponent();
@@ -46,7 +50,7 @@
 
       checkBox2.Checked = SvgNest.Config.Simplify;
       checkBox3.Checked = SvgNest.Config.OffsetTreePhase;
-      checkBox4.Checked = Background.UseParallel;
+      checkBox4.Checked = SvgNest.Config.UseParallel;
       this.numericUpDown1.Value = SvgNest.Config.PopulationSize;
       this.numericUpDown2.Value = SvgNest.Config.MutationRate;
       this.comboBox1.SelectedItem = SvgNest.Config.PlacementType.ToString();
@@ -60,13 +64,35 @@
       Load += Form1_Load;
     }
 
+    private NestingContext Context
+    {
+      get
+      {
+        lock (contextSyncLock)
+        {
+          if (this.context == null)
+          {
+            this.context = new NestingContext(new MessageBoxService(), new ProgressDisplayer(this));
+          }
+        }
+
+        return this.context;
+      }
+
+      set
+      {
+        lock (contextSyncLock)
+        {
+          this.context = value;
+        }
+      }
+    }
+
     private void Form1_Load(object sender, EventArgs e)
     {
       mf = new MessageFilter();
       Application.AddMessageFilter(mf);
     }
-
-    MessageFilter mf = null;
 
     private void LoadSettings()
     {
@@ -115,11 +141,9 @@
       groupBox6.Text = "Sheets: " + sheets.Count;
     }
 
-    public NestingContext Context = new NestingContext(new MessageBoxService());
-
     public SvgNest nest
     {
-      get { return this.context.Nest; }
+      get { return this.Context.Nest; }
     }
 
     public object selected = null;
@@ -187,8 +211,6 @@
       var posx = pos1.X;
       var posy = pos1.Y;
       ctx.Update();
-      //ctx2.Update();
-
 
       #region preview draw
       RedrawPreview(ctx2, Preview);
@@ -208,7 +230,7 @@
       {
         ctx.gr.DrawString("X:" + posx.ToString("0.00") + " Y: " + posy.ToString("0.00"), Font, Brushes.Blue, 0, yy);
         yy += (int)Font.Size + gap;
-        ctx.gr.DrawString($"Material Utilization: {Math.Round(context.MaterialUtilization * 100.0f, 2)}%   Iterations: {context.Iterations}    Parts placed: {context.PlacedPartsCount}/{polygons.Count}", Font, Brushes.DarkBlue, 0, yy);
+        ctx.gr.DrawString($"Material Utilization: {Math.Round(Context.MaterialUtilization * 100.0f, 2)}%   Iterations: {Context.Iterations}    Parts placed: {Context.PlacedPartsCount}/{polygons.Count}", Font, Brushes.DarkBlue, 0, yy);
         yy += (int)Font.Size + gap;
         ctx.gr.DrawString($"Sheets: {sheets.Count}   Parts:{polygons.Count}    parts types: {polygons.GroupBy(z => z.Source).Count()}", Font, Brushes.DarkBlue, 0, yy);
         yy += (int)Font.Size + gap;
@@ -219,12 +241,12 @@
           yy += (int)Font.Size + gap;
         }
 
-        ctx.gr.DrawString($"Call counter: {context.Background.callCounter};  Last placing time: {context.Background.LastPlacePartTime}ms", Font, Brushes.DarkBlue, 0, yy);
+        ctx.gr.DrawString($"Call counter: {Context.Background.callCounter};  Last placing time: {Context.Background.LastPlacePartTime}ms", Font, Brushes.DarkBlue, 0, yy);
         yy += (int)Font.Size + gap;
       }
       else
       {
-        ctx.gr.DrawString($"Iterations: {context.Iterations}    Parts placed: {context.PlacedPartsCount}/{polygons.Count}", Font, Brushes.DarkBlue, 0, yy);
+        ctx.gr.DrawString($"Iterations: {Context.Iterations}    Parts placed: {Context.PlacedPartsCount}/{polygons.Count}", Font, Brushes.DarkBlue, 0, yy);
         yy += (int)Font.Size + gap;
         ctx.gr.DrawString($"Sheets: {sheets.Count}   Parts:{polygons.Count}    Parts types: {polygons.GroupBy(z => z.Source).Count()}", Font, Brushes.DarkBlue, 0, yy);
         yy += (int)Font.Size + gap;
@@ -433,11 +455,9 @@
 
     Thread th;
 
-    internal void displayProgress(int placedParts, int currentPopulation)
+    private void displayProgress(float progressVal)
     {
-      float progressPopulation = (0.66f * ((float)currentPopulation / (float)SvgNest.Config.PopulationSize));
-      float progressPlacements = (0.34f * ((float)placedParts / (float)this.polygons.Count));
-      this.progressVal = progressPopulation + progressPlacements;
+      this.progressVal = progressVal;
     }
 
     public float progressVal = 0;
@@ -623,9 +643,9 @@
         sheet.Width = (float)b.width;
         sheet.Height = (float)b.height;
 
-        sheet.Source = context.GetNextSheetSource();
+        sheet.Source = Context.GetNextSheetSource();
         sheets.Add(sheet);
-        context.ReorderSheets();
+        Context.ReorderSheets();
         UpdateList();
       }
     }
@@ -739,7 +759,7 @@
         {
           this.th = new Thread(() =>
           {
-            this.context.StartNest();
+            this.Context.StartNest();
             UpdateNestsList();
 
             while (true)
@@ -747,11 +767,11 @@
               Stopwatch sw = new Stopwatch();
               sw.Start();
 
-              this.context.NestIterate(displayProgress);
+              this.Context.NestIterate();
               UpdateNestsList();
               sw.Stop();
               _ = this.Invoke((MethodInvoker)(() => { this.toolStripStatusLabel1.Text = "Nesting time: " + sw.ElapsedMilliseconds + "ms"; }));
-              if (this.stop || this.context.IsErrored)
+              if (this.stop || this.Context.IsErrored)
               {
                 break;
               }
@@ -801,7 +821,7 @@
       stop = false;
       progressBar1.Value = 0;
       tabControl1.SelectedTab = tabPage4;
-      context.ReorderSheets();
+      Context.ReorderSheets();
       RunDeepnest();
     }
 
@@ -822,7 +842,7 @@
 
     private void checkBox4_CheckedChanged(object sender, EventArgs e)
     {
-      Background.UseParallel = checkBox4.Checked;
+      SvgNest.Config.UseParallel = checkBox4.Checked;
     }
 
     private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -853,7 +873,7 @@
       if (listView4.SelectedItems.Count > 0)
       {
         var shp = listView4.SelectedItems[0].Tag as SheetPlacement;
-        context.AssignPlacement(shp);
+        Context.AssignPlacement(shp);
       }
     }
 
@@ -909,7 +929,7 @@
       label11.BackColor = label11.Parent.BackColor;
       label11.ForeColor = label11.Parent.ForeColor;
       List<Sheet> sh = new List<Sheet>();
-      var src = context.GetNextSheetSource();
+      var src = Context.GetNextSheetSource();
       for (int i = 0; i < cnt; i++)
       {
         switch (comboBox2.SelectedItem.ToString())
@@ -928,10 +948,10 @@
       foreach (var item in sh)
       {
         item.Source = src;
-        context.Sheets.Add(item);
+        Context.Sheets.Add(item);
       }
       UpdateList();
-      context.ReorderSheets();
+      Context.ReorderSheets();
     }
 
     public int GetCountFromDialog()
@@ -1096,9 +1116,7 @@
       stop = true;
     }
 
-    NestingContext context = new NestingContext(new MessageBoxService());
-
-    List<NFP> polygons { get { return context.Polygons; } }
+    List<NFP> polygons { get { return Context.Polygons; } }
 
     private void button6_Click(object sender, EventArgs e)
     {
@@ -1186,7 +1204,7 @@
         var f = listView2.SelectedItems[0].Tag as NFP;
         sheets.Remove(f);
         UpdateList();
-        context.ReorderSheets();
+        Context.ReorderSheets();
       }
     }
 
@@ -1257,7 +1275,7 @@
       }
     }
 
-    List<NFP> sheets { get { return context.Sheets; } }
+    List<NFP> sheets { get { return Context.Sheets; } }
 
     int lastSaveFilterIndex = 1;
 
@@ -1398,11 +1416,11 @@
 
     private void toolStripButton6_Click(object sender, EventArgs e)
     {
-      context = new NestingContext(new MessageBoxService());
+      Context = new NestingContext(new MessageBoxService(), new ProgressDisplayer(this));
       int src = 0;
       foreach (var item in sheetsInfos)
       {
-        src = context.GetNextSheetSource();
+        src = Context.GetNextSheetSource();
         for (int i = 0; i < item.Quantity; i++)
         {
           var ns = NewSheet(item.Width, item.Height);
@@ -1411,7 +1429,7 @@
         }
       }
 
-      context.ReorderSheets();
+      Context.ReorderSheets();
 
       src = 0;
       foreach (var item in Infos.Where(o => o.IsIncluded))
@@ -1442,12 +1460,12 @@
     private void AddToPolygons(int src, RawDetail det, DetailLoadInfo item)
     {
       NFP loadedNfp;
-      if (context.TryImportFromRawDetail(det, src, out loadedNfp))
+      if (Context.TryImportFromRawDetail(det, src, out loadedNfp))
       {
         loadedNfp.IsPrimary = item.IsPrimary;
         for (int i = 0; i < item.Quantity; i++)
         {
-          context.Polygons.Add(loadedNfp.Clone());
+          Context.Polygons.Add(loadedNfp.Clone());
         }
       }
       else

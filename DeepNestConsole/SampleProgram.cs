@@ -13,7 +13,7 @@
 
   public class SampleProgram
   {
-    internal NestingContext Context { get; } = new NestingContext(new ConsoleMessageService());
+    internal NestingContext Context { get; } = new NestingContext(new ConsoleMessageService(), null);
 
     private bool IsFinished()
     {
@@ -26,7 +26,7 @@
 
     public void Run()
     {
-      Background.UseParallel = true;
+      SvgNest.Config.UseParallel = true;
       SvgNest.Config.PlacementType = PlacementTypeEnum.Gravity;
       Console.WriteLine("Settings updated..");
 
@@ -38,7 +38,7 @@
       do
       {
         var sw = Stopwatch.StartNew();
-        Context.NestIterate(null);
+        Context.NestIterate();
         sw.Stop();
         Console.WriteLine("Iteration: " + Context.Iterations + "; fitness: " + Context.Current.fitness + "; nesting time: " + sw.ElapsedMilliseconds + "ms");
       } while (!IsFinished());

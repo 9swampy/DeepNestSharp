@@ -8,49 +8,41 @@
 
   public class Procreant
   {
+    private readonly Random r = new Random();
+
     private readonly ISvgNestConfig Config;
     public List<PopulationItem> Population;
 
-    private static bool StrictAngles = true;
-    private float[] defaultAngles = new float[] {
-        0,
-0,
-180,
-//0,
-//0,
-//270,
-//180,
-//180,
-//180,
-//90
-        };
+    private static bool StrictAngles = false;
+    private float[] defaultAngles = new float[]
+    {
+      0,
+      180,
+      //0,
+      //0,
+      //270,
+      //180,
+      //180,
+      //180,
+      //90
+    };
 
     public Procreant(NFP[] adam, ISvgNestConfig config)
     {
-
-      //var ang2 = new List<float>();
-      //for (var i = 0; i < adam.Length; i++)
-      //{
-      //  ang2.Add(i * 90 % 360);
-      //}
-      //defaultAngles = ang2.ToArray();
       Config = config;
-
 
       var angles = new List<float>();
       for (var i = 0; i < adam.Length; i++)
       {
         if (StrictAngles)
         {
-          angles.Add(defaultAngles[i % 2]);
+          angles.Add(defaultAngles[i % defaultAngles.Length]);
         }
         else
         {
           var angle = (float)Math.Floor(r.NextDouble() * Config.Rotations) * (360f / Config.Rotations);
           angles.Add(angle);
         }
-
-        //angles.Add(randomAngle(adam[i]));
       }
 
       Population = new List<PopulationItem>();
@@ -84,14 +76,13 @@
         if (rand < 0.01 * Config.MutationRate)
         {
           // clone.Rotation[i] = (float)Math.Floor(r.NextDouble() * Config.Rotations) * (360f / Config.Rotations);
-          clone.Rotation[i] = defaultAngles[random.Next() % 3];
+          clone.Rotation[i] = defaultAngles[random.Next() % defaultAngles.Length];
         }
       }
 
-
       return clone;
     }
-    Random r = new Random();
+
     private float[] shuffleArray(float[] array)
     {
       for (var i = array.Length - 1; i > 0; i--)
@@ -103,7 +94,6 @@
       }
       return array;
     }
-
 
     // returns a random individual from the population, weighted to the front of the list (lower fitness value is more likely to be selected)
     private PopulationItem randomWeightedIndividual(PopulationItem exclude = null)

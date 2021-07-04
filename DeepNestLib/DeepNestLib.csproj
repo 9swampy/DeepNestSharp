@@ -131,12 +131,16 @@
     <Compile Include="IExport.cs" />
     <Compile Include="IMessageService.cs" />
     <Compile Include="INfp.cs" />
+    <Compile Include="IntPointArrayExtensions.cs" />
+    <Compile Include="IProgressDisplayer.cs" />
     <Compile Include="ISvgNestConfig.cs" />
     <Compile Include="IWindowUnk.cs" />
     <Compile Include="LineElement.cs" />
     <Compile Include="NestingContext.cs" />
     <Compile Include="NFP.cs" />
     <Compile Include="NfpExtensions.cs" />
+    <Compile Include="NfpPairsFactory.cs" />
+    <Compile Include="PmapWorker.cs" />
     <Compile Include="PolygonSimplificationDictionary.cs" />
     <Compile Include="PolygonWithBounds.cs" />
     <Compile Include="GeneticAlgorithm\PopulationItem.cs" />

@@ -11,10 +11,12 @@
   public class NestingContext
   {
     private readonly IMessageService messageService;
+    private readonly IProgressDisplayer progressDisplayer;
 
-    public NestingContext(IMessageService messageService)
+    public NestingContext(IMessageService messageService, IProgressDisplayer progressDisplayer)
     {
       this.messageService = messageService;
+      this.progressDisplayer = progressDisplayer;
     }
 
     public bool IsErrored { get; private set; }
@@ -40,12 +42,12 @@
     public void StartNest()
     {
       this.current = null;
-      Nest = new SvgNest(this.messageService, () => this.IsErrored = true);
-      this.Background = new Background();
+      Nest = new SvgNest(this.messageService, this.progressDisplayer, () => this.IsErrored = true);
+      this.Background = new Background(this.progressDisplayer);
       Iterations = 0;
     }
 
-    public void NestIterate(DisplayProgressDelegate displayProgress)
+    public void NestIterate()
     {
       try
       {
@@ -90,7 +92,7 @@
         if (SvgNest.Config.OffsetTreePhase)
         {
           var grps = lpoly.GroupBy(z => z.Source).ToArray();
-          if (Background.UseParallel)
+          if (SvgNest.Config.UseParallel)
           {
             Parallel.ForEach(grps, (item) =>
             {
@@ -145,7 +147,7 @@
           item.Polygon.Source = srcc++;
         }
 
-        Nest.launchWorkers(partsLocal.ToArray(), displayProgress);
+        Nest.launchWorkers(partsLocal.ToArray());
         if (Nest != null & Nest.nests != null && Nest.nests.Count > 0)
         {
           var plcpr = Nest.nests.First();
@@ -317,12 +319,11 @@
       if (loadedNfp == null)
       {
         return false;
-        }
+      }
 
       loadedNfp.Source = src;
-      Polygons.Add(loadedNfp);
-        return true;
-      }
+      return true;
+    }
 
     public int GetNextSource()
     {

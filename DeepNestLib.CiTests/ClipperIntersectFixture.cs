@@ -27,7 +27,7 @@
       RawDetail raw;
       NestingContext ctx;
       raw = DxfParser.ConvertDxfToRawDetail(string.Empty, dxfEntities);
-      ctx = new NestingContext(A.Fake<IMessageService>());
+      ctx = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
       NFP result;
       _ = ctx.TryImportFromRawDetail(raw, 0, out result);
       return result;

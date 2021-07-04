@@ -11,11 +11,20 @@
   {
     private readonly IMessageService messageService;
     private readonly Action setIsErrored;
+    public readonly Background background;
 
-    public SvgNest(IMessageService messageService, Action setIsErrored)
+    private PopulationItem individual = null;
+    private NFP[] placelist;
+    private GeneticAlgorithm.Procreant ga;
+
+    public List<SheetPlacement> nests = new List<SheetPlacement>();
+
+    public SvgNest(IMessageService messageService, IProgressDisplayer progressDisplayer, Action setIsErrored)
     {
       this.messageService = messageService;
+      this.progressDisplayer = progressDisplayer;
       this.setIsErrored = setIsErrored;
+      this.background = new Background(progressDisplayer);
     }
 
     public class InrangeItem
@@ -384,7 +393,7 @@
             double? largestArea = null;
             for (i = 0; i < combined.Count; i++)
             {
-              var n = Background.ToNestCoordinates(combined[i].ToArray(), 10000000);
+              var n = combined[i].ToArray().ToNestCoordinates(10000000);
               var sarea = -GeometryUtil.polygonArea(n);
               if (largestArea == null || largestArea < sarea)
               {
@@ -447,7 +456,7 @@
       List<List<IntPoint>> finalNfp = new List<List<IntPoint>>();
       if (clipper.Execute(ClipType.ctIntersection, finalNfp, PolyFillType.pftNonZero, PolyFillType.pftNonZero) && finalNfp != null && finalNfp.Count > 0)
       {
-        return Background.ToNestCoordinates(finalNfp[0].ToArray(), clipperScale);
+        return finalNfp[0].ToArray().ToNestCoordinates(clipperScale);
       }
 
       return subject;
@@ -793,14 +802,6 @@
       return newtree;
     }
 
-    public Background background = new Background();
-
-    private PopulationItem individual = null;
-    private NFP[] placelist;
-    private GeneticAlgorithm.Procreant ga;
-
-    public List<SheetPlacement> nests = new List<SheetPlacement>();
-
     public void ResponseProcessor(SheetPlacement payload)
     {
       // console.log('ipc response', payload);
@@ -849,41 +850,16 @@
         currentPlacements = this.nests[0].placements[0][0].sheetplacements.Count;
       }
 
-      DisplayProgress(currentPlacements, this.ga.Population.Count(o => o.fitness != null));
+      this.progressDisplayer?.DisplayProgress(currentPlacements, this.ga.Population.Count(o => o.fitness != null));
     }
 
     private static volatile object displayProgressLock = new object();
-    private DisplayProgressDelegate displayProgress;
+    private IProgressDisplayer progressDisplayer;
 
-    private DisplayProgressDelegate DisplayProgress
-    {
-      get
-      {
-        lock (displayProgressLock)
-        {
-          if (this.displayProgress == null)
-          {
-            return (a, b) => a = b;
-          }
-
-          return this.displayProgress;
-        }
-      }
-
-      set
-      {
-        lock (displayProgressLock)
-        {
-          this.displayProgress = value;
-        }
-      }
-    }
-
-    public void launchWorkers(NestItem[] parts, DisplayProgressDelegate displayProgress)
+    public void launchWorkers(NestItem[] parts)
     {
       try
       {
-        this.DisplayProgress = displayProgress;
         this.background.ResponseAction = this.ResponseProcessor;
 
         if (this.ga == null)
@@ -1020,7 +996,7 @@
               children = children,
             };
 
-            this.background.BackgroundStart(data);
+            this.background.BackgroundStart(data, data.config);
 
             // ipcRenderer.send('background-start', { index: i, sheets: sheets, sheetids: sheetids, sheetsources: sheetsources, sheetchildren: sheetchildren, individual: GA.population[i], config: config, ids: ids, sources: sources, children: children});
             running++;

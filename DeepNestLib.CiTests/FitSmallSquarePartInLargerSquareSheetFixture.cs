@@ -14,24 +14,24 @@
 
     public FitSmallSquarePartInLargerSquareSheetFixture()
     {
-      var nestingContext = new NestingContext(A.Fake<IMessageService>());
+      var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
       NFP sheet;
       nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { DxfGenerator.Rectangle(22D) }), 0, out sheet).Should().BeTrue();
       NFP part;
       nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Rectangle(11D) }), 0, out part).Should().BeTrue();
-      this.sheetPlacement = new Background().PlaceParts(new NFP[] { sheet }, new NFP[] { part }, new SvgNestConfig(), 0);
+      this.sheetPlacement = new Background(A.Fake<IProgressDisplayer>()).PlaceParts(new NFP[] { sheet }, new NFP[] { part }, new SvgNestConfig(), 0);
     }
 
     [Fact]
     public void GivenNullSheetsPassedInThenNullReturned()
     {
-      new Background().PlaceParts(null, new NFP[] { new NFP() }, new SvgNestConfig(), 0).Should().BeNull();
+      new Background(A.Fake<IProgressDisplayer>()).PlaceParts(null, new NFP[] { new NFP() }, new SvgNestConfig(), 0).Should().BeNull();
     }
 
     [Fact]
     private void TestAnActualCallOutToMinkowskiBecauseWhyDoTestsWorkButApplicationCrashes()
     {
-      var nestingContext = new NestingContext(A.Fake<IMessageService>());
+      var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
       NFP sheet;
       nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { DxfGenerator.Rectangle(22D) }), 0, out sheet).Should().BeTrue();
       NFP part;
@@ -39,7 +39,7 @@
 
       var frame = Background.getFrame(sheet);
 
-      new Background().Process2(frame, part, 0).Should().NotBeNull();
+      new Background(A.Fake<IProgressDisplayer>()).Process2(frame, part, 0).Should().NotBeNull();
     }
 
     [Fact]
