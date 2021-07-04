@@ -141,6 +141,9 @@
     <Compile Include="NFP.cs" />
     <Compile Include="NfpExtensions.cs" />
     <Compile Include="NfpPairsFactory.cs" />
+    <Compile Include="Placement\PartPlacement.cs" />
+    <Compile Include="Placement\SheetPlacement.cs" />
+    <Compile Include="Placement\SheetPlacementCollection.cs" />
     <Compile Include="PmapWorker.cs" />
     <Compile Include="PolygonSimplificationDictionary.cs" />
     <Compile Include="PolygonWithBounds.cs" />
@@ -152,6 +155,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="RawDetail.cs" />
+    <Compile Include="Placement\NestResult.cs" />
     <Compile Include="Simplify.cs" />
     <Compile Include="SvgNest.cs" />
     <Compile Include="SvgNestConfig.cs" />

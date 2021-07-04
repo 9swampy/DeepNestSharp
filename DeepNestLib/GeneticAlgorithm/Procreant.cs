@@ -133,11 +133,18 @@
             clone.placements[j] = temp;
           }
         }
+
         rand = r.NextDouble();
         if (rand < 0.01 * Config.MutationRate)
         {
-          // clone.Rotation[i] = (float)Math.Floor(r.NextDouble() * Config.Rotations) * (360f / Config.Rotations);
-          clone.Rotation[i] = defaultAngles[random.Next() % defaultAngles.Length];
+          if (StrictAngles)
+          {
+            clone.Rotation[i] = defaultAngles[random.Next() % defaultAngles.Length];
+          }
+          else
+          {
+            clone.Rotation[i] = (float)Math.Floor(r.NextDouble() * Config.Rotations) * (360f / Config.Rotations);
+          }
         }
       }
 

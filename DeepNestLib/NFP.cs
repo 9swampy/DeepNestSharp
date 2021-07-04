@@ -13,7 +13,7 @@
       get { return this.Sheet != null; }
     }
 
-    public NFP Sheet;
+    public NFP Sheet { get; set; }
 
     public override string ToString()
     {
@@ -31,7 +31,6 @@
     {
       this.points = new SvgPoint[0];
     }
-        
     public NFP(IEnumerable<SvgPoint> points)
     {
       this.points = points.DeepClone();

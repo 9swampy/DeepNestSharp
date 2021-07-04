@@ -2,6 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
+  using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
   using IxMilia.Dxf.Entities;
@@ -10,7 +11,7 @@
   public class FitFourSmallSquaresInOneLargerSquareSheetPerfectlyFixture
   {
     private static readonly DxfGenerator DxfGenerator = new DxfGenerator();
-    private SheetPlacement sheetPlacement;
+    private NestResult nestResult;
     private int firstSheetIdSrc = new Random().Next();
     private int firstPartIdSrc = new Random().Next();
     private int secondPartIdSrc = new Random().Next();
@@ -39,145 +40,139 @@
       // fourthPart = fourthPart.Rotate(180);
       fourthPart.Rotation = 180;
       var config = new DefaultSvgNestConfig();
-      this.sheetPlacement = new Background(A.Fake<IProgressDisplayer>()).PlaceParts(new NFP[] { firstSheet }, new NFP[] { firstPart, secondPart, thirdPart, fourthPart }, config, 0);
+      this.nestResult = new Background(A.Fake<IProgressDisplayer>()).PlaceParts(new NFP[] { firstSheet }, new NFP[] { firstPart, secondPart, thirdPart, fourthPart }, config, 0);
     }
 
     [Fact]
     public void ShouldHaveReturnedASheetPlacement()
     {
-      this.sheetPlacement.Should().NotBeNull();
+      this.nestResult.Should().NotBeNull();
     }
 
     [Fact]
     public void GivenOnePartOnlyThenShouldBeNoMergedLines()
     {
-      this.sheetPlacement.mergedLength.Should().Be(0, "there was only one part on each sheet; no lines to merge possible.");
+      this.nestResult.mergedLength.Should().Be(0, "there was only one part on each sheet; no lines to merge possible.");
     }
 
     [Fact]
     public void ShouldHaveExpectedFitness()
     {
-      this.sheetPlacement.fitness.Should().BeApproximately(617.04158790170129, 10);
+      this.nestResult.fitness.Should().BeApproximately(617.04158790170129, 10);
     }
 
     [Fact]
     public void ShouldHaveExpectedNullRotation()
     {
-      this.sheetPlacement.Rotation.Should().BeNull();
+      this.nestResult.Rotation.Should().BeNull();
     }
 
     [Fact]
     public void ShouldHaveExpectedArea()
     {
-      this.sheetPlacement.area.Should().Be(529);
+      this.nestResult.area.Should().Be(529);
     }
 
     [Fact]
     public void ShouldHaveOnePlacement()
     {
-      this.sheetPlacement.placements.Length.Should().Be(1);
+      this.nestResult.UsedSheets.Count.Should().Be(1);
     }
 
     [Fact]
     public void ShouldHaveOneNestResultWithOneSheet()
     {
-      this.sheetPlacement.placements[0].Count.Should().Be(1);
+      this.nestResult.UsedSheets.Count.Should().Be(1);
     }
 
     [Fact]
     public void FirstSheetShouldHaveExpectedId()
     {
-      this.sheetPlacement.placements[0][0].sheetId.Should().Be(0);
+      this.nestResult.UsedSheets[0].SheetId.Should().Be(0);
     }
 
     [Fact]
     public void FirstSheetShouldHaveExpectedSource()
     {
-      this.sheetPlacement.placements[0][0].sheetSource.Should().Be(firstSheetIdSrc, "this is the first sheet in the single nest result");
-    }
-
-    [Fact]
-    public void ShouldHaveNoPlacementsOnFirstSheet()
-    {
-      this.sheetPlacement.placements[0][0].placements.Should().BeEmpty("not sure why there would be placements on the sheet; inners maybe?");
+      this.nestResult.UsedSheets[0].SheetSource.Should().Be(firstSheetIdSrc, "this is the first sheet in the single nest result");
     }
 
     [Fact]
     public void ShouldHaveFirstSheet()
     {
-      this.sheetPlacement.placements[0][0].sheetplacements.Count.Should().Be(4, "they all fit on one sheet");
+      this.nestResult.UsedSheets[0].PartPlacements.Count.Should().Be(4, "they all fit on one sheet");
     }
 
     [Fact]
     public void ShouldHaveFirstPartOnPlacementWithExpectedX()
     {
-      this.sheetPlacement.placements[0][0].sheetplacements[0].x.Should().Be(10.999999933643268, "bottom left");
+      this.nestResult.UsedSheets[0].PartPlacements[0].x.Should().Be(10.999999933643268, "bottom left");
     }
 
     [Fact]
     public void ShouldHaveFirstPartOnPlacementWithExpectedY()
     {
-      this.sheetPlacement.placements[0][0].sheetplacements[0].y.Should().Be(10.999999933643265, "bottom left");
+      this.nestResult.UsedSheets[0].PartPlacements[0].y.Should().Be(10.999999933643265, "bottom left");
     }
 
     [Fact]
     public void ShouldHaveFirstPartOnPlacementWithExpectedRotation()
     {
-      this.sheetPlacement.placements[0][0].sheetplacements[0].rotation.Should().Be(180);
+      this.nestResult.UsedSheets[0].PartPlacements[0].rotation.Should().Be(180);
     }
 
     [Fact]
     public void ShouldHaveSecondPartOnPlacementWithExpectedX()
     {
-      this.sheetPlacement.placements[0][0].sheetplacements[1].x.Should().BeApproximately(10.999999933643268, 0.001, "bottom right");
+      this.nestResult.UsedSheets[0].PartPlacements[1].x.Should().BeApproximately(10.999999933643268, 0.001, "bottom right");
     }
 
     [Fact]
     public void ShouldHaveSecondPartOnPlacementWithExpectedY()
     {
-      this.sheetPlacement.placements[0][0].sheetplacements[1].y.Should().BeApproximately(21.9999999, 0.001, "bottom right");
+      this.nestResult.UsedSheets[0].PartPlacements[1].y.Should().BeApproximately(21.9999999, 0.001, "bottom right");
     }
 
     [Fact]
     public void ShouldHaveSecondPartOnPlacementWithExpectedRotation()
     {
-      this.sheetPlacement.placements[0][0].sheetplacements[1].rotation.Should().Be(180);
+      this.nestResult.UsedSheets[0].PartPlacements[1].rotation.Should().Be(180);
     }
 
     [Fact]
     public void ShouldHaveThirdPartOnPlacementWithExpectedX()
     {
-      this.sheetPlacement.placements[0][0].sheetplacements[2].x.Should().BeApproximately(21.999999900000002, 0.001, "bottom left");
+      this.nestResult.UsedSheets[0].PartPlacements[2].x.Should().BeApproximately(21.999999900000002, 0.001, "bottom left");
     }
 
     [Fact]
     public void ShouldHaveThirdPartOnPlacementWithExpectedY()
     {
-      this.sheetPlacement.placements[0][0].sheetplacements[2].y.Should().BeApproximately(10.999999933643265, 0.001, "bottom left");
+      this.nestResult.UsedSheets[0].PartPlacements[2].y.Should().BeApproximately(10.999999933643265, 0.001, "bottom left");
     }
 
     [Fact]
     public void ShouldHaveThirdPartOnPlacementWithExpectedRotation()
     {
-      this.sheetPlacement.placements[0][0].sheetplacements[2].rotation.Should().Be(180);
+      this.nestResult.UsedSheets[0].PartPlacements[2].rotation.Should().Be(180);
     }
 
     [Fact]
     public void ShouldHaveFourthPartOnPlacementWithExpectedX()
     {
-      this.sheetPlacement.placements[0][0].sheetplacements[3].x.Should().BeApproximately(21.999999900000002, 0.001, "top right");
+      this.nestResult.UsedSheets[0].PartPlacements[3].x.Should().BeApproximately(21.999999900000002, 0.001, "top right");
     }
 
     [Fact]
     public void ShouldHaveFourthPartOnPlacementWithExpectedY()
     {
-      this.sheetPlacement.placements[0][0].sheetplacements[3].y.Should().BeApproximately(21.9999999, 0.001, "top right");
+      this.nestResult.UsedSheets[0].PartPlacements[3].y.Should().BeApproximately(21.9999999, 0.001, "top right");
     }
 
     [Fact]
     public void ShouldHaveFourthPartOnPlacementWithExpectedRotation()
     {
-      this.sheetPlacement.placements[0][0].sheetplacements[3].rotation.Should().Be(180);
+      this.nestResult.UsedSheets[0].PartPlacements[3].rotation.Should().Be(180);
     }
 
     //[Fact]

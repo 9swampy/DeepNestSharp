@@ -13,6 +13,7 @@
   using System.Windows.Forms;
   using System.Xml.Linq;
   using DeepNestLib;
+  using DeepNestLib.Placement;
 
   public partial class Form1 : Form
   {
@@ -339,16 +340,16 @@
               double tot1 = 0;
               double tot2 = 0;
               bool was = false;
-              foreach (var zitem in fr.placements.First())
+              foreach (var zitem in fr.UsedSheets)
               {
-                var sheetid = zitem.sheetId;
+                var sheetid = zitem.SheetId;
                 if (sheetid != item.Id) continue;
                 var sheet = sheets.FirstOrDefault(z => z.Id == sheetid);
                 if (sheet != null)
                 {
                   tot1 += Math.Abs(GeometryUtil.polygonArea(sheet));
                   was = true;
-                  foreach (var ssitem in zitem.sheetplacements)
+                  foreach (var ssitem in zitem.PartPlacements)
                   {
                     var poly = polygons.FirstOrDefault(z => z.Id == ssitem.id);
                     if (poly != null)
@@ -881,8 +882,8 @@
     {
       if (listView4.SelectedItems.Count > 0)
       {
-        var shp = listView4.SelectedItems[0].Tag as SheetPlacement;
-        Context.AssignPlacement(shp);
+        var nestResult = listView4.SelectedItems[0].Tag as NestResult;
+        Context.AssignPlacement(nestResult);
       }
     }
 

@@ -1,5 +1,6 @@
 ﻿namespace DeepNestLib
 {
+  using DeepNestLib.Placement;
   using System;
   using System.Collections.Generic;
   using System.IO;
@@ -29,9 +30,9 @@
 
     public int PlacedPartsCount { get; private set; } = 0;
 
-    SheetPlacement current = null;
+    NestResult current = null;
 
-    public SheetPlacement Current { get { return current; } }
+    public NestResult Current { get { return current; } }
 
     public SvgNest Nest { get; private set; }
 
@@ -170,7 +171,7 @@
       }
     }
 
-    public void AssignPlacement(SheetPlacement plcpr)
+    public void AssignPlacement(NestResult plcpr)
     {
       current = plcpr;
       double totalSheetsArea = 0;
@@ -182,33 +183,31 @@
       {
         item.Sheet = null;
       }
+
       List<int> sheetsIds = new List<int>();
 
-      foreach (var item in plcpr.placements)
+      foreach (var item in plcpr.UsedSheets)
       {
-        foreach (var zitem in item)
+        var sheetid = item.SheetId;
+        if (!sheetsIds.Contains(sheetid))
         {
-          var sheetid = zitem.sheetId;
-          if (!sheetsIds.Contains(sheetid))
-          {
-            sheetsIds.Add(sheetid);
-          }
+          sheetsIds.Add(sheetid);
+        }
 
-          var sheet = Sheets.First(z => z.Id == sheetid);
-          totalSheetsArea += GeometryUtil.polygonArea(sheet);
+        var sheet = Sheets.First(z => z.Id == sheetid);
+        totalSheetsArea += GeometryUtil.polygonArea(sheet);
 
-          foreach (var ssitem in zitem.sheetplacements)
-          {
-            PlacedPartsCount++;
-            var poly = Polygons.First(z => z.Id == ssitem.id);
-            totalPartsArea += GeometryUtil.polygonArea(poly);
-            placed.Add(poly);
-            poly.Sheet = sheet;
-            poly.x = ssitem.x + sheet.x;
-            poly.y = ssitem.y + sheet.y;
-            poly.Rotation = ssitem.rotation;
-            poly.PlacementOrder = zitem.sheetplacements.IndexOf(ssitem);
-          }
+        foreach (var ssitem in item.PartPlacements)
+        {
+          PlacedPartsCount++;
+          var poly = Polygons.First(z => z.Id == ssitem.id);
+          totalPartsArea += GeometryUtil.polygonArea(poly);
+          placed.Add(poly);
+          poly.Sheet = sheet;
+          poly.x = ssitem.x + sheet.x;
+          poly.y = ssitem.y + sheet.y;
+          poly.Rotation = ssitem.rotation;
+          poly.PlacementOrder = item.PartPlacements.IndexOf(ssitem);
         }
       }
 

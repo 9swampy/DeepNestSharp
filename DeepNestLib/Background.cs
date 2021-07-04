@@ -8,6 +8,7 @@
   using System.Runtime.InteropServices;
   using System.Threading.Tasks;
   using ClipperLib;
+  using DeepNestLib.Placement;
   using Minkowski;
 
   public class Background
@@ -24,7 +25,7 @@
     // run the placement synchronously
     private IWindowUnk window = new windowUnk();
 
-    public Action<SheetPlacement> ResponseAction;
+    public Action<NestResult> ResponseAction;
 
     private static object lockobj = new object();
     private readonly IProgressDisplayer progressDisplayer;
@@ -40,7 +41,7 @@
       this.progressDisplayer = progressDisplayer;
     }
 
-    public static NFP shiftPolygon(NFP p, PlacementItem shift)
+    public static NFP shiftPolygon(NFP p, PartPlacement shift)
     {
       NFP shifted = new NFP();
       for (var i = 0; i < p.Length; i++)
@@ -476,7 +477,7 @@
       return f.ToArray();
     }
 
-    internal SheetPlacement PlaceParts(IEnumerable<NFP> sheets, NFP[] parts, ISvgNestConfig config, int nestindex)
+    internal NestResult PlaceParts(IEnumerable<NFP> sheets, NFP[] parts, ISvgNestConfig config, int nestIndex)
     {
       if (sheets == null || sheets.Count() == 0)
       {
@@ -505,7 +506,7 @@
 
       parts = rotated.ToArray();
 
-      List<SheetPlacementItem> allplacements = new List<SheetPlacementItem>();
+      SheetPlacementCollection allplacements = new SheetPlacementCollection();
 
       double fitness = 0;
 
@@ -520,7 +521,7 @@
       while (parts.Length > 0 && unusedSheets.Count > 0)
       {
         List<NFP> placed = new List<NFP>();
-        List<PlacementItem> placements = new List<PlacementItem>();
+        List<PartPlacement> placements = new List<PartPlacement>();
 
         // open a new sheet
         var sheet = unusedSheets.Dequeue();
@@ -582,7 +583,7 @@
             continue;
           }
 
-          PlacementItem position = null;
+          PartPlacement position = null;
           if (placed.Count == 0)
           {
             // first placement, put it on the bottom left corner
@@ -596,7 +597,7 @@
                     GeometryUtil._almostEqual(sheetNfp[j][k].x - part[0].x, position.x)
                     && ((sheetNfp[j][k].y - part[0].y) < position.y)))
                 {
-                  position = new PlacementItem()
+                  position = new PartPlacement()
                   {
                     x = sheetNfp[j][k].x - part[0].x,
                     y = sheetNfp[j][k].y - part[0].y,
@@ -737,7 +738,7 @@
             double? miny = null;
             NFP nf;
             double area;
-            PlacementItem shiftvector = null;
+            PartPlacement shiftvector = null;
 
             NFP allpoints = new NFP();
             for (int m = 0; m < placed.Count; m++)
@@ -776,7 +777,7 @@
               // console.log('evalnf',nf.length);
               for (int k = 0; k < nf.Length; k++)
               {
-                shiftvector = new PlacementItem()
+                shiftvector = new PartPlacement()
                 {
                   id = part.Id,
                   x = nf[k].x - part[0].x,
@@ -883,7 +884,7 @@
               placed.Add(part);
               totalPlaced++;
               placements.Add(position);
-              if (position.mergedLength != null)
+              if (position.mergedLength.HasValue)
               {
                 totalMerged += position.mergedLength.Value;
               }
@@ -897,7 +898,7 @@
             var placednum = placed.Count;
             for (int j = 0; j < allplacements.Count; j++)
             {
-              placednum += allplacements[j].sheetplacements.Count;
+              placednum += allplacements[j].PartPlacements.Count;
             }
 
             // console.log(placednum, totalnum);
@@ -929,12 +930,7 @@
 
         if (placements != null && placements.Count > 0)
         {
-          allplacements.Add(new SheetPlacementItem()
-          {
-            sheetId = sheet.Id,
-            sheetSource = sheet.Source,
-            sheetplacements = placements,
-          });
+          allplacements.Add(new SheetPlacement(sheet, placements));
 
           // fitness += Add the unused space on each sheet to fitness; we want to use as much as possible within rectangle bounds, not just rectanglebounds
           // fitness += placements.Sum(o=> o.hullsheet.Area
@@ -956,15 +952,7 @@
 
       // send finish progerss signal
       // ipcRenderer.send('background-progress', { index: nestindex, progress: -1});
-      return new SheetPlacement()
-      {
-        placements = new[] { allplacements.ToList() },
-        fitness = fitness,
-
-        // paths = paths,
-        area = sheetarea,
-        mergedLength = totalMerged,
-      };
+      return new NestResult(nestIndex, sheetarea, allplacements, fitness, totalMerged);
 
       // return { placements: allplacements, fitness: fitness, area: sheetarea, mergedLength: totalMerged };
     }
@@ -999,12 +987,12 @@
 
       // console.log('nfp cached:', c);
       Stopwatch sw = Stopwatch.StartNew();
-      var placement = PlaceParts(this.data.sheets.ToArray(), this.parts, this.data.config, this.index);
+      var nestResult = PlaceParts(this.data.sheets.ToArray(), this.parts, this.data.config, this.index);
       sw.Stop();
       LastPlacePartTime = sw.ElapsedMilliseconds;
 
-      placement.index = this.data.index;
-      this.ResponseAction(placement);
+      nestResult.index = this.data.index;
+      this.ResponseAction(nestResult);
     }
 
     internal void BackgroundStart(DataInfo data, ISvgNestConfig config)

@@ -6,6 +6,7 @@
   using System.Threading.Tasks;
   using ClipperLib;
   using DeepNestLib.GeneticAlgorithm;
+  using DeepNestLib.Placement;
 
   public class SvgNest
   {
@@ -17,7 +18,7 @@
     private NFP[] placelist;
     private GeneticAlgorithm.Procreant ga;
 
-    public List<SheetPlacement> nests = new List<SheetPlacement>();
+    public List<NestResult> nests = new List<NestResult>();
 
     public SvgNest(IMessageService messageService, IProgressDisplayer progressDisplayer, Action setIsErrored)
     {
@@ -782,7 +783,7 @@
       return id;
     }
 
-    public void ResponseProcessor(SheetPlacement payload)
+    public void ResponseProcessor(NestResult payload)
     {
       // console.log('ipc response', payload);
       if (this.ga == null)
@@ -826,9 +827,9 @@
       }
 
       int currentPlacements = 0;
-      if (this.nests.Count > 0 && this.nests[0].placements.Length > 0 && this.nests[0].placements[0].Count > 0)
+      if (this.nests.Count > 0 && this.nests[0].UsedSheets.Count > 0 && this.nests[0].UsedSheets.Count > 0)
       {
-        currentPlacements = this.nests[0].placements[0][0].sheetplacements.Count;
+        currentPlacements = this.nests[0].UsedSheets[0].PartPlacements.Count;
       }
 
       this.progressDisplayer?.DisplayProgress(currentPlacements, this.ga.Population.Count(o => o.fitness != null));
@@ -851,7 +852,7 @@
 
         if (this.ga == null)
         {
-          new Procreant(parts, config);
+          this.ga = new Procreant(parts, config);
         }
 
         this.individual = null;
@@ -1167,58 +1168,6 @@
     {
       return $"A:{AIndex} B:{BIndex} inside:{Inside} Arotation:{ARotation} Brotation:{BRotation}";
     }
-  }
-
-  public class SheetPlacementItem
-  {
-    public int sheetId;
-    public int sheetSource;
-
-    public List<PlacementItem> sheetplacements = new List<PlacementItem>();
-    public List<PlacementItem> placements = new List<PlacementItem>();
-  }
-
-  public class PlacementItem
-  {
-    public double? mergedLength;
-    public object mergedSegments;
-    public List<List<ClipperLib.IntPoint>> nfp;
-    public int id;
-    public NFP hull;
-    public NFP hullsheet;
-
-    public float rotation;
-    public double x;
-    public double y;
-    public int source;
-  }
-
-  public class SheetPlacement
-  {
-    public double? fitness;
-
-    private double fitnessAlt = -1;
-
-    public double FitnessAlt
-    {
-      get
-      {
-        if (this.fitness == null && this.fitnessAlt == -1)
-        {
-          this.fitnessAlt = new OriginalFitness().Evaluate(this);
-        }
-
-        return this.fitnessAlt;
-      }
-    }
-
-    public float[] Rotation;
-    public List<SheetPlacementItem>[] placements;
-
-    public NFP[] paths;
-    public double area;
-    public double mergedLength;
-    internal int index;
   }
 
   public class Sheet : NFP
