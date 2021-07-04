@@ -2,6 +2,11 @@
 {
   public class SvgNestConfig : ISvgNestConfig
   {
+    public const int PopulationMin = 50;
+    public const int PopulationMax = 800;
+    public const int MutationRateMin = 1;
+    public const int MutationRateMax = 5000;
+
     public double Scale { get; set; } = 25;
 
     public double ClipperScale { get; set; } = 10000000;
@@ -176,7 +181,10 @@
     {
       get
       {
-        return (int)Properties.Settings.Default["PopulationSize"];
+        var result = (int)Properties.Settings.Default["PopulationSize"];
+        if (result < PopulationMin) return PopulationMin;
+        if (result > PopulationMax) return PopulationMax;
+        return result;
       }
 
       set
@@ -191,7 +199,10 @@
     {
       get
       {
-        return (int)Properties.Settings.Default["MutationRate"];
+        var result = (int)Properties.Settings.Default["MutationRate"];
+        if (result < MutationRateMin) return MutationRateMin;
+        if (result > MutationRateMax) return MutationRateMax;
+        return result;
       }
 
       set

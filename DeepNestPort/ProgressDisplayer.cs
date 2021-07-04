@@ -16,14 +16,14 @@
 
       public void DisplayProgress(int placedParts, int currentPopulation)
       {
-        float progressPopulation = (0.66f * ((float)currentPopulation / (float)SvgNest.Config.PopulationSize));
-        float progressPlacements = (0.34f * ((float)placedParts / (float)form.polygons.Count));
-        form.displayProgress(progressPopulation + progressPlacements);
+        float progressPopulation = 0.66f * ((float)currentPopulation / (float)SvgNest.Config.PopulationSize);
+        float progressPlacements = 0.34f * ((float)placedParts / (float)this.form.polygons.Count);
+        this.form.displayProgress(progressPopulation + progressPlacements);
       }
 
       public void DisplayProgress(float percentageComplete)
       {
-        form.displayProgress(percentageComplete);
+        this.form.displayProgress(percentageComplete);
       }
     }
   }

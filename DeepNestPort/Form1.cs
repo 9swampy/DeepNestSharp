@@ -52,7 +52,12 @@
       checkBox3.Checked = SvgNest.Config.OffsetTreePhase;
       checkBox4.Checked = SvgNest.Config.UseParallel;
       this.numericUpDown1.Value = SvgNest.Config.PopulationSize;
+      this.numericUpDown1.Minimum = SvgNestConfig.PopulationMin;
+      this.numericUpDown1.Maximum = SvgNestConfig.PopulationMax;
       this.numericUpDown2.Value = SvgNest.Config.MutationRate;
+      this.numericUpDown2.Minimum = SvgNestConfig.MutationRateMin;
+      this.numericUpDown2.Maximum = SvgNestConfig.MutationRateMax;
+
       this.comboBox1.SelectedItem = SvgNest.Config.PlacementType.ToString();
       this.textBox1.Text = SvgNest.Config.Spacing.ToString();
       this.textBox6.Text = SvgNest.Config.CurveTolerance.ToString();
