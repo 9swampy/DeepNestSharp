@@ -514,6 +514,9 @@
       int totalPlaced = 0;
       int totalParts = parts.Count();
 
+      Stopwatch sw = new Stopwatch();
+      sw.Start();
+
       while (parts.Length > 0 && unusedSheets.Count > 0)
       {
         List<NFP> placed = new List<NFP>();
@@ -537,6 +540,11 @@
         double? minarea = null;
         for (int i = 0; i < parts.Length; i++)
         {
+          if (i > 0 && sw.ElapsedMilliseconds / i * parts.Length > 5000)
+          {
+            this.progressDisplayer.DisplayProgress((float)i / parts.Length);
+          }
+
           part = parts[i];
 
           // inner NFP
@@ -869,7 +877,6 @@
                 }
               }
             }
-
 
             if (position != null)
             {

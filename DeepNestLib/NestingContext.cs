@@ -47,7 +47,7 @@
       Iterations = 0;
     }
 
-    public void NestIterate()
+    public void NestIterate(ISvgNestConfig config)
     {
       try
       {
@@ -89,14 +89,14 @@
           lsheets.Add(clone);
         }
 
-        if (SvgNest.Config.OffsetTreePhase)
+        if (config.OffsetTreePhase)
         {
           var grps = lpoly.GroupBy(z => z.Source).ToArray();
-          if (SvgNest.Config.UseParallel)
+          if (config.UseParallel)
           {
             Parallel.ForEach(grps, (item) =>
             {
-              SvgNest.OffsetTree(item.First(), 0.5 * SvgNest.Config.Spacing, SvgNest.Config);
+              SvgNest.OffsetTree(item.First(), 0.5 * config.Spacing);
               foreach (var zitem in item)
               {
                 zitem.ReplacePoints(item.First().Points);
@@ -109,7 +109,7 @@
           {
             foreach (var item in grps)
             {
-              SvgNest.OffsetTree(item.First(), 0.5 * SvgNest.Config.Spacing, SvgNest.Config);
+              SvgNest.OffsetTree(item.First(), 0.5 * config.Spacing);
               foreach (var zitem in item)
               {
                 zitem.ReplacePoints(item.First().Points);
@@ -119,8 +119,8 @@
 
           foreach (var item in lsheets)
           {
-            var gap = SvgNest.Config.SheetSpacing - SvgNest.Config.Spacing / 2;
-            SvgNest.OffsetTree(item, -gap, SvgNest.Config, true);
+            var gap = config.SheetSpacing - config.Spacing / 2;
+            SvgNest.OffsetTree(item, -gap, true);
           }
         }
 
@@ -147,7 +147,7 @@
           item.Polygon.Source = srcc++;
         }
 
-        Nest.launchWorkers(partsLocal.ToArray());
+        Nest.launchWorkers(partsLocal.ToArray(), this.Background, config);
         if (Nest != null & Nest.nests != null && Nest.nests.Count > 0)
         {
           var plcpr = Nest.nests.First();

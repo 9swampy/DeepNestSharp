@@ -1,16 +1,14 @@
 ﻿namespace DeepNestLib.GeneticAlgorithm
 {
-  using System;
   using System.Collections.Generic;
-  using System.Linq;
-  using System.Threading.Tasks;
-  using ClipperLib;
 
   public class PopulationItem
   {
     public object processing = null;
 
     public double? fitness;
+
+    public double fitnessAlt;
 
     public float[] Rotation { get; }
 

@@ -237,6 +237,8 @@
         yy += (int)Font.Size + gap;
         ctx.gr.DrawString($"Material Utilization: {Math.Round(Context.MaterialUtilization * 100.0f, 2)}%   Iterations: {Context.Iterations}    Parts placed: {Context.PlacedPartsCount}/{polygons.Count}", Font, Brushes.DarkBlue, 0, yy);
         yy += (int)Font.Size + gap;
+        ctx.gr.DrawString($"Generations: {Context.Iterations / SvgNest.Config.PopulationSize}    Population: {Context.Iterations % SvgNest.Config.PopulationSize}", Font, Brushes.DarkBlue, 0, yy);
+        yy += (int)Font.Size + gap;
         ctx.gr.DrawString($"Sheets: {sheets.Count}   Parts:{polygons.Count}    parts types: {polygons.GroupBy(z => z.Source).Count()}", Font, Brushes.DarkBlue, 0, yy);
         yy += (int)Font.Size + gap;
 
@@ -246,12 +248,14 @@
           yy += (int)Font.Size + gap;
         }
 
-        ctx.gr.DrawString($"Call counter: {Context.Background.callCounter};  Last placing time: {Context.Background.LastPlacePartTime}ms", Font, Brushes.DarkBlue, 0, yy);
+        ctx.gr.DrawString($"Call counter: {Context?.Background?.callCounter};  Last placing time: {Context?.Background?.LastPlacePartTime}ms", Font, Brushes.DarkBlue, 0, yy);
         yy += (int)Font.Size + gap;
       }
       else
       {
         ctx.gr.DrawString($"Iterations: {Context.Iterations}    Parts placed: {Context.PlacedPartsCount}/{polygons.Count}", Font, Brushes.DarkBlue, 0, yy);
+        yy += (int)Font.Size + gap;
+        ctx.gr.DrawString($"Generations: {Context.Iterations / SvgNest.Config.PopulationSize}    Population: {Context.Iterations % SvgNest.Config.PopulationSize}", Font, Brushes.DarkBlue, 0, yy);
         yy += (int)Font.Size + gap;
         ctx.gr.DrawString($"Sheets: {sheets.Count}   Parts:{polygons.Count}    Parts types: {polygons.GroupBy(z => z.Source).Count()}", Font, Brushes.DarkBlue, 0, yy);
         yy += (int)Font.Size + gap;
@@ -451,7 +455,7 @@
           listView4.Items.Clear();
           foreach (var item in nest.nests)
           {
-            listView4.Items.Add(new ListViewItem(new string[] { item.fitness + "" }) { Tag = item });
+            listView4.Items.Add(new ListViewItem(new string[] { item.fitness?.ToString("F6"), item.FitnessAlt.ToString("F6") }) { Tag = item });
           }
           listView4.EndUpdate();
         }));
@@ -772,7 +776,7 @@
               Stopwatch sw = new Stopwatch();
               sw.Start();
 
-              this.Context.NestIterate();
+              this.Context.NestIterate(SvgNest.Config);
               UpdateNestsList();
               sw.Stop();
               _ = this.Invoke((MethodInvoker)(() => { this.toolStripStatusLabel1.Text = "Nesting time: " + sw.ElapsedMilliseconds + "ms"; }));

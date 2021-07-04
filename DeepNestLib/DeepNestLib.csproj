@@ -120,11 +120,12 @@
   <ItemGroup>
     <Compile Include="Background.cs" />
     <Compile Include="D3.cs" />
-    <Compile Include="DisplayProgressDelegate.cs" />
     <Compile Include="DxfParser.cs" />
     <Compile Include="ExporterFactory.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GeneticAlgorithm\NestChromosome.cs" />
+    <Compile Include="GeneticAlgorithm\NestFitness.cs" />
+    <Compile Include="GeneticAlgorithm\OriginalFitness.cs" />
     <Compile Include="GeneticAlgorithm\Procreant.cs" />
     <Compile Include="GeometryUtil.cs" />
     <Compile Include="IDbCache.cs" />

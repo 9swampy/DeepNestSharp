@@ -11,7 +11,7 @@
   {
     private readonly IMessageService messageService;
     private readonly Action setIsErrored;
-    public readonly Background background;
+    private Background background;
 
     private PopulationItem individual = null;
     private NFP[] placelist;
@@ -24,7 +24,6 @@
       this.messageService = messageService;
       this.progressDisplayer = progressDisplayer;
       this.setIsErrored = setIsErrored;
-      this.background = new Background(progressDisplayer);
     }
 
     public class InrangeItem
@@ -536,7 +535,7 @@
     }
 
     // offset tree recursively
-    public static void OffsetTree(NFP t, double offset, ISvgNestConfig config, bool? inside = null)
+    public static void OffsetTree(NFP t, double offset, bool? inside = null)
     {
       var simple = simplifyFunction(t, (inside == null) ? false : inside.Value);
       var offsetpaths = new NFP[] { simple };
@@ -574,7 +573,7 @@
       {
         for (var i = 0; i < t.Children.Count; i++)
         {
-          OffsetTree(t.Children[i], -offset, config, (inside == null) ? true : (!inside));
+          OffsetTree(t.Children[i], -offset, (inside == null) ? true : (!inside));
         }
       }
     }
@@ -783,25 +782,6 @@
       return id;
     }
 
-    private static NFP cloneTree(NFP tree)
-    {
-      NFP newtree = new NFP();
-      foreach (var t in tree.Points)
-      {
-        newtree.AddPoint(new SvgPoint(t.x, t.y) { exact = t.exact });
-      }
-
-      if (tree.Children != null && tree.Children.Count > 0)
-      {
-        foreach (var c in tree.Children)
-        {
-          newtree.Children.Add(cloneTree(c));
-        }
-      }
-
-      return newtree;
-    }
-
     public void ResponseProcessor(SheetPlacement payload)
     {
       // console.log('ipc response', payload);
@@ -813,6 +793,7 @@
 
       this.ga.Population[payload.index].processing = null;
       this.ga.Population[payload.index].fitness = payload.fitness;
+      this.ga.Population[payload.index].fitnessAlt = new OriginalFitness().Evaluate(payload);
 
       if (this.nests.Count == 0)
       {
@@ -856,66 +837,26 @@
     private static volatile object displayProgressLock = new object();
     private IProgressDisplayer progressDisplayer;
 
-    public void launchWorkers(NestItem[] parts)
+    /// <summary>
+    /// Starts next generation if none started or prior finished.
+    /// </summary>
+    /// <param name="parts"></param>
+    /// <param name="background"></param>
+    public void launchWorkers(NestItem[] parts, Background background, ISvgNestConfig config)
     {
       try
       {
-        this.background.ResponseAction = this.ResponseProcessor;
+        background.ResponseAction = this.ResponseProcessor;
+        this.background = background;
 
         if (this.ga == null)
         {
-          List<NFP> adam = new List<NFP>();
-          var id = 0;
-          for (int i = 0; i < parts.Count(); i++)
-          {
-            if (!parts[i].IsSheet)
-            {
-              for (int j = 0; j < parts[i].Quantity; j++)
-              {
-                var poly = cloneTree(parts[i].Polygon); // deep copy
-                poly.Id = id; // id is the unique id of all parts that will be nested, including cloned duplicates
-                poly.Source = i; // source is the id of each unique part from the main part list
-
-                adam.Add(poly);
-                id++;
-              }
-            }
-          }
-
-          adam = adam.OrderByDescending(z => Math.Abs(GeometryUtil.polygonArea(z))).ToList();
-          /*List<NFP> shuffle = new List<NFP>();
-          Random r = new Random(DateTime.Now.Millisecond);
-          while (adam.Any())
-          {
-              var rr = r.Next(adam.Count);
-              shuffle.Add(adam[rr]);
-              adam.RemoveAt(rr);
-          }
-          adam = shuffle;*/
-
-          /*#region special case
-          var temp = adam[1];
-          adam.RemoveAt(1);
-          adam.Insert(9, temp);
-
-          #endregion*/
-          this.ga = new GeneticAlgorithm.Procreant(adam.ToArray(), Config);
+          new Procreant(parts, config);
         }
 
         this.individual = null;
 
-        // check if current generation is finished
-        var finished = true;
-        for (int i = 0; i < this.ga.Population.Count; i++)
-        {
-          if (this.ga.Population[i].fitness == null)
-          {
-            finished = false;
-            break;
-          }
-        }
-
-        if (finished)
+        if (this.ga.IsCurrentGenerationFinished)
         {
           // console.log('new generation!');
           // all individuals have been evaluated, start next generation
@@ -940,7 +881,7 @@
             var poly = parts[i].Polygon;
             for (int j = 0; j < parts[i].Quantity; j++)
             {
-              var cln = cloneTree(poly);
+              var cln = poly.CloneTree();
               cln.Id = sid; // id is the unique id of all parts that will be nested, including cloned duplicates
               cln.Source = poly.Source; // source is the id of each unique part from the main part list
 
@@ -1255,6 +1196,21 @@
   public class SheetPlacement
   {
     public double? fitness;
+
+    private double fitnessAlt = -1;
+
+    public double FitnessAlt
+    {
+      get
+      {
+        if (this.fitness == null && this.fitnessAlt == -1)
+        {
+          this.fitnessAlt = new OriginalFitness().Evaluate(this);
+        }
+
+        return this.fitnessAlt;
+      }
+    }
 
     public float[] Rotation;
     public List<SheetPlacementItem>[] placements;

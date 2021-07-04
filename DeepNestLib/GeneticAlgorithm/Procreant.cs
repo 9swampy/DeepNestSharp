@@ -54,7 +54,68 @@
       }
     }
 
+    public Procreant(NestItem[] parts, ISvgNestConfig config)
+      : this(CreateAdam(parts), config)
+    {
+    }
+
+    private static NFP[] CreateAdam(NestItem[] parts)
+    {
+      List<NFP> adam = new List<NFP>();
+      var id = 0;
+      for (int i = 0; i < parts.Count(); i++)
+      {
+        if (!parts[i].IsSheet)
+        {
+          for (int j = 0; j < parts[i].Quantity; j++)
+          {
+            var poly = parts[i].Polygon.CloneTree(); // deep copy
+            poly.Id = id; // id is the unique id of all parts that will be nested, including cloned duplicates
+            poly.Source = i; // source is the id of each unique part from the main part list
+
+            adam.Add(poly);
+            id++;
+          }
+        }
+      }
+
+      adam = adam.OrderByDescending(z => Math.Abs(GeometryUtil.polygonArea(z))).ToList();
+      /*List<NFP> shuffle = new List<NFP>();
+      Random r = new Random(DateTime.Now.Millisecond);
+      while (adam.Any())
+      {
+          var rr = r.Next(adam.Count);
+          shuffle.Add(adam[rr]);
+          adam.RemoveAt(rr);
+      }
+      adam = shuffle;*/
+
+      /*#region special case
+      var temp = adam[1];
+      adam.RemoveAt(1);
+      adam.Insert(9, temp);
+
+      #endregion*/
+      return adam.ToArray();
+    }
+
     private readonly Random random = new Random();
+
+    public bool IsCurrentGenerationFinished
+    {
+      get
+      {
+        for (int i = 0; i < this.Population.Count; i++)
+        {
+          if (this.Population[i].fitness == null)
+          {
+            return false;
+          }
+        }
+
+        return true;
+      }
+    }
 
     private PopulationItem mutate(PopulationItem p)
     {

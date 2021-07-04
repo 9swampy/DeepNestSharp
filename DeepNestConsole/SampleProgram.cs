@@ -38,12 +38,17 @@
       do
       {
         var sw = Stopwatch.StartNew();
-        Context.NestIterate();
+        Context.NestIterate(SvgNest.Config);
         sw.Stop();
         Console.WriteLine("Iteration: " + Context.Iterations + "; fitness: " + Context.Current.fitness + "; nesting time: " + sw.ElapsedMilliseconds + "ms");
-      } while (!IsFinished());
+      }
+      while (!IsFinished());
 
-      #region convert results
+      ConvertResults();
+    }
+
+    private void ConvertResults()
+    {
       string path = "output.dxf";
 
       if (path.ToLower().EndsWith("svg"))
@@ -54,7 +59,6 @@
         throw new NotImplementedException($"unknown format: {path}");
 
       Console.WriteLine($"Results exported in: {path}");
-      #endregion
     }
   }
 }

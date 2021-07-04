@@ -28,12 +28,13 @@
     private void DisplayProgress()
     {
       Interlocked.Increment(ref this.processed);
-      this.progressDisplayer.DisplayProgress((float)this.processed / (float)this.pairs.Count);
+      this.progressDisplayer.DisplayProgress(Math.Min(1F, (float)this.processed / (float)this.pairs.Count));
     }
 
     public NfpPair[] PmapDeepNest()
     {
       NfpPair[] ret = new NfpPair[pairs.Count()];
+      DisplayProgress();
       if (this.useParallel)
       {
         Parallel.For(0, pairs.Count, (i) =>

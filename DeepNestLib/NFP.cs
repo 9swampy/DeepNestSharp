@@ -218,6 +218,7 @@
       NFP clone = new NFP();
       clone.Id = this.Id;
       clone.Source = this.Source;
+      clone.IsPrimary = this.IsPrimary;
       clone.ReplacePoints(this.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }));
       if (this.Children != null)
       {
@@ -263,6 +264,32 @@
       }
 
       return rotated;
+    }
+
+    public NFP CloneTree()
+    {
+      NFP newtree = new NFP();
+      foreach (var t in this.Points)
+      {
+        newtree.AddPoint(new SvgPoint(t.x, t.y) { exact = t.exact });
+      }
+
+      // jwb added the properties
+      // newtree.Id = this.Id;
+      // newtree.Source = this.Source;
+      newtree.IsPrimary = this.IsPrimary;
+
+      // newtree.Name = this.Name;
+      // jwb added the properties
+      if (this.Children != null && this.Children.Count > 0)
+      {
+        foreach (var c in this.Children)
+        {
+          newtree.Children.Add(c.CloneTree());
+        }
+      }
+
+      return newtree;
     }
   }
 }

@@ -90,6 +90,7 @@
       this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
       this.listView4 = new System.Windows.Forms.ListView();
       this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+      this.colFitnessAlt = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
       this.toolStrip1 = new System.Windows.Forms.ToolStrip();
       this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
       this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
@@ -202,10 +203,10 @@
       // pictureBox1
       // 
       this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.pictureBox1.Location = new System.Drawing.Point(133, 53);
+      this.pictureBox1.Location = new System.Drawing.Point(273, 53);
       this.pictureBox1.Margin = new System.Windows.Forms.Padding(0);
       this.pictureBox1.Name = "pictureBox1";
-      this.pictureBox1.Size = new System.Drawing.Size(832, 457);
+      this.pictureBox1.Size = new System.Drawing.Size(692, 457);
       this.pictureBox1.TabIndex = 0;
       this.pictureBox1.TabStop = false;
       this.pictureBox1.MouseEnter += new System.EventHandler(this.pictureBox1_MouseEnter);
@@ -856,7 +857,7 @@
       // tableLayoutPanel1
       // 
       this.tableLayoutPanel1.ColumnCount = 2;
-      this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 133F));
+      this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 273F));
       this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
       this.tableLayoutPanel1.Controls.Add(this.listView4, 0, 1);
       this.tableLayoutPanel1.Controls.Add(this.toolStrip1, 0, 0);
@@ -870,13 +871,15 @@
       this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
       this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26F));
       this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+      this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
       this.tableLayoutPanel1.Size = new System.Drawing.Size(965, 510);
       this.tableLayoutPanel1.TabIndex = 1;
       // 
       // listView4
       // 
       this.listView4.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader8});
+            this.columnHeader8,
+            this.colFitnessAlt});
       this.listView4.Dock = System.Windows.Forms.DockStyle.Fill;
       this.listView4.FullRowSelect = true;
       this.listView4.GridLines = true;
@@ -885,7 +888,7 @@
       this.listView4.Margin = new System.Windows.Forms.Padding(2);
       this.listView4.Name = "listView4";
       this.tableLayoutPanel1.SetRowSpan(this.listView4, 2);
-      this.listView4.Size = new System.Drawing.Size(129, 479);
+      this.listView4.Size = new System.Drawing.Size(269, 479);
       this.listView4.TabIndex = 5;
       this.listView4.UseCompatibleStateImageBehavior = false;
       this.listView4.View = System.Windows.Forms.View.Details;
@@ -895,6 +898,11 @@
       // 
       this.columnHeader8.Text = "Fitness";
       this.columnHeader8.Width = 150;
+      // 
+      // colFitnessAlt
+      // 
+      this.colFitnessAlt.Text = "FitnessAlt";
+      this.colFitnessAlt.Width = 120;
       // 
       // toolStrip1
       // 
@@ -954,10 +962,10 @@
       // panel1
       // 
       this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.panel1.Location = new System.Drawing.Point(133, 27);
+      this.panel1.Location = new System.Drawing.Point(273, 27);
       this.panel1.Margin = new System.Windows.Forms.Padding(0);
       this.panel1.Name = "panel1";
-      this.panel1.Size = new System.Drawing.Size(832, 26);
+      this.panel1.Size = new System.Drawing.Size(692, 26);
       this.panel1.TabIndex = 1;
       // 
       // tabPage1
@@ -1825,6 +1833,7 @@
     private System.Windows.Forms.CheckBox checkBox5;
     private System.Windows.Forms.GroupBox groupBox9;
     private System.Windows.Forms.CheckBox checkBox6;
+    private System.Windows.Forms.ColumnHeader colFitnessAlt;
   }
 }
 
