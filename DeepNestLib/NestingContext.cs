@@ -153,7 +153,7 @@
         {
           var plcpr = Nest.nests.First();
 
-          if (current == null || plcpr.fitness < current.fitness)
+          if (current == null || plcpr.Fitness < current.Fitness)
           {
             AssignPlacement(plcpr);
           }

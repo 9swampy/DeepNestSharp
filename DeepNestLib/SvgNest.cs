@@ -793,7 +793,7 @@
       }
 
       this.ga.Population[payload.index].processing = null;
-      this.ga.Population[payload.index].fitness = payload.fitness;
+      this.ga.Population[payload.index].fitness = payload.Fitness;
       this.ga.Population[payload.index].fitnessAlt = new OriginalFitness().Evaluate(payload);
 
       if (this.nests.Count == 0)
@@ -809,12 +809,12 @@
             break;
           }
 
-          if (i == this.nests.Count || this.nests[i].fitness > payload.fitness)
+          if (i == this.nests.Count || this.nests[i].Fitness > payload.Fitness)
           {
             this.nests.Insert(i, payload);
             break;
           }
-          else if (this.nests[i].fitness == payload.fitness)
+          else if (this.nests[i].Fitness == payload.Fitness)
           {
             break;
           }
