@@ -1,5 +1,6 @@
 ﻿namespace DeepNestLib.Placement
 {
+  using System;
   using System.Collections.Generic;
   using DeepNestLib.GeneticAlgorithm;
 
@@ -7,7 +8,8 @@
   {
     private double fitnessAlt = -1;
 
-    public double? fitness { get; }
+    [Obsolete("Exposed only for interim UnitTest comparisons of old with replacement.")]
+    public double? fitness = null;
 
     public NestResult(int nestIndex, double area, SheetPlacementCollection allplacements, IList<NFP> unplacedParts, double? fitness, double mergedLength, double fitnessSheets, double fitnessBounds, double fitnessUnplaced, PlacementTypeEnum placementType)
     {
@@ -33,6 +35,15 @@
         }
 
         return this.fitnessAlt;
+      }
+    }
+
+    public double? Fitness
+    {
+      get
+      {
+        if (this.PlacementType == PlacementTypeEnum.Squeeze) return fitness;
+        return this.FitnessAlt;
       }
     }
 

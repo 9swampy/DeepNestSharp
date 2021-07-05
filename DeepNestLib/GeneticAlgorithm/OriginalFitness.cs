@@ -33,7 +33,7 @@
         double area;
         if (nestResult.PlacementType == PlacementTypeEnum.Gravity)
         {
-          area = (o.RectBounds.width * 3) + o.RectBounds.height;
+          area = (o.RectBounds.width * 4) * o.RectBounds.height;
         }
         else
         {
