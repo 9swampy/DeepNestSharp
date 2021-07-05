@@ -509,6 +509,9 @@
       SheetPlacementCollection allplacements = new SheetPlacementCollection();
 
       double fitness = 0;
+      double fitnessSheets = 0;
+      double fitnessBounds = 0;
+      double fitnessUnplaced = 0;
 
       NFP nfp;
       double sheetarea = -1;
@@ -528,6 +531,7 @@
         sheetarea = Math.Abs(GeometryUtil.polygonArea(sheet));
         totalsheetarea += sheetarea;
 
+        fitnessSheets += sheetarea; // add 1 for each new sheet opened (lower fitness is better)
         fitness += sheetarea; // add 1 for each new sheet opened (lower fitness is better)
 
         string clipkey = string.Empty;
@@ -597,7 +601,7 @@
                     GeometryUtil._almostEqual(sheetNfp[j][k].x - part[0].x, position.x)
                     && ((sheetNfp[j][k].y - part[0].y) < position.y)))
                 {
-                  position = new PartPlacement()
+                  position = new PartPlacement(part)
                   {
                     x = sheetNfp[j][k].x - part[0].x,
                     y = sheetNfp[j][k].y - part[0].y,
@@ -710,7 +714,9 @@
             {
               if (part.IsPrimary)
               {
-                break; // Failed to fit a Primary part; add another sheet - we'll leave additional space on the first sheet though that won't get used again as everything remaining will be fit to the consequent sheet.
+                break; /* Failed to fit a Primary part; add another sheet.
+                          However that means we'll leave additional space on the first sheet though that won't get used again
+                          as everything remaining will be fit to the consequent sheet? */
               }
 
               continue; // Part can't be fitted but it wasn't a primary, so move on to the next part
@@ -740,17 +746,7 @@
             double area;
             PartPlacement shiftvector = null;
 
-            NFP allpoints = new NFP();
-            for (int m = 0; m < placed.Count; m++)
-            {
-              for (int n = 0; n < placed[m].Length; n++)
-              {
-                allpoints.AddPoint(
-                    new SvgPoint(
-                     placed[m][n].x + placements[m].x, placed[m][n].y + placements[m].y));
-              }
-            }
-
+            NFP allpoints = SheetPlacement.CombinedPoints(placements);
             PolygonBounds allbounds = null;
             PolygonBounds partbounds = null;
             if (config.PlacementType == PlacementTypeEnum.Gravity || config.PlacementType == PlacementTypeEnum.BoundingBox)
@@ -777,7 +773,7 @@
               // console.log('evalnf',nf.length);
               for (int k = 0; k < nf.Length; k++)
               {
-                shiftvector = new PartPlacement()
+                shiftvector = new PartPlacement(part)
                 {
                   id = part.Id,
                   x = nf[k].x - part[0].x,
@@ -911,10 +907,12 @@
         // if(minwidth){
         if (!minwidth.HasValue)
         {
+          fitnessBounds = double.NaN;
           fitness = double.NaN;
         }
         else
         {
+          fitnessBounds += (minwidth.Value / sheetarea) + minarea.Value;
           fitness += (minwidth.Value / sheetarea) + minarea.Value;
         }
 
@@ -945,14 +943,18 @@
 
       // there were parts that couldn't be placed
       // scale this value high - we really want to get all the parts in, even at the cost of opening new sheets
+      List<NFP> unplacedParts = new List<NFP>();
       for (int noPlaceIdx = 0; noPlaceIdx < parts.Count(); noPlaceIdx++)
       {
-        fitness += 100000000 * (Math.Abs(GeometryUtil.polygonArea(parts[noPlaceIdx])) / totalsheetarea);
+        var unplacedPart = parts[noPlaceIdx];
+        unplacedParts.Add(unplacedPart);
+        fitnessUnplaced += 100000000 * (Math.Abs(GeometryUtil.polygonArea(unplacedPart)) / totalsheetarea);
+        fitness += 100000000 * (Math.Abs(GeometryUtil.polygonArea(unplacedPart)) / totalsheetarea);
       }
 
       // send finish progerss signal
       // ipcRenderer.send('background-progress', { index: nestindex, progress: -1});
-      return new NestResult(nestIndex, sheetarea, allplacements, fitness, totalMerged);
+      return new NestResult(nestIndex, sheetarea, allplacements, unplacedParts, fitness, totalMerged, fitnessSheets, fitnessBounds, fitnessUnplaced, config.PlacementType);
 
       // return { placements: allplacements, fitness: fitness, area: sheetarea, mergedLength: totalMerged };
     }

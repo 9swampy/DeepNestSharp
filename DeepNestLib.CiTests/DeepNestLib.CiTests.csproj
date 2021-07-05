@@ -153,6 +153,7 @@
     <Compile Include="DxfParserPart5Fixture.cs" />
     <Compile Include="DxfParserPart1Fixture.cs" />
     <Compile Include="DxfParserFixture.cs" />
+    <Compile Include="FitFourSmallSquaresInOneLargerSquareSheetPerfectlyBoundingBoxFitnessFixture.cs" />
     <Compile Include="FitFourSmallSquaresInOneLargerSquareSheetPerfectlyFixture.cs" />
     <Compile Include="FitSmallSquarePartInLargerSquareSheetFixture.cs" />
     <Compile Include="FitOnlyOneOfTwoSmallSquaresPartInOneLargerSquareSheetsFixture.cs" />

@@ -4,8 +4,9 @@
 
   public class PartPlacement
   {
-    public PartPlacement()
+    public PartPlacement(NFP part)
     {
+      this.Part = part;
     }
 
     public double? mergedLength
@@ -65,5 +66,7 @@
     /// Source of the part placed.
     /// </summary>
     public int source { get; set; }
+
+    public NFP Part { get; }
   }
 }

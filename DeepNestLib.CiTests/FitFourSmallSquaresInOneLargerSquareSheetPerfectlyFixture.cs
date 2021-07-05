@@ -2,6 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
+  using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
@@ -40,6 +41,7 @@
       // fourthPart = fourthPart.Rotate(180);
       fourthPart.Rotation = 180;
       var config = new DefaultSvgNestConfig();
+      config.PlacementType = PlacementTypeEnum.Gravity;
       this.nestResult = new Background(A.Fake<IProgressDisplayer>()).PlaceParts(new NFP[] { firstSheet }, new NFP[] { firstPart, secondPart, thirdPart, fourthPart }, config, 0);
     }
 
@@ -59,6 +61,36 @@
     public void ShouldHaveExpectedFitness()
     {
       this.nestResult.fitness.Should().BeApproximately(617.04158790170129, 10);
+    }
+
+    [Fact]
+    public void ShouldHaveSameFitnessAsOriginal()
+    {
+      this.nestResult.fitness.Should().BeApproximately(this.nestResult.FitnessAlt, 10);
+    }
+
+    [Fact]
+    public void ShouldHaveSameFitnessBoundsAsOriginal()
+    {
+      this.nestResult.FitnessBounds.Should().BeApproximately(OriginalFitness.FitnessBounds(this.nestResult), 10);
+    }
+
+    [Fact]
+    public void ShouldHaveExpectedFitnessBounds()
+    {
+      OriginalFitness.FitnessBounds(this.nestResult).Should().BeApproximately(88, 10);
+    }
+
+    [Fact]
+    public void ShouldHaveSameFitnessUnplacedAsOriginal()
+    {
+      this.nestResult.FitnessUnplaced.Should().BeApproximately(OriginalFitness.FitnessUnplaced(this.nestResult), 10);
+    }
+
+    [Fact]
+    public void ShouldHaveSameFitnessSheetsAsOriginal()
+    {
+      this.nestResult.FitnessSheets.Should().BeApproximately(OriginalFitness.FitnessSheets(this.nestResult), 10);
     }
 
     [Fact]

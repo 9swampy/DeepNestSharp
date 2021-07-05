@@ -1,26 +1,52 @@
 ﻿namespace DeepNestLib.GeneticAlgorithm
 {
-  using DeepNestLib.Placement;
   using System;
-  using System.Collections.Generic;
   using System.Linq;
-  using System.Text;
-  using System.Threading.Tasks;
+  using DeepNestLib.Placement;
 
   public class OriginalFitness
   {
-    public double Evaluate(NestResult sheetPlacement)
+    public double Evaluate(NestResult nestResult)
     {
       var result = 0D;
-      result += sheetPlacement.UsedSheets.Count * sheetPlacement.area;
-      // sheetPlacement.placements[0].Sum(o=>o.sheetplacements.)
-
-      // 100000000 * (Math.Abs(GeometryUtil.polygonArea(parts[noPlaceIdx])) / totalsheetarea);
+      result += FitnessUnplaced(nestResult);
+      result += FitnessBounds(nestResult);
+      result += FitnessSheets(nestResult);
 
       return result;
     }
 
-    // https://www.researchgate.net/publication/276909495_An_optimizing_model_to_solve_the_nesting_problem_of_rectangle_pieces_based_on_genetic_algorithm
+    private static float GetTotalSheetArea(NestResult nestResult)
+    {
+      return nestResult.UsedSheets.Sum(o => o.Sheet.Area);
+    }
 
+    internal static double FitnessSheets(NestResult nestResult)
+    {
+      return nestResult.UsedSheets.Sum(o => o.Sheet.Area);
+    }
+
+    internal static double FitnessBounds(NestResult nestResult)
+    {
+      return nestResult.UsedSheets.Sum(o =>
+      {
+        double area;
+        if (nestResult.PlacementType == PlacementTypeEnum.Gravity)
+        {
+          area = (o.RectBounds.width * 3) + o.RectBounds.height;
+        }
+        else
+        {
+          area = o.RectBounds.width * o.RectBounds.height;
+        }
+
+        return (o.RectBounds.width / o.Sheet.Area) + area;
+      });
+    }
+
+    internal static double FitnessUnplaced(NestResult nestResult)
+    {
+      return nestResult.UnplacedParts.Sum(o => 100000000 * (Math.Abs(GeometryUtil.polygonArea(o)) / OriginalFitness.GetTotalSheetArea(nestResult)));
+    }
   }
 }

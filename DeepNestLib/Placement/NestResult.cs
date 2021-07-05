@@ -9,13 +9,18 @@
 
     public double? fitness { get; }
 
-    public NestResult(int nestIndex, double area, SheetPlacementCollection allplacements, double? fitness, double mergedLength)
+    public NestResult(int nestIndex, double area, SheetPlacementCollection allplacements, IList<NFP> unplacedParts, double? fitness, double mergedLength, double fitnessSheets, double fitnessBounds, double fitnessUnplaced, PlacementTypeEnum placementType)
     {
       UsedSheets = allplacements;
+      this.UnplacedParts = unplacedParts;
       this.fitness = fitness;
       this.NestIndex = nestIndex;
       this.area = area;
       this.mergedLength = mergedLength;
+      this.FitnessSheets = fitnessSheets;
+      this.FitnessBounds = fitnessBounds;
+      this.FitnessUnplaced = fitnessUnplaced;
+      this.PlacementType = placementType;
     }
 
     public double FitnessAlt
@@ -35,6 +40,8 @@
 
     public SheetPlacementCollection UsedSheets { get; private set; }
 
+    public IList<NFP> UnplacedParts { get; }
+
     public int NestIndex { get; }
 
     /// <summary>
@@ -44,6 +51,14 @@
 
     public double mergedLength { get; }
 
+    public double FitnessSheets { get; }
+
+    public double FitnessBounds { get; }
+
+    public double FitnessUnplaced { get; }
+
     internal int index { get; set; }
+
+    public PlacementTypeEnum PlacementType { get; }
   }
 }
