@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.2015
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31410.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinkowskiWrapper", "MinkowskiWrapper\MinkowskiWrapper.csproj", "{E09E5402-28CF-4C96-9410-1AF2A44833E0}"
 EndProject
@@ -19,6 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinkowskiWrapper.CiTests", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MinkowskiDlls", "MinkowskiDlls", "{448485F0-CDD4-4AB8-8EFA-D2EAC39421B4}"
 	ProjectSection(SolutionItems) = preProject
+		Minkowski\compile.bat = Minkowski\compile.bat
 		MinkowskiDlls\minkowski.dll = MinkowskiDlls\minkowski.dll
 		MinkowskiDlls\minkowski_x64.dll = MinkowskiDlls\minkowski_x64.dll
 		MinkowskiDlls\minkowski_x86.dll = MinkowskiDlls\minkowski_x86.dll
