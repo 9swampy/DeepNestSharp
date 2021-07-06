@@ -40,7 +40,7 @@
 
       var frame = Background.getFrame(sheet);
 
-      new Background(A.Fake<IProgressDisplayer>()).Process2(frame, part, 0).Should().NotBeNull();
+      new Background(A.Fake<IProgressDisplayer>()).Process2(frame, part, MinkowskiCache.Cache).Should().NotBeNull();
     }
 
     [Fact]

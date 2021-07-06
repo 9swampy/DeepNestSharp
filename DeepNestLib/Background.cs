@@ -246,10 +246,11 @@
       }
     }
 
-    internal NFP[] Process2(INfp A, INfp B, int type)
+    internal NFP[] Process2(INfp A, INfp B, MinkowskiCache minkowskiCache)
     {
       var key = A.Source + ";" + B.Source + ";" + A.Rotation + ";" + B.Rotation;
-      bool cacheAllow = type != 1;
+      bool cacheAllow = minkowskiCache == MinkowskiCache.Cache;
+
       if (cacheProcess.ContainsKey(key) && cacheAllow)
       {
         return cacheProcess[key];
@@ -408,7 +409,7 @@
       return frame;
     }
 
-    private NFP[] getInnerNfp(NFP A, NFP B, int type, double clipperScale)
+    private NFP[] getInnerNfp(NFP A, NFP B, MinkowskiCache type, double clipperScale)
     {
       if (A.Source != null && B.Source != null)
       {
@@ -436,7 +437,7 @@
       {
         for (var i = 0; i < A.Children.Count; i++)
         {
-          var hnfp = GetOuterNfp(A.Children[i], B, 1);
+          var hnfp = GetOuterNfp(A.Children[i], B, MinkowskiCache.NoCache);
           if (hnfp != null)
           {
             holes.Add(hnfp);
@@ -985,19 +986,7 @@
 
     private void SyncPlaceParts()
     {
-      // console.log('starting synchronous calculations', Object.keys(window.nfpCache).length);
-      // console.log('in sync');
-      var c = 0;
-      foreach (var key in window.nfpCache)
-      {
-        c++;
-      }
-
-      // console.log('nfp cached:', c);
-      Stopwatch sw = Stopwatch.StartNew();
       var nestResult = PlaceParts(this.data.sheets.ToArray(), this.parts, this.data.config, this.index);
-      sw.Stop();
-
       if (nestResult != null)
       {
         nestResult.index = this.data.index;
@@ -1109,7 +1098,7 @@
           var cbounds = GeometryUtil.getPolygonBounds(Achildren[j]);
           if (cbounds.width > bbounds.width && cbounds.height > bbounds.height)
           {
-            var n = getInnerNfp(Achildren[j], Brotated, 1, this.data.config.ClipperScale);
+            var n = getInnerNfp(Achildren[j], Brotated, MinkowskiCache.NoCache, this.data.config.ClipperScale);
             if (n != null && n.Count() > 0)
             {
               cnfp.AddRange(n);
@@ -1203,7 +1192,7 @@
           }
 
           // var childNfp = SvgNest.toClipperCoordinates(nfp.Children[j]);
-          var childNfp = _Clipper.ScaleUpPaths(nfp.Children[j].Points, clipperScale);
+          var childNfp = DeepNestClipper.ScaleUpPaths(nfp.Children[j].Points, clipperScale);
           clipperNfp.Add(childNfp);
         }
       }
@@ -1216,7 +1205,7 @@
       // var outerNfp = SvgNest.toClipperCoordinates(nfp);
 
       // clipper js defines holes based on orientation
-      var outerNfp = _Clipper.ScaleUpPaths(nfp.Points, clipperScale);
+      var outerNfp = DeepNestClipper.ScaleUpPaths(nfp.Points, clipperScale);
 
       // var cleaned = ClipperLib.Clipper.CleanPolygon(outerNfp, 0.00001*config.clipperScale);
       clipperNfp.Add(outerNfp);
@@ -1240,7 +1229,7 @@
       return clipperNfp.ToArray();
     }
 
-    private NFP GetOuterNfp(NFP A, NFP B, int type, bool inside = false) // todo:?inside def?
+    private NFP GetOuterNfp(NFP A, NFP B, MinkowskiCache type, bool inside = false) // todo:?inside def?
     {
       NFP[] nfp = null;
 
@@ -1262,36 +1251,7 @@
       }
       else
       {
-        var ac = _Clipper.ScaleUpPaths(A.Points, 10000000);
-
-        var bc = _Clipper.ScaleUpPaths(B.Points, 10000000);
-        for (var i = 0; i < bc.Length; i++)
-        {
-          bc[i].X *= -1;
-          bc[i].Y *= -1;
-        }
-
-        var solution = ClipperLib.Clipper.MinkowskiSum(new List<IntPoint>(ac), new List<IntPoint>(bc), true);
-        NFP clipperNfp = null;
-
-        double? largestArea = null;
-        for (int i = 0; i < solution.Count(); i++)
-        {
-          var n = solution[i].ToArray().ToNestCoordinates(10000000);
-          var sarea = GeometryUtil.polygonArea(n);
-          if (largestArea == null || largestArea > sarea)
-          {
-            clipperNfp = n;
-            largestArea = sarea;
-          }
-        }
-
-        for (var i = 0; i < clipperNfp.Length; i++)
-        {
-          clipperNfp[i].x += B[0].x;
-          clipperNfp[i].y += B[0].y;
-        }
-
+        NFP clipperNfp = DeepNestClipper.MinkowskiSum(A, B, MinkowskiSumPick.Smallest);
         nfp = new NFP[] { new NFP(clipperNfp.Points) };
       }
 

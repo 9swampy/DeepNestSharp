@@ -46,12 +46,22 @@
             //return indexes.slice(0, size); // remove popped points
         }
 
-        public class HullInfoPoint
+        private struct HullInfoPoint
         {
-            public double x;
-            public double y;
-            public int index;
+            public HullInfoPoint(double x, double y, int index)
+            {
+              this.X = x;
+              this.Y = y;
+              this.Index = index;
+            }
+
+            public double X { get; }
+
+            public double Y { get; }
+
+            public int Index { get; }
         }
+
         public static double[][] polygonHull(double[][] points)
         {
             int n;
@@ -65,12 +75,12 @@
 
 
 
-            for (int i = 0; i < n; ++i) sortedPoints[i] = new HullInfoPoint { x = points[i][0], y = points[i][1], index = i };
-            sortedPoints = sortedPoints.OrderBy(x => x.x).ThenBy(z => z.y).ToArray();
+            for (int i = 0; i < n; ++i) sortedPoints[i] = new HullInfoPoint(points[i][0],points[i][1], i);
+            sortedPoints = sortedPoints.OrderBy(x => x.X).ThenBy(z => z.Y).ToArray();
 
-            for (int i = 0; i < n; ++i) flippedPoints[i] = new double[] { sortedPoints[i].x, -sortedPoints[i].y };
+            for (int i = 0; i < n; ++i) flippedPoints[i] = new double[] { sortedPoints[i].X, -sortedPoints[i].Y };
 
-            var upperIndexes = computeUpperHullIndexes(sortedPoints.Select(z => new double[] { z.x, z.y, z.index }).ToArray());
+            var upperIndexes = computeUpperHullIndexes(sortedPoints.Select(z => new double[] { z.X, z.Y, z.Index }).ToArray());
             var lowerIndexes = computeUpperHullIndexes(flippedPoints);
 
 
@@ -82,9 +92,9 @@
             // Add upper hull in right-to-l order.
             // Then add lower hull in left-to-right order.
             for (int i = upperIndexes.Length - 1; i >= 0; --i)
-                hull.Add(points[sortedPoints[upperIndexes[i]].index]);
+                hull.Add(points[sortedPoints[upperIndexes[i]].Index]);
             //for (int i = +skipLeft; i < lowerIndexes.Length - skipRight; ++i) hull.push(points[sortedPoints[lowerIndexes[i]][2]]);
-            for (int i = skipLeft ? 1 : 0; i < lowerIndexes.Length - (skipRight ? 1 : 0); ++i) hull.Add(points[sortedPoints[lowerIndexes[i]].index]);
+            for (int i = skipLeft ? 1 : 0; i < lowerIndexes.Length - (skipRight ? 1 : 0); ++i) hull.Add(points[sortedPoints[lowerIndexes[i]].Index]);
 
             return hull.ToArray();
         }

@@ -15,9 +15,7 @@
     private readonly IMessageService messageService;
     private readonly IProgressDisplayer progressDisplayer;
     private int iterations = 0;
-    private int generations = 0;
-    private int population = 0;
-    
+
     public NestingContext(IMessageService messageService, IProgressDisplayer progressDisplayer)
     {
       this.messageService = messageService;
@@ -38,11 +36,13 @@
 
     public SvgNest Nest { get; private set; }
 
-    public int Iterations { get; }
-
-    public int Population { get; }
-
-    public int Generations { get; }
+    public int Iterations
+    {
+      get
+      {
+        return iterations;
+      }
+    }
 
     public void StartNest()
     {

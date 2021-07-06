@@ -256,7 +256,7 @@
       {
         ctx.gr.DrawString($"Iterations: {Context.Iterations}    Parts placed: {Context.PlacedPartsCount}/{polygons.Count}", Font, Brushes.DarkBlue, 0, yy);
         yy += (int)Font.Size + gap;
-        ctx.gr.DrawString($"Generations: {Context.Iterations / SvgNest.Config.PopulationSize}    Population: {Context.Iterations % SvgNest.Config.PopulationSize}", Font, Brushes.DarkBlue, 0, yy);
+        ctx.gr.DrawString($"Generations: {SvgNest.Generations}    Population: {SvgNest.Population}", Font, Brushes.DarkBlue, 0, yy);
         yy += (int)Font.Size + gap;
         ctx.gr.DrawString($"Sheets: {sheets.Count}   Parts:{polygons.Count}    Parts types: {polygons.GroupBy(z => z.Source).Count()}", Font, Brushes.DarkBlue, 0, yy);
         yy += (int)Font.Size + gap;

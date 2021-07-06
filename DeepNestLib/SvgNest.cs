@@ -21,11 +21,30 @@
 
     public List<NestResult> nests = new List<NestResult>();
 
+    private static int generations = 0;
+    private static int population = 0;
+
     public SvgNest(IMessageService messageService, IProgressDisplayer progressDisplayer, Action setIsErrored)
     {
       this.messageService = messageService;
       this.progressDisplayer = progressDisplayer;
       this.setIsErrored = setIsErrored;
+    }
+
+    public static int Population
+    {
+      get
+      {
+        return population;
+      }
+    }
+
+    public static int Generations
+    {
+      get
+      {
+        return generations;
+      }
     }
 
     public class InrangeItem
@@ -379,8 +398,8 @@
 
         if (straightened)
         {
-          var Ac = _Clipper.ScaleUpPaths(offset.Points, 10000000);
-          var Bc = _Clipper.ScaleUpPaths(polygon.Points, 10000000);
+          var Ac = DeepNestClipper.ScaleUpPaths(offset.Points, 10000000);
+          var Bc = DeepNestClipper.ScaleUpPaths(polygon.Points, 10000000);
 
           var combined = new List<List<IntPoint>>();
           var clipper = new ClipperLib.Clipper();
@@ -610,14 +629,14 @@
     // converts a polygon from normal float coordinates to integer coordinates used by clipper, as well as x/y -> X/Y
     public static IntPoint[] svgToClipper2(NFP polygon, double? scale = null)
     {
-      var d = _Clipper.ScaleUpPaths(polygon.Points, scale == null ? Config.ClipperScale : scale.Value);
+      var d = DeepNestClipper.ScaleUpPaths(polygon.Points, scale == null ? Config.ClipperScale : scale.Value);
       return d.ToArray();
     }
 
     // converts a polygon from normal float coordinates to integer coordinates used by clipper, as well as x/y -> X/Y
     public static ClipperLib.IntPoint[] svgToClipper(NFP polygon)
     {
-      var d = _Clipper.ScaleUpPaths(polygon.Points, Config.ClipperScale);
+      var d = DeepNestClipper.ScaleUpPaths(polygon.Points, Config.ClipperScale);
       return d.ToArray();
 
       return polygon.Points.Select(z => new IntPoint((long)z.x, (long)z.y)).ToArray();
@@ -788,6 +807,7 @@
 
     public void ResponseProcessor(NestResult payload)
     {
+      Interlocked.Increment(ref population);
       LastPlacePartTime = payload.PlacePartTime;
 
       // console.log('ipc response', payload);
@@ -840,7 +860,6 @@
       this.progressDisplayer?.DisplayProgress(currentPlacements, this.ga.Population.Count(o => o.fitness != null));
     }
 
-    private static volatile object displayProgressLock = new object();
     private IProgressDisplayer progressDisplayer;
 
     /// <summary>
@@ -865,6 +884,8 @@
           // all individuals have been evaluated, start next generation
 
           this.ga.Generate();
+          Interlocked.Increment(ref generations);
+          Interlocked.Exchange(ref population, 0);
         }
 
         var running = this.ga.Population.Where((p) =>
@@ -899,70 +920,78 @@
 
         var threadList = new Queue<Thread>();
 
-        for (int i = 0; i < this.ga.Population.Count; i++)
+        //while (!this.ga.IsCurrentGenerationFinished)
         {
-          // if(running < config.threads && !GA.population[i].processing && !GA.population[i].fitness){
-          // only one background window now...
-          if (running < 1 && this.ga.Population[i].processing == null && this.ga.Population[i].fitness == null)
+          for (int i = 0; i < this.ga.Population.Count; i++)
           {
-            this.ga.Population[i].processing = true;
-
-            // hash values on arrays don't make it across ipc, store them in an array and reassemble on the other side....
-            List<int> ids = new List<int>();
-            List<int> sources = new List<int>();
-            List<List<NFP>> children = new List<List<NFP>>();
-
-            for (int j = 0; j < this.ga.Population[i].placements.Count; j++)
+            // if(running < config.threads && !GA.population[i].processing && !GA.population[i].fitness){
+            // only one background window now...
+            //if (threadList.Count < 10 && this.ga.Population[i].processing == null && this.ga.Population[i].fitness == null)
+            if (running < 1 && this.ga.Population[i].processing == null && this.ga.Population[i].fitness == null)
             {
-              var id = this.ga.Population[i].placements[j].Id;
-              var source = this.ga.Population[i].placements[j].Source;
-              var child = this.ga.Population[i].placements[j].Children;
+              this.ga.Population[i].processing = true;
 
-              // ids[j] = id;
-              ids.Add(id);
+              // hash values on arrays don't make it across ipc, store them in an array and reassemble on the other side....
+              List<int> ids = new List<int>();
+              List<int> sources = new List<int>();
+              List<List<NFP>> children = new List<List<NFP>>();
 
-              // sources[j] = source;
-              sources.Add(source);
+              for (int j = 0; j < this.ga.Population[i].placements.Count; j++)
+              {
+                var id = this.ga.Population[i].placements[j].Id;
+                var source = this.ga.Population[i].placements[j].Source;
+                var child = this.ga.Population[i].placements[j].Children;
 
-              // children[j] = child;
-              children.Add(child.ToList());
+                // ids[j] = id;
+                ids.Add(id);
+
+                // sources[j] = source;
+                sources.Add(source);
+
+                // children[j] = child;
+                children.Add(child.ToList());
+              }
+
+              DataInfo data = new DataInfo()
+              {
+                index = i,
+                sheets = sheets,
+                sheetids = sheetids.ToArray(),
+                sheetsources = sheetsources.ToArray(),
+                sheetchildren = sheetchildren,
+                individual = this.ga.Population[i],
+                config = Config,
+                ids = ids.ToArray(),
+                sources = sources.ToArray(),
+                children = children,
+              };
+
+              //var t = new Thread(new ThreadStart(() =>
+              //{
+                var background = new Background(this.progressDisplayer);
+                background.ResponseAction = this.ResponseProcessor;
+                background.BackgroundStart(data, data.config);
+              //}));
+              //threadList.Enqueue(t);
+              //t.Start();
+              //t.Join();
+
+              // ipcRenderer.send('background-start', { index: i, sheets: sheets, sheetids: sheetids, sheetsources: sheetsources, sheetchildren: sheetchildren, individual: GA.population[i], config: config, ids: ids, sources: sources, children: children});
+              running++;
             }
-
-            DataInfo data = new DataInfo()
-            {
-              index = i,
-              sheets = sheets,
-              sheetids = sheetids.ToArray(),
-              sheetsources = sheetsources.ToArray(),
-              sheetchildren = sheetchildren,
-              individual = this.ga.Population[i],
-              config = Config,
-              ids = ids.ToArray(),
-              sources = sources.ToArray(),
-              children = children,
-            };
-
-            var t = new Thread(new ThreadStart(() =>
-            {
-              var background = new Background(this.progressDisplayer);
-              background.ResponseAction = this.ResponseProcessor;
-              background.BackgroundStart(data, data.config);
-            }));
-            threadList.Enqueue(t);
-            t.Start();
-
-            // ipcRenderer.send('background-start', { index: i, sheets: sheets, sheetids: sheetids, sheetsources: sheetsources, sheetchildren: sheetchildren, individual: GA.population[i], config: config, ids: ids, sources: sources, children: children});
-            running++;
           }
-        }
 
-        while (threadList.Count > 0)
-        {
-          var thread = threadList.Dequeue();
-          if (!thread.Join(1000))
-          {
-            threadList.Enqueue(thread);
-          }
+          //for (int i = 0; i < 10; i++)
+          //{
+          //  if (threadList.Count > 0)
+          //  {
+          //    var thread = threadList.Dequeue();
+          //    if (!thread.Join(1000))
+          //    {
+          //      threadList.Enqueue(thread);
+          //    }
+          //  }
+          //}
         }
       }
       catch (Exception ex)
@@ -997,67 +1026,6 @@
     ClipperLib.IntPoint[] ScaleUpPathsOriginal(NFP p, double scale);
 
     ClipperLib.IntPoint[] ScaleUpPathsSlowerParallel(SvgPoint[] points, double scale = 1);
-  }
-
-  public class _Clipper : IDeprecatedClipper
-  {
-    ClipperLib.IntPoint[] IDeprecatedClipper.ScaleUpPathsOriginal(NFP p, double scale)
-    {
-      List<ClipperLib.IntPoint> ret = new List<ClipperLib.IntPoint>();
-
-      for (int i = 0; i < p.Points.Length; i++)
-      {
-        // p.Points[i] = new SvgNestPort.SvgPoint((float)Math.Round(p.Points[i].x * scale), (float)Math.Round(p.Points[i].y * scale));
-        ret.Add(new ClipperLib.IntPoint(
-            (long)Math.Round((decimal)p.Points[i].x * (decimal)scale),
-            (long)Math.Round((decimal)p.Points[i].y * (decimal)scale)));
-      }
-
-      return ret.ToArray();
-    } // 5 secs
-
-    ClipperLib.IntPoint[] IDeprecatedClipper.ScaleUpPathsSlowerParallel(SvgPoint[] points, double scale)
-    {
-      var result = from point in points.AsParallel().AsSequential()
-                   select new ClipperLib.IntPoint((long)Math.Round((decimal)point.x * (decimal)scale), (long)Math.Round((decimal)point.y * (decimal)scale));
-
-      return result.ToArray();
-    } // 2 secs
-
-    public static ClipperLib.IntPoint[] ScaleUpPaths(SvgPoint[] points, double scale = 1)
-    {
-      var result = new ClipperLib.IntPoint[points.Length];
-
-      Parallel.For(0, points.Length, i => result[i] = new ClipperLib.IntPoint((long)Math.Round((decimal)points[i].x * (decimal)scale), (long)Math.Round((decimal)points[i].y * (decimal)scale)));
-
-      return result.ToArray();
-    } // 2 secs
-
-    /*public static IntPoint[] ScaleUpPath(IntPoint[] p, double scale = 1)
-    {
-        for (int i = 0; i < p.Length; i++)
-        {
-
-            //p[i] = new IntPoint(p[i].X * scale, p[i].Y * scale);
-            p[i] = new IntPoint(
-                (long)Math.Round((decimal)p[i].X * (decimal)scale),
-                (long)Math.Round((decimal)p[i].Y * (decimal)scale));
-        }
-        return p.ToArray();
-    }
-    public static void ScaleUpPaths(List<List<IntPoint>> p, double scale = 1)
-    {
-        for (int i = 0; i < p.Count; i++)
-        {
-            for (int j = 0; j < p[i].Count; j++)
-            {
-                p[i][j] = new IntPoint(p[i][j].X * scale, p[i][j].Y * scale);
-
-            }
-        }
-
-
-    }*/
   }
 
   public class DataInfo
