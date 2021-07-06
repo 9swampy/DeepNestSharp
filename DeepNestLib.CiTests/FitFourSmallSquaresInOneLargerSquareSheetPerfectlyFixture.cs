@@ -79,7 +79,7 @@
     [Fact]
     public void ShouldHaveExpectedFitnessBounds()
     {
-      OriginalFitness.FitnessBounds(this.nestResult).Should().BeApproximately(1936, 10);
+      OriginalFitness.FitnessBounds(this.nestResult).Should().BeApproximately(968, 10);
     }
 
     [Fact]

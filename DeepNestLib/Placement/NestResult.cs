@@ -11,11 +11,24 @@
     [Obsolete("Exposed only for interim UnitTest comparisons of old with replacement.")]
     public double? fitness = null;
 
-    public NestResult(int nestIndex, double area, SheetPlacementCollection allplacements, IList<NFP> unplacedParts, double? fitness, double mergedLength, double fitnessSheets, double fitnessBounds, double fitnessUnplaced, PlacementTypeEnum placementType)
+    public NestResult(
+      int nestIndex,
+      double area,
+      SheetPlacementCollection allplacements,
+      IList<NFP> unplacedParts,
+      double? fitness,
+      double mergedLength,
+      double fitnessSheets,
+      double fitnessBounds,
+      double fitnessUnplaced,
+      PlacementTypeEnum placementType,
+      long placePartTime)
     {
       UsedSheets = allplacements;
       this.UnplacedParts = unplacedParts;
+#pragma warning disable CS0618 // Type or member is obsolete
       this.fitness = fitness;
+#pragma warning restore CS0618 // Type or member is obsolete
       this.NestIndex = nestIndex;
       this.area = area;
       this.mergedLength = mergedLength;
@@ -23,6 +36,7 @@
       this.FitnessBounds = fitnessBounds;
       this.FitnessUnplaced = fitnessUnplaced;
       this.PlacementType = placementType;
+      this.PlacePartTime = placePartTime;
     }
 
     public double FitnessAlt
@@ -71,5 +85,7 @@
     internal int index { get; set; }
 
     public PlacementTypeEnum PlacementType { get; }
+
+    public long PlacePartTime { get; }
   }
 }

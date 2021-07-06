@@ -6,6 +6,7 @@
   using System.Drawing;
   using System.Linq;
   using System.Runtime.InteropServices;
+  using System.Threading;
   using System.Threading.Tasks;
   using ClipperLib;
   using DeepNestLib.Placement;
@@ -14,6 +15,10 @@
   public class Background
   {
     public static bool EnableCaches = true;
+    private static int callCounter = 0;
+    private static volatile object minkowskiSyncLock = new object();
+
+    public Dictionary<string, NFP[]> cacheProcess = new Dictionary<string, NFP[]>();
 
     // jsClipper uses X/Y instead of x/y...
     public DataInfo data;
@@ -30,14 +35,10 @@
     private static object lockobj = new object();
     private readonly IProgressDisplayer progressDisplayer;
 
-
-    public long LastPlacePartTime { get; private set; } = 0;
-
     public Background(IProgressDisplayer progressDisplayer)
     {
       this.cacheProcess = new Dictionary<string, NFP[]>();
       this.window = new windowUnk();
-      this.callCounter = 0;
       this.progressDisplayer = progressDisplayer;
     }
 
@@ -237,9 +238,13 @@
       return result.ToArray();
     }
 
-    public int callCounter = 0;
-
-    public Dictionary<string, NFP[]> cacheProcess = new Dictionary<string, NFP[]>();
+    public static int CallCounter
+    {
+      get
+      {
+        return callCounter;
+      }
+    }
 
     internal NFP[] Process2(INfp A, INfp B, int type)
     {
@@ -250,7 +255,6 @@
         return cacheProcess[key];
       }
 
-      Stopwatch swg = Stopwatch.StartNew();
       Dictionary<string, List<PointF>> dic1 = new Dictionary<string, List<PointF>>();
       Dictionary<string, List<double>> dic2 = new Dictionary<string, List<double>>();
       dic2.Add("A", new List<double>());
@@ -284,30 +288,36 @@
       var bb = dic2["B"];
       var arr1 = A.Children.Select(z => z.Points.Count() * 2).ToArray();
 
+      int[] sizes;
+      int[] sizes1;
+      int[] sizes2;
+      double[] dat1;
+      double[] hdat1;
+
+      lock (minkowskiSyncLock)
+      {
 #if x64
-      System.Diagnostics.Debug.Print("Minkowski_x64");
-      long[] longs = arr1.Select(o => (long)o).ToArray();
-      MinkowskiWrapper.setData(aa.Count, aa.ToArray(), A.Children.Count, longs, hdat.ToArray(), bb.Count, bb.ToArray());
-#elif x86
-      System.Diagnostics.Debug.Print("Minkowski_x86");
-      MinkowskiWrapper.setData(aa.Count, aa.ToArray(), A.Children.Count, arr1, hdat.ToArray(), bb.Count, bb.ToArray());
+        System.Diagnostics.Debug.Print($"{callCounter}.Minkowski_x64");
+        long[] longs = arr1.Select(o => (long)o).ToArray();
+        MinkowskiWrapper.setData(aa.Count, aa.ToArray(), A.Children.Count, longs, hdat.ToArray(), bb.Count, bb.ToArray());
 #else
-      System.Diagnostics.Debug.Print("Minkowski_AnyCpu");
-      MinkowskiWrapper.setData(aa.Count, aa.ToArray(), A.Children.Count, arr1, hdat.ToArray(), bb.Count, bb.ToArray());
+        System.Diagnostics.Debug.Print($"{callCounter}.Minkowski_x86/AnyCpu");
+        MinkowskiWrapper.setData(aa.Count, aa.ToArray(), A.Children.Count, arr1, hdat.ToArray(), bb.Count, bb.ToArray());
 #endif
-      MinkowskiWrapper.calculateNFP();
+        MinkowskiWrapper.calculateNFP();
 
-      this.callCounter++;
+        Interlocked.Increment(ref callCounter);
 
-      int[] sizes = new int[2];
-      MinkowskiWrapper.getSizes1(sizes);
-      int[] sizes1 = new int[sizes[0]];
-      int[] sizes2 = new int[sizes[1]];
-      MinkowskiWrapper.getSizes2(sizes1, sizes2);
-      double[] dat1 = new double[sizes1.Sum()];
-      double[] hdat1 = new double[sizes2.Sum()];
+        sizes = new int[2];
+        MinkowskiWrapper.getSizes1(sizes);
+        sizes1 = new int[sizes[0]];
+        sizes2 = new int[sizes[1]];
+        MinkowskiWrapper.getSizes2(sizes1, sizes2);
+        dat1 = new double[sizes1.Sum()];
+        hdat1 = new double[sizes2.Sum()];
 
-      MinkowskiWrapper.getResults(dat1, hdat1);
+        MinkowskiWrapper.getResults(dat1, hdat1);
+      }
 
       if (sizes1.Count() > 1)
       {
@@ -366,8 +376,6 @@
         }
       }
 
-      swg.Stop();
-      var msg = swg.ElapsedMilliseconds;
       var res = new NFP[] { ret };
 
       if (cacheAllow)
@@ -484,10 +492,11 @@
         return null;
       }
 
+      Stopwatch sw = new Stopwatch();
+      sw.Start();
+
       Queue<NFP> unusedSheets = new Queue<NFP>(sheets);
-
       double totalsheetarea = 0;
-
       NFP part = null;
 
       // total length of merged lines
@@ -518,9 +527,6 @@
       int totalPlaced = 0;
       int totalParts = parts.Count();
 
-      Stopwatch sw = new Stopwatch();
-      sw.Start();
-
       while (parts.Length > 0 && unusedSheets.Count > 0)
       {
         List<NFP> placed = new List<NFP>();
@@ -545,7 +551,7 @@
         double? minarea = null;
         for (int i = 0; i < parts.Length; i++)
         {
-          if (i > 0 && sw.ElapsedMilliseconds / i * parts.Length > 5000)
+          if (i > 5 && sw.ElapsedMilliseconds / i * parts.Length > 5000)
           {
             this.progressDisplayer.DisplayProgress((float)i / parts.Length);
           }
@@ -954,7 +960,7 @@
 
       // send finish progerss signal
       // ipcRenderer.send('background-progress', { index: nestindex, progress: -1});
-      return new NestResult(nestIndex, sheetarea, allplacements, unplacedParts, fitness, totalMerged, fitnessSheets, fitnessBounds, fitnessUnplaced, config.PlacementType);
+      return new NestResult(nestIndex, sheetarea, allplacements, unplacedParts, fitness, totalMerged, fitnessSheets, fitnessBounds, fitnessUnplaced, config.PlacementType, sw.ElapsedMilliseconds);
 
       // return { placements: allplacements, fitness: fitness, area: sheetarea, mergedLength: totalMerged };
     }
@@ -991,10 +997,12 @@
       Stopwatch sw = Stopwatch.StartNew();
       var nestResult = PlaceParts(this.data.sheets.ToArray(), this.parts, this.data.config, this.index);
       sw.Stop();
-      LastPlacePartTime = sw.ElapsedMilliseconds;
 
-      nestResult.index = this.data.index;
-      this.ResponseAction(nestResult);
+      if (nestResult != null)
+      {
+        nestResult.index = this.data.index;
+        this.ResponseAction(nestResult);
+      }
     }
 
     internal void BackgroundStart(DataInfo data, ISvgNestConfig config)

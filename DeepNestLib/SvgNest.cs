@@ -3,6 +3,7 @@
   using System;
   using System.Collections.Generic;
   using System.Linq;
+  using System.Threading;
   using System.Threading.Tasks;
   using ClipperLib;
   using DeepNestLib.GeneticAlgorithm;
@@ -783,10 +784,14 @@
       return id;
     }
 
+    public static long LastPlacePartTime { get; private set; } = 0;
+
     public void ResponseProcessor(NestResult payload)
     {
+      LastPlacePartTime = payload.PlacePartTime;
+
       // console.log('ipc response', payload);
-      if (this.ga == null)
+      if (this.ga == null || payload == null)
       {
         // user might have quit while we're away
         return;
@@ -843,13 +848,10 @@
     /// </summary>
     /// <param name="parts"></param>
     /// <param name="background"></param>
-    public void launchWorkers(NestItem[] parts, Background background, ISvgNestConfig config)
+    public void launchWorkers(NestItem[] parts, ISvgNestConfig config)
     {
       try
       {
-        background.ResponseAction = this.ResponseProcessor;
-        this.background = background;
-
         if (this.ga == null)
         {
           this.ga = new Procreant(parts, config);
@@ -895,6 +897,8 @@
           }
         }
 
+        var threadList = new Queue<Thread>();
+
         for (int i = 0; i < this.ga.Population.Count; i++)
         {
           // if(running < config.threads && !GA.population[i].processing && !GA.population[i].fitness){
@@ -938,10 +942,26 @@
               children = children,
             };
 
-            this.background.BackgroundStart(data, data.config);
+            var t = new Thread(new ThreadStart(() =>
+            {
+              var background = new Background(this.progressDisplayer);
+              background.ResponseAction = this.ResponseProcessor;
+              background.BackgroundStart(data, data.config);
+            }));
+            threadList.Enqueue(t);
+            t.Start();
 
             // ipcRenderer.send('background-start', { index: i, sheets: sheets, sheetids: sheetids, sheetsources: sheetsources, sheetchildren: sheetchildren, individual: GA.population[i], config: config, ids: ids, sources: sources, children: children});
             running++;
+          }
+        }
+
+        while (threadList.Count > 0)
+        {
+          var thread = threadList.Dequeue();
+          if (!thread.Join(1000))
+          {
+            threadList.Enqueue(thread);
           }
         }
       }

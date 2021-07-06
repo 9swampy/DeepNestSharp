@@ -52,12 +52,12 @@
       checkBox2.Checked = SvgNest.Config.Simplify;
       checkBox3.Checked = SvgNest.Config.OffsetTreePhase;
       checkBox4.Checked = SvgNest.Config.UseParallel;
-      this.numericUpDown1.Value = SvgNest.Config.PopulationSize;
       this.numericUpDown1.Minimum = SvgNestConfig.PopulationMin;
       this.numericUpDown1.Maximum = SvgNestConfig.PopulationMax;
-      this.numericUpDown2.Value = SvgNest.Config.MutationRate;
+      this.numericUpDown1.Value = SvgNest.Config.PopulationSize;
       this.numericUpDown2.Minimum = SvgNestConfig.MutationRateMin;
       this.numericUpDown2.Maximum = SvgNestConfig.MutationRateMax;
+      this.numericUpDown2.Value = SvgNest.Config.MutationRate;
 
       this.comboBox1.SelectedItem = SvgNest.Config.PlacementType.ToString();
       this.textBox1.Text = SvgNest.Config.Spacing.ToString();
@@ -249,7 +249,7 @@
           yy += (int)Font.Size + gap;
         }
 
-        ctx.gr.DrawString($"Call counter: {Context?.Background?.callCounter};  Last placing time: {Context?.Background?.LastPlacePartTime}ms", Font, Brushes.DarkBlue, 0, yy);
+        ctx.gr.DrawString($"Minkowski Calls: {Background.CallCounter};  Last placing time: {SvgNest.LastPlacePartTime}ms", Font, Brushes.DarkBlue, 0, yy);
         yy += (int)Font.Size + gap;
       }
       else

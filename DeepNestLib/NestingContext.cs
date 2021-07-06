@@ -6,6 +6,7 @@
   using System.IO;
   using System.Linq;
   using System.Text;
+  using System.Threading;
   using System.Threading.Tasks;
   using System.Xml.Linq;
 
@@ -13,7 +14,10 @@
   {
     private readonly IMessageService messageService;
     private readonly IProgressDisplayer progressDisplayer;
-
+    private int iterations = 0;
+    private int generations = 0;
+    private int population = 0;
+    
     public NestingContext(IMessageService messageService, IProgressDisplayer progressDisplayer)
     {
       this.messageService = messageService;
@@ -30,22 +34,20 @@
 
     public int PlacedPartsCount { get; private set; } = 0;
 
-    NestResult current = null;
-
-    public NestResult Current { get { return current; } }
+    public NestResult Current { get; private set; } = null;
 
     public SvgNest Nest { get; private set; }
 
-    public Background Background { get; private set; }
+    public int Iterations { get; }
 
-    public int Iterations { get; private set; } = 0;
+    public int Population { get; }
+
+    public int Generations { get; }
 
     public void StartNest()
     {
-      this.current = null;
+      this.Current = null;
       Nest = new SvgNest(this.messageService, this.progressDisplayer, () => this.IsErrored = true);
-      this.Background = new Background(this.progressDisplayer);
-      Iterations = 0;
     }
 
     public void NestIterate(ISvgNestConfig config)
@@ -59,10 +61,12 @@
         {
           Polygons[i].Id = i;
         }
+
         for (int i = 0; i < Sheets.Count; i++)
         {
           Sheets[i].Id = i;
         }
+
         foreach (var item in Polygons)
         {
           NFP clone = item.CloneExact();
@@ -120,7 +124,7 @@
 
           foreach (var item in lsheets)
           {
-            var gap = config.SheetSpacing - config.Spacing / 2;
+            var gap = config.SheetSpacing - (config.Spacing / 2);
             SvgNest.OffsetTree(item, -gap, true);
           }
         }
@@ -148,18 +152,18 @@
           item.Polygon.Source = srcc++;
         }
 
-        Nest.launchWorkers(partsLocal.ToArray(), this.Background, config);
+        Nest.launchWorkers(partsLocal.ToArray(), config);
         if (Nest != null & Nest.nests != null && Nest.nests.Count > 0)
         {
           var plcpr = Nest.nests.First();
 
-          if (current == null || plcpr.Fitness < current.Fitness)
+          if (Current == null || plcpr.Fitness < Current.Fitness)
           {
             AssignPlacement(plcpr);
           }
         }
 
-        Iterations++;
+        Interlocked.Increment(ref iterations);
       }
       catch (Exception ex)
       {
@@ -173,7 +177,7 @@
 
     public void AssignPlacement(NestResult plcpr)
     {
-      current = plcpr;
+      Current = plcpr;
       double totalSheetsArea = 0;
       double totalPartsArea = 0;
 
@@ -314,6 +318,12 @@
 
     public bool TryImportFromRawDetail(RawDetail raw, int src, out NFP loadedNfp)
     {
+      if (raw == null)
+      {
+        loadedNfp = null;
+        return false;
+      }
+
       loadedNfp = raw.ToNfp();
       if (loadedNfp == null)
       {
