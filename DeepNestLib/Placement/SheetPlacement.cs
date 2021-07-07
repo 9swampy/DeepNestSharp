@@ -49,11 +49,15 @@
       NFP allpoints = new NFP();
       for (int partIndex = 0; partIndex < partPlacements.Count; partIndex++)
       {
-        for (int pointIndex = 0; pointIndex < partPlacements[partIndex].Part.Points.Count(); pointIndex++)
+        var length = partPlacements[partIndex].Part.Points.Length;
+        for (int pointIndex = 0; pointIndex < length; pointIndex++)
         {
+          var part = partPlacements[partIndex].Part.Points[pointIndex];
+          var placement = partPlacements[partIndex];
           allpoints.AddPoint(
               new SvgPoint(
-               partPlacements[partIndex].Part.Points[pointIndex].x + partPlacements[partIndex].x, partPlacements[partIndex].Part.Points[pointIndex].y + partPlacements[partIndex].y));
+               part.x + placement.x,
+               part.y + placement.y));
         }
       }
 

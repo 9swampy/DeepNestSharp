@@ -692,9 +692,9 @@
 
             for (var i = 0; i < A.Length - 1; i++)
             {
-                if (!A[i].marked)
+                if (!A[i].Marked)
                 {
-                    A[i].marked = true;
+                    A[i].Marked = true;
                     for (var j = 0; j < B.Length; j++)
                     {
                         B.Offsetx = A[i].x - B[j].x;
@@ -1127,7 +1127,7 @@
 
             for (i = 1; i < A.Length; i++)
             {
-                A[i].marked = false;
+                A[i].Marked = false;
                 if (A[i].y < minA)
                 {
                     minA = A[i].y;
@@ -1137,7 +1137,7 @@
 
             for (i = 1; i < B.Length; i++)
             {
-                B[i].marked = false;
+                B[i].Marked = false;
                 if (B[i].y > maxB)
                 {
                     maxB = B[i].y;
@@ -1224,7 +1224,7 @@
                     for (i = 0; i < touching.Count; i++)
                     {
                         var vertexA = A[touching[i].A];
-                        vertexA.marked = true;
+                        vertexA.Marked = true;
 
                         // adjacent A vertices
                         var prevAindex = touching[i].A - 1;
@@ -1363,8 +1363,8 @@
                         break;
                     }
 
-                    translate.start.marked = true;
-                    translate.end.marked = true;
+                    translate.start.Marked = true;
+                    translate.end.Marked = true;
 
                     prevvector = translate;
 

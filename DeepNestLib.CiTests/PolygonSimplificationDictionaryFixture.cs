@@ -11,7 +11,7 @@
     public void GivenAddedWhenAddedAgainThenThrowArgumentException()
     {
       var sut = new PolygonSimplificationDictionary();
-      var item = new Tuple<SvgPoint[], double?, bool, bool>(new SvgPoint[0], null, true, true);
+      var item = new PolygonSimplificationKey(new SvgPoint[0], null, true, true);
       sut.Add(item, item.Item1);
       Action act = () => sut.Add(item, item.Item1);
 
@@ -22,9 +22,9 @@
     public void GivenEmptyAddedWhenAnotherEmptyAddedAgainThenThrowArgumentException()
     {
       var sut = new PolygonSimplificationDictionary();
-      var first = new Tuple<SvgPoint[], double?, bool, bool>(new SvgPoint[0], null, true, true);
+      var first = new PolygonSimplificationKey(new SvgPoint[0], null, true, true);
       sut.Add(first, first.Item1);
-      var second = new Tuple<SvgPoint[], double?, bool, bool>(new SvgPoint[0], null, true, true);
+      var second = new PolygonSimplificationKey(new SvgPoint[0], null, true, true);
       Action act = () => sut.Add(second, second.Item1);
 
       act.Should().Throw<ArgumentException>();
@@ -34,9 +34,9 @@
     public void GivenAddedWhenAnotherAddedThenShouldNotThrow()
     {
       var sut = new PolygonSimplificationDictionary();
-      var first = new Tuple<SvgPoint[], double?, bool, bool>(new SvgPoint[] { new SvgPoint(1, 1) }, null, true, true);
+      var first = new PolygonSimplificationKey(new SvgPoint[] { new SvgPoint(1, 1) }, null, true, true);
       sut.Add(first, first.Item1);
-      var second = new Tuple<SvgPoint[], double?, bool, bool>(new SvgPoint[] { new SvgPoint(2, 2) }, null, true, true);
+      var second = new PolygonSimplificationKey(new SvgPoint[] { new SvgPoint(2, 2) }, null, true, true);
       Action act = () => sut.Add(second, second.Item1);
 
       act.Should().NotThrow();
@@ -46,9 +46,9 @@
     public void GivenAddedWhenAnotherSameAddedThenShouldThrow()
     {
       var sut = new PolygonSimplificationDictionary();
-      var first = new Tuple<SvgPoint[], double?, bool, bool>(new SvgPoint[] { new SvgPoint(1, 1) }, null, true, true);
+      var first = new PolygonSimplificationKey(new SvgPoint[] { new SvgPoint(1, 1) }, null, true, true);
       sut.Add(first, first.Item1);
-      var second = new Tuple<SvgPoint[], double?, bool, bool>(new SvgPoint[] { new SvgPoint(1, 1) }, null, true, true);
+      var second = new PolygonSimplificationKey(new SvgPoint[] { new SvgPoint(1, 1) }, null, true, true);
       Action act = () => sut.Add(second, second.Item1);
 
       act.Should().Throw<ArgumentException>();
@@ -58,9 +58,9 @@
     public void GivenAddedWhenAnotherOnlyNullToleranceToSameByDefaultDifferenceAddedThenShouldNotThrow()
     {
       var sut = new PolygonSimplificationDictionary();
-      var first = new Tuple<SvgPoint[], double?, bool, bool>(new SvgPoint[] { new SvgPoint(1, 1) }, null, true, true);
+      var first = new PolygonSimplificationKey(new SvgPoint[] { new SvgPoint(1, 1) }, null, true, true);
       sut.Add(first, first.Item1);
-      var second = new Tuple<SvgPoint[], double?, bool, bool>(new SvgPoint[] { new SvgPoint(1, 1) }, 1F, true, true);
+      var second = new PolygonSimplificationKey(new SvgPoint[] { new SvgPoint(1, 1) }, 1F, true, true);
       Action act = () => sut.Add(second, second.Item1);
 
       act.Should().Throw<ArgumentException>("null Tolerance defaults to 1");
@@ -70,9 +70,9 @@
     public void GivenAddedWhenAnotherOnlyNullToleranceDifferenceAddedThenShouldNotThrow()
     {
       var sut = new PolygonSimplificationDictionary();
-      var first = new Tuple<SvgPoint[], double?, bool, bool>(new SvgPoint[] { new SvgPoint(1, 1) }, null, true, true);
+      var first = new PolygonSimplificationKey(new SvgPoint[] { new SvgPoint(1, 1) }, null, true, true);
       sut.Add(first, first.Item1);
-      var second = new Tuple<SvgPoint[], double?, bool, bool>(new SvgPoint[] { new SvgPoint(1, 1) }, 0F, true, true);
+      var second = new PolygonSimplificationKey(new SvgPoint[] { new SvgPoint(1, 1) }, 0F, true, true);
       Action act = () => sut.Add(second, second.Item1);
 
       act.Should().NotThrow();
@@ -82,9 +82,9 @@
     public void GivenAddedWhenAnotherOnlyNonNullToleranceDifferenceAddedThenShouldNotThrow()
     {
       var sut = new PolygonSimplificationDictionary();
-      var first = new Tuple<SvgPoint[], double?, bool, bool>(new SvgPoint[] { new SvgPoint(1, 1) }, 1F, true, true);
+      var first = new PolygonSimplificationKey(new SvgPoint[] { new SvgPoint(1, 1) }, 1F, true, true);
       sut.Add(first, first.Item1);
-      var second = new Tuple<SvgPoint[], double?, bool, bool>(new SvgPoint[] { new SvgPoint(1, 1) }, 0F, true, true);
+      var second = new PolygonSimplificationKey(new SvgPoint[] { new SvgPoint(1, 1) }, 0F, true, true);
       Action act = () => sut.Add(second, second.Item1);
 
       act.Should().NotThrow();
@@ -94,9 +94,9 @@
     public void GivenAddedWhenAnotherOnlyRadialDifferenceAddedThenShouldNotThrow()
     {
       var sut = new PolygonSimplificationDictionary();
-      var first = new Tuple<SvgPoint[], double?, bool, bool>(new SvgPoint[] { new SvgPoint(1, 1) }, 0F, true, true);
+      var first = new PolygonSimplificationKey(new SvgPoint[] { new SvgPoint(1, 1) }, 0F, true, true);
       sut.Add(first, first.Item1);
-      var second = new Tuple<SvgPoint[], double?, bool, bool>(new SvgPoint[] { new SvgPoint(1, 1) }, 0F, false, true);
+      var second = new PolygonSimplificationKey(new SvgPoint[] { new SvgPoint(1, 1) }, 0F, false, true);
       Action act = () => sut.Add(second, second.Item1);
 
       act.Should().NotThrow();
@@ -106,9 +106,9 @@
     public void GivenAddedWhenAnotherOnlyPDDifferenceAddedThenShouldNotThrow()
     {
       var sut = new PolygonSimplificationDictionary();
-      var first = new Tuple<SvgPoint[], double?, bool, bool>(new SvgPoint[] { new SvgPoint(1, 1) }, 0F, true, true);
+      var first = new PolygonSimplificationKey(new SvgPoint[] { new SvgPoint(1, 1) }, 0F, true, true);
       sut.Add(first, first.Item1);
-      var second = new Tuple<SvgPoint[], double?, bool, bool>(new SvgPoint[] { new SvgPoint(1, 1) }, 0F, true, false);
+      var second = new PolygonSimplificationKey(new SvgPoint[] { new SvgPoint(1, 1) }, 0F, true, false);
       Action act = () => sut.Add(second, second.Item1);
 
       act.Should().NotThrow();
@@ -118,9 +118,9 @@
     public void GivenAddedWhenAnotherOnlyPDDifferenceCheckedThenNotContains()
     {
       var sut = new PolygonSimplificationDictionary();
-      var first = new Tuple<SvgPoint[], double?, bool, bool>(new SvgPoint[] { new SvgPoint(1, 1) }, 0F, true, true);
+      var first = new PolygonSimplificationKey(new SvgPoint[] { new SvgPoint(1, 1) }, 0F, true, true);
       sut.Add(first, first.Item1);
-      var second = new Tuple<SvgPoint[], double?, bool, bool>(new SvgPoint[] { new SvgPoint(1, 1) }, 0F, true, false);
+      var second = new PolygonSimplificationKey(new SvgPoint[] { new SvgPoint(1, 1) }, 0F, true, false);
       sut.ContainsKey(second).Should().BeFalse();
     }
 
@@ -128,9 +128,9 @@
     public void GivenAddedWhenAnotherSameCheckedThenContains()
     {
       var sut = new PolygonSimplificationDictionary();
-      var first = new Tuple<SvgPoint[], double?, bool, bool>(new SvgPoint[] { new SvgPoint(1, 1) }, 0F, true, true);
+      var first = new PolygonSimplificationKey(new SvgPoint[] { new SvgPoint(1, 1) }, 0F, true, true);
       sut.Add(first, first.Item1);
-      var second = new Tuple<SvgPoint[], double?, bool, bool>(new SvgPoint[] { new SvgPoint(1, 1) }, 0F, true, true);
+      var second = new PolygonSimplificationKey(new SvgPoint[] { new SvgPoint(1, 1) }, 0F, true, true);
       sut.ContainsKey(second).Should().BeTrue();
     }
 

@@ -19,6 +19,16 @@
 
     public bool UseHoles { get; set; } = false;
 
+    /// <summary>
+    /// Max bound for bezier->line segment conversion, in native SVG units.
+    /// </summary>
+    public float Tolerance { get; set; } = 2f;
+
+    /// <summary>
+    /// Fudge factor for browser inaccuracy in SVG unit handling.
+    /// </summary>
+    public float ToleranceSvg { get; set; } = 0.005f;
+
     public double TimeRatio { get; set; } = 0.5;
 
     public bool MergeLines { get; set; } = false;

@@ -31,6 +31,7 @@
     {
       this.points = new SvgPoint[0];
     }
+
     public NFP(IEnumerable<SvgPoint> points)
     {
       this.points = points.DeepClone();
@@ -40,7 +41,9 @@
 
     public void AddPoint(SvgPoint point)
     {
-      this.points = this.points.Append(point).ToArray();
+      int i = this.points.Length;
+      Array.Resize(ref this.points, i + 1);
+      this.points[i] = point;
     }
 
     public bool isBin;
@@ -218,7 +221,7 @@
       clone.Id = this.Id;
       clone.Source = this.Source;
       clone.IsPrimary = this.IsPrimary;
-      clone.ReplacePoints(this.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }));
+      clone.ReplacePoints(this.Points.Select(z => new SvgPoint(z.x, z.y) { Exact = z.Exact }));
       if (this.Children != null)
       {
         foreach (var citem in this.Children)
@@ -227,7 +230,7 @@
           var l = clone.Children.Last();
           l.Id = citem.Id;
           l.Source = citem.Source;
-          l.ReplacePoints(citem.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }));
+          l.ReplacePoints(citem.Points.Select(z => new SvgPoint(z.x, z.y) { Exact = z.Exact }));
         }
       }
 
@@ -270,7 +273,7 @@
       NFP newtree = new NFP();
       foreach (var t in this.Points)
       {
-        newtree.AddPoint(new SvgPoint(t.x, t.y) { exact = t.exact });
+        newtree.AddPoint(new SvgPoint(t.x, t.y) { Exact = t.Exact });
       }
 
       // jwb added the properties

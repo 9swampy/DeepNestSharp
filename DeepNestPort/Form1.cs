@@ -1299,7 +1299,7 @@
       }
       else
       {
-        IExport exporter = ExporterFactory.GetExporter(polygons);
+        IExport exporter = ExporterFactory.GetExporter(polygons, SvgNest.Config);
         sfd.Filter = exporter.SaveFileDialogFilter;
         if (sfd.ShowDialog() == DialogResult.OK)
         {

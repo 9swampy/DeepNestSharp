@@ -1,11 +1,15 @@
 ﻿namespace DeepNestLib
 {
   using System;
-  using System.Threading;
 
   public class SvgPoint : IEquatable<SvgPoint>
   {
-    public bool exact = true;
+    public bool Exact
+    {
+      get;
+      set;
+    }
+      = true;
 
     public override string ToString()
     {
@@ -20,13 +24,13 @@
 
     internal SvgPoint(SvgPoint point)
     {
-      this.exact = point.exact;
-      this.marked = point.marked;
+      this.Exact = point.Exact;
+      this.Marked = point.Marked;
       this.x = point.x;
       this.y = point.y;
     }
 
-    public bool marked { get; set; }
+    public bool Marked { get; set; }
 
     public double x { get; internal set; }
 
@@ -39,7 +43,7 @@
 
     public override int GetHashCode()
     {
-      return HashCode.Combine(exact, marked, x, y);
+      return HashCode.Combine(Exact, Marked, x, y);
     }
 
     public bool Equals(SvgPoint other)

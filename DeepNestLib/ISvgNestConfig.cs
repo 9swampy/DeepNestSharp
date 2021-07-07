@@ -42,6 +42,10 @@
 
     double TimeRatio { get; set; }
 
+    float Tolerance { get; set; }
+
+    float ToleranceSvg { get; set; }
+
     bool UseHoles { get; set; }
 
     bool UseParallel { get; set; }

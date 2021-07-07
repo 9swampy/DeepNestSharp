@@ -1,14 +1,13 @@
 ﻿namespace DeepNestLib
 {
-  using DeepNestLib.Placement;
   using System;
   using System.Collections.Generic;
   using System.IO;
   using System.Linq;
-  using System.Text;
   using System.Threading;
   using System.Threading.Tasks;
   using System.Xml.Linq;
+  using DeepNestLib.Placement;
 
   public class NestingContext
   {
@@ -20,6 +19,7 @@
     {
       this.messageService = messageService;
       this.progressDisplayer = progressDisplayer;
+      SvgNest.ResetCounters();
     }
 
     public bool IsErrored { get; private set; }
@@ -78,7 +78,7 @@
           NFP clone = new NFP();
           clone.Id = item.Id;
           clone.Source = item.Source;
-          clone.ReplacePoints(item.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }));
+          clone.ReplacePoints(item.Points.Select(z => new SvgPoint(z.x, z.y) { Exact = z.Exact }));
           if (item.Children != null)
           {
             foreach (var citem in item.Children)
@@ -87,7 +87,7 @@
               var l = clone.Children.Last();
               l.Id = citem.Id;
               l.Source = citem.Source;
-              l.ReplacePoints(citem.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }));
+              l.ReplacePoints(citem.Points.Select(z => new SvgPoint(z.x, z.y) { Exact = z.Exact }));
             }
           }
 

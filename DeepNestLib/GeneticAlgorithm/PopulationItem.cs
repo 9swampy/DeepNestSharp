@@ -4,7 +4,7 @@
 
   public class PopulationItem
   {
-    public object processing = null;
+    public bool processing = false;
 
     public double? fitness;
 

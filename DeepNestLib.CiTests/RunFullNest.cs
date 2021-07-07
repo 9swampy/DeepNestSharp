@@ -2,9 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
-  using System.Linq;
-  using System.Text;
-  using System.Threading.Tasks;
+  using System.Threading;
   using FakeItEasy;
   using FluentAssertions;
   using IxMilia.Dxf.Entities;
@@ -19,8 +17,6 @@
     private RawDetail loadedRawDetail;
     private NestingContext nestingContext;
     private NFP loadedNfp;
-    private NFP simplifiedNfp;
-    private long simplifiedNfpTime;
     private bool hasImportedRawDetail;
     private int terminateNestResultCount = 2;
     private int firstSheetIdSrc = new Random().Next();
@@ -46,10 +42,15 @@
           this.nestingContext.Sheets.Add(firstSheet);
 
           this.nestingContext.StartNest();
-          while (this.nestingContext.Nest.nests.Count < terminateNestResultCount)
+          int i = 0;
+          while (this.nestingContext.Nest.nests.Count < terminateNestResultCount && i < 100)
           {
+            i++;
             this.nestingContext.NestIterate(this.config);
+            Thread.Sleep(10);
           }
+
+          this.nestingContext.Nest.nests.Count.Should().Be(terminateNestResultCount);
         }
       }
     }

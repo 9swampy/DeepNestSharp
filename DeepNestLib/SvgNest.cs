@@ -3,6 +3,7 @@
   using System;
   using System.Collections.Generic;
   using System.Linq;
+  using System.Text;
   using System.Threading;
   using System.Threading.Tasks;
   using ClipperLib;
@@ -22,6 +23,13 @@
     public List<NestResult> nests = new List<NestResult>();
 
     private static int generations = 0;
+
+    internal static void ResetCounters()
+    {
+      Interlocked.Exchange(ref generations, 0);
+      Interlocked.Exchange(ref population, 0);
+    }
+
     private static int population = 0;
 
     public SvgNest(IMessageService messageService, IProgressDisplayer progressDisplayer, Action setIsErrored)
@@ -73,7 +81,7 @@
       {
         var filtered = inrange.Where((p) =>
         {
-          return p.point.exact;
+          return p.point.Exact;
         }).ToList();
 
         // use exact points when available, normal points when not
@@ -214,7 +222,7 @@
       SvgPoint[] resultSource;
       bool doSimplifyRadialDist = false;
       bool doSimplifyDouglasPeucker = true;
-      if (cache.TryGetValue(new System.Tuple<SvgPoint[], double?, bool, bool>(polygon.Points, config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker), out resultSource))
+      if (cache.TryGetValue(new PolygonSimplificationKey(polygon.Points, config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker), out resultSource))
       {
         return new NFP(resultSource);
       }
@@ -236,8 +244,8 @@
           var sqd = ((p2.x - p1.x) * (p2.x - p1.x)) + ((p2.y - p1.y) * (p2.y - p1.y));
           if (sqd > fixedTolerance)
           {
-            p1.marked = true;
-            p2.marked = true;
+            p1.Marked = true;
+            p2.Marked = true;
           }
         }
 
@@ -448,9 +456,9 @@
 
       lock (cacheSyncLock)
       {
-        if (!cache.ContainsKey(new System.Tuple<SvgPoint[], double?, bool, bool>(polygon.Points, config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker)))
+        if (!cache.ContainsKey(new PolygonSimplificationKey(polygon.Points, config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker)))
         {
-          cache.Add(new System.Tuple<SvgPoint[], double?, bool, bool>(polygon.Points, config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker), offset.Points);
+          cache.Add(new PolygonSimplificationKey(polygon.Points, config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker), offset.Points);
         }
       }
 
@@ -507,8 +515,8 @@
 
         if (IsExactMatch(polygon, index1, index2))
         {
-          seg[0].exact = true;
-          seg[1].exact = true;
+          seg[0].Exact = true;
+          seg[1].Exact = true;
         }
       }
     }
@@ -531,8 +539,8 @@
 
         if (IsExactMatch(polygon, index1, index2))
         {
-          seg[0].exact = true;
-          seg[1].exact = true;
+          seg[0].Exact = true;
+          seg[1].Exact = true;
         }
       }
     }
@@ -817,7 +825,7 @@
         return;
       }
 
-      this.ga.Population[payload.index].processing = null;
+      this.ga.Population[payload.index].processing = false;
       this.ga.Population[payload.index].fitness = payload.Fitness;
       this.ga.Population[payload.index].fitnessAlt = new OriginalFitness().Evaluate(payload);
 
@@ -827,27 +835,20 @@
       }
       else
       {
-        for (int i = 0; i < this.nests.Count; i++)
+        int i = 0;
+        while (i < this.nests.Count - 1 && this.nests[i].Fitness > payload.Fitness)
         {
-          if (i > Config.PopulationSize / 10)
-          {
-            break;
-          }
+          i++;
+        }
 
-          if (i == this.nests.Count || this.nests[i].Fitness > payload.Fitness)
-          {
-            this.nests.Insert(i, payload);
-            break;
-          }
-          else if (this.nests[i].Fitness == payload.Fitness)
-          {
-            break;
-          }
+        if (i <= Config.PopulationSize / 10 && this.nests[i].Fitness != payload.Fitness)
+        {
+          this.nests.Insert(i, payload);
+        }
 
-          if (this.nests.Count > Config.PopulationSize)
-          {
-            this.nests.RemoveAt(this.nests.Count - 1);
-          }
+        if (this.nests.Count > Config.PopulationSize * 2 / 10)
+        {
+          this.nests.RemoveAt(this.nests.Count - 1);
         }
       }
 
@@ -890,7 +891,7 @@
 
         var running = this.ga.Population.Where((p) =>
         {
-          return p.processing != null;
+          return p.processing;
         }).Count();
 
         List<NFP> sheets = new List<NFP>();
@@ -927,7 +928,8 @@
             // if(running < config.threads && !GA.population[i].processing && !GA.population[i].fitness){
             // only one background window now...
             //if (threadList.Count < 10 && this.ga.Population[i].processing == null && this.ga.Population[i].fitness == null)
-            if (running < 1 && this.ga.Population[i].processing == null && this.ga.Population[i].fitness == null)
+
+            if (running < 1 && !this.ga.Population[i].processing && this.ga.Population[i].fitness == null)
             {
               this.ga.Population[i].processing = true;
 
@@ -968,9 +970,9 @@
 
               //var t = new Thread(new ThreadStart(() =>
               //{
-                var background = new Background(this.progressDisplayer);
-                background.ResponseAction = this.ResponseProcessor;
-                background.BackgroundStart(data, data.config);
+              var background = new Background(this.progressDisplayer);
+              background.ResponseAction = this.ResponseProcessor;
+              background.BackgroundStart(data, data.config);
               //}));
               //threadList.Enqueue(t);
               //t.Start();
@@ -1094,7 +1096,18 @@
     {
       get
       {
-        var key = "A" + this.A + "B" + this.B + "Arot" + (int)Math.Round(this.ARotation * 10000) + "Brot" + (int)Math.Round(this.BRotation * 10000) + ";" + this.Type;
+        var key = new StringBuilder(30).Append("A")
+                                      .Append(this.A)
+                                      .Append("B")
+                                      .Append(this.B)
+                                      .Append("Arot")
+                                      .Append((int)Math.Round(this.ARotation * 10000))
+                                      .Append("Brot")
+                                      .Append((int)Math
+                                      .Round(this.BRotation * 10000))
+                                      .Append(";")
+                                      .Append(this.Type)
+                                      .ToString();
         return key;
       }
     }
@@ -1102,60 +1115,24 @@
 
   public class NfpPair
   {
-    public NFP A;
-    public NFP B;
-    public NfpKey Key;
-    public NFP nfp;
+    public NFP A { get; internal set; }
 
-    public float ARotation;
-    public float BRotation;
+    public NFP B { get; internal set; }
+
+    public NFP nfp { get; internal set; }
+
+    public float ARotation { get; internal set; }
+
+    public float BRotation { get; internal set; }
 
     public int Asource { get; internal set; }
+
     public int Bsource { get; internal set; }
-  }
-
-  public class NonameReturn
-  {
-    public NfpKey key;
-    public NFP[] nfp;
-    public NFP[] value
-    {
-      get
-      {
-        return nfp;
-      }
-    }
-
-    public NonameReturn(NfpKey key, NFP[] nfp)
-    {
-      this.key = key;
-      this.nfp = nfp;
-    }
   }
 
   public interface IStringify
   {
     string stringify();
-  }
-  public class NfpKey : IStringify
-  {
-
-    public NFP A;
-    public NFP B;
-    public float ARotation { get; set; }
-    public float BRotation { get; set; }
-    public bool Inside { get; set; }
-
-    public int AIndex { get; set; }
-    public int BIndex { get; set; }
-    public object Asource;
-    public object Bsource;
-
-
-    public string stringify()
-    {
-      return $"A:{AIndex} B:{BIndex} inside:{Inside} Arotation:{ARotation} Brotation:{BRotation}";
-    }
   }
 
   public class Sheet : NFP

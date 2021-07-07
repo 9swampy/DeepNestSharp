@@ -3,17 +3,8 @@
   using System;
   using System.Collections.Generic;
   using System.Linq;
-  using System.Threading;
   using System.Threading.Tasks;
   using ClipperLib;
-  using DeepNestLib.GeneticAlgorithm;
-  using DeepNestLib.Placement;
-
-  public enum MinkowskiSumPick
-  {
-    Smallest,
-    Largest
-  }
 
   public class DeepNestClipper : IDeprecatedClipper
   {
@@ -74,41 +65,5 @@
 
 
     }*/
-
-    public static NFP MinkowskiSum(NFP a, NFP b, MinkowskiSumPick minkowskiSumPick)
-    {
-      var ac = ScaleUpPaths(a.Points, 10000000);
-      var bc = ScaleUpPaths(b.Points, 10000000);
-      for (var i = 0; i < bc.Length; i++)
-      {
-        bc[i].X *= -1;
-        bc[i].Y *= -1;
-      }
-
-      var solution = ClipperLib.Clipper.MinkowskiSum(new List<IntPoint>(ac), new List<IntPoint>(bc), true);
-      NFP clipperNfp = null;
-
-      double? largestArea = null;
-      for (int i = 0; i < solution.Count(); i++)
-      {
-        var n = solution[i].ToArray().ToNestCoordinates(10000000);
-        var sarea = -GeometryUtil.polygonArea(n);
-        if (largestArea == null ||
-            (minkowskiSumPick == MinkowskiSumPick.Largest && largestArea < sarea) ||
-            (minkowskiSumPick == MinkowskiSumPick.Smallest && largestArea > sarea))
-        {
-          clipperNfp = n;
-          largestArea = sarea;
-        }
-      }
-
-      for (var i = 0; i < clipperNfp.Length; i++)
-      {
-        clipperNfp[i].x += b[0].x;
-        clipperNfp[i].y += b[0].y;
-      }
-
-      return clipperNfp;
-    }
   }
 }

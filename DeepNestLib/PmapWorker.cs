@@ -2,14 +2,9 @@
 {
   using System;
   using System.Collections.Generic;
-  using System.Diagnostics;
-  using System.Drawing;
   using System.Linq;
-  using System.Runtime.InteropServices;
   using System.Threading;
   using System.Threading.Tasks;
-  using ClipperLib;
-  using Minkowski;
 
   public class PmapWorker
   {
@@ -17,6 +12,8 @@
     private readonly IProgressDisplayer progressDisplayer;
     private readonly bool useParallel;
     private int processed = 0;
+    private static readonly NfpPairDictionary NfpPairCache = new NfpPairDictionary();
+    private static volatile object nfpPairCacheSyncLock = new object();
 
     public PmapWorker(IList<NfpPair> pairs, IProgressDisplayer progressDisplayer, bool useParallel)
     {
@@ -56,11 +53,20 @@
       return ret.ToArray();
     }
 
-    private NfpPair Process(NfpPair pair)
+    internal NfpPair Process(NfpPair pair)
     {
-      var A = pair.A.Rotate(pair.ARotation);
-      var B = pair.B.Rotate(pair.BRotation);
-      NFP clipperNfp = DeepNestClipper.MinkowskiSum(A, B, MinkowskiSumPick.Largest);
+      var a = pair.A.Rotate(pair.ARotation);
+      var b = pair.B.Rotate(pair.BRotation);
+
+      NFP clipperNfp;
+      lock (nfpPairCacheSyncLock)
+      {
+        if (!NfpPairCache.TryGetValue(a.Points, b.Points, pair.ARotation, pair.BRotation, pair.Asource, pair.Bsource, MinkowskiSumPick.Largest, out clipperNfp))
+        {
+          clipperNfp = MinkowskiSum.ClipperExecute(a.Points, b.Points, MinkowskiSumPick.Largest);
+          NfpPairCache.Add(a.Points, b.Points, pair.ARotation, pair.BRotation, pair.Asource, pair.Bsource, MinkowskiSumPick.Largest, clipperNfp);
+        }
+      }
 
       pair.A = null;
       pair.B = null;

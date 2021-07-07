@@ -12,6 +12,11 @@
 
   public class SvgParser : IExport
   {
+    public SvgParser(ISvgNestConfig config)
+    {
+      Config = config;
+    }
+
     public static RawDetail LoadSvg(string path)
     {
       XDocument doc = XDocument.Load(path);
@@ -168,12 +173,13 @@
       File.WriteAllText(path, sb.ToString());
     }
 
-    public static SvgConfig Conf = new SvgConfig();
+
+    public ISvgNestConfig Config { get; }
 
     public string SaveFileDialogFilter => "Svg files (*.svg)|*.svg";
 
     // return a polygon from the given SVG element in the form of an array of points
-    public static NFP polygonify(XElement element)
+    public NFP polygonify(XElement element)
     {
       List<SvgPoint> poly = new List<SvgPoint>();
       int i;
@@ -348,8 +354,8 @@
       }
 
       // do not include last point if coincident with starting point
-      while (poly.Count > 0 && GeometryUtil._almostEqual(poly[0].x, poly[poly.Count - 1].x, Conf.toleranceSvg)
-          && GeometryUtil._almostEqual(poly[0].y, poly[poly.Count - 1].y, Conf.toleranceSvg))
+      while (poly.Count > 0 && GeometryUtil._almostEqual(poly[0].x, poly[poly.Count - 1].x, this.Config.ToleranceSvg)
+          && GeometryUtil._almostEqual(poly[0].y, poly[poly.Count - 1].y, this.Config.ToleranceSvg))
       {
         poly.RemoveAt(0);
       }
@@ -358,12 +364,6 @@
     }
   }
 
-  public class SvgConfig
-  {
-    public float tolerance = 2f; // max bound for bezier->line segment conversion, in native SVG units
-    public float toleranceSvg = 0.005f;// fudge factor for browser inaccuracy in SVG unit handling
-
-  }
   public class LocalContour
   {
     public float Len
