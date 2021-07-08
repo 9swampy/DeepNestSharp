@@ -13,12 +13,12 @@
       get { return this.Sheet != null; }
     }
 
-    public NFP Sheet;
+    public NFP Sheet { get; set; }
 
     public override string ToString()
     {
       var str1 = (this.points != null) ? this.points.Count() + string.Empty : "null";
-      return $"nfp: id: {this.Id}; source: {this.Source}; rotation: {this.rotation}; points: {str1}";
+      return $"nfp: id: {this.Id}; source: {this.Source}; rotation: {this.Rotation}; points: {str1}";
     }
 
     public NFP(IList<NFP> children)
@@ -31,7 +31,7 @@
     {
       this.points = new SvgPoint[0];
     }
-        
+
     public NFP(IEnumerable<SvgPoint> points)
     {
       this.points = points.DeepClone();
@@ -41,7 +41,9 @@
 
     public void AddPoint(SvgPoint point)
     {
-      this.points = this.points.Append(point).ToArray();
+      int i = this.points.Length;
+      Array.Resize(ref this.points, i + 1);
+      this.points[i] = point;
     }
 
     public bool isBin;
@@ -101,6 +103,8 @@
 
     public int Source { get; set; } = -1;
 
+    public int PlacementOrder { get; set; } = -1;
+
     private float rotation;
 
     public float Rotation
@@ -158,6 +162,8 @@
       }
     }
 
+    public bool IsPrimary { get; set; }
+
     internal void Push(SvgPoint svgPoint)
     {
       this.points = this.points.Append(svgPoint).ToArray();
@@ -179,6 +185,113 @@
     public string stringify()
     {
       throw new NotImplementedException();
+    }
+
+    public NFP Clone()
+    {
+      NFP result = new NFP();
+      result.Id = this.Id;
+      result.Source = this.Source;
+      result.Rotation = this.Rotation;
+      result.IsPrimary = this.IsPrimary;
+
+      for (var i = 0; i < this.Length; i++)
+      {
+        result.AddPoint(new SvgPoint(this[i].x, this[i].y));
+      }
+
+      if (this.Children != null && this.Children.Count > 0)
+      {
+        foreach (var child in this.Children)
+        {
+          result.Children.Add(child.Clone());
+        }
+      }
+
+      return result;
+    }
+
+    /// <summary>
+    /// Clone but only copy exact points.
+    /// </summary>
+    /// <returns>Clone but only copy exact points.</returns>
+    public NFP CloneExact()
+    {
+      NFP clone = new NFP();
+      clone.Id = this.Id;
+      clone.Source = this.Source;
+      clone.IsPrimary = this.IsPrimary;
+      clone.ReplacePoints(this.Points.Select(z => new SvgPoint(z.x, z.y) { Exact = z.Exact }));
+      if (this.Children != null)
+      {
+        foreach (var citem in this.Children)
+        {
+          clone.Children.Add(new NFP());
+          var l = clone.Children.Last();
+          l.Id = citem.Id;
+          l.Source = citem.Source;
+          l.ReplacePoints(citem.Points.Select(z => new SvgPoint(z.x, z.y) { Exact = z.Exact }));
+        }
+      }
+
+      return clone;
+    }
+
+    public NFP Rotate(float degrees)
+    {
+      var angle = degrees * Math.PI / 180;
+      List<SvgPoint> pp = new List<SvgPoint>();
+      for (var i = 0; i < this.Length; i++)
+      {
+        var x = this[i].x;
+        var y = this[i].y;
+        var x1 = (x * Math.Cos(angle)) - (y * Math.Sin(angle));
+        var y1 = (x * Math.Sin(angle)) + (y * Math.Cos(angle));
+
+        pp.Add(new SvgPoint(x1, y1));
+      }
+
+      NFP rotated = this.Clone();
+      rotated.Rotation = 0;
+      rotated.ReplacePoints(pp);
+      // rotated.Rotation += degrees;
+      // rotated.Rotation = rotated.Rotation % 360f;
+
+      if (this.Children != null && this.Children.Count > 0)
+      {
+        for (var j = 0; j < this.Children.Count; j++)
+        {
+          rotated.Children.Add(this.Children[j].Rotate(degrees));
+        }
+      }
+
+      return rotated;
+    }
+
+    public NFP CloneTree()
+    {
+      NFP newtree = new NFP();
+      foreach (var t in this.Points)
+      {
+        newtree.AddPoint(new SvgPoint(t.x, t.y) { Exact = t.Exact });
+      }
+
+      // jwb added the properties
+      // newtree.Id = this.Id;
+      // newtree.Source = this.Source;
+      newtree.IsPrimary = this.IsPrimary;
+
+      // newtree.Name = this.Name;
+      // jwb added the properties
+      if (this.Children != null && this.Children.Count > 0)
+      {
+        foreach (var c in this.Children)
+        {
+          newtree.Children.Add(c.CloneTree());
+        }
+      }
+
+      return newtree;
     }
   }
 }

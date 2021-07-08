@@ -23,7 +23,7 @@
     public DxfParserFixture()
     {
       this.loadedRawDetail = DxfParser.LoadDxf(DxfTestFilename);
-      this.nestingContext = new NestingContext(A.Fake<IMessageService>());
+      this.nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
       this.hasImportedRawDetail = this.nestingContext.TryImportFromRawDetail(this.loadedRawDetail, A.Dummy<int>(), out this.loadedNfp);
     }
 

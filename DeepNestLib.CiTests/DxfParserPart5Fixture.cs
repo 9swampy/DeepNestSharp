@@ -19,7 +19,6 @@
     private NFP simplifiedNfp;
     private long simplifiedNfpTime;
     private bool hasImportedRawDetail;
-
     public DxfParserPart5Fixture()
     {
       lock (testSyncLock)
@@ -27,7 +26,7 @@
         if (!this.hasImportedRawDetail)
         {
           this.loadedRawDetail = DxfParser.LoadDxf(DxfTestFilename);
-          this.nestingContext = new NestingContext(A.Fake<IMessageService>());
+          this.nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
           this.hasImportedRawDetail = this.nestingContext.TryImportFromRawDetail(this.loadedRawDetail, A.Dummy<int>(), out this.loadedNfp);
           var sw = new Stopwatch();
           sw.Start();

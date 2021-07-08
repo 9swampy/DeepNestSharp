@@ -13,7 +13,7 @@
 
   public class SampleProgram
   {
-    internal NestingContext Context { get; } = new NestingContext(new ConsoleMessageService());
+    internal NestingContext Context { get; } = new NestingContext(new ConsoleMessageService(), null);
 
     private bool IsFinished()
     {
@@ -26,7 +26,7 @@
 
     public void Run()
     {
-      Background.UseParallel = true;
+      SvgNest.Config.UseParallel = true;
       SvgNest.Config.PlacementType = PlacementTypeEnum.Gravity;
       Console.WriteLine("Settings updated..");
 
@@ -38,23 +38,27 @@
       do
       {
         var sw = Stopwatch.StartNew();
-        Context.NestIterate();
+        Context.NestIterate(SvgNest.Config);
         sw.Stop();
         Console.WriteLine("Iteration: " + Context.Iterations + "; fitness: " + Context.Current.fitness + "; nesting time: " + sw.ElapsedMilliseconds + "ms");
-      } while (!IsFinished());
+      }
+      while (!IsFinished());
 
-      #region convert results
+      ConvertResults();
+    }
+
+    private void ConvertResults()
+    {
       string path = "output.dxf";
 
       if (path.ToLower().EndsWith("svg"))
-        new SvgParser().Export(path, Context.Polygons, Context.Sheets);
+        new SvgParser(SvgNest.Config).Export(path, Context.Polygons, Context.Sheets);
       else if (path.ToLower().EndsWith("dxf"))
         new DxfParser().Export(path, Context.Polygons, Context.Sheets);
       else
         throw new NotImplementedException($"unknown format: {path}");
 
       Console.WriteLine($"Results exported in: {path}");
-      #endregion
     }
   }
 }

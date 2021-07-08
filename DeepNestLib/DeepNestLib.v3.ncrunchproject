@@ -1,3 +1,5 @@
 ﻿<ProjectConfiguration>
-  <Settings />
+  <Settings>
+    <PreloadReferencedAssemblies>True</PreloadReferencedAssemblies>
+  </Settings>
 </ProjectConfiguration>

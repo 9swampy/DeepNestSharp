@@ -35,9 +35,19 @@
     double SheetSpacing { get; set; }
 
     int SheetWidth { get; set; }
+
     bool Simplify { get; set; }
+
     double Spacing { get; set; }
+
     double TimeRatio { get; set; }
+
+    float Tolerance { get; set; }
+
+    float ToleranceSvg { get; set; }
+
     bool UseHoles { get; set; }
+
+    bool UseParallel { get; set; }
   }
 }

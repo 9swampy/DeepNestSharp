@@ -1,15 +1,5 @@
 ﻿namespace DeepNestLib.CiTests
 {
-  using System;
-  using System.Collections.Generic;
-  using System.Diagnostics;
-  using System.Linq;
-  using ClipperLib;
-  using FakeItEasy;
-  using FluentAssertions;
-  using IxMilia.Dxf.Entities;
-  using Xunit;
-
   public class DefaultSvgNestConfig : ISvgNestConfig
   {
     public double ClipperScale { get; set; } = 10000000;
@@ -53,5 +43,11 @@
     public bool ClipByHull { get; set; } = true;
 
     public bool DrawSimplification { get; set; } = true;
+
+    public bool UseParallel { get; set; } = false;
+
+    public float Tolerance { get; set; } = 2f;
+
+    public float ToleranceSvg { get; set; } = 0.005f;
   }
 }

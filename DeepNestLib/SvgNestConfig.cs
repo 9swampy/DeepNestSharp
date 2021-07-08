@@ -2,6 +2,11 @@
 {
   public class SvgNestConfig : ISvgNestConfig
   {
+    public const int PopulationMin = 50;
+    public const int PopulationMax = 800;
+    public const int MutationRateMin = 1;
+    public const int MutationRateMax = 5000;
+
     public double Scale { get; set; } = 25;
 
     public double ClipperScale { get; set; } = 10000000;
@@ -13,6 +18,16 @@
     public double SheetSpacing { get; set; } = 0;
 
     public bool UseHoles { get; set; } = false;
+
+    /// <summary>
+    /// Max bound for bezier->line segment conversion, in native SVG units.
+    /// </summary>
+    public float Tolerance { get; set; } = 2f;
+
+    /// <summary>
+    /// Fudge factor for browser inaccuracy in SVG unit handling.
+    /// </summary>
+    public float ToleranceSvg { get; set; } = 0.005f;
 
     public double TimeRatio { get; set; } = 0.5;
 
@@ -176,7 +191,10 @@
     {
       get
       {
-        return (int)Properties.Settings.Default["PopulationSize"];
+        var result = (int)Properties.Settings.Default["PopulationSize"];
+        if (result < PopulationMin) return PopulationMin;
+        if (result > PopulationMax) return PopulationMax;
+        return result;
       }
 
       set
@@ -191,7 +209,10 @@
     {
       get
       {
-        return (int)Properties.Settings.Default["MutationRate"];
+        var result = (int)Properties.Settings.Default["MutationRate"];
+        if (result < MutationRateMin) return MutationRateMin;
+        if (result > MutationRateMax) return MutationRateMax;
+        return result;
       }
 
       set
@@ -212,6 +233,21 @@
       set
       {
         Properties.Settings.Default["DrawSimplification"] = value;
+        Properties.Settings.Default.Save();
+        Properties.Settings.Default.Upgrade();
+      }
+    }
+
+    public bool UseParallel
+    {
+      get
+      {
+        return (bool)Properties.Settings.Default["UseParallel"];
+      }
+
+      set
+      {
+        Properties.Settings.Default["UseParallel"] = value;
         Properties.Settings.Default.Save();
         Properties.Settings.Default.Upgrade();
       }

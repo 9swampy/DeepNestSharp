@@ -62,7 +62,7 @@
       {
         point = points[i];
 
-        if (point.marked || getSqDist(point, prevPoint) > sqTolerance)
+        if (point.Marked || getSqDist(point, prevPoint) > sqTolerance)
         {
           newPoints.AddPoint(point);
           prevPoint = point;

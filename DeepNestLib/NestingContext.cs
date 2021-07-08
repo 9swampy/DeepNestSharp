@@ -4,17 +4,22 @@
   using System.Collections.Generic;
   using System.IO;
   using System.Linq;
-  using System.Text;
+  using System.Threading;
   using System.Threading.Tasks;
   using System.Xml.Linq;
+  using DeepNestLib.Placement;
 
   public class NestingContext
   {
     private readonly IMessageService messageService;
+    private readonly IProgressDisplayer progressDisplayer;
+    private int iterations = 0;
 
-    public NestingContext(IMessageService messageService)
+    public NestingContext(IMessageService messageService, IProgressDisplayer progressDisplayer)
     {
       this.messageService = messageService;
+      this.progressDisplayer = progressDisplayer;
+      SvgNest.ResetCounters();
     }
 
     public bool IsErrored { get; private set; }
@@ -27,25 +32,25 @@
 
     public int PlacedPartsCount { get; private set; } = 0;
 
-    SheetPlacement current = null;
-
-    public SheetPlacement Current { get { return current; } }
+    public NestResult Current { get; private set; } = null;
 
     public SvgNest Nest { get; private set; }
 
-    public Background Background { get; private set; }
-
-    public int Iterations { get; private set; } = 0;
+    public int Iterations
+    {
+      get
+      {
+        return iterations;
+      }
+    }
 
     public void StartNest()
     {
-      this.current = null;
-      Nest = new SvgNest(this.messageService, () => this.IsErrored = true);
-      this.Background = new Background();
-      Iterations = 0;
+      this.Current = null;
+      Nest = new SvgNest(this.messageService, this.progressDisplayer, () => this.IsErrored = true);
     }
 
-    public void NestIterate()
+    public void NestIterate(ISvgNestConfig config)
     {
       try
       {
@@ -56,28 +61,15 @@
         {
           Polygons[i].Id = i;
         }
+
         for (int i = 0; i < Sheets.Count; i++)
         {
           Sheets[i].Id = i;
         }
+
         foreach (var item in Polygons)
         {
-          NFP clone = new NFP();
-          clone.Id = item.Id;
-          clone.Source = item.Source;
-          clone.ReplacePoints(item.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }));
-          if (item.Children != null)
-          {
-            foreach (var citem in item.Children)
-            {
-              clone.Children.Add(new NFP());
-              var l = clone.Children.Last();
-              l.Id = citem.Id;
-              l.Source = citem.Source;
-              l.ReplacePoints(citem.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }));
-            }
-          }
-
+          NFP clone = item.CloneExact();
           lpoly.Add(clone);
         }
 
@@ -86,7 +78,7 @@
           NFP clone = new NFP();
           clone.Id = item.Id;
           clone.Source = item.Source;
-          clone.ReplacePoints(item.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }));
+          clone.ReplacePoints(item.Points.Select(z => new SvgPoint(z.x, z.y) { Exact = z.Exact }));
           if (item.Children != null)
           {
             foreach (var citem in item.Children)
@@ -95,21 +87,21 @@
               var l = clone.Children.Last();
               l.Id = citem.Id;
               l.Source = citem.Source;
-              l.ReplacePoints(citem.Points.Select(z => new SvgPoint(z.x, z.y) { exact = z.exact }));
+              l.ReplacePoints(citem.Points.Select(z => new SvgPoint(z.x, z.y) { Exact = z.Exact }));
             }
           }
 
           lsheets.Add(clone);
         }
 
-        if (SvgNest.Config.OffsetTreePhase)
+        if (config.OffsetTreePhase)
         {
           var grps = lpoly.GroupBy(z => z.Source).ToArray();
-          if (Background.UseParallel)
+          if (config.UseParallel)
           {
             Parallel.ForEach(grps, (item) =>
             {
-              SvgNest.OffsetTree(item.First(), 0.5 * SvgNest.Config.Spacing, SvgNest.Config);
+              SvgNest.OffsetTree(item.First(), 0.5 * config.Spacing);
               foreach (var zitem in item)
               {
                 zitem.ReplacePoints(item.First().Points);
@@ -122,7 +114,7 @@
           {
             foreach (var item in grps)
             {
-              SvgNest.OffsetTree(item.First(), 0.5 * SvgNest.Config.Spacing, SvgNest.Config);
+              SvgNest.OffsetTree(item.First(), 0.5 * config.Spacing);
               foreach (var zitem in item)
               {
                 zitem.ReplacePoints(item.First().Points);
@@ -132,8 +124,8 @@
 
           foreach (var item in lsheets)
           {
-            var gap = SvgNest.Config.SheetSpacing - SvgNest.Config.Spacing / 2;
-            SvgNest.OffsetTree(item, -gap, SvgNest.Config, true);
+            var gap = config.SheetSpacing - (config.Spacing / 2);
+            SvgNest.OffsetTree(item, -gap, true);
           }
         }
 
@@ -142,16 +134,15 @@
         {
           Polygon = z.First(),
           IsSheet = false,
-          Quantity = z.Count()
+          Quantity = z.Count(),
         });
 
         var p2 = lsheets.GroupBy(z => z.Source).Select(z => new NestItem()
         {
           Polygon = z.First(),
           IsSheet = true,
-          Quantity = z.Count()
+          Quantity = z.Count(),
         });
-
 
         partsLocal.AddRange(p1);
         partsLocal.AddRange(p2);
@@ -161,15 +152,18 @@
           item.Polygon.Source = srcc++;
         }
 
-        Nest.launchWorkers(partsLocal.ToArray());
-        var plcpr = Nest.nests.First();
-
-        if (current == null || plcpr.fitness < current.fitness)
+        Nest.launchWorkers(partsLocal.ToArray(), config);
+        if (Nest != null & Nest.nests != null && Nest.nests.Count > 0)
         {
-          AssignPlacement(plcpr);
+          var plcpr = Nest.nests.First();
+
+          if (Current == null || plcpr.Fitness < Current.Fitness)
+          {
+            AssignPlacement(plcpr);
+          }
         }
 
-        Iterations++;
+        Interlocked.Increment(ref iterations);
       }
       catch (Exception ex)
       {
@@ -181,9 +175,9 @@
       }
     }
 
-    public void AssignPlacement(SheetPlacement plcpr)
+    public void AssignPlacement(NestResult plcpr)
     {
-      current = plcpr;
+      Current = plcpr;
       double totalSheetsArea = 0;
       double totalPartsArea = 0;
 
@@ -193,32 +187,31 @@
       {
         item.Sheet = null;
       }
+
       List<int> sheetsIds = new List<int>();
 
-      foreach (var item in plcpr.placements)
+      foreach (var item in plcpr.UsedSheets)
       {
-        foreach (var zitem in item)
+        var sheetid = item.SheetId;
+        if (!sheetsIds.Contains(sheetid))
         {
-          var sheetid = zitem.sheetId;
-          if (!sheetsIds.Contains(sheetid))
-          {
-            sheetsIds.Add(sheetid);
-          }
+          sheetsIds.Add(sheetid);
+        }
 
-          var sheet = Sheets.First(z => z.Id == sheetid);
-          totalSheetsArea += GeometryUtil.polygonArea(sheet);
+        var sheet = Sheets.First(z => z.Id == sheetid);
+        totalSheetsArea += GeometryUtil.polygonArea(sheet);
 
-          foreach (var ssitem in zitem.sheetplacements)
-          {
-            PlacedPartsCount++;
-            var poly = Polygons.First(z => z.Id == ssitem.id);
-            totalPartsArea += GeometryUtil.polygonArea(poly);
-            placed.Add(poly);
-            poly.Sheet = sheet;
-            poly.x = ssitem.x + sheet.x;
-            poly.y = ssitem.y + sheet.y;
-            poly.Rotation = ssitem.rotation;
-          }
+        foreach (var ssitem in item.PartPlacements)
+        {
+          PlacedPartsCount++;
+          var poly = Polygons.First(z => z.Id == ssitem.id);
+          totalPartsArea += GeometryUtil.polygonArea(poly);
+          placed.Add(poly);
+          poly.Sheet = sheet;
+          poly.x = ssitem.x + sheet.x;
+          poly.y = ssitem.y + sheet.y;
+          poly.Rotation = ssitem.rotation;
+          poly.PlacementOrder = item.PartPlacements.IndexOf(ssitem);
         }
       }
 
@@ -311,8 +304,26 @@
       }
     }
 
+    public bool TryAddFromRawDetailToPolygons(RawDetail raw, int src)
+    {
+      NFP loadedNfp;
+      bool result = TryImportFromRawDetail(raw, src, out loadedNfp);
+      if (result)
+      {
+        Polygons.Add(loadedNfp);
+      }
+
+      return result;
+    }
+
     public bool TryImportFromRawDetail(RawDetail raw, int src, out NFP loadedNfp)
     {
+      if (raw == null)
+      {
+        loadedNfp = null;
+        return false;
+      }
+
       loadedNfp = raw.ToNfp();
       if (loadedNfp == null)
       {
@@ -320,7 +331,6 @@
       }
 
       loadedNfp.Source = src;
-      Polygons.Add(loadedNfp);
       return true;
     }
 

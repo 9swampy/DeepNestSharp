@@ -13,8 +13,6 @@
   {
     private const string DxfTestFilename = "_1.dxf";
 
-    private static readonly DxfGenerator DxfGenerator = new DxfGenerator();
-
     private RawDetail loadedRawDetail;
     private NestingContext nestingContext;
     private NFP loadedNfp;
@@ -23,7 +21,7 @@
     public DxfParserPart1Fixture()
     {
       this.loadedRawDetail = DxfParser.LoadDxf(DxfTestFilename);
-      this.nestingContext = new NestingContext(A.Fake<IMessageService>());
+      this.nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
       this.hasImportedRawDetail = this.nestingContext.TryImportFromRawDetail(this.loadedRawDetail, A.Dummy<int>(), out this.loadedNfp);
     }
 

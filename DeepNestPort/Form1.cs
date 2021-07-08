@@ -13,9 +13,14 @@
   using System.Windows.Forms;
   using System.Xml.Linq;
   using DeepNestLib;
+  using DeepNestLib.Placement;
 
   public partial class Form1 : Form
   {
+    private NestingContext context;
+    MessageFilter mf = null;
+    private volatile static object contextSyncLock = new object();
+
     public Form1()
     {
       InitializeComponent();
@@ -46,9 +51,14 @@
 
       checkBox2.Checked = SvgNest.Config.Simplify;
       checkBox3.Checked = SvgNest.Config.OffsetTreePhase;
-      checkBox4.Checked = Background.UseParallel;
+      checkBox4.Checked = SvgNest.Config.UseParallel;
+      this.numericUpDown1.Minimum = SvgNestConfig.PopulationMin;
+      this.numericUpDown1.Maximum = SvgNestConfig.PopulationMax;
       this.numericUpDown1.Value = SvgNest.Config.PopulationSize;
+      this.numericUpDown2.Minimum = SvgNestConfig.MutationRateMin;
+      this.numericUpDown2.Maximum = SvgNestConfig.MutationRateMax;
       this.numericUpDown2.Value = SvgNest.Config.MutationRate;
+
       this.comboBox1.SelectedItem = SvgNest.Config.PlacementType.ToString();
       this.textBox1.Text = SvgNest.Config.Spacing.ToString();
       this.textBox6.Text = SvgNest.Config.CurveTolerance.ToString();
@@ -60,13 +70,35 @@
       Load += Form1_Load;
     }
 
+    private NestingContext Context
+    {
+      get
+      {
+        lock (contextSyncLock)
+        {
+          if (this.context == null)
+          {
+            this.context = new NestingContext(new MessageBoxService(), new ProgressDisplayer(this));
+          }
+        }
+
+        return this.context;
+      }
+
+      set
+      {
+        lock (contextSyncLock)
+        {
+          this.context = value;
+        }
+      }
+    }
+
     private void Form1_Load(object sender, EventArgs e)
     {
       mf = new MessageFilter();
       Application.AddMessageFilter(mf);
     }
-
-    MessageFilter mf = null;
 
     private void LoadSettings()
     {
@@ -115,11 +147,9 @@
       groupBox6.Text = "Sheets: " + sheets.Count;
     }
 
-    public NestingContext Context = new NestingContext(new MessageBoxService());
-
     public SvgNest nest
     {
-      get { return this.context.Nest; }
+      get { return this.Context.Nest; }
     }
 
     public object selected = null;
@@ -133,8 +163,8 @@
       ctx2.Update();
       ctx2.Clear(Color.White);
 
-      // ctx2.gr.DrawLine(Pens.Blue, ctx2.Transform(new PointF(0, 0)), ctx2.Transform(100, 0));
-      // ctx2.gr.DrawLine(Pens.Red, ctx2.Transform(new PointF(0, 0)), ctx2.Transform(0, 100));
+      //ctx2.gr.DrawLine(Pens.Blue, ctx2.Transform(new PointF(0, 0)), ctx2.Transform(100, 0));
+      //ctx2.gr.DrawLine(Pens.Red, ctx2.Transform(new PointF(0, 0)), ctx2.Transform(0, 100));
       ctx2.Reset();
 
       if (previewObject != null)
@@ -173,13 +203,9 @@
     /// <param name="raw">The part to approximate.</param>
     private void AddApproximation(DrawingContext ctx, RawDetail raw)
     {
-      var nestingContext = new NestingContext(new MessageBoxService());
-      NFP part;
-      nestingContext.TryImportFromRawDetail(raw, 0, out part);
-
+      NFP part = raw.ToNfp();
       var simplification = SvgNest.simplifyFunction(part, false);
       ctx.Draw(simplification, Pens.Red);
-
       var pointsChange = $"{part.Points.Length} => {simplification.Points.Length} points";
       ctx.DrawLabel(pointsChange, Brushes.Black, Color.Orange, 5, (int)(10 + ctx.GetLabelHeight()));
     }
@@ -191,8 +217,6 @@
       var posx = pos1.X;
       var posy = pos1.Y;
       ctx.Update();
-      //ctx2.Update();
-
 
       #region preview draw
       RedrawPreview(ctx2, Preview);
@@ -212,23 +236,27 @@
       {
         ctx.gr.DrawString("X:" + posx.ToString("0.00") + " Y: " + posy.ToString("0.00"), Font, Brushes.Blue, 0, yy);
         yy += (int)Font.Size + gap;
-        ctx.gr.DrawString($"Material Utilization: {Math.Round(context.MaterialUtilization * 100.0f, 2)}%   Iterations: {context.Iterations}    Parts placed: {context.PlacedPartsCount}/{polygons.Count}", Font, Brushes.DarkBlue, 0, yy);
+        ctx.gr.DrawString($"Material Utilization: {Math.Round(Context.MaterialUtilization * 100.0f, 2)}%   Iterations: {Context.Iterations}    Parts placed: {Context.PlacedPartsCount}/{polygons.Count}", Font, Brushes.DarkBlue, 0, yy);
+        yy += (int)Font.Size + gap;
+        ctx.gr.DrawString($"Generations: {Context.Iterations / SvgNest.Config.PopulationSize}    Population: {Context.Iterations % SvgNest.Config.PopulationSize}", Font, Brushes.DarkBlue, 0, yy);
         yy += (int)Font.Size + gap;
         ctx.gr.DrawString($"Sheets: {sheets.Count}   Parts:{polygons.Count}    parts types: {polygons.GroupBy(z => z.Source).Count()}", Font, Brushes.DarkBlue, 0, yy);
         yy += (int)Font.Size + gap;
 
         if (nest != null && nest.nests.Any())
         {
-          ctx.gr.DrawString($"Nests: {nest.nests.Count} Fitness: {nest.nests.First().fitness}   Area:{nest.nests.First().area}  ", Font, Brushes.DarkBlue, 0, yy);
+          ctx.gr.DrawString($"Nests: {nest.nests.Count} Fitness: {nest.nests.First().Fitness}   Area:{nest.nests.First().area}  ", Font, Brushes.DarkBlue, 0, yy);
           yy += (int)Font.Size + gap;
         }
 
-        ctx.gr.DrawString($"Call counter: {context.Background.callCounter};  Last placing time: {context.Background.LastPlacePartTime}ms", Font, Brushes.DarkBlue, 0, yy);
+        ctx.gr.DrawString($"Minkowski Calls: {Background.CallCounter};  Last placing time: {SvgNest.LastPlacePartTime}ms", Font, Brushes.DarkBlue, 0, yy);
         yy += (int)Font.Size + gap;
       }
       else
       {
-        ctx.gr.DrawString($"Iterations: {context.Iterations}    Parts placed: {context.PlacedPartsCount}/{polygons.Count}", Font, Brushes.DarkBlue, 0, yy);
+        ctx.gr.DrawString($"Iterations: {Context.Iterations}    Parts placed: {Context.PlacedPartsCount}/{polygons.Count}", Font, Brushes.DarkBlue, 0, yy);
+        yy += (int)Font.Size + gap;
+        ctx.gr.DrawString($"Generations: {SvgNest.Generations}    Population: {SvgNest.Population}", Font, Brushes.DarkBlue, 0, yy);
         yy += (int)Font.Size + gap;
         ctx.gr.DrawString($"Sheets: {sheets.Count}   Parts:{polygons.Count}    Parts types: {polygons.GroupBy(z => z.Source).Count()}", Font, Brushes.DarkBlue, 0, yy);
         yy += (int)Font.Size + gap;
@@ -243,6 +271,8 @@
           ctx.gr.DrawImage(bb, new RectangleF(pp.X, pp.Y, bb.Width * ctx.zoom, bb.Height * ctx.zoom), new Rectangle(0, 0, bb.Width, bb.Height), GraphicsUnit.Pixel);
         }
       }
+
+      int i = 0;
       foreach (var item in polygons.Union(sheets))
       {
         if (!checkBox1.Checked)
@@ -262,12 +292,19 @@
           m.Translate((float)item.x, (float)item.y);
           m.Rotate(item.Rotation);
 
-
-
           var pnts = item.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
           m.TransformPoints(pnts);
 
           path.AddPolygon(pnts.Select(z => ctx.Transform(z)).ToArray());
+
+          if (!(item is Sheet) && isInfoShow)
+          {
+            var label = $"{item.PlacementOrder} ({item.x:N0},{item.y:N0})@{item.Rotation}";
+            var ms = ctx2.gr.MeasureString(label, SystemFonts.DefaultFont);
+            var midPnt = new PointF(pnts.Average(o => o.X), pnts.Average(o => o.Y));
+            ctx.gr.DrawString(label, Font, Brushes.Black, ctx.Transform(midPnt));
+          }
+
           if (item.Children != null)
           {
             foreach (var citem in item.Children)
@@ -303,16 +340,16 @@
               double tot1 = 0;
               double tot2 = 0;
               bool was = false;
-              foreach (var zitem in fr.placements.First())
+              foreach (var zitem in fr.UsedSheets)
               {
-                var sheetid = zitem.sheetId;
+                var sheetid = zitem.SheetId;
                 if (sheetid != item.Id) continue;
                 var sheet = sheets.FirstOrDefault(z => z.Id == sheetid);
                 if (sheet != null)
                 {
                   tot1 += Math.Abs(GeometryUtil.polygonArea(sheet));
                   was = true;
-                  foreach (var ssitem in zitem.sheetplacements)
+                  foreach (var ssitem in zitem.PartPlacements)
                   {
                     var poly = polygons.FirstOrDefault(z => z.Id == ssitem.id);
                     if (poly != null)
@@ -344,7 +381,6 @@
 
       foreach (var item in polygons.Union(sheets))
       {
-
         if (!(item is Sheet))
         {
           if (!item.fitted) continue;
@@ -364,6 +400,7 @@
           m.TransformPoints(pnts);
 
           path.AddPolygon(pnts.Select(z => ctx.Transform(z)).ToArray());
+
           if (item.Children != null)
           {
             foreach (var citem in item.Children)
@@ -371,7 +408,6 @@
               var pnts2 = citem.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
               m.TransformPoints(pnts2);
               path.AddPolygon(pnts2.Select(z => ctx.Transform(z)).ToArray());
-
             }
           }
           ctx.gr.ResetTransform();
@@ -420,21 +456,21 @@
           listView4.Items.Clear();
           foreach (var item in nest.nests)
           {
-            listView4.Items.Add(new ListViewItem(new string[] { item.fitness + "" }) { Tag = item });
+            listView4.Items.Add(new ListViewItem(new string[] { item.fitness?.ToString("F6"), item.FitnessAlt.ToString("F6") }) { Tag = item });
           }
+
           listView4.EndUpdate();
         }));
       }
     }
 
-
     Thread th;
 
-    internal void displayProgress(float progress)
+    private void displayProgress(float progressVal)
     {
-      progressVal = progress;
-
+      this.progressVal = progressVal;
     }
+
     public float progressVal = 0;
 
     private void listView1_SelectedIndexChanged(object sender, EventArgs e)
@@ -618,9 +654,9 @@
         sheet.Width = (float)b.width;
         sheet.Height = (float)b.height;
 
-        sheet.Source = context.GetNextSheetSource();
+        sheet.Source = Context.GetNextSheetSource();
         sheets.Add(sheet);
-        context.ReorderSheets();
+        Context.ReorderSheets();
         UpdateList();
       }
     }
@@ -669,30 +705,34 @@
         QntDialog q = new QntDialog();
         if (q.ShowDialog() == DialogResult.OK)
         {
-          RawDetail det = null;
-          if (f.Extension == ".svg")
-          {
-            det = SvgParser.LoadSvg(f.FullName);
-          }
-          if (f.Extension == ".dxf")
-          {
-            det = DxfParser.LoadDxf(f.FullName);
-          }
+          RawDetail det = LoadRawDetail(f);
 
           int src = 0;
           if (polygons.Any())
           {
             src = polygons.Max(z => z.Source) + 1;
           }
-          for (int i = 0; i < q.Qnt; i++)
-          {
-            context.TryImportFromRawDetail(det, src, out _);
-          }
 
+          AddToPolygons(src, det, q.Qnt);
           UpdateList();
 
         }
       }
+    }
+
+    private static RawDetail LoadRawDetail(FileInfo f)
+    {
+      RawDetail det = null;
+      if (f.Extension == ".svg")
+      {
+        det = SvgParser.LoadSvg(f.FullName);
+      }
+      if (f.Extension == ".dxf")
+      {
+        det = DxfParser.LoadDxf(f.FullName);
+      }
+
+      return det;
     }
 
     private void importSelectedToolStripMenuItem_Click(object sender, EventArgs e)
@@ -705,25 +745,17 @@
         foreach (var item in listView3.SelectedItems)
         {
           var t = (item as ListViewItem).Tag as FileInfo;
-          RawDetail det = null;
-          if (t.Extension == ".svg")
-          {
-            det = SvgParser.LoadSvg(t.FullName);
-          }
-          if (t.Extension == ".dxf")
-          {
-            det = DxfParser.LoadDxf(t.FullName);
-          }
+          var det = LoadRawDetail(t);
+
           int src = 0;
           if (polygons.Any())
           {
             src = polygons.Max(z => z.Source) + 1;
           }
-          for (int i = 0; i < q.Qnt; i++)
-          {
-            context.TryImportFromRawDetail(det, src, out _);
-          }
+
+          AddToPolygons(src, det, q.Qnt);
         }
+
         UpdateList();
       }
     }
@@ -738,21 +770,19 @@
         {
           this.th = new Thread(() =>
           {
-            this.context.StartNest();
+            this.Context.StartNest();
             UpdateNestsList();
-            Background.displayProgress = displayProgress;
 
             while (true)
             {
               Stopwatch sw = new Stopwatch();
               sw.Start();
 
-              this.context.NestIterate();
+              this.Context.NestIterate(SvgNest.Config);
               UpdateNestsList();
-              displayProgress(1.0f);
               sw.Stop();
               _ = this.Invoke((MethodInvoker)(() => { this.toolStripStatusLabel1.Text = "Nesting time: " + sw.ElapsedMilliseconds + "ms"; }));
-              if (this.stop || this.context.IsErrored)
+              if (this.stop || this.Context.IsErrored)
               {
                 break;
               }
@@ -783,7 +813,7 @@
           var nfp = (listView1.SelectedItems[0].Tag as NFP);
           for (int i = 0; i < qd.Qnt; i++)
           {
-            var r = Background.Clone(nfp);
+            var r = nfp.Clone();
             polygons.Add(r);
           }
 
@@ -802,7 +832,7 @@
       stop = false;
       progressBar1.Value = 0;
       tabControl1.SelectedTab = tabPage4;
-      context.ReorderSheets();
+      Context.ReorderSheets();
       RunDeepnest();
     }
 
@@ -823,7 +853,7 @@
 
     private void checkBox4_CheckedChanged(object sender, EventArgs e)
     {
-      Background.UseParallel = checkBox4.Checked;
+      SvgNest.Config.UseParallel = checkBox4.Checked;
     }
 
     private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -853,8 +883,8 @@
     {
       if (listView4.SelectedItems.Count > 0)
       {
-        var shp = listView4.SelectedItems[0].Tag as SheetPlacement;
-        context.AssignPlacement(shp);
+        var nestResult = listView4.SelectedItems[0].Tag as NestResult;
+        Context.AssignPlacement(nestResult);
       }
     }
 
@@ -910,7 +940,7 @@
       label11.BackColor = label11.Parent.BackColor;
       label11.ForeColor = label11.Parent.ForeColor;
       List<Sheet> sh = new List<Sheet>();
-      var src = context.GetNextSheetSource();
+      var src = Context.GetNextSheetSource();
       for (int i = 0; i < cnt; i++)
       {
         switch (comboBox2.SelectedItem.ToString())
@@ -929,10 +959,10 @@
       foreach (var item in sh)
       {
         item.Source = src;
-        context.Sheets.Add(item);
+        Context.Sheets.Add(item);
       }
       UpdateList();
-      context.ReorderSheets();
+      Context.ReorderSheets();
     }
 
     public int GetCountFromDialog()
@@ -1097,9 +1127,7 @@
       stop = true;
     }
 
-    NestingContext context = new NestingContext(new MessageBoxService());
-
-    List<NFP> polygons { get { return context.Polygons; } }
+    List<NFP> polygons { get { return Context.Polygons; } }
 
     private void button6_Click(object sender, EventArgs e)
     {
@@ -1187,7 +1215,7 @@
         var f = listView2.SelectedItems[0].Tag as NFP;
         sheets.Remove(f);
         UpdateList();
-        context.ReorderSheets();
+        Context.ReorderSheets();
       }
     }
 
@@ -1258,7 +1286,7 @@
       }
     }
 
-    List<NFP> sheets { get { return context.Sheets; } }
+    List<NFP> sheets { get { return Context.Sheets; } }
 
     int lastSaveFilterIndex = 1;
 
@@ -1271,7 +1299,7 @@
       }
       else
       {
-        IExport exporter = ExporterFactory.GetExporter(polygons);
+        IExport exporter = ExporterFactory.GetExporter(polygons, SvgNest.Config);
         sfd.Filter = exporter.SaveFileDialogFilter;
         if (sfd.ShowDialog() == DialogResult.OK)
         {
@@ -1378,7 +1406,7 @@
           if (fr != null)
             fr.Quantity++;
           else
-            Infos.Add(new DetailLoadInfo() { Quantity = 1, Name = new FileInfo(ofd.FileNames[i]).Name, Path = ofd.FileNames[i] });
+            Infos.Add(new DetailLoadInfo() { Quantity = 1, Name = new FileInfo(ofd.FileNames[i]).Name, Path = ofd.FileNames[i], IsIncluded = true, IsPrimary = false });
 
         }
         catch (Exception ex)
@@ -1399,11 +1427,11 @@
 
     private void toolStripButton6_Click(object sender, EventArgs e)
     {
-      context = new NestingContext(new MessageBoxService());
+      Context = new NestingContext(new MessageBoxService(), new ProgressDisplayer(this));
       int src = 0;
       foreach (var item in sheetsInfos)
       {
-        src = context.GetNextSheetSource();
+        src = Context.GetNextSheetSource();
         for (int i = 0; i < item.Quantity; i++)
         {
           var ns = NewSheet(item.Width, item.Height);
@@ -1412,44 +1440,55 @@
         }
       }
 
-      context.ReorderSheets();
+      Context.ReorderSheets();
 
       src = 0;
-      foreach (var item in Infos)
+      foreach (var item in Infos.Where(o => o.IsIncluded))
       {
-        RawDetail det = null;
-        if (item.Path.ToLower().EndsWith("dxf"))
-        {
-          det = DxfParser.LoadDxf(item.Path);
-        }
-        else if (item.Path.ToLower().EndsWith("svg"))
-        {
-          det = SvgParser.LoadSvg(item.Path);
-        }
+        var det = LoadRawDetail(new FileInfo(item.Path));
 
-        for (int i = 0; i < item.Quantity; i++)
-        {
-          context.TryImportFromRawDetail(det, src, out _);
-        }
+        AddToPolygons(src, det, item);
 
         src++;
       }
 
-      run();
+      if (src == 0)
+      {
+        MessageBox.Show("No parts to nest.", "DeepNest", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+      }
+      else
+      {
+        run();
+      }
+    }
+
+    private void AddToPolygons(int src, RawDetail det, int quantity, bool isIncluded = true, bool isPrimary = false)
+    {
+      var item = new DetailLoadInfo() { Quantity = quantity, IsIncluded = isIncluded, IsPrimary = isPrimary };
+      AddToPolygons(src, det, item);
+    }
+
+    private void AddToPolygons(int src, RawDetail det, DetailLoadInfo item)
+    {
+      NFP loadedNfp;
+      if (Context.TryImportFromRawDetail(det, src, out loadedNfp))
+      {
+        loadedNfp.IsPrimary = item.IsPrimary;
+        for (int i = 0; i < item.Quantity; i++)
+        {
+          Context.Polygons.Add(loadedNfp.Clone());
+        }
+      }
+      else
+      {
+        MessageBox.Show($"Failed to import {det.Name}.");
+      }
     }
 
     private void objectListView1_SelectedIndexChanged(object sender, EventArgs e)
     {
       if (objectListView1.SelectedObject == null) return;
-      var path = (objectListView1.SelectedObject as DetailLoadInfo).Path.ToLower();
-      if (path.EndsWith("dxf"))
-      {
-        Preview = DxfParser.LoadDxf(path);
-      }
-      else if (path.EndsWith("svg"))
-      {
-        Preview = SvgParser.LoadSvg(path);
-      }
+      Preview = LoadRawDetail(new FileInfo((objectListView1.SelectedObject as DetailLoadInfo).Path));
       if (autoFit) fitAll();
     }
 
@@ -1565,6 +1604,7 @@
       {
         (item as DetailLoadInfo).Quantity = q.Qnt;
       }
+
       objectListView1.RefreshObjects(objectListView1.SelectedObjects);
     }
 

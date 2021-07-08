@@ -4,7 +4,7 @@
 
   public static class ExporterFactory
   {
-    public static IExport GetExporter(List<NFP> polygons)
+    public static IExport GetExporter(List<NFP> polygons, ISvgNestConfig config)
     {
       IExport exporter;
       if (polygons.ContainsDxfs())
@@ -13,7 +13,7 @@
       }
       else
       {
-        exporter = new SvgParser();
+        exporter = new SvgParser(config);
       }
 
       return exporter;

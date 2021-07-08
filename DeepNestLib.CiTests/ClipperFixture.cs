@@ -16,8 +16,8 @@
       var source = new SvgPoint[] { new SvgPoint(new Random().Next(), new Random().Next()), new SvgPoint(new Random().Next(), new Random().Next()), new SvgPoint(new Random().Next(), new Random().Next()), new SvgPoint(new Random().Next(), new Random().Next()) };
       var original = new NFP(source);
       var alternate = new NFP(source);
-      var sut = new _Clipper() as IDeprecatedClipper;
-      sut.ScaleUpPathsOriginal(original, 1D).Should().BeEquivalentTo(_Clipper.ScaleUpPaths(alternate.Points, 1D));
+      var sut = new DeepNestClipper() as IDeprecatedClipper;
+      sut.ScaleUpPathsOriginal(original, 1D).Should().BeEquivalentTo(DeepNestClipper.ScaleUpPaths(alternate.Points, 1D));
     }
 
     [Fact]
@@ -31,7 +31,7 @@
       }
 
       var original = new NFP(source);
-      var sut = new _Clipper() as IDeprecatedClipper;
+      var sut = new DeepNestClipper() as IDeprecatedClipper;
       var sw = new Stopwatch();
       long deprecatedOriginal = 0;
       long current = 0;
@@ -43,7 +43,7 @@
         deprecatedOriginal += sw.ElapsedTicks;
         sw.Reset();
         sw.Start();
-        _ = _Clipper.ScaleUpPaths(original.Points, 1D);
+        _ = DeepNestClipper.ScaleUpPaths(original.Points, 1D);
         current += sw.ElapsedTicks;
         sw.Reset();
         sw.Start();

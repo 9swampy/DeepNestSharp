@@ -1,0 +1,104 @@
+UnitTestRun
+
+?pair
+{DeepNestLib.NfpPair}
+    A: {nfp: id: 0; source: -1; rotation: 0; points: 4}
+    ARotation: 0
+    Asource: 0
+    B: {nfp: id: 0; source: -1; rotation: 0; points: 4}
+    BRotation: 0
+    Bsource: 0
+    nfp: null
+?pair.A
+{nfp: id: 0; source: -1; rotation: 0; points: 4}
+    Area: 121
+    Children: Count = 0
+    ForceRotations: false
+    HeightCalculated: 11
+    Id: 0
+    IsPrimary: false
+    Length: 4
+    Name: null
+    Offsetx: null
+    Offsety: null
+    PlacementOrder: -1
+    Points: {DeepNestLib.SvgPoint[4]}
+    Rotation: 0
+    Rotations: {float[2]}
+    Sheet: null
+    Source: -1
+    WidthCalculated: 11
+    fitted: false
+    isBin: false
+    points: {DeepNestLib.SvgPoint[4]}
+    rotation: 0
+    x: 0
+    y: 0
+?pair.B
+{nfp: id: 0; source: -1; rotation: 0; points: 4}
+    Area: 121
+    Children: Count = 0
+    ForceRotations: false
+    HeightCalculated: 11
+    Id: 0
+    IsPrimary: false
+    Length: 4
+    Name: null
+    Offsetx: null
+    Offsety: null
+    PlacementOrder: -1
+    Points: {DeepNestLib.SvgPoint[4]}
+    Rotation: 0
+    Rotations: {float[2]}
+    Sheet: null
+    Source: -1
+    WidthCalculated: 11
+    fitted: false
+    isBin: false
+    points: {DeepNestLib.SvgPoint[4]}
+    rotation: 0
+    x: 0
+    y: 0
+?pair.A.Points
+{DeepNestLib.SvgPoint[4]}
+    [0]: {x: 11; y: 11}
+    [1]: {x: 0; y: 11}
+    [2]: {x: 0; y: 0}
+    [3]: {x: 11; y: 0}
+?pair.B.Points
+{DeepNestLib.SvgPoint[4]}
+    [0]: {x: 11; y: 11}
+    [1]: {x: 0; y: 11}
+    [2]: {x: 0; y: 0}
+    [3]: {x: 11; y: 0}
+?clipperNfp
+{nfp: id: 0; source: -1; rotation: 0; points: 4}
+    Area: 484
+    Children: Count = 0
+    ForceRotations: false
+    HeightCalculated: 22
+    Id: 0
+    IsPrimary: false
+    Length: 4
+    Name: null
+    Offsetx: null
+    Offsety: null
+    PlacementOrder: -1
+    Points: {DeepNestLib.SvgPoint[4]}
+    Rotation: 0
+    Rotations: {float[2]}
+    Sheet: null
+    Source: -1
+    WidthCalculated: 22
+    fitted: false
+    isBin: false
+    points: {DeepNestLib.SvgPoint[4]}
+    rotation: 0
+    x: 0
+    y: 0
+?clipperNfp.Points
+{DeepNestLib.SvgPoint[4]}
+    [0]: {x: 22; y: 22}
+    [1]: {x: 0; y: 22}
+    [2]: {x: 0; y: 0}
+    [3]: {x: 22; y: 0}

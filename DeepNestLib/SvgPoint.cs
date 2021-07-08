@@ -4,14 +4,17 @@
 
   public class SvgPoint : IEquatable<SvgPoint>
   {
-    public bool exact = true;
+    public bool Exact
+    {
+      get;
+      set;
+    }
+      = true;
 
     public override string ToString()
     {
       return "x: " + x + "; y: " + y;
     }
-
-    public int id;
 
     public SvgPoint(double x, double y)
     {
@@ -21,14 +24,13 @@
 
     internal SvgPoint(SvgPoint point)
     {
-      this.exact = point.exact;
-      this.id = point.id;
-      this.marked = point.marked;
+      this.Exact = point.Exact;
+      this.Marked = point.Marked;
       this.x = point.x;
       this.y = point.y;
     }
 
-    public bool marked;
+    public bool Marked { get; set; }
 
     public double x { get; internal set; }
 
@@ -41,7 +43,7 @@
 
     public override int GetHashCode()
     {
-      return HashCode.Combine(id, exact, marked, x, y);
+      return HashCode.Combine(Exact, Marked, x, y);
     }
 
     public bool Equals(SvgPoint other)

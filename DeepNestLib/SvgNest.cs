@@ -3,18 +3,56 @@
   using System;
   using System.Collections.Generic;
   using System.Linq;
+  using System.Text;
+  using System.Threading;
   using System.Threading.Tasks;
   using ClipperLib;
+  using DeepNestLib.GeneticAlgorithm;
+  using DeepNestLib.Placement;
 
   public class SvgNest
   {
     private readonly IMessageService messageService;
     private readonly Action setIsErrored;
+    private Background background;
 
-    public SvgNest(IMessageService messageService, Action setIsErrored)
+    private PopulationItem individual = null;
+    private NFP[] placelist;
+    private GeneticAlgorithm.Procreant ga;
+
+    public List<NestResult> nests = new List<NestResult>();
+
+    private static int generations = 0;
+
+    internal static void ResetCounters()
+    {
+      Interlocked.Exchange(ref generations, 0);
+      Interlocked.Exchange(ref population, 0);
+    }
+
+    private static int population = 0;
+
+    public SvgNest(IMessageService messageService, IProgressDisplayer progressDisplayer, Action setIsErrored)
     {
       this.messageService = messageService;
+      this.progressDisplayer = progressDisplayer;
       this.setIsErrored = setIsErrored;
+    }
+
+    public static int Population
+    {
+      get
+      {
+        return population;
+      }
+    }
+
+    public static int Generations
+    {
+      get
+      {
+        return generations;
+      }
     }
 
     public class InrangeItem
@@ -43,7 +81,7 @@
       {
         var filtered = inrange.Where((p) =>
         {
-          return p.point.exact;
+          return p.point.Exact;
         }).ToList();
 
         // use exact points when available, normal points when not
@@ -184,7 +222,7 @@
       SvgPoint[] resultSource;
       bool doSimplifyRadialDist = false;
       bool doSimplifyDouglasPeucker = true;
-      if (cache.TryGetValue(new System.Tuple<SvgPoint[], double?, bool, bool>(polygon.Points, config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker), out resultSource))
+      if (cache.TryGetValue(new PolygonSimplificationKey(polygon.Points, config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker), out resultSource))
       {
         return new NFP(resultSource);
       }
@@ -206,8 +244,8 @@
           var sqd = ((p2.x - p1.x) * (p2.x - p1.x)) + ((p2.y - p1.y) * (p2.y - p1.y));
           if (sqd > fixedTolerance)
           {
-            p1.marked = true;
-            p2.marked = true;
+            p1.Marked = true;
+            p2.Marked = true;
           }
         }
 
@@ -368,8 +406,8 @@
 
         if (straightened)
         {
-          var Ac = _Clipper.ScaleUpPaths(offset.Points, 10000000);
-          var Bc = _Clipper.ScaleUpPaths(polygon.Points, 10000000);
+          var Ac = DeepNestClipper.ScaleUpPaths(offset.Points, 10000000);
+          var Bc = DeepNestClipper.ScaleUpPaths(polygon.Points, 10000000);
 
           var combined = new List<List<IntPoint>>();
           var clipper = new ClipperLib.Clipper();
@@ -383,7 +421,7 @@
             double? largestArea = null;
             for (i = 0; i < combined.Count; i++)
             {
-              var n = Background.ToNestCoordinates(combined[i].ToArray(), 10000000);
+              var n = combined[i].ToArray().ToNestCoordinates(10000000);
               var sarea = -GeometryUtil.polygonArea(n);
               if (largestArea == null || largestArea < sarea)
               {
@@ -418,9 +456,9 @@
 
       lock (cacheSyncLock)
       {
-        if (!cache.ContainsKey(new System.Tuple<SvgPoint[], double?, bool, bool>(polygon.Points, config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker)))
+        if (!cache.ContainsKey(new PolygonSimplificationKey(polygon.Points, config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker)))
         {
-          cache.Add(new System.Tuple<SvgPoint[], double?, bool, bool>(polygon.Points, config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker), offset.Points);
+          cache.Add(new PolygonSimplificationKey(polygon.Points, config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker), offset.Points);
         }
       }
 
@@ -446,7 +484,7 @@
       List<List<IntPoint>> finalNfp = new List<List<IntPoint>>();
       if (clipper.Execute(ClipType.ctIntersection, finalNfp, PolyFillType.pftNonZero, PolyFillType.pftNonZero) && finalNfp != null && finalNfp.Count > 0)
       {
-        return Background.ToNestCoordinates(finalNfp[0].ToArray(), clipperScale);
+        return finalNfp[0].ToArray().ToNestCoordinates(clipperScale);
       }
 
       return subject;
@@ -477,8 +515,8 @@
 
         if (IsExactMatch(polygon, index1, index2))
         {
-          seg[0].exact = true;
-          seg[1].exact = true;
+          seg[0].Exact = true;
+          seg[1].Exact = true;
         }
       }
     }
@@ -501,8 +539,8 @@
 
         if (IsExactMatch(polygon, index1, index2))
         {
-          seg[0].exact = true;
-          seg[1].exact = true;
+          seg[0].Exact = true;
+          seg[1].Exact = true;
         }
       }
     }
@@ -526,7 +564,7 @@
     }
 
     // offset tree recursively
-    public static void OffsetTree(NFP t, double offset, ISvgNestConfig config, bool? inside = null)
+    public static void OffsetTree(NFP t, double offset, bool? inside = null)
     {
       var simple = simplifyFunction(t, (inside == null) ? false : inside.Value);
       var offsetpaths = new NFP[] { simple };
@@ -564,7 +602,7 @@
       {
         for (var i = 0; i < t.Children.Count; i++)
         {
-          OffsetTree(t.Children[i], -offset, config, (inside == null) ? true : (!inside));
+          OffsetTree(t.Children[i], -offset, (inside == null) ? true : (!inside));
         }
       }
     }
@@ -599,14 +637,14 @@
     // converts a polygon from normal float coordinates to integer coordinates used by clipper, as well as x/y -> X/Y
     public static IntPoint[] svgToClipper2(NFP polygon, double? scale = null)
     {
-      var d = _Clipper.ScaleUpPaths(polygon.Points, scale == null ? Config.ClipperScale : scale.Value);
+      var d = DeepNestClipper.ScaleUpPaths(polygon.Points, scale == null ? Config.ClipperScale : scale.Value);
       return d.ToArray();
     }
 
     // converts a polygon from normal float coordinates to integer coordinates used by clipper, as well as x/y -> X/Y
     public static ClipperLib.IntPoint[] svgToClipper(NFP polygon)
     {
-      var d = _Clipper.ScaleUpPaths(polygon.Points, Config.ClipperScale);
+      var d = DeepNestClipper.ScaleUpPaths(polygon.Points, Config.ClipperScale);
       return d.ToArray();
 
       return polygon.Points.Select(z => new IntPoint((long)z.x, (long)z.y)).ToArray();
@@ -773,131 +811,87 @@
       return id;
     }
 
-    private static NFP cloneTree(NFP tree)
+    public static long LastPlacePartTime { get; private set; } = 0;
+
+    public void ResponseProcessor(NestResult payload)
     {
-      NFP newtree = new NFP();
-      foreach (var t in tree.Points)
-      {
-        newtree.AddPoint(new SvgPoint(t.x, t.y) { exact = t.exact });
-      }
+      Interlocked.Increment(ref population);
+      LastPlacePartTime = payload.PlacePartTime;
 
-      if (tree.Children != null && tree.Children.Count > 0)
-      {
-        foreach (var c in tree.Children)
-        {
-          newtree.Children.Add(cloneTree(c));
-        }
-      }
-
-      return newtree;
-    }
-
-    public Background background = new Background();
-
-    private PopulationItem individual = null;
-    private NFP[] placelist;
-    private GeneticAlgorithm ga;
-
-    public List<SheetPlacement> nests = new List<SheetPlacement>();
-
-    public void ResponseProcessor(SheetPlacement payload)
-    {
       // console.log('ipc response', payload);
-      if (this.ga == null)
+      if (this.ga == null || payload == null)
       {
         // user might have quit while we're away
         return;
       }
 
-      this.ga.Population[payload.index].processing = null;
-      this.ga.Population[payload.index].fitness = payload.fitness;
+      this.ga.Population[payload.index].processing = false;
+      this.ga.Population[payload.index].fitness = payload.Fitness;
+      this.ga.Population[payload.index].fitnessAlt = new OriginalFitness().Evaluate(payload);
 
-      // render placement
-      if (this.nests.Count == 0 || this.nests[0].fitness > payload.fitness)
+      if (this.nests.Count == 0)
       {
         this.nests.Insert(0, payload);
+      }
+      else
+      {
+        int i = 0;
+        while (i < this.nests.Count - 1 && this.nests[i].Fitness > payload.Fitness)
+        {
+          i++;
+        }
 
-        if (this.nests.Count > Config.PopulationSize)
+        if (i <= Config.PopulationSize / 10 && this.nests[i].Fitness != payload.Fitness)
+        {
+          this.nests.Insert(i, payload);
+        }
+
+        if (this.nests.Count > Config.PopulationSize * 2 / 10)
         {
           this.nests.RemoveAt(this.nests.Count - 1);
         }
-
-        // if (displayCallback)
-        {
-          // displayCallback();
-        }
       }
+
+      int currentPlacements = 0;
+      if (this.nests.Count > 0 && this.nests[0].UsedSheets.Count > 0 && this.nests[0].UsedSheets.Count > 0)
+      {
+        currentPlacements = this.nests[0].UsedSheets[0].PartPlacements.Count;
+      }
+
+      this.progressDisplayer?.DisplayProgress(currentPlacements, this.ga.Population.Count(o => o.fitness != null));
     }
 
-    public void launchWorkers(NestItem[] parts)
+    private IProgressDisplayer progressDisplayer;
+
+    /// <summary>
+    /// Starts next generation if none started or prior finished.
+    /// </summary>
+    /// <param name="parts"></param>
+    /// <param name="background"></param>
+    public void launchWorkers(NestItem[] parts, ISvgNestConfig config)
     {
       try
       {
-        this.background.ResponseAction = this.ResponseProcessor;
-
         if (this.ga == null)
         {
-          List<NFP> adam = new List<NFP>();
-          var id = 0;
-          for (int i = 0; i < parts.Count(); i++)
-          {
-            if (!parts[i].IsSheet)
-            {
-              for (int j = 0; j < parts[i].Quantity; j++)
-              {
-                var poly = cloneTree(parts[i].Polygon); // deep copy
-                poly.Id = id; // id is the unique id of all parts that will be nested, including cloned duplicates
-                poly.Source = i; // source is the id of each unique part from the main part list
-
-                adam.Add(poly);
-                id++;
-              }
-            }
-          }
-
-          adam = adam.OrderByDescending(z => Math.Abs(GeometryUtil.polygonArea(z))).ToList();
-          /*List<NFP> shuffle = new List<NFP>();
-          Random r = new Random(DateTime.Now.Millisecond);
-          while (adam.Any())
-          {
-              var rr = r.Next(adam.Count);
-              shuffle.Add(adam[rr]);
-              adam.RemoveAt(rr);
-          }
-          adam = shuffle;*/
-
-          /*#region special case
-          var temp = adam[1];
-          adam.RemoveAt(1);
-          adam.Insert(9, temp);
-
-          #endregion*/
-          this.ga = new GeneticAlgorithm(adam.ToArray(), Config);
+          this.ga = new Procreant(parts, config);
         }
 
         this.individual = null;
 
-        // check if current generation is finished
-        var finished = true;
-        for (int i = 0; i < this.ga.Population.Count; i++)
-        {
-          if (this.ga.Population[i].fitness == null)
-          {
-            finished = false;
-            break;
-          }
-        }
-
-        if (finished)
+        if (this.ga.IsCurrentGenerationFinished)
         {
           // console.log('new generation!');
           // all individuals have been evaluated, start next generation
-          this.ga.Generation();
+
+          this.ga.Generate();
+          Interlocked.Increment(ref generations);
+          Interlocked.Exchange(ref population, 0);
         }
 
         var running = this.ga.Population.Where((p) =>
         {
-          return p.processing != null;
+          return p.processing;
         }).Count();
 
         List<NFP> sheets = new List<NFP>();
@@ -912,7 +906,7 @@
             var poly = parts[i].Polygon;
             for (int j = 0; j < parts[i].Quantity; j++)
             {
-              var cln = cloneTree(poly);
+              var cln = poly.CloneTree();
               cln.Id = sid; // id is the unique id of all parts that will be nested, including cloned duplicates
               cln.Source = poly.Source; // source is the id of each unique part from the main part list
 
@@ -925,54 +919,81 @@
           }
         }
 
-        for (int i = 0; i < this.ga.Population.Count; i++)
+        var threadList = new Queue<Thread>();
+
+        //while (!this.ga.IsCurrentGenerationFinished)
         {
-          // if(running < config.threads && !GA.population[i].processing && !GA.population[i].fitness){
-          // only one background window now...
-          if (running < 1 && this.ga.Population[i].processing == null && this.ga.Population[i].fitness == null)
+          for (int i = 0; i < this.ga.Population.Count; i++)
           {
-            this.ga.Population[i].processing = true;
+            // if(running < config.threads && !GA.population[i].processing && !GA.population[i].fitness){
+            // only one background window now...
+            //if (threadList.Count < 10 && this.ga.Population[i].processing == null && this.ga.Population[i].fitness == null)
 
-            // hash values on arrays don't make it across ipc, store them in an array and reassemble on the other side....
-            List<int> ids = new List<int>();
-            List<int> sources = new List<int>();
-            List<List<NFP>> children = new List<List<NFP>>();
-
-            for (int j = 0; j < this.ga.Population[i].placements.Count; j++)
+            if (running < 1 && !this.ga.Population[i].processing && this.ga.Population[i].fitness == null)
             {
-              var id = this.ga.Population[i].placements[j].Id;
-              var source = this.ga.Population[i].placements[j].Source;
-              var child = this.ga.Population[i].placements[j].Children;
+              this.ga.Population[i].processing = true;
 
-              // ids[j] = id;
-              ids.Add(id);
+              // hash values on arrays don't make it across ipc, store them in an array and reassemble on the other side....
+              List<int> ids = new List<int>();
+              List<int> sources = new List<int>();
+              List<List<NFP>> children = new List<List<NFP>>();
 
-              // sources[j] = source;
-              sources.Add(source);
+              for (int j = 0; j < this.ga.Population[i].placements.Count; j++)
+              {
+                var id = this.ga.Population[i].placements[j].Id;
+                var source = this.ga.Population[i].placements[j].Source;
+                var child = this.ga.Population[i].placements[j].Children;
 
-              // children[j] = child;
-              children.Add(child.ToList());
+                // ids[j] = id;
+                ids.Add(id);
+
+                // sources[j] = source;
+                sources.Add(source);
+
+                // children[j] = child;
+                children.Add(child.ToList());
+              }
+
+              DataInfo data = new DataInfo()
+              {
+                index = i,
+                sheets = sheets,
+                sheetids = sheetids.ToArray(),
+                sheetsources = sheetsources.ToArray(),
+                sheetchildren = sheetchildren,
+                individual = this.ga.Population[i],
+                config = Config,
+                ids = ids.ToArray(),
+                sources = sources.ToArray(),
+                children = children,
+              };
+
+              //var t = new Thread(new ThreadStart(() =>
+              //{
+              var background = new Background(this.progressDisplayer);
+              background.ResponseAction = this.ResponseProcessor;
+              background.BackgroundStart(data, data.config);
+              //}));
+              //threadList.Enqueue(t);
+              //t.Start();
+              //t.Join();
+
+              // ipcRenderer.send('background-start', { index: i, sheets: sheets, sheetids: sheetids, sheetsources: sheetsources, sheetchildren: sheetchildren, individual: GA.population[i], config: config, ids: ids, sources: sources, children: children});
+              running++;
             }
-
-            DataInfo data = new DataInfo()
-            {
-              index = i,
-              sheets = sheets,
-              sheetids = sheetids.ToArray(),
-              sheetsources = sheetsources.ToArray(),
-              sheetchildren = sheetchildren,
-              individual = this.ga.Population[i],
-              config = Config,
-              ids = ids.ToArray(),
-              sources = sources.ToArray(),
-              children = children,
-            };
-
-            this.background.BackgroundStart(data);
-
-            // ipcRenderer.send('background-start', { index: i, sheets: sheets, sheetids: sheetids, sheetsources: sheetsources, sheetchildren: sheetchildren, individual: GA.population[i], config: config, ids: ids, sources: sources, children: children});
-            running++;
           }
+
+          //for (int i = 0; i < 10; i++)
+          //{
+          //  if (threadList.Count > 0)
+          //  {
+          //    var thread = threadList.Dequeue();
+          //    if (!thread.Join(1000))
+          //    {
+          //      threadList.Enqueue(thread);
+          //    }
+          //  }
+          //}
         }
       }
       catch (Exception ex)
@@ -1007,67 +1028,6 @@
     ClipperLib.IntPoint[] ScaleUpPathsOriginal(NFP p, double scale);
 
     ClipperLib.IntPoint[] ScaleUpPathsSlowerParallel(SvgPoint[] points, double scale = 1);
-  }
-
-  public class _Clipper : IDeprecatedClipper
-  {
-    ClipperLib.IntPoint[] IDeprecatedClipper.ScaleUpPathsOriginal(NFP p, double scale = 1)
-    {
-      List<ClipperLib.IntPoint> ret = new List<ClipperLib.IntPoint>();
-
-      for (int i = 0; i < p.Points.Length; i++)
-      {
-        // p.Points[i] = new SvgNestPort.SvgPoint((float)Math.Round(p.Points[i].x * scale), (float)Math.Round(p.Points[i].y * scale));
-        ret.Add(new ClipperLib.IntPoint(
-            (long)Math.Round((decimal)p.Points[i].x * (decimal)scale),
-            (long)Math.Round((decimal)p.Points[i].y * (decimal)scale)));
-      }
-
-      return ret.ToArray();
-    } // 5 secs
-
-    ClipperLib.IntPoint[] IDeprecatedClipper.ScaleUpPathsSlowerParallel(SvgPoint[] points, double scale = 1)
-    {
-      var result = from point in points.AsParallel().AsSequential()
-                   select new ClipperLib.IntPoint((long)Math.Round((decimal)point.x * (decimal)scale), (long)Math.Round((decimal)point.y * (decimal)scale));
-
-      return result.ToArray();
-    } // 2 secs
-
-    public static ClipperLib.IntPoint[] ScaleUpPaths(SvgPoint[] points, double scale = 1)
-    {
-      var result = new ClipperLib.IntPoint[points.Length];
-
-      Parallel.For(0, points.Length, i => result[i] = new ClipperLib.IntPoint((long)Math.Round((decimal)points[i].x * (decimal)scale), (long)Math.Round((decimal)points[i].y * (decimal)scale)));
-
-      return result.ToArray();
-    } // 2 secs
-
-    /*public static IntPoint[] ScaleUpPath(IntPoint[] p, double scale = 1)
-    {
-        for (int i = 0; i < p.Length; i++)
-        {
-
-            //p[i] = new IntPoint(p[i].X * scale, p[i].Y * scale);
-            p[i] = new IntPoint(
-                (long)Math.Round((decimal)p[i].X * (decimal)scale),
-                (long)Math.Round((decimal)p[i].Y * (decimal)scale));
-        }
-        return p.ToArray();
-    }
-    public static void ScaleUpPaths(List<List<IntPoint>> p, double scale = 1)
-    {
-        for (int i = 0; i < p.Count; i++)
-        {
-            for (int j = 0; j < p[i].Count; j++)
-            {
-                p[i][j] = new IntPoint(p[i][j].X * scale, p[i][j].Y * scale);
-
-            }
-        }
-
-
-    }*/
   }
 
   public class DataInfo
@@ -1136,7 +1096,18 @@
     {
       get
       {
-        var key = "A" + this.A + "B" + this.B + "Arot" + (int)Math.Round(this.ARotation * 10000) + "Brot" + (int)Math.Round(this.BRotation * 10000) + ";" + this.Type;
+        var key = new StringBuilder(30).Append("A")
+                                      .Append(this.A)
+                                      .Append("B")
+                                      .Append(this.B)
+                                      .Append("Arot")
+                                      .Append((int)Math.Round(this.ARotation * 10000))
+                                      .Append("Brot")
+                                      .Append((int)Math
+                                      .Round(this.BRotation * 10000))
+                                      .Append(";")
+                                      .Append(this.Type)
+                                      .ToString();
         return key;
       }
     }
@@ -1144,110 +1115,24 @@
 
   public class NfpPair
   {
-    public NFP A;
-    public NFP B;
-    public NfpKey Key;
-    public NFP nfp;
+    public NFP A { get; internal set; }
 
-    public float ARotation;
-    public float BRotation;
+    public NFP B { get; internal set; }
+
+    public NFP nfp { get; internal set; }
+
+    public float ARotation { get; internal set; }
+
+    public float BRotation { get; internal set; }
 
     public int Asource { get; internal set; }
+
     public int Bsource { get; internal set; }
-  }
-
-  public class NonameReturn
-  {
-    public NfpKey key;
-    public NFP[] nfp;
-    public NFP[] value
-    {
-      get
-      {
-        return nfp;
-      }
-    }
-
-    public NonameReturn(NfpKey key, NFP[] nfp)
-    {
-      this.key = key;
-      this.nfp = nfp;
-    }
   }
 
   public interface IStringify
   {
     string stringify();
-  }
-  public class NfpKey : IStringify
-  {
-
-    public NFP A;
-    public NFP B;
-    public float ARotation { get; set; }
-    public float BRotation { get; set; }
-    public bool Inside { get; set; }
-
-    public int AIndex { get; set; }
-    public int BIndex { get; set; }
-    public object Asource;
-    public object Bsource;
-
-
-    public string stringify()
-    {
-      return $"A:{AIndex} B:{BIndex} inside:{Inside} Arotation:{ARotation} Brotation:{BRotation}";
-    }
-  }
-
-  public class PopulationItem
-  {
-    public object processing = null;
-
-    public double? fitness;
-
-    public float[] Rotation;
-    public List<NFP> placements;
-
-    public NFP[] paths;
-    public double area;
-  }
-
-  public class SheetPlacementItem
-  {
-    public int sheetId;
-    public int sheetSource;
-
-    public List<PlacementItem> sheetplacements = new List<PlacementItem>();
-    public List<PlacementItem> placements = new List<PlacementItem>();
-  }
-
-  public class PlacementItem
-  {
-    public double? mergedLength;
-    public object mergedSegments;
-    public List<List<ClipperLib.IntPoint>> nfp;
-    public int id;
-    public NFP hull;
-    public NFP hullsheet;
-
-    public float rotation;
-    public double x;
-    public double y;
-    public int source;
-  }
-
-  public class SheetPlacement
-  {
-    public double? fitness;
-
-    public float[] Rotation;
-    public List<SheetPlacementItem>[] placements;
-
-    public NFP[] paths;
-    public double area;
-    public double mergedLength;
-    internal int index;
   }
 
   public class Sheet : NFP

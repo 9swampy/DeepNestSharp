@@ -1,16 +1,8 @@
-﻿using DeepNestLib;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-
-namespace DeepNestConsole
+﻿namespace DeepNestConsole
 {
+  using System;
+  using DeepNestLib;
+
   public class ConsoleMessageService : IMessageService
   {
     public void DisplayMessage(string message)

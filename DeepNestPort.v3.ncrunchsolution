@@ -4,7 +4,8 @@
       <Value>MinkowskiDlls\**.*</Value>
     </AdditionalFilesForGridProcessing>
     <AllowParallelTestExecution>True</AllowParallelTestExecution>
-    <BuildProcessArchitecture>x64</BuildProcessArchitecture>
     <SolutionConfigured>True</SolutionConfigured>
+    <UseBuildConfiguration>DEBUG</UseBuildConfiguration>
+    <UseBuildPlatform>x86</UseBuildPlatform>
   </Settings>
 </SolutionConfiguration>
