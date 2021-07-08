@@ -1,11 +1,10 @@
 ﻿namespace DeepNestLib.CiTests
 {
   using System;
-  using System.Collections.Generic;
   using System.Diagnostics;
+  using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
-  using IxMilia.Dxf.Entities;
   using Xunit;
 
   public class ClipperFixture

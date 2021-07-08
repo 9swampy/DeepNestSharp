@@ -4,7 +4,7 @@
   using System.Collections.Generic;
   using DeepNestLib.GeneticAlgorithm;
 
-  public class NestResult
+  public class NestResult : INestResult
   {
     private double fitnessAlt = -1;
 
@@ -30,8 +30,8 @@
       this.fitness = fitness;
 #pragma warning restore CS0618 // Type or member is obsolete
       this.NestIndex = nestIndex;
-      this.area = area;
-      this.mergedLength = mergedLength;
+      this.Area = area;
+      this.MergedLength = mergedLength;
       this.FitnessSheets = fitnessSheets;
       this.FitnessBounds = fitnessBounds;
       this.FitnessUnplaced = fitnessUnplaced;
@@ -72,9 +72,9 @@
     /// <summary>
     /// Area of the placement sheet.
     /// </summary>
-    public double area { get; }
+    public double Area { get; }
 
-    public double mergedLength { get; }
+    public double MergedLength { get; }
 
     public double FitnessSheets { get; }
 

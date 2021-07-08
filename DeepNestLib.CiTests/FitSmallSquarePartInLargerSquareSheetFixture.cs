@@ -52,7 +52,7 @@
     [Fact]
     public void GivenOnePartOnlyThenShouldBeNoMergedLines()
     {
-      this.nestResult.mergedLength.Should().Be(0, "there was only one part; no lines to merge possible.");
+      this.nestResult.MergedLength.Should().Be(0, "there was only one part; no lines to merge possible.");
     }
 
     [Fact]

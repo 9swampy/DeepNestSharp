@@ -152,6 +152,7 @@
     <Compile Include="NfpPairEqualityComparer.cs" />
     <Compile Include="NfpPairEqualityComparerKey.cs" />
     <Compile Include="NfpPairsFactory.cs" />
+    <Compile Include="Placement\INestResult.cs" />
     <Compile Include="Placement\PartPlacement.cs" />
     <Compile Include="Placement\SheetPlacement.cs" />
     <Compile Include="Placement\SheetPlacementCollection.cs" />
@@ -175,6 +176,7 @@
     <Compile Include="PolygonSimplificationEqualityComparer.cs" />
     <Compile Include="SvgPoint.cs" />
     <Compile Include="SvgPointArrayExtensions.cs" />
+    <Compile Include="TopNestResultsCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\clipper_library\clipper_library.csproj">

@@ -1,6 +1,7 @@
 ﻿namespace DeepNestLib
 {
   using System;
+  using System.Collections;
   using System.Collections.Generic;
   using System.Linq;
   using System.Text;
@@ -20,7 +21,7 @@
     private NFP[] placelist;
     private GeneticAlgorithm.Procreant ga;
 
-    public List<NestResult> nests = new List<NestResult>();
+    public TopNestResultsCollection nests { get; private set; } = new TopNestResultsCollection(Config);
 
     private static int generations = 0;
 
@@ -828,34 +829,12 @@
       this.ga.Population[payload.index].processing = false;
       this.ga.Population[payload.index].fitness = payload.Fitness;
       this.ga.Population[payload.index].fitnessAlt = new OriginalFitness().Evaluate(payload);
-
-      if (this.nests.Count == 0)
-      {
-        this.nests.Insert(0, payload);
-      }
-      else
-      {
-        int i = 0;
-        while (i < this.nests.Count - 1 && this.nests[i].Fitness > payload.Fitness)
-        {
-          i++;
-        }
-
-        if (i <= Config.PopulationSize / 10 && this.nests[i].Fitness != payload.Fitness)
-        {
-          this.nests.Insert(i, payload);
-        }
-
-        if (this.nests.Count > Config.PopulationSize * 2 / 10)
-        {
-          this.nests.RemoveAt(this.nests.Count - 1);
-        }
-      }
+      this.nests.Add(payload);
 
       int currentPlacements = 0;
-      if (this.nests.Count > 0 && this.nests[0].UsedSheets.Count > 0 && this.nests[0].UsedSheets.Count > 0)
+      if (this.nests.Count > 0 && this.nests.Top.UsedSheets.Count > 0 && this.nests.Top.UsedSheets.Count > 0)
       {
-        currentPlacements = this.nests[0].UsedSheets[0].PartPlacements.Count;
+        currentPlacements = this.nests.Top.UsedSheets[0].PartPlacements.Count;
       }
 
       this.progressDisplayer?.DisplayProgress(currentPlacements, this.ga.Population.Count(o => o.fitness != null));

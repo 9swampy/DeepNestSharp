@@ -32,7 +32,7 @@
 
     public int PlacedPartsCount { get; private set; } = 0;
 
-    public NestResult Current { get; private set; } = null;
+    public INestResult Current { get; private set; } = null;
 
     public SvgNest Nest { get; private set; }
 
@@ -175,7 +175,7 @@
       }
     }
 
-    public void AssignPlacement(NestResult plcpr)
+    public void AssignPlacement(INestResult plcpr)
     {
       Current = plcpr;
       double totalSheetsArea = 0;

@@ -54,7 +54,7 @@
     [Fact]
     public void GivenOnePartOnlyThenShouldBeNoMergedLines()
     {
-      this.nestResult.mergedLength.Should().Be(0, "there was only one part on each sheet; no lines to merge possible.");
+      this.nestResult.MergedLength.Should().Be(0, "there was only one part on each sheet; no lines to merge possible.");
     }
 
     [Fact]
@@ -103,7 +103,7 @@
     [Fact]
     public void ShouldHaveExpectedArea()
     {
-      this.nestResult.area.Should().Be(529);
+      this.nestResult.Area.Should().Be(529);
     }
 
     [Fact]

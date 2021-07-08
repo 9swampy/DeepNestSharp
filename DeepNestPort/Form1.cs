@@ -245,7 +245,7 @@
 
         if (nest != null && nest.nests.Any())
         {
-          ctx.gr.DrawString($"Nests: {nest.nests.Count} Fitness: {nest.nests.First().Fitness}   Area:{nest.nests.First().area}  ", Font, Brushes.DarkBlue, 0, yy);
+          ctx.gr.DrawString($"Nests: {nest.nests.Count} Fitness: {nest.nests.First().Fitness}   Area:{nest.nests.First().Area}  ", Font, Brushes.DarkBlue, 0, yy);
           yy += (int)Font.Size + gap;
         }
 
@@ -456,7 +456,7 @@
           listView4.Items.Clear();
           foreach (var item in nest.nests)
           {
-            listView4.Items.Add(new ListViewItem(new string[] { item.fitness?.ToString("F6"), item.FitnessAlt.ToString("F6") }) { Tag = item });
+            listView4.Items.Add(new ListViewItem(new string[] { item.Fitness?.ToString("F6"), item.FitnessAlt.ToString("F6") }) { Tag = item });
           }
 
           listView4.EndUpdate();

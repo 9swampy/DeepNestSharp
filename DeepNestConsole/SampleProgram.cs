@@ -40,7 +40,7 @@
         var sw = Stopwatch.StartNew();
         Context.NestIterate(SvgNest.Config);
         sw.Stop();
-        Console.WriteLine("Iteration: " + Context.Iterations + "; fitness: " + Context.Current.fitness + "; nesting time: " + sw.ElapsedMilliseconds + "ms");
+        Console.WriteLine("Iteration: " + Context.Iterations + "; fitness: " + Context.Current.Fitness + "; nesting time: " + sw.ElapsedMilliseconds + "ms");
       }
       while (!IsFinished());
 
