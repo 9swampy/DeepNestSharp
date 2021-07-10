@@ -3,25 +3,21 @@
   using System;
   using System.Collections.Generic;
   using System.Diagnostics;
-  using System.Drawing;
   using System.Linq;
   using System.Runtime.InteropServices;
   using System.Text;
-  using System.Threading;
   using System.Threading.Tasks;
   using ClipperLib;
   using DeepNestLib.Placement;
-  
+
   public class Background
   {
     public static bool EnableCaches = true;
-    
+
     public Dictionary<string, NFP[]> cacheProcess = new Dictionary<string, NFP[]>();
 
     // jsClipper uses X/Y instead of x/y...
     public DataInfo data;
-
-    private NFP[] parts;
 
     private int index;
 
@@ -275,10 +271,10 @@
       bounds.y -= 0.5 * (bounds.height - (bounds.height / 1.1));
 
       var frame = new NFP(new List<NFP>() { A });
-      frame.Push(new SvgPoint(bounds.x, bounds.y));
-      frame.Push(new SvgPoint(bounds.x + bounds.width, bounds.y));
-      frame.Push(new SvgPoint(bounds.x + bounds.width, bounds.y + bounds.height));
-      frame.Push(new SvgPoint(bounds.x, bounds.y + bounds.height));
+      ((IHiddenNfp)frame).Push(new SvgPoint(bounds.x, bounds.y));
+      ((IHiddenNfp)frame).Push(new SvgPoint(bounds.x + bounds.width, bounds.y));
+      ((IHiddenNfp)frame).Push(new SvgPoint(bounds.x + bounds.width, bounds.y + bounds.height));
+      ((IHiddenNfp)frame).Push(new SvgPoint(bounds.x, bounds.y + bounds.height));
 
       frame.Source = A.Source;
       frame.Rotation = 0;
@@ -373,7 +369,7 @@
       Stopwatch sw = new Stopwatch();
       sw.Start();
 
-      Queue<NFP> unusedSheets = new Queue<NFP>(sheets);
+      var unusedSheets = new Stack<NFP>(sheets.Reverse());
       double totalsheetarea = 0;
       NFP part = null;
 
@@ -391,7 +387,7 @@
         rotated.Add(r);
       }
 
-      parts = rotated.ToArray();
+      var unplacedParts = rotated.ToArray();
 
       SheetPlacementCollection allplacements = new SheetPlacementCollection();
 
@@ -403,20 +399,55 @@
       NFP nfp;
       double sheetarea = -1;
       int totalPlaced = 0;
-      int totalParts = parts.Count();
+      int totalParts = unplacedParts.Count();
 
-      while (parts.Length > 0 && unusedSheets.Count > 0)
+      bool isPriorityPlacement;
+      while (unplacedParts.Length > 0 && unusedSheets.Count > 0)
       {
+        var done = parts.Length - unplacedParts.Length;
+        if (done > 5 && sw.ElapsedMilliseconds / done * parts.Length > 5000)
+        {
+          this.progressDisplayer.DisplayProgress((float)done / parts.Length);
+        }
+
         List<NFP> placed = new List<NFP>();
         List<PartPlacement> placements = new List<PartPlacement>();
 
         // open a new sheet
-        var sheet = unusedSheets.Dequeue();
-        sheetarea = Math.Abs(GeometryUtil.polygonArea(sheet));
-        totalsheetarea += sheetarea;
+        NFP sheet = null;
+        var requeue = new Queue<NFP>();
+        while (sheet == null)
+        {
+          sheet = unusedSheets.Pop();
+          if (allplacements.Any(o => o.Sheet == sheet))
+          {
+            var sheetPlacement = allplacements.Single(o => o.Sheet == sheet);
+            placements = sheetPlacement.PartPlacements;
+            placed = sheetPlacement.PartPlacements.Select(o => o.Part).ToList();
+            if (unplacedParts.Any(o => o.IsPriority))
+            {
+              // Sheet's already used so by definition it's already full of priority parts, no point trying to add more
+              requeue.Enqueue(sheet);
+              sheet = null;
+            }
+            else
+            {
+              // Sheet's already used for priority parts but there's no priority parts left so fill spaces with non-priority
+              allplacements.Remove(sheetPlacement);
+            }
+          }
+          else
+          {
+            //it's a new sheet so just go ahead and use it for whatever's left
+            placements = new List<PartPlacement>();
+            placed = new List<NFP>();
+            sheetarea = Math.Abs(GeometryUtil.polygonArea(sheet));
+            totalsheetarea += sheetarea;
 
-        fitnessSheets += sheetarea; // add 1 for each new sheet opened (lower fitness is better)
-        fitness += sheetarea; // add 1 for each new sheet opened (lower fitness is better)
+            fitnessSheets += sheetarea; // add 1 for each new sheet opened (lower fitness is better)
+            fitness += sheetarea; // add 1 for each new sheet opened (lower fitness is better)
+          }
+        }
 
         string clipkey = string.Empty;
         Dictionary<string, ClipCacheItem> clipCache = new Dictionary<string, ClipCacheItem>();
@@ -425,16 +456,13 @@
         var error = false;
         IntPoint[][] clipperSheetNfp = null;
         double? minwidth = null;
-
         double? minarea = null;
-        for (int i = 0; i < parts.Length; i++)
-        {
-          if (i > 5 && sw.ElapsedMilliseconds / i * parts.Length > 5000)
-          {
-            this.progressDisplayer.DisplayProgress((float)i / parts.Length);
-          }
 
-          part = parts[i];
+        isPriorityPlacement = unplacedParts.Any(o => o.IsPriority);
+        var processingParts = (isPriorityPlacement ? unplacedParts.Where(o => o.IsPriority) : unplacedParts).ToArray();
+        for (int i = 0; i < processingParts.Length; i++)
+        {
+          part = processingParts[i];
 
           // inner NFP
           NFP[] sheetNfp = null;
@@ -457,7 +485,7 @@
 
             // rotation is not in-place
             part = r;
-            parts[i] = r;
+            processingParts[i] = r;
 
             if (part.Rotation > 360f)
             {
@@ -596,7 +624,7 @@
 
             if (differenceWithSheetPolygonNfpPoints == null || differenceWithSheetPolygonNfpPoints.Count == 0)
             {
-              if (part.IsPrimary)
+              if (part.IsPriority)
               {
                 break; /* Failed to fit a Primary part; add another sheet.
                           However that means we'll leave additional space on the first sheet though that won't get used again
@@ -730,11 +758,10 @@
                 }
 
                 // console.timeEnd('evalmerge');
-                if (
-        minarea == null ||
-        area < minarea ||
-        (GeometryUtil._almostEqual(minarea, area) && (minx == null || shiftvector.x < minx)) ||
-        (GeometryUtil._almostEqual(minarea, area) && (minx != null && GeometryUtil._almostEqual(shiftvector.x, minx) && shiftvector.y < miny)))
+                if (minarea == null ||
+                    area < minarea ||
+                    (GeometryUtil._almostEqual(minarea, area) && (minx == null || shiftvector.x < minx)) ||
+                    (GeometryUtil._almostEqual(minarea, area) && (minx != null && GeometryUtil._almostEqual(shiftvector.x, minx) && shiftvector.y < miny)))
                 {
                   minarea = area;
 
@@ -769,7 +796,7 @@
                 totalMerged += position.mergedLength.Value;
               }
             }
-            else if (part.IsPrimary)
+            else if (part.IsPriority)
             {
               break; // Should go to line 921
             }
@@ -800,14 +827,23 @@
           fitness += (minwidth.Value / sheetarea) + minarea.Value;
         }
 
-        // }
         for (int i = 0; i < placed.Count; i++)
         {
-          var index = Array.IndexOf(parts, placed[i]);
+          var index = Array.IndexOf(unplacedParts, placed[i]);
           if (index >= 0)
           {
-            parts = parts.Splice(index, 1);
+            unplacedParts = unplacedParts.Splice(index, 1);
           }
+        }
+
+        if (isPriorityPlacement && unplacedParts.Length > 0)
+        {
+          unusedSheets.Push(sheet);
+        }
+
+        while (requeue.Count > 0)
+        {
+          unusedSheets.Push(requeue.Dequeue());
         }
 
         if (placements != null && placements.Count > 0)
@@ -827,20 +863,13 @@
 
       // there were parts that couldn't be placed
       // scale this value high - we really want to get all the parts in, even at the cost of opening new sheets
-      List<NFP> unplacedParts = new List<NFP>();
-      for (int noPlaceIdx = 0; noPlaceIdx < parts.Count(); noPlaceIdx++)
+      foreach (var unplacedPart in unplacedParts)
       {
-        var unplacedPart = parts[noPlaceIdx];
-        unplacedParts.Add(unplacedPart);
         fitnessUnplaced += 100000000 * (Math.Abs(GeometryUtil.polygonArea(unplacedPart)) / totalsheetarea);
         fitness += 100000000 * (Math.Abs(GeometryUtil.polygonArea(unplacedPart)) / totalsheetarea);
       }
 
-      // send finish progerss signal
-      // ipcRenderer.send('background-progress', { index: nestindex, progress: -1});
       return new NestResult(nestIndex, sheetarea, allplacements, unplacedParts, fitness, totalMerged, fitnessSheets, fitnessBounds, fitnessUnplaced, config.PlacementType, sw.ElapsedMilliseconds);
-
-      // return { placements: allplacements, fitness: fitness, area: sheetarea, mergedLength: totalMerged };
     }
 
     private bool CanBePlaced(NFP sheet, NFP part, double clipperScale, out NFP[] sheetNfp)
@@ -861,9 +890,9 @@
       return false;
     }
 
-    private void SyncPlaceParts()
+    private void SyncPlaceParts(NFP[] parts)
     {
-      var nestResult = PlaceParts(this.data.sheets.ToArray(), this.parts, this.data.config, this.index);
+      var nestResult = PlaceParts(this.data.sheets.ToArray(), parts, this.data.config, this.index);
       if (nestResult != null)
       {
         nestResult.index = this.data.index;
@@ -879,7 +908,7 @@
         var index = data.index;
         var individual = data.individual;
 
-        var parts = individual.placements;
+        var parts = individual.Placements;
         var rotations = individual.Rotation;
         var ids = data.ids;
         var sources = data.sources;
@@ -908,16 +937,15 @@
 
         // console.log('pairs: ', pairs.length);
         // console.time('Total');
-        this.parts = parts.ToArray();
         if (pairs.Count > 0)
         {
           var pmapWorker = new PmapWorker(pairs, progressDisplayer, config.UseParallel);
           var pmapResult = pmapWorker.PmapDeepNest();
-          this.ThenDeepNest(config.UseParallel, pmapResult, parts);
+          this.ThenDeepNest(config.UseParallel, pmapResult, parts.ToList());
         }
         else
         {
-          this.SyncPlaceParts();
+          this.SyncPlaceParts(parts.ToArray());
         }
       }
       catch (DllNotFoundException)
@@ -1019,7 +1047,7 @@
 
       // console.timeEnd('Total');
       // console.log('before sync');
-      this.SyncPlaceParts();
+      this.SyncPlaceParts(parts.ToArray());
     }
 
     public static NFP GetHull(SvgPoint[] polygon)

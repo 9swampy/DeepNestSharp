@@ -4,6 +4,9 @@
       <Value>MinkowskiDlls\**.*</Value>
     </AdditionalFilesForGridProcessing>
     <AllowParallelTestExecution>True</AllowParallelTestExecution>
+    <MSpecEnabled>False</MSpecEnabled>
+    <NUnit3Enabled>False</NUnit3Enabled>
+    <PreloadReferencedAssemblies>True</PreloadReferencedAssemblies>
     <SolutionConfigured>True</SolutionConfigured>
     <UseBuildConfiguration>DEBUG</UseBuildConfiguration>
     <UseBuildPlatform>x86</UseBuildPlatform>

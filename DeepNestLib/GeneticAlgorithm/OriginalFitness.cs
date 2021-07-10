@@ -29,7 +29,17 @@
     /// <returns></returns>
     internal static double FitnessSheets(NestResult nestResult)
     {
-      return nestResult.UsedSheets.Sum(o => o.Sheet.Area);
+      return nestResult.UsedSheets.Sum(s =>
+      {
+        var result = s.Sheet.Area;
+        if (s.PartPlacements.Any(p => p.Part.IsPriority))
+        {
+          result += s.Sheet.Area;
+          result += s.PartPlacements.Sum(p => p.Part.Area);
+        }
+
+        return result;
+      });
     }
 
     /// <summary>
@@ -72,7 +82,13 @@
     /// <returns></returns>
     internal static double FitnessUnplaced(NestResult nestResult)
     {
-      return nestResult.UnplacedParts.Sum(o => 100000000 * (Math.Abs(GeometryUtil.polygonArea(o)) / OriginalFitness.GetTotalSheetArea(nestResult)));
+      var result = nestResult.UnplacedParts.Sum(o => 100000000 * (Math.Abs(GeometryUtil.polygonArea(o)) / OriginalFitness.GetTotalSheetArea(nestResult)));
+      if (nestResult.UnplacedParts.Any(o => o.IsPriority))
+      {
+        result *= 2;
+      }
+
+      return result;
     }
   }
 }

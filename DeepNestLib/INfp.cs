@@ -1,15 +1,22 @@
 ﻿namespace DeepNestLib
 {
-    using System.Collections.Generic;
+  using System.Collections.Generic;
 
-    public interface INfp
-    {
-        float Rotation { get; }
+  public interface IHiddenNfp
+  {
+    void Push(SvgPoint svgPoint);
+  }
 
-        int Source { get; }
+  public interface INfp
+  {
+    float Rotation { get; }
 
-        SvgPoint[] Points { get; }
+    int Source { get; }
 
-        IList<NFP> Children { get; }
-    }
+    SvgPoint[] Points { get; }
+
+    IList<NFP> Children { get; }
+
+    void AddPoint(SvgPoint svgPoint);
+  }
 }

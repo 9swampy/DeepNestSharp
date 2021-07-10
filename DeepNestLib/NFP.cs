@@ -4,16 +4,20 @@
   using System.Collections.Generic;
   using System.Linq;
 
-  public class NFP : INfp, IStringify
+  public class NFP : PolygonBase, INfp, IHiddenNfp, IStringify
   {
-    private SvgPoint[] points;
-
-    public bool fitted
+    public bool Fitted
     {
       get { return this.Sheet != null; }
     }
 
     public NFP Sheet { get; set; }
+
+    //public T CloneType<T>()
+    //  where T : NFP
+    //{
+    //  return NfpFactory.CloneType((T)this);
+    //}
 
     public override string ToString()
     {
@@ -28,16 +32,17 @@
     }
 
     public NFP()
+      : base(new SvgPoint[0])
     {
       this.points = new SvgPoint[0];
     }
 
     public NFP(IEnumerable<SvgPoint> points)
+      : base(points.DeepClone())
     {
-      this.points = points.DeepClone();
     }
 
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 
     public void AddPoint(SvgPoint point)
     {
@@ -162,9 +167,9 @@
       }
     }
 
-    public bool IsPrimary { get; set; }
+    public bool IsPriority { get; set; }
 
-    internal void Push(SvgPoint svgPoint)
+    void IHiddenNfp.Push(SvgPoint svgPoint)
     {
       this.points = this.points.Append(svgPoint).ToArray();
     }
@@ -193,7 +198,8 @@
       result.Id = this.Id;
       result.Source = this.Source;
       result.Rotation = this.Rotation;
-      result.IsPrimary = this.IsPrimary;
+      result.IsPriority = this.IsPriority;
+      result.Name = this.Name;
 
       for (var i = 0; i < this.Length; i++)
       {
@@ -220,7 +226,7 @@
       NFP clone = new NFP();
       clone.Id = this.Id;
       clone.Source = this.Source;
-      clone.IsPrimary = this.IsPrimary;
+      clone.IsPriority = this.IsPriority;
       clone.ReplacePoints(this.Points.Select(z => new SvgPoint(z.x, z.y) { Exact = z.Exact }));
       if (this.Children != null)
       {
@@ -279,7 +285,7 @@
       // jwb added the properties
       // newtree.Id = this.Id;
       // newtree.Source = this.Source;
-      newtree.IsPrimary = this.IsPrimary;
+      newtree.IsPriority = this.IsPriority;
 
       // newtree.Name = this.Name;
       // jwb added the properties

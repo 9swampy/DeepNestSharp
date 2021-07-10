@@ -21,13 +21,13 @@
     {
       var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
       NFP firstSheet;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { DxfGenerator.Rectangle(20D) }), firstSheetIdSrc, out firstSheet).Should().BeTrue();
+      DxfGenerator.GenerateSquare("Sheet", 20D, RectangleType.FileLoad).TryImportFromRawDetail(firstSheetIdSrc, out firstSheet).Should().BeTrue();
       NFP secondSheet;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { DxfGenerator.Rectangle(20D) }), secondSheetIdSrc, out secondSheet).Should().BeTrue();
+      DxfGenerator.GenerateSquare("Sheet", 20D, RectangleType.FileLoad).TryImportFromRawDetail(secondSheetIdSrc, out secondSheet).Should().BeTrue();
       NFP firstPart;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Rectangle(11D) }), firstPartIdSrc, out firstPart).Should().BeTrue();
+      DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryImportFromRawDetail(firstPartIdSrc, out firstPart).Should().BeTrue();
       NFP secondPart;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Rectangle(11D) }), secondPartIdSrc, out secondPart).Should().BeTrue();
+      DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryImportFromRawDetail(secondPartIdSrc, out secondPart).Should().BeTrue();
       this.nestResult = new Background(A.Fake<IProgressDisplayer>()).PlaceParts(new NFP[] { firstSheet, secondSheet }, new NFP[] { firstPart, secondPart }, new SvgNestConfig(), 0);
     }
 
@@ -131,6 +131,12 @@
     public void ShouldHaveOnePartOnSecondPlacementWithExpectedRotation()
     {
       this.nestResult.UsedSheets[1].PartPlacements[0].rotation.Should().Be(0);
+    }
+
+    [Fact]
+    public void ShouldHaveNoUnplacedParts()
+    {
+      this.nestResult.UnplacedParts.Should().BeEmpty();
     }
   }
 }

@@ -23,6 +23,29 @@
 
     public string Name { get; set; }
 
+    public bool TryImportFromRawDetail(int src, out NFP loadedNfp)
+    {
+      return this.TryGetNfp(src, out loadedNfp);
+    }
+
+    public bool TryGetNfp(int src, out NFP loadedNfp)
+    {
+      if (this == null)
+      {
+        loadedNfp = null;
+        return false;
+      }
+
+      loadedNfp = this.ToNfp();
+      if (loadedNfp == null)
+      {
+        return false;
+      }
+
+      loadedNfp.Source = src;
+      return true;
+    }
+
     public NFP ToNfp()
     {
       NFP po = null;
@@ -54,6 +77,7 @@
           {
             po.Children = new List<NFP>();
           }
+
           po.Children.Add(r);
         }
       }

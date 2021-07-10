@@ -2,6 +2,7 @@
 {
   using System.Collections;
   using System.Collections.Generic;
+  using System.Linq;
   using DeepNestLib.Placement;
 
   public class TopNestResultsCollection : IEnumerable<INestResult>
@@ -16,7 +17,7 @@
 
     public int Count => items.Count;
 
-    public INestResult Top => items?[0];
+    public INestResult Top => items?.FirstOrDefault();
 
     public void Add(INestResult payload)
     {

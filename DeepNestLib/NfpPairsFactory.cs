@@ -1,14 +1,7 @@
 ﻿namespace DeepNestLib
 {
-  using System;
   using System.Collections.Generic;
-  using System.Diagnostics;
-  using System.Drawing;
-  using System.Linq;
-  using System.Runtime.InteropServices;
   using System.Threading.Tasks;
-  using ClipperLib;
-  using Minkowski;
 
   public class NfpPairsFactory
   {
@@ -29,7 +22,7 @@
         Parallel.For(0, parts.Count, i =>
         {
           {
-            foreach (var pair in CreatePair(i, parts))
+            foreach (var pair in CreatePairs(i, parts))
             {
               var doc = new DbCacheKey(pair.Asource, pair.Bsource, pair.ARotation, pair.BRotation);
               AddToPairs(pairs, pair, doc);
@@ -41,7 +34,7 @@
       {
         for (var i = 0; i < parts.Count; i++)
         {
-          foreach (var pair in CreatePair(i, parts))
+          foreach (var pair in CreatePairs(i, parts))
           {
             var doc = new DbCacheKey(pair.Asource, pair.Bsource, pair.ARotation, pair.BRotation);
             AddToPairs(pairs, pair, doc);
@@ -52,7 +45,7 @@
       return pairs;
     }
 
-    private IEnumerable<NfpPair> CreatePair(int i, List<NFP> parts)
+    private IEnumerable<NfpPair> CreatePairs(int i, List<NFP> parts)
     {
       var b = parts[i];
       for (var j = 0; j < i; j++)

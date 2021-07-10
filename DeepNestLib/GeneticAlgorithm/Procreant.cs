@@ -13,19 +13,30 @@
     private readonly ISvgNestConfig Config;
     public List<PopulationItem> Population;
 
-    private static bool StrictAngles = false;
     private float[] defaultAngles = new float[]
     {
       0,
       180,
-      //0,
-      //0,
-      //270,
-      //180,
-      //180,
-      //180,
-      //90
     };
+
+    //private float[] defaultAngles = new float[]
+    //{
+    //  90,
+    //  270,
+    //};
+
+    //private float[] defaultAngles = new float[]
+    //{
+    //  0,
+    //  180,
+    //  //0,
+    //  //0,
+    //  //270,
+    //  //180,
+    //  //180,
+    //  //180,
+    //  //90
+    //};
 
     public Procreant(NFP[] adam, ISvgNestConfig config)
     {
@@ -34,7 +45,7 @@
       var angles = new List<float>();
       for (var i = 0; i < adam.Length; i++)
       {
-        if (StrictAngles)
+        if (config.StrictAngles)
         {
           angles.Add(defaultAngles[i % defaultAngles.Length]);
         }
@@ -119,25 +130,25 @@
 
     private PopulationItem mutate(PopulationItem p)
     {
-      var clone = new PopulationItem(p.placements.ToArray().ToList(), p.Rotation.Clone() as float[]);
-      for (var i = 0; i < clone.placements.Count(); i++)
+      var clone = new PopulationItem(p.Placements.ToArray().ToList(), p.Rotation.Clone() as float[]);
+      for (var i = 0; i < clone.Placements.Count(); i++)
       {
         var rand = r.NextDouble();
         if (rand < 0.01 * Config.MutationRate)
         {
           var j = i + 1;
-          if (j < clone.placements.Count)
+          if (j < clone.Placements.Count)
           {
-            var temp = clone.placements[i];
-            clone.placements[i] = clone.placements[j];
-            clone.placements[j] = temp;
+            var temp = clone.Placements[i];
+            clone.Placements[i] = clone.Placements[j];
+            clone.Placements[j] = temp;
           }
         }
 
         rand = r.NextDouble();
         if (rand < 0.01 * Config.MutationRate)
         {
-          if (StrictAngles)
+          if (Config.StrictAngles)
           {
             clone.Rotation[i] = defaultAngles[random.Next() % defaultAngles.Length];
           }
@@ -160,6 +171,7 @@
         array[i] = array[j];
         array[j] = temp;
       }
+
       return array;
     }
 
@@ -187,6 +199,7 @@
         {
           return pop[i];
         }
+
         lower = upper;
         upper += 2 * weight * ((pop.Length - i) / (float)pop.Length);
       }
@@ -197,30 +210,30 @@
     // single point crossover
     private PopulationItem[] mate(PopulationItem male, PopulationItem female)
     {
-      var cutpoint = (int)Math.Round(Math.Min(Math.Max(r.NextDouble(), 0.1), 0.9) * (male.placements.Count - 1));
+      var cutpoint = (int)Math.Round(Math.Min(Math.Max(r.NextDouble(), 0.1), 0.9) * (male.Placements.Count - 1));
 
-      var gene1 = new List<NFP>(male.placements.Take(cutpoint).ToArray());
+      var gene1 = new List<NFP>(male.Placements.Take(cutpoint).ToArray());
       var rot1 = new List<float>(male.Rotation.Take(cutpoint).ToArray());
 
-      var gene2 = new List<NFP>(female.placements.Take(cutpoint).ToArray());
+      var gene2 = new List<NFP>(female.Placements.Take(cutpoint).ToArray());
       var rot2 = new List<float>(female.Rotation.Take(cutpoint).ToArray());
 
       var i = 0;
 
-      for (i = 0; i < female.placements.Count; i++)
+      for (i = 0; i < female.Placements.Count; i++)
       {
-        if (!gene1.Any(z => z.Id == female.placements[i].Id))
+        if (!gene1.Any(z => z.Id == female.Placements[i].Id))
         {
-          gene1.Add(female.placements[i]);
+          gene1.Add(female.Placements[i]);
           rot1.Add(female.Rotation[i]);
         }
       }
 
-      for (i = 0; i < male.placements.Count; i++)
+      for (i = 0; i < male.Placements.Count; i++)
       {
-        if (!gene2.Any(z => z.Id == male.placements[i].Id))
+        if (!gene2.Any(z => z.Id == male.Placements[i].Id))
         {
-          gene2.Add(male.placements[i]);
+          gene2.Add(male.Placements[i]);
           rot2.Add(male.Rotation[i]);
         }
       }

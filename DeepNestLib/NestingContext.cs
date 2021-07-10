@@ -14,17 +14,18 @@
     private readonly IMessageService messageService;
     private readonly IProgressDisplayer progressDisplayer;
     private int iterations = 0;
+    Random random = new Random();
+    private bool isStopped;
 
     public NestingContext(IMessageService messageService, IProgressDisplayer progressDisplayer)
     {
       this.messageService = messageService;
       this.progressDisplayer = progressDisplayer;
-      SvgNest.ResetCounters();
     }
 
     public bool IsErrored { get; private set; }
 
-    public List<NFP> Polygons { get; private set; } = new List<NFP>();
+    public ICollection<NFP> Polygons { get; } = new HashSet<NFP>();
 
     public List<NFP> Sheets { get; private set; } = new List<NFP>();
 
@@ -34,7 +35,13 @@
 
     public INestResult Current { get; private set; } = null;
 
-    public SvgNest Nest { get; private set; }
+    public long LastPlacePartTime { get; private set; } = 0;
+
+    public SvgNest Nest
+    {
+      get;
+      private set;
+    }
 
     public int Iterations
     {
@@ -46,8 +53,15 @@
 
     public void StartNest()
     {
+      this.InternalReset();
       this.Current = null;
-      Nest = new SvgNest(this.messageService, this.progressDisplayer, () => this.IsErrored = true);
+      this.Nest = new SvgNest(
+        this.messageService,
+        this.progressDisplayer,
+        () => this.IsErrored = true,
+        (milliseconds) => this.LastPlacePartTime = milliseconds);
+      this.progressDisplayer.DisplayToolStripMessage($"Pre-processing. . .");
+      this.isStopped = false;
     }
 
     public void NestIterate(ISvgNestConfig config)
@@ -57,9 +71,16 @@
         List<NFP> lsheets = new List<NFP>();
         List<NFP> lpoly = new List<NFP>();
 
-        for (int i = 0; i < Polygons.Count; i++)
+        //for (int i = 0; i < Polygons.Count; i++)
+        //{
+        //  Polygons[i].Id = i;
+        //}
+
+        int id = 0;
+        foreach (var item in Polygons)
         {
-          Polygons[i].Id = i;
+          item.Id = id;
+          id++;
         }
 
         for (int i = 0; i < Sheets.Count; i++)
@@ -152,18 +173,29 @@
           item.Polygon.Source = srcc++;
         }
 
-        Nest.launchWorkers(partsLocal.ToArray(), config);
-        if (Nest != null & Nest.nests != null && Nest.nests.Count > 0)
+        if (Nest == null)
         {
-          var plcpr = Nest.nests.First();
-
-          if (Current == null || plcpr.Fitness < Current.Fitness)
-          {
-            AssignPlacement(plcpr);
-          }
+          throw new FieldAccessException("Nest was null when it should not be possible.");
         }
+        else
+        {
+          if (!this.isStopped)
+          {
+            Nest.launchWorkers(partsLocal.ToArray(), config);
+          }
 
-        Interlocked.Increment(ref iterations);
+          if (Nest.TopNestResults != null && Nest.TopNestResults.Count > 0)
+          {
+            var plcpr = Nest.TopNestResults.Top;
+
+            if (Current == null || plcpr.Fitness < Current.Fitness)
+            {
+              AssignPlacement(plcpr);
+            }
+          }
+
+          Interlocked.Increment(ref iterations);
+        }
       }
       catch (Exception ex)
       {
@@ -172,6 +204,10 @@
           this.IsErrored = true;
           this.messageService.DisplayMessage(ex);
         }
+
+#if NCRUNCH
+        throw;
+#endif
       }
     }
 
@@ -190,9 +226,9 @@
 
       List<int> sheetsIds = new List<int>();
 
-      foreach (var item in plcpr.UsedSheets)
+      foreach (var sheetPlacement in plcpr.UsedSheets)
       {
-        var sheetid = item.SheetId;
+        var sheetid = sheetPlacement.SheetId;
         if (!sheetsIds.Contains(sheetid))
         {
           sheetsIds.Add(sheetid);
@@ -201,17 +237,17 @@
         var sheet = Sheets.First(z => z.Id == sheetid);
         totalSheetsArea += GeometryUtil.polygonArea(sheet);
 
-        foreach (var ssitem in item.PartPlacements)
+        foreach (var partPlacement in sheetPlacement.PartPlacements)
         {
           PlacedPartsCount++;
-          var poly = Polygons.First(z => z.Id == ssitem.id);
+          var poly = Polygons.First(z => z.Id == partPlacement.id);
           totalPartsArea += GeometryUtil.polygonArea(poly);
           placed.Add(poly);
           poly.Sheet = sheet;
-          poly.x = ssitem.x + sheet.x;
-          poly.y = ssitem.y + sheet.y;
-          poly.Rotation = ssitem.rotation;
-          poly.PlacementOrder = item.PartPlacements.IndexOf(ssitem);
+          poly.x = partPlacement.x + sheet.x;
+          poly.y = partPlacement.y + sheet.y;
+          poly.Rotation = partPlacement.rotation;
+          poly.PlacementOrder = sheetPlacement.PartPlacements.IndexOf(partPlacement);
         }
       }
 
@@ -251,7 +287,7 @@
       }
     }
 
-    public void AddSheet(int w, int h, int src)
+    private void AddSheet(int w, int h, int src)
     {
       var tt = new RectangleSheet();
       tt.Name = "sheet" + (Sheets.Count + 1);
@@ -264,74 +300,20 @@
       ReorderSheets();
     }
 
-    Random r = new Random();
-
     public void LoadSampleData()
     {
       Console.WriteLine("Adding sheets..");
-      //add sheets
       for (int i = 0; i < 5; i++)
       {
         AddSheet(3000, 1500, 0);
       }
 
       Console.WriteLine("Adding parts..");
-      //add parts
       int src1 = GetNextSource();
       for (int i = 0; i < 200; i++)
       {
         AddRectanglePart(src1, 250, 220);
       }
-    }
-
-    public void LoadInputData(string path, int count)
-    {
-      var dir = new DirectoryInfo(path);
-      foreach (var item in dir.GetFiles("*.svg"))
-      {
-        try
-        {
-          var src = GetNextSource();
-          for (int i = 0; i < count; i++)
-          {
-            TryImportFromRawDetail(SvgParser.LoadSvg(item.FullName), src, out _);
-          }
-        }
-        catch (Exception ex)
-        {
-          Console.WriteLine("Error loading " + item.FullName + ". skip");
-        }
-      }
-    }
-
-    public bool TryAddFromRawDetailToPolygons(RawDetail raw, int src)
-    {
-      NFP loadedNfp;
-      bool result = TryImportFromRawDetail(raw, src, out loadedNfp);
-      if (result)
-      {
-        Polygons.Add(loadedNfp);
-      }
-
-      return result;
-    }
-
-    public bool TryImportFromRawDetail(RawDetail raw, int src, out NFP loadedNfp)
-    {
-      if (raw == null)
-      {
-        loadedNfp = null;
-        return false;
-      }
-
-      loadedNfp = raw.ToNfp();
-      if (loadedNfp == null)
-      {
-        return false;
-      }
-
-      loadedNfp.Source = src;
-      return true;
     }
 
     public int GetNextSource()
@@ -396,7 +378,7 @@
         }
         else if (path.ToLower().EndsWith("dxf"))
         {
-          r = DxfParser.LoadDxf(path);
+          r = DxfParser.LoadDxfFile(path);
         }
         else
         {
@@ -407,9 +389,46 @@
 
         for (int i = 0; i < cnt; i++)
         {
-          TryImportFromRawDetail(r, src, out _);
+          NFP loadedNfp;
+          if (r.TryGetNfp(src, out loadedNfp))
+          {
+            this.Polygons.Add(loadedNfp);
+          }
         }
       }
+    }
+
+    /// <summary>
+    /// A full reset of the Context and all internals; Polygons and Sheets will need to be reinitialized.
+    /// Caches remain intact.
+    /// </summary>
+    public void Reset()
+    {
+      this.Polygons.Clear();
+      this.Sheets.Clear();
+      InternalReset();
+    }
+
+    /// <summary>
+    /// An internal reset to facilitate restarting the nest only; won't clear down the Polygons or Sheets.
+    /// </summary>
+    private void InternalReset()
+    {
+      SvgNest.Reset();
+      MaterialUtilization = 0;
+      PlacedPartsCount = 0;
+      Current = null;
+      LastPlacePartTime = 0;
+      Interlocked.Exchange(ref iterations, 0);
+      this.IsErrored = false;
+      this.Current = null;
+      this.Nest = null;
+    }
+
+    public void StopNest()
+    {
+      this.isStopped = true;
+      this.Nest.Stop();
     }
   }
 }

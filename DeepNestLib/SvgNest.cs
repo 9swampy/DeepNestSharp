@@ -1,60 +1,46 @@
 ﻿namespace DeepNestLib
 {
   using System;
-  using System.Collections;
   using System.Collections.Generic;
   using System.Linq;
   using System.Text;
   using System.Threading;
-  using System.Threading.Tasks;
   using ClipperLib;
   using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
 
   public class SvgNest
   {
+    private static int generations = 0;
+    private static int population = 0;
+    private static int nestCount = 0;
+    private static long totalNestTime = 0;
+
     private readonly IMessageService messageService;
     private readonly Action setIsErrored;
-    private Background background;
-
-    private PopulationItem individual = null;
-    private NFP[] placelist;
+    private readonly Action<long> setLastPlacementTime;
     private GeneticAlgorithm.Procreant ga;
+    private PolygonTreeItem[] tree;
+    private bool useHoles;
+    private bool searchEdges;
 
-    public TopNestResultsCollection nests { get; private set; } = new TopNestResultsCollection(Config);
-
-    private static int generations = 0;
-
-    internal static void ResetCounters()
-    {
-      Interlocked.Exchange(ref generations, 0);
-      Interlocked.Exchange(ref population, 0);
-    }
-
-    private static int population = 0;
-
-    public SvgNest(IMessageService messageService, IProgressDisplayer progressDisplayer, Action setIsErrored)
+    public SvgNest(IMessageService messageService, IProgressDisplayer progressDisplayer, Action setIsErrored, Action<long> setLastPlacementTime)
     {
       this.messageService = messageService;
       this.progressDisplayer = progressDisplayer;
       this.setIsErrored = setIsErrored;
+      this.setLastPlacementTime = setLastPlacementTime;
     }
 
-    public static int Population
-    {
-      get
-      {
-        return population;
-      }
-    }
+    public TopNestResultsCollection TopNestResults { get; private set; } = new TopNestResultsCollection(Config);
 
-    public static int Generations
-    {
-      get
-      {
-        return generations;
-      }
-    }
+    public long AverageNestTime => nestCount == 0 ? 0 : totalNestTime / nestCount;
+
+    public static int NestCount => nestCount;
+
+    public static int Population => population;
+
+    public static int Generations => generations;
 
     public class InrangeItem
     {
@@ -113,7 +99,7 @@
       return target;
     }
 
-    public static ISvgNestConfig Config = new SvgNestConfig();
+    public static ISvgNestConfig Config { get; } = new SvgNestConfig();
 
     public static NFP clone(NFP p)
     {
@@ -121,7 +107,6 @@
       for (var i = 0; i < p.Length; i++)
       {
         newp.AddPoint(new SvgPoint(
-
              p[i].x,
              p[i].y));
       }
@@ -189,7 +174,7 @@
       int i, j, k;
 
       var hull = Background.GetHull(polygon.Points);
-      if (Config.Simplify)
+      if (config.Simplify)
       {
         /*
         // use convex hull
@@ -233,7 +218,7 @@
       {
         // polygon to polyline
         var copy = polygon.slice(0);
-        copy.Push(copy[0]);
+        ((IHiddenNfp)copy).Push(copy[0]);
 
         // mark all segments greater than ~0.25 in to be kept
         // the PD simplification algo doesn't care about the accuracy of long lines, only the absolute distance of each point
@@ -464,6 +449,19 @@
       }
 
       return offset;
+    }
+
+    internal static void Reset()
+    {
+      Interlocked.Exchange(ref nestCount, 0);
+      Interlocked.Exchange(ref totalNestTime, 0);
+      Interlocked.Exchange(ref generations, 0);
+      Interlocked.Exchange(ref population, 0);
+    }
+
+    internal void Stop()
+    {
+      this.isStopped = true;
     }
 
     /// <summary>
@@ -812,12 +810,12 @@
       return id;
     }
 
-    public static long LastPlacePartTime { get; private set; } = 0;
-
     public void ResponseProcessor(NestResult payload)
     {
       Interlocked.Increment(ref population);
-      LastPlacePartTime = payload.PlacePartTime;
+      this.setLastPlacementTime(payload.PlacePartTime);
+      Interlocked.Increment(ref nestCount);
+      totalNestTime += payload.PlacePartTime;
 
       // console.log('ipc response', payload);
       if (this.ga == null || payload == null)
@@ -826,24 +824,31 @@
         return;
       }
 
-      this.ga.Population[payload.index].processing = false;
+      this.ga.Population[payload.index].Processing = false;
       this.ga.Population[payload.index].fitness = payload.Fitness;
       this.ga.Population[payload.index].fitnessAlt = new OriginalFitness().Evaluate(payload);
-      this.nests.Add(payload);
+      this.TopNestResults.Add(payload);
 
       int currentPlacements = 0;
-      if (this.nests.Count > 0 && this.nests.Top.UsedSheets.Count > 0 && this.nests.Top.UsedSheets.Count > 0)
+      if (this.TopNestResults.Count > 0 && this.TopNestResults.Top.UsedSheets.Count > 0 && this.TopNestResults.Top.UsedSheets.Count > 0)
       {
-        currentPlacements = this.nests.Top.UsedSheets[0].PartPlacements.Count;
+        currentPlacements = this.TopNestResults.Top.UsedSheets[0].PartPlacements.Count;
       }
 
       this.progressDisplayer?.DisplayProgress(currentPlacements, this.ga.Population.Count(o => o.fitness != null));
+      if (this.TopNestResults.Top == payload)
+      {
+        this.progressDisplayer.DisplayToolStripMessage($"New top nest found: Nesting time; {payload.PlacePartTime}ms");
+        this.progressDisplayer?.UpdateNestsList();
+      }
     }
 
     private IProgressDisplayer progressDisplayer;
+    private bool isStopped;
 
     /// <summary>
-    /// Starts next generation if none started or prior finished.
+    /// Starts next generation if none started or prior finished. Will keep rehitting the outstanding population 
+    /// set up for the generation until all have processed.
     /// </summary>
     /// <param name="parts"></param>
     /// <param name="background"></param>
@@ -856,8 +861,6 @@
           this.ga = new Procreant(parts, config);
         }
 
-        this.individual = null;
-
         if (this.ga.IsCurrentGenerationFinished)
         {
           // console.log('new generation!');
@@ -867,11 +870,6 @@
           Interlocked.Increment(ref generations);
           Interlocked.Exchange(ref population, 0);
         }
-
-        var running = this.ga.Population.Where((p) =>
-        {
-          return p.processing;
-        }).Count();
 
         List<NFP> sheets = new List<NFP>();
         List<int> sheetids = new List<int>();
@@ -899,80 +897,74 @@
         }
 
         var threadList = new Queue<Thread>();
-
-        //while (!this.ga.IsCurrentGenerationFinished)
+        for (int i = 0; i < this.ga.Population.Count; i++)
         {
-          for (int i = 0; i < this.ga.Population.Count; i++)
+          // if(running < config.threads && !GA.population[i].processing && !GA.population[i].fitness){
+          // only one background window now...
+          if (ThrottleReadyForMore(config, threadList) && this.ga.Population[i].IsPending)
           {
-            // if(running < config.threads && !GA.population[i].processing && !GA.population[i].fitness){
-            // only one background window now...
-            //if (threadList.Count < 10 && this.ga.Population[i].processing == null && this.ga.Population[i].fitness == null)
+            this.ga.Population[i].Processing = true;
 
-            if (running < 1 && !this.ga.Population[i].processing && this.ga.Population[i].fitness == null)
+            // hash values on arrays don't make it across ipc, store them in an array and reassemble on the other side....
+            List<int> ids = new List<int>();
+            List<int> sources = new List<int>();
+            List<List<NFP>> children = new List<List<NFP>>();
+
+            for (int j = 0; j < this.ga.Population[i].Placements.Count; j++)
             {
-              this.ga.Population[i].processing = true;
+              var id = this.ga.Population[i].Placements[j].Id;
+              var source = this.ga.Population[i].Placements[j].Source;
+              var child = this.ga.Population[i].Placements[j].Children;
 
-              // hash values on arrays don't make it across ipc, store them in an array and reassemble on the other side....
-              List<int> ids = new List<int>();
-              List<int> sources = new List<int>();
-              List<List<NFP>> children = new List<List<NFP>>();
+              // ids[j] = id;
+              ids.Add(id);
 
-              for (int j = 0; j < this.ga.Population[i].placements.Count; j++)
+              // sources[j] = source;
+              sources.Add(source);
+
+              // children[j] = child;
+              children.Add(child.ToList());
+            }
+
+            DataInfo data = new DataInfo()
+            {
+              index = i,
+              sheets = sheets,
+              sheetids = sheetids.ToArray(),
+              sheetsources = sheetsources.ToArray(),
+              sheetchildren = sheetchildren,
+              individual = this.ga.Population[i],
+              config = config,
+              ids = ids.ToArray(),
+              sources = sources.ToArray(),
+              children = children,
+            };
+
+            if (config.UseParallel)
+            {
+              var t = new Thread(new ThreadStart(() =>
               {
-                var id = this.ga.Population[i].placements[j].Id;
-                var source = this.ga.Population[i].placements[j].Source;
-                var child = this.ga.Population[i].placements[j].Children;
+                DoWork(data);
+              }));
+              threadList.Enqueue(t);
+              t.Start();
 
-                // ids[j] = id;
-                ids.Add(id);
-
-                // sources[j] = source;
-                sources.Add(source);
-
-                // children[j] = child;
-                children.Add(child.ToList());
+              if (!ThrottleReadyForMore(config, threadList))
+              {
+                WaitAll(threadList);
               }
-
-              DataInfo data = new DataInfo()
-              {
-                index = i,
-                sheets = sheets,
-                sheetids = sheetids.ToArray(),
-                sheetsources = sheetsources.ToArray(),
-                sheetchildren = sheetchildren,
-                individual = this.ga.Population[i],
-                config = Config,
-                ids = ids.ToArray(),
-                sources = sources.ToArray(),
-                children = children,
-              };
-
-              //var t = new Thread(new ThreadStart(() =>
-              //{
-              var background = new Background(this.progressDisplayer);
-              background.ResponseAction = this.ResponseProcessor;
-              background.BackgroundStart(data, data.config);
-              //}));
-              //threadList.Enqueue(t);
-              //t.Start();
-              //t.Join();
-
-              // ipcRenderer.send('background-start', { index: i, sheets: sheets, sheetids: sheetids, sheetsources: sheetsources, sheetchildren: sheetchildren, individual: GA.population[i], config: config, ids: ids, sources: sources, children: children});
-              running++;
+            }
+            else
+            {
+              DoWork(data);
             }
           }
 
-          //for (int i = 0; i < 10; i++)
-          //{
-          //  if (threadList.Count > 0)
-          //  {
-          //    var thread = threadList.Dequeue();
-          //    if (!thread.Join(1000))
-          //    {
-          //      threadList.Enqueue(thread);
-          //    }
-          //  }
-          //}
+          WaitAll(threadList);
+          if (this.isStopped)
+          {
+            break;
+          }
         }
       }
       catch (Exception ex)
@@ -982,7 +974,42 @@
       }
     }
 
-    public PolygonTreeItem[] tree;
+    private void DoWork(DataInfo data)
+    {
+      Background background = new Background(this.progressDisplayer);
+      background.ResponseAction = this.ResponseProcessor;
+      background.BackgroundStart(data, data.config);
+    }
+
+    private int PopulationRunning
+    {
+      get
+      {
+        return this.ga.Population.Where((p) => { return p.Processing; }).Count();
+      }
+    }
+
+    private bool ThrottleReadyForMore(ISvgNestConfig config, Queue<Thread> threadList)
+    {
+      if (!this.isStopped && ((config.UseParallel && threadList.Count < config.ParallelNests) || PopulationRunning < 1))
+      {
+        return true;
+      }
+
+      return false;
+    }
+
+    private void WaitAll(Queue<Thread> threadList)
+    {
+      while (!this.isStopped && threadList.Count > 0)
+      {
+        var t = threadList.Dequeue();
+        if (!t.Join(1000))
+        {
+          threadList.Enqueue(t);
+        }
+      }
+    }
 
     public static IntPoint[] toClipperCoordinates(NFP polygon)
     {
@@ -997,9 +1024,6 @@
 
       return clone.ToArray();
     }
-
-    public bool useHoles;
-    public bool searchEdges;
   }
 
   public interface IDeprecatedClipper

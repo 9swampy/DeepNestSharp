@@ -17,9 +17,9 @@
     {
       var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
       NFP sheet;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { DxfGenerator.Rectangle(22D) }), 0, out sheet).Should().BeTrue();
+      DxfGenerator.GenerateSquare("Sheet", 22D, RectangleType.FileLoad).TryImportFromRawDetail(0, out sheet).Should().BeTrue();
       NFP part;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Rectangle(11D) }), 0, out part).Should().BeTrue();
+      DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryImportFromRawDetail(0, out part).Should().BeTrue();
       this.nestResult = new Background(A.Fake<IProgressDisplayer>()).PlaceParts(new NFP[] { sheet }, new NFP[] { part }, new SvgNestConfig(), 0);
     }
 
@@ -34,9 +34,9 @@
     {
       var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
       NFP sheet;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { DxfGenerator.Rectangle(22D) }), 0, out sheet).Should().BeTrue();
+      DxfGenerator.GenerateSquare("Sheet", 22D, RectangleType.FileLoad).TryImportFromRawDetail(0, out sheet).Should().BeTrue();
       NFP part;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Rectangle(11D) }), 0, out part).Should().BeTrue();
+      DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryImportFromRawDetail(0, out part).Should().BeTrue();
 
       var frame = Background.getFrame(sheet);
 
@@ -109,8 +109,10 @@
       this.nestResult.UsedSheets[0].PartPlacements[0].rotation.Should().Be(0);
     }
 
-    //[Fact]
-    //public void Should()
-    //{ }
+    [Fact]
+    public void ShouldHaveNoUnplacedParts()
+    {
+      this.nestResult.UnplacedParts.Should().BeEmpty();
+    }
   }
 }

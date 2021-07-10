@@ -25,9 +25,9 @@
     {
       var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
       NFP firstPart;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Rectangle(11D) }), firstPartIdSrc, out firstPart).Should().BeTrue();
+      DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Rectangle(11D) }).TryGetNfp(firstPartIdSrc, out firstPart).Should().BeTrue();
       NFP secondPart;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Rectangle(11D) }), secondPartIdSrc, out secondPart).Should().BeTrue();
+      DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Rectangle(11D) }).TryGetNfp(secondPartIdSrc, out secondPart).Should().BeTrue();
       var sw = new Stopwatch();
       sw.Start();
       for (int i = 0; i < iterations; i++)

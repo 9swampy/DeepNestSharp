@@ -23,21 +23,21 @@
     {
       var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
       NFP firstSheet;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { DxfGenerator.Rectangle(23D, RectangleType.FileLoad) }), firstSheetIdSrc, out firstSheet).Should().BeTrue();
+      DxfGenerator.GenerateSquare("Sheet", 23D, RectangleType.FileLoad).TryImportFromRawDetail(firstSheetIdSrc, out firstSheet).Should().BeTrue();
       NFP firstPart;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("firstPart", new List<DxfEntity>() { DxfGenerator.Rectangle(11D, RectangleType.FitFour) }), firstPartIdSrc, out firstPart).Should().BeTrue();
+      DxfGenerator.GenerateSquare("firstPart", 11D, RectangleType.FitFour).TryImportFromRawDetail(firstPartIdSrc, out firstPart).Should().BeTrue();
       // firstPart = firstPart.Rotate(180);
       firstPart.Rotation = 180;
       NFP secondPart;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("secondPart", new List<DxfEntity>() { DxfGenerator.Rectangle(11D, RectangleType.FitFour) }), secondPartIdSrc, out secondPart).Should().BeTrue();
+      DxfGenerator.GenerateSquare("secondPart", 11D, RectangleType.FitFour).TryImportFromRawDetail(secondPartIdSrc, out secondPart).Should().BeTrue();
       // secondPart = secondPart.Rotate(180);
       secondPart.Rotation = 180;
       NFP thirdPart;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("thirdPart", new List<DxfEntity>() { DxfGenerator.Rectangle(11D, RectangleType.FitFour) }), thirdPartIdSrc, out thirdPart).Should().BeTrue();
+      DxfGenerator.GenerateSquare("thirdPart", 11D, RectangleType.FitFour).TryImportFromRawDetail(thirdPartIdSrc, out thirdPart).Should().BeTrue();
       // thirdPart = thirdPart.Rotate(180);
       thirdPart.Rotation = 180;
       NFP fourthPart;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("fourthPart", new List<DxfEntity>() { DxfGenerator.Rectangle(11D, RectangleType.FitFour) }), fourthPartIdSrc, out fourthPart).Should().BeTrue();
+      DxfGenerator.GenerateSquare("fourthPart", 11D, RectangleType.FitFour).TryImportFromRawDetail(fourthPartIdSrc, out fourthPart).Should().BeTrue();
       // fourthPart = fourthPart.Rotate(180);
       fourthPart.Rotation = 180;
       var config = new DefaultSvgNestConfig();
@@ -67,6 +67,12 @@
     public void ShouldHaveSameFitnessAsOriginal()
     {
       this.nestResult.fitness.Should().BeApproximately(this.nestResult.FitnessAlt, 10);
+    }
+
+    [Fact]
+    public void ShouldHaveNoUnplacedParts()
+    {
+      this.nestResult.UnplacedParts.Should().BeEmpty();
     }
   }
 }

@@ -10,6 +10,8 @@
 
     public bool IsIncluded { get; set; }
 
-    public bool IsPrimary { get; set; }
+    public bool IsPriority { get; set; }
+
+    public bool IsMultiplied { get; set; }
   }
 }

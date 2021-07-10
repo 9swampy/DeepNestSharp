@@ -165,8 +165,11 @@
     <Compile Include="PmapWorkerProcessFixture.cs" />
     <Compile Include="PmapWorkerProcessSecondFixture.cs" />
     <Compile Include="PolygonSimplificationDictionaryFixture.cs" />
+    <Compile Include="ProgressTestResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RunFullNest.cs" />
+    <Compile Include="RunFullNestBoundingBoxFixture.cs" />
+    <Compile Include="RunFullNestGravityFixture.cs" />
+    <Compile Include="RunFullNestSqueezeFixture.cs" />
     <Compile Include="TopNestResultsCollectionFixture.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -191,13 +194,6 @@
     <Content Include="SquareInSquare.dxf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="_1.dxf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="_5.dxf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="_6.dxf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\clipper_library\clipper_library.csproj">

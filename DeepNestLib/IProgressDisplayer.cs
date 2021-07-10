@@ -9,5 +9,9 @@
     void DisplayProgress(float percentageComplete);
 
     void DisplayProgress(int placedParts, int currentPopulation);
+
+    void DisplayToolStripMessage(string message);
+
+    void UpdateNestsList();
   }
 }

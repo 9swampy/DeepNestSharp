@@ -1,5 +1,6 @@
 ﻿namespace DeepNestLib.Placement
 {
+  using System;
   using System.Collections.Generic;
   using System.Collections.ObjectModel;
 
@@ -16,6 +17,11 @@
     public void Add(SheetPlacement item)
     {
       this.Items.Add(item);
+    }
+
+    internal void Remove(SheetPlacement sheetPlacement)
+    {
+      this.Items.Remove(sheetPlacement);
     }
   }
 }
