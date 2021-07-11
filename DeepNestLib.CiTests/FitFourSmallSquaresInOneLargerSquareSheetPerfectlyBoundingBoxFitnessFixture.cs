@@ -1,12 +1,9 @@
 ﻿namespace DeepNestLib.CiTests
 {
   using System;
-  using System.Collections.Generic;
-  using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
-  using IxMilia.Dxf.Entities;
   using Xunit;
 
   public class FitFourSmallSquaresInOneLargerSquareSheetPerfectlyBoundingBoxFitnessFixture
@@ -48,25 +45,25 @@
     [Fact]
     public void ShouldHaveSameFitnessBoundsAsOriginal()
     {
-      this.nestResult.FitnessBounds.Should().BeApproximately(OriginalFitness.FitnessBounds(this.nestResult), 10);
+      this.nestResult.FitnessBounds.Should().BeApproximately(161, 10);
     }
 
     [Fact]
     public void ShouldHaveSameFitnessSheetsAsOriginal()
     {
-      this.nestResult.FitnessSheets.Should().BeApproximately(OriginalFitness.FitnessSheets(this.nestResult), 10);
+      this.nestResult.FitnessSheets.Should().BeApproximately(529, 10);
     }
 
     [Fact]
     public void ShouldHaveSameFitnessUnplacedAsOriginal()
     {
-      this.nestResult.FitnessUnplaced.Should().BeApproximately(OriginalFitness.FitnessUnplaced(this.nestResult), 10);
+      this.nestResult.FitnessUnplaced.Should().BeApproximately(0, 10);
     }
 
     [Fact]
     public void ShouldHaveSameFitnessAsOriginal()
     {
-      this.nestResult.fitness.Should().BeApproximately(this.nestResult.FitnessAlt, 10);
+      this.nestResult.Fitness.Should().BeApproximately(815, 10);
     }
 
     [Fact]

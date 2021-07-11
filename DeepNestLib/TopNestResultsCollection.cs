@@ -19,11 +19,13 @@
 
     public INestResult Top => items?.FirstOrDefault();
 
-    public void Add(INestResult payload)
+    public bool Add(INestResult payload)
     {
+      var isAdded = true;
       if (items.Count == 0)
       {
         items.Insert(0, payload);
+        isAdded = true;
       }
       else
       {
@@ -36,17 +38,21 @@
         if (i == items.Count)
         {
           items.Add(payload);
+          isAdded = true;
         }
         else if (items[i].Fitness != payload.Fitness)
         {
           items.Insert(i, payload);
-        }
-
-        if (items.Count > MaxCapacity)
-        {
-          items.RemoveAt(items.Count - 1);
+          isAdded = true;
         }
       }
+
+      if (items.Count > MaxCapacity)
+      {
+        items.RemoveAt(items.Count - 1);
+      }
+
+      return isAdded;
     }
 
     public int EliteSurvivors
@@ -73,6 +79,11 @@
     IEnumerator IEnumerable.GetEnumerator()
     {
       return items.GetEnumerator();
+    }
+
+    public int IndexOf(INestResult nestResult)
+    {
+      return this.items.IndexOf(nestResult);
     }
   }
 }

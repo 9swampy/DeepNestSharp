@@ -13,30 +13,17 @@
     private readonly ISvgNestConfig Config;
     public List<PopulationItem> Population;
 
-    private float[] defaultAngles = new float[]
+    private float[] strictVerticalAngles = new float[]
     {
       0,
       180,
     };
 
-    //private float[] defaultAngles = new float[]
-    //{
-    //  90,
-    //  270,
-    //};
-
-    //private float[] defaultAngles = new float[]
-    //{
-    //  0,
-    //  180,
-    //  //0,
-    //  //0,
-    //  //270,
-    //  //180,
-    //  //180,
-    //  //180,
-    //  //90
-    //};
+    private float[] strictHorizontalAngles = new float[]
+    {
+      90,
+      270,
+    };
 
     public Procreant(NFP[] adam, ISvgNestConfig config)
     {
@@ -45,9 +32,13 @@
       var angles = new List<float>();
       for (var i = 0; i < adam.Length; i++)
       {
-        if (config.StrictAngles)
+        if (config.StrictAngles == AnglesEnum.Vertical)
         {
-          angles.Add(defaultAngles[i % defaultAngles.Length]);
+          angles.Add(strictVerticalAngles[i % strictVerticalAngles.Length]);
+        }
+        else if (config.StrictAngles == AnglesEnum.Horizontal)
+        {
+          angles.Add(strictHorizontalAngles[i % strictHorizontalAngles.Length]);
         }
         else
         {
@@ -118,7 +109,7 @@
       {
         for (int i = 0; i < this.Population.Count; i++)
         {
-          if (this.Population[i].fitness == null)
+          if (this.Population[i].Fitness == null)
           {
             return false;
           }
@@ -148,9 +139,13 @@
         rand = r.NextDouble();
         if (rand < 0.01 * Config.MutationRate)
         {
-          if (Config.StrictAngles)
+          if (clone.Placements[i].StrictAngle == AnglesEnum.Vertical || (clone.Placements[i].StrictAngle == AnglesEnum.None && Config.StrictAngles == AnglesEnum.Vertical))
           {
-            clone.Rotation[i] = defaultAngles[random.Next() % defaultAngles.Length];
+            clone.Rotation[i] = strictVerticalAngles[random.Next() % strictVerticalAngles.Length];
+          }
+          else if (clone.Placements[i].StrictAngle == AnglesEnum.Horizontal || (clone.Placements[i].StrictAngle == AnglesEnum.None && Config.StrictAngles == AnglesEnum.Horizontal))
+          {
+            clone.Rotation[i] = strictHorizontalAngles[random.Next() % strictHorizontalAngles.Length];
           }
           else
           {
@@ -248,7 +243,7 @@
     public void Generate()
     {
       // Individuals with higher fitness are more likely to be selected for mating
-      Population = Population.OrderBy(z => z.fitness).ToList();
+      Population = Population.OrderBy(z => z.Fitness).ToList();
 
       // fittest individuals are preserved in the new generation (elitism)
       var newpopulation = new List<PopulationItem>();

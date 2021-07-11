@@ -6,15 +6,13 @@
   {
     public bool Processing { get; set; } = false;
 
-    public double? fitness;
-
-    public double fitnessAlt;
+    public double Fitness = -1;
 
     public float[] Rotation { get; }
 
     public List<NFP> Placements { get; }
 
-    public bool IsPending => !Processing && fitness == null;
+    public bool IsPending => !Processing && Fitness == -1;
 
     public PopulationItem(List<NFP> placements, float[] rotation)
     {

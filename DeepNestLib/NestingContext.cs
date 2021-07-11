@@ -15,7 +15,7 @@
     private readonly IProgressDisplayer progressDisplayer;
     private int iterations = 0;
     Random random = new Random();
-    private bool isStopped;
+    private volatile bool isStopped;
 
     public NestingContext(IMessageService messageService, IProgressDisplayer progressDisplayer)
     {
@@ -29,14 +29,10 @@
 
     public List<NFP> Sheets { get; private set; } = new List<NFP>();
 
-    public double MaterialUtilization { get; private set; } = 0;
-
     public int PlacedPartsCount { get; private set; } = 0;
 
     public INestResult Current { get; private set; } = null;
-
-    public long LastPlacePartTime { get; private set; } = 0;
-
+    
     public SvgNest Nest
     {
       get;
@@ -58,8 +54,7 @@
       this.Nest = new SvgNest(
         this.messageService,
         this.progressDisplayer,
-        () => this.IsErrored = true,
-        (milliseconds) => this.LastPlacePartTime = milliseconds);
+        () => this.IsErrored = true);
       this.progressDisplayer.DisplayToolStripMessage($"Pre-processing. . .");
       this.isStopped = false;
     }
@@ -214,8 +209,6 @@
     public void AssignPlacement(INestResult plcpr)
     {
       Current = plcpr;
-      double totalSheetsArea = 0;
-      double totalPartsArea = 0;
 
       PlacedPartsCount = 0;
       List<NFP> placed = new List<NFP>();
@@ -235,13 +228,11 @@
         }
 
         var sheet = Sheets.First(z => z.Id == sheetid);
-        totalSheetsArea += GeometryUtil.polygonArea(sheet);
 
         foreach (var partPlacement in sheetPlacement.PartPlacements)
         {
           PlacedPartsCount++;
           var poly = Polygons.First(z => z.Id == partPlacement.id);
-          totalPartsArea += GeometryUtil.polygonArea(poly);
           placed.Add(poly);
           poly.Sheet = sheet;
           poly.x = partPlacement.x + sheet.x;
@@ -250,10 +241,6 @@
           poly.PlacementOrder = sheetPlacement.PartPlacements.IndexOf(partPlacement);
         }
       }
-
-      var emptySheets = Sheets.Where(z => !sheetsIds.Contains(z.Id)).ToArray();
-
-      MaterialUtilization = Math.Abs(totalPartsArea / totalSheetsArea);
 
       var ppps = Polygons.Where(z => !placed.Contains(z));
       foreach (var item in ppps)
@@ -415,10 +402,8 @@
     private void InternalReset()
     {
       SvgNest.Reset();
-      MaterialUtilization = 0;
       PlacedPartsCount = 0;
       Current = null;
-      LastPlacePartTime = 0;
       Interlocked.Exchange(ref iterations, 0);
       this.IsErrored = false;
       this.Current = null;

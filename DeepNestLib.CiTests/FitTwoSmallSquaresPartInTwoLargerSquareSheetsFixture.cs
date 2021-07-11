@@ -1,11 +1,9 @@
 ﻿namespace DeepNestLib.CiTests
 {
   using System;
-  using System.Collections.Generic;
   using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
-  using IxMilia.Dxf.Entities;
   using Xunit;
 
   public class FitTwoSmallSquaresPartInTwoLargerSquareSheetsFixture
@@ -46,19 +44,13 @@
     [Fact]
     public void ShouldHaveExpectedFitness()
     {
-      this.nestResult.fitness.Should().Be(double.NaN);
+      this.nestResult.Fitness.Should().BeApproximately(3340, 1);
     }
 
     [Fact]
     public void ShouldHaveExpectedNullRotation()
     {
       this.nestResult.Rotation.Should().BeNull();
-    }
-
-    [Fact]
-    public void ShouldHaveExpectedArea()
-    {
-      this.nestResult.Area.Should().Be(400);
     }
 
     [Fact]

@@ -50,7 +50,7 @@
 
     bool UseParallel { get; set; }
 
-    bool StrictAngles { get; set; }
+    AnglesEnum StrictAngles { get; set; }
 
     int Multiplier { get; set; }
 

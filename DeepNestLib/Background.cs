@@ -370,7 +370,6 @@
       sw.Start();
 
       var unusedSheets = new Stack<NFP>(sheets.Reverse());
-      double totalsheetarea = 0;
       NFP part = null;
 
       // total length of merged lines
@@ -388,19 +387,8 @@
       }
 
       var unplacedParts = rotated.ToArray();
-
       SheetPlacementCollection allplacements = new SheetPlacementCollection();
-
-      double fitness = 0;
-      double fitnessSheets = 0;
-      double fitnessBounds = 0;
-      double fitnessUnplaced = 0;
-
       NFP nfp;
-      double sheetarea = -1;
-      int totalPlaced = 0;
-      int totalParts = unplacedParts.Count();
-
       bool isPriorityPlacement;
       while (unplacedParts.Length > 0 && unusedSheets.Count > 0)
       {
@@ -411,7 +399,7 @@
         }
 
         List<NFP> placed = new List<NFP>();
-        List<PartPlacement> placements = new List<PartPlacement>();
+        IList<PartPlacement> placements = new List<PartPlacement>();
 
         // open a new sheet
         NFP sheet = null;
@@ -441,11 +429,6 @@
             //it's a new sheet so just go ahead and use it for whatever's left
             placements = new List<PartPlacement>();
             placed = new List<NFP>();
-            sheetarea = Math.Abs(GeometryUtil.polygonArea(sheet));
-            totalsheetarea += sheetarea;
-
-            fitnessSheets += sheetarea; // add 1 for each new sheet opened (lower fitness is better)
-            fitness += sheetarea; // add 1 for each new sheet opened (lower fitness is better)
           }
         }
 
@@ -534,7 +517,6 @@
 
             placements.Add(position);
             placed.Add(part);
-            totalPlaced++;
           }
           else
           {
@@ -675,7 +657,7 @@
             }
             else
             {
-              allpoints = GetHull(allpoints.Points);
+              allpoints = allpoints.GetHull();
             }
 
             for (int j = 0; j < finalNfp.Count; j++)
@@ -730,9 +712,9 @@
                     localpoints.AddPoint(new SvgPoint(part[m].x + shiftvector.x, part[m].y + shiftvector.y));
                   }
 
-                  area = Math.Abs(GeometryUtil.polygonArea(GetHull(localpoints.Points)));
-                  shiftvector.hull = GetHull(localpoints.Points);
-                  shiftvector.hullsheet = GetHull(sheet.Points);
+                  area = Math.Abs(GeometryUtil.polygonArea(localpoints.GetHull()));
+                  shiftvector.hull = localpoints.GetHull();
+                  shiftvector.hullsheet = sheet.GetHull();
                 }
 
                 // console.timeEnd('evalbounds');
@@ -789,7 +771,6 @@
             if (position != null)
             {
               placed.Add(part);
-              totalPlaced++;
               placements.Add(position);
               if (position.mergedLength.HasValue)
               {
@@ -807,24 +788,7 @@
             {
               placednum += allplacements[j].PartPlacements.Count;
             }
-
-            // console.log(placednum, totalnum);
-            // ipcRenderer.send('background-progress', { index: nestindex, progress: 0.5 + 0.5 * (placednum / totalnum)});
-
-            // console.timeEnd('placement');
           }
-        }
-
-        // if(minwidth){
-        if (!minwidth.HasValue)
-        {
-          fitnessBounds = double.NaN;
-          fitness = double.NaN;
-        }
-        else
-        {
-          fitnessBounds += (minwidth.Value / sheetarea) + minarea.Value;
-          fitness += (minwidth.Value / sheetarea) + minarea.Value;
         }
 
         for (int i = 0; i < placed.Count; i++)
@@ -848,12 +812,7 @@
 
         if (placements != null && placements.Count > 0)
         {
-          allplacements.Add(new SheetPlacement(sheet, placements));
-
-          // fitness += Add the unused space on each sheet to fitness; we want to use as much as possible within rectangle bounds, not just rectanglebounds
-          // fitness += placements.Sum(o=> o.hullsheet.Area
-
-          // allplacements.Add({ sheet: sheet.source, sheetid: sheet.id, sheetplacements: placements});
+          allplacements.Add(new SheetPlacement(config.PlacementType, sheet, placements));
         }
         else
         {
@@ -861,15 +820,7 @@
         }
       }
 
-      // there were parts that couldn't be placed
-      // scale this value high - we really want to get all the parts in, even at the cost of opening new sheets
-      foreach (var unplacedPart in unplacedParts)
-      {
-        fitnessUnplaced += 100000000 * (Math.Abs(GeometryUtil.polygonArea(unplacedPart)) / totalsheetarea);
-        fitness += 100000000 * (Math.Abs(GeometryUtil.polygonArea(unplacedPart)) / totalsheetarea);
-      }
-
-      return new NestResult(nestIndex, sheetarea, allplacements, unplacedParts, fitness, totalMerged, fitnessSheets, fitnessBounds, fitnessUnplaced, config.PlacementType, sw.ElapsedMilliseconds);
+      return new NestResult(nestIndex, allplacements, unplacedParts, totalMerged, config.PlacementType, sw.ElapsedMilliseconds);
     }
 
     private bool CanBePlaced(NFP sheet, NFP part, double clipperScale, out NFP[] sheetNfp)
@@ -1048,37 +999,6 @@
       // console.timeEnd('Total');
       // console.log('before sync');
       this.SyncPlaceParts(parts.ToArray());
-    }
-
-    public static NFP GetHull(SvgPoint[] polygon)
-    {
-      // convert to hulljs format
-      /*var hull = new ConvexHullGrahamScan();
-      for(var i=0; i<polygon.length; i++){
-          hull.addPoint(polygon[i].x, polygon[i].y);
-      }
-
-      return hull.getHull();*/
-      double[][] points = new double[polygon.Length][];
-      for (var i = 0; i < polygon.Length; i++)
-      {
-        points[i] = new double[] { polygon[i].x, polygon[i].y };
-      }
-
-      var hullpoints = D3.polygonHull(points);
-
-      if (hullpoints == null)
-      {
-        return new NFP(polygon);
-      }
-
-      NFP hull = new NFP();
-      for (int i = 0; i < hullpoints.Count(); i++)
-      {
-        hull.AddPoint(new SvgPoint(hullpoints[i][0], hullpoints[i][1]));
-      }
-
-      return hull;
     }
 
     // returns clipper nfp. Remember that clipper nfp are a list of polygons, not a tree!

@@ -193,10 +193,10 @@ namespace DeepNestLib.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool StrictAngles {
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int StrictAngles {
             get {
-                return ((bool)(this["StrictAngles"]));
+                return ((int)(this["StrictAngles"]));
             }
             set {
                 this["StrictAngles"] = value;

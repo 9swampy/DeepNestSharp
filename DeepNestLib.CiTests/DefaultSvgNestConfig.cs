@@ -50,7 +50,7 @@
 
     public float ToleranceSvg { get; set; } = 0.005f;
 
-    public bool StrictAngles { get; set; } = false;
+    public AnglesEnum StrictAngles { get; set; } = AnglesEnum.None;
 
     public int Multiplier { get; set; } = 1;
 

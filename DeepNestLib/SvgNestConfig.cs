@@ -258,16 +258,23 @@
       }
     }
 
-    public bool StrictAngles
+    public AnglesEnum StrictAngles
     {
       get
       {
-        return (bool)Properties.Settings.Default["StrictAngles"];
+        try
+        {
+          return (AnglesEnum)Properties.Settings.Default["StrictAngles"];
+        }
+        catch (System.Exception)
+        {
+          return AnglesEnum.None;
+        }
       }
 
       set
       {
-        Properties.Settings.Default["StrictAngles"] = value;
+        Properties.Settings.Default["StrictAngles"] = (int)value;
         Properties.Settings.Default.Save();
         Properties.Settings.Default.Upgrade();
       }

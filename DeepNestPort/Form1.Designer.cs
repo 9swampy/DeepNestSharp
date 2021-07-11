@@ -1,33 +1,33 @@
 ﻿namespace DeepNestPort
 {
-    partial class Form1
+  partial class Form1
+  {
+    /// <summary>
+    /// Required designer variable.
+    /// </summary>
+    private System.ComponentModel.IContainer components = null;
+
+    /// <summary>
+    /// Clean up any resources being used.
+    /// </summary>
+    /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+    protected override void Dispose(bool disposing)
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
-        private System.ComponentModel.IContainer components = null;
+      if (disposing && (components != null))
+      {
+        components.Dispose();
+      }
+      base.Dispose(disposing);
+    }
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+    #region Windows Form Designer generated code
 
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
-        private void InitializeComponent()
-        {
+    /// <summary>
+    /// Required method for Designer support - do not modify
+    /// the contents of this method with the code editor.
+    /// </summary>
+    private void InitializeComponent()
+    {
       this.components = new System.ComponentModel.Container();
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
       this.nestPreview = new System.Windows.Forms.PictureBox();
@@ -52,6 +52,7 @@
       this.olvInclude = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
       this.olvPriority = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
       this.olvMultiply = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+      this.olvStrictAngle = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
       this.contextMenuStrip4 = new System.Windows.Forms.ContextMenuStrip(this.components);
       this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.deleteToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
@@ -64,8 +65,8 @@
       this.runNestingButton = new System.Windows.Forms.ToolStripButton();
       this.tabPage2 = new System.Windows.Forms.TabPage();
       this.groupBox9 = new System.Windows.Forms.GroupBox();
+      this.strictAnglesCombo = new System.Windows.Forms.ComboBox();
       this.showPartPositions = new System.Windows.Forms.CheckBox();
-      this.strictAnglesCheckbox = new System.Windows.Forms.CheckBox();
       this.checkBox6 = new System.Windows.Forms.CheckBox();
       this.checkBox5 = new System.Windows.Forms.CheckBox();
       this.label2 = new System.Windows.Forms.Label();
@@ -93,9 +94,9 @@
       this.textBox1 = new System.Windows.Forms.TextBox();
       this.tabPage4 = new System.Windows.Forms.TabPage();
       this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-      this.listView4 = new System.Windows.Forms.ListView();
-      this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-      this.colFitnessAlt = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+      this.listViewTopNests = new System.Windows.Forms.ListView();
+      this.columnHeaderFitness = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+      this.columnHeaderDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
       this.toolStrip1 = new System.Windows.Forms.ToolStrip();
       this.runButton = new System.Windows.Forms.ToolStripButton();
       this.stopButton = new System.Windows.Forms.ToolStripButton();
@@ -164,6 +165,9 @@
       this.timer1 = new System.Windows.Forms.Timer(this.components);
       this.statusStrip1 = new System.Windows.Forms.StatusStrip();
       this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+      this.contextMenuTopNestResults = new System.Windows.Forms.ContextMenuStrip(this.components);
+      this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+      this.label12 = new System.Windows.Forms.Label();
       ((System.ComponentModel.ISupportInitialize)(this.nestPreview)).BeginInit();
       this.tabControl1.SuspendLayout();
       this.tabPage3.SuspendLayout();
@@ -204,15 +208,16 @@
       ((System.ComponentModel.ISupportInitialize)(this.debugPreview)).BeginInit();
       this.tabPage5.SuspendLayout();
       this.statusStrip1.SuspendLayout();
+      this.contextMenuTopNestResults.SuspendLayout();
       this.SuspendLayout();
       // 
       // nestPreview
       // 
       this.nestPreview.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.nestPreview.Location = new System.Drawing.Point(364, 59);
+      this.nestPreview.Location = new System.Drawing.Point(277, 59);
       this.nestPreview.Margin = new System.Windows.Forms.Padding(0);
       this.nestPreview.Name = "nestPreview";
-      this.nestPreview.Size = new System.Drawing.Size(925, 580);
+      this.nestPreview.Size = new System.Drawing.Size(1012, 580);
       this.nestPreview.TabIndex = 0;
       this.nestPreview.TabStop = false;
       this.nestPreview.MouseEnter += new System.EventHandler(this.pictureBox1_MouseEnter);
@@ -409,6 +414,7 @@
       this.partsList.AllColumns.Add(this.olvInclude);
       this.partsList.AllColumns.Add(this.olvPriority);
       this.partsList.AllColumns.Add(this.olvMultiply);
+      this.partsList.AllColumns.Add(this.olvStrictAngle);
       this.partsList.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.DoubleClick;
       this.partsList.CellEditUseWholeCell = false;
       this.partsList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -416,7 +422,8 @@
             this.olvQuantity,
             this.olvInclude,
             this.olvPriority,
-            this.olvMultiply});
+            this.olvMultiply,
+            this.olvStrictAngle});
       this.partsList.ContextMenuStrip = this.contextMenuStrip4;
       this.partsList.Cursor = System.Windows.Forms.Cursors.Default;
       this.partsList.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -462,6 +469,11 @@
       this.olvMultiply.AspectName = "IsMultiplied";
       this.olvMultiply.CheckBoxes = true;
       this.olvMultiply.Text = "Multiply";
+      // 
+      // olvStrictAngle
+      // 
+      this.olvStrictAngle.AspectName = "StrictAngle";
+      this.olvStrictAngle.Text = "StrictAngle";
       // 
       // contextMenuStrip4
       // 
@@ -582,8 +594,9 @@
       // 
       // groupBox9
       // 
+      this.groupBox9.Controls.Add(this.label12);
+      this.groupBox9.Controls.Add(this.strictAnglesCombo);
       this.groupBox9.Controls.Add(this.showPartPositions);
-      this.groupBox9.Controls.Add(this.strictAnglesCheckbox);
       this.groupBox9.Controls.Add(this.checkBox6);
       this.groupBox9.Controls.Add(this.checkBox5);
       this.groupBox9.Location = new System.Drawing.Point(471, 15);
@@ -595,10 +608,19 @@
       this.groupBox9.TabStop = false;
       this.groupBox9.Text = "Port features";
       // 
+      // strictAnglesCombo
+      // 
+      this.strictAnglesCombo.FormattingEnabled = true;
+      this.strictAnglesCombo.Location = new System.Drawing.Point(6, 174);
+      this.strictAnglesCombo.Name = "strictAnglesCombo";
+      this.strictAnglesCombo.Size = new System.Drawing.Size(264, 24);
+      this.strictAnglesCombo.TabIndex = 36;
+      this.strictAnglesCombo.SelectedValueChanged += new System.EventHandler(this.strictAnglesCombo_SelectedValueChanged);
+      // 
       // showPartPositions
       // 
       this.showPartPositions.AutoSize = true;
-      this.showPartPositions.Location = new System.Drawing.Point(5, 99);
+      this.showPartPositions.Location = new System.Drawing.Point(5, 70);
       this.showPartPositions.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
       this.showPartPositions.Name = "showPartPositions";
       this.showPartPositions.Size = new System.Drawing.Size(195, 21);
@@ -606,18 +628,6 @@
       this.showPartPositions.Text = "Show Part Position Details";
       this.showPartPositions.UseVisualStyleBackColor = true;
       this.showPartPositions.CheckedChanged += new System.EventHandler(this.showPartPositions_CheckedChanged);
-      // 
-      // strictAnglesCheckbox
-      // 
-      this.strictAnglesCheckbox.AutoSize = true;
-      this.strictAnglesCheckbox.Location = new System.Drawing.Point(5, 74);
-      this.strictAnglesCheckbox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-      this.strictAnglesCheckbox.Name = "strictAnglesCheckbox";
-      this.strictAnglesCheckbox.Size = new System.Drawing.Size(109, 21);
-      this.strictAnglesCheckbox.TabIndex = 34;
-      this.strictAnglesCheckbox.Text = "Strict Angles";
-      this.strictAnglesCheckbox.UseVisualStyleBackColor = true;
-      this.strictAnglesCheckbox.CheckedChanged += new System.EventHandler(this.strictAnglesCheckbox_CheckedChanged);
       // 
       // checkBox6
       // 
@@ -634,7 +644,7 @@
       // checkBox5
       // 
       this.checkBox5.AutoSize = true;
-      this.checkBox5.Location = new System.Drawing.Point(5, 49);
+      this.checkBox5.Location = new System.Drawing.Point(5, 45);
       this.checkBox5.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
       this.checkBox5.Name = "checkBox5";
       this.checkBox5.Size = new System.Drawing.Size(165, 21);
@@ -830,7 +840,7 @@
       // checkBox4
       // 
       this.checkBox4.AutoSize = true;
-      this.checkBox4.Location = new System.Drawing.Point(11, 217);
+      this.checkBox4.Location = new System.Drawing.Point(11, 219);
       this.checkBox4.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
       this.checkBox4.Name = "checkBox4";
       this.checkBox4.Size = new System.Drawing.Size(76, 21);
@@ -843,7 +853,7 @@
       // 
       this.checkBox3.AutoSize = true;
       this.checkBox3.Enabled = false;
-      this.checkBox3.Location = new System.Drawing.Point(11, 192);
+      this.checkBox3.Location = new System.Drawing.Point(11, 194);
       this.checkBox3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
       this.checkBox3.Name = "checkBox3";
       this.checkBox3.Size = new System.Drawing.Size(137, 21);
@@ -936,9 +946,9 @@
       // tableLayoutPanel1
       // 
       this.tableLayoutPanel1.ColumnCount = 2;
-      this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 364F));
+      this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 277F));
       this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-      this.tableLayoutPanel1.Controls.Add(this.listView4, 0, 1);
+      this.tableLayoutPanel1.Controls.Add(this.listViewTopNests, 0, 1);
       this.tableLayoutPanel1.Controls.Add(this.toolStrip1, 0, 0);
       this.tableLayoutPanel1.Controls.Add(this.nestPreview, 1, 2);
       this.tableLayoutPanel1.Controls.Add(this.panel1, 1, 1);
@@ -954,35 +964,36 @@
       this.tableLayoutPanel1.Size = new System.Drawing.Size(1289, 639);
       this.tableLayoutPanel1.TabIndex = 1;
       // 
-      // listView4
+      // listViewTopNests
       // 
-      this.listView4.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader8,
-            this.colFitnessAlt});
-      this.listView4.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.listView4.FullRowSelect = true;
-      this.listView4.GridLines = true;
-      this.listView4.HideSelection = false;
-      this.listView4.Location = new System.Drawing.Point(3, 29);
-      this.listView4.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-      this.listView4.MultiSelect = false;
-      this.listView4.Name = "listView4";
-      this.tableLayoutPanel1.SetRowSpan(this.listView4, 2);
-      this.listView4.Size = new System.Drawing.Size(358, 608);
-      this.listView4.TabIndex = 5;
-      this.listView4.UseCompatibleStateImageBehavior = false;
-      this.listView4.View = System.Windows.Forms.View.Details;
-      this.listView4.SelectedIndexChanged += new System.EventHandler(this.listView4_SelectedIndexChanged);
+      this.listViewTopNests.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeaderFitness,
+            this.columnHeaderDate});
+      this.listViewTopNests.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.listViewTopNests.FullRowSelect = true;
+      this.listViewTopNests.GridLines = true;
+      this.listViewTopNests.HideSelection = false;
+      this.listViewTopNests.Location = new System.Drawing.Point(3, 29);
+      this.listViewTopNests.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+      this.listViewTopNests.MultiSelect = false;
+      this.listViewTopNests.Name = "listViewTopNests";
+      this.tableLayoutPanel1.SetRowSpan(this.listViewTopNests, 2);
+      this.listViewTopNests.Size = new System.Drawing.Size(271, 608);
+      this.listViewTopNests.TabIndex = 5;
+      this.listViewTopNests.UseCompatibleStateImageBehavior = false;
+      this.listViewTopNests.View = System.Windows.Forms.View.Details;
+      this.listViewTopNests.SelectedIndexChanged += new System.EventHandler(this.listViewTopNests_SelectedIndexChanged);
+      this.listViewTopNests.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listView4_KeyPress);
       // 
-      // columnHeader8
+      // columnHeaderFitness
       // 
-      this.columnHeader8.Text = "Fitness";
-      this.columnHeader8.Width = 150;
+      this.columnHeaderFitness.Text = "Fitness";
+      this.columnHeaderFitness.Width = 85;
       // 
-      // colFitnessAlt
+      // columnHeaderDate
       // 
-      this.colFitnessAlt.Text = "FitnessAlt";
-      this.colFitnessAlt.Width = 120;
+      this.columnHeaderDate.Text = "Date";
+      this.columnHeaderDate.Width = 152;
       // 
       // toolStrip1
       // 
@@ -1042,10 +1053,10 @@
       // panel1
       // 
       this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.panel1.Location = new System.Drawing.Point(364, 27);
+      this.panel1.Location = new System.Drawing.Point(277, 27);
       this.panel1.Margin = new System.Windows.Forms.Padding(0);
       this.panel1.Name = "panel1";
-      this.panel1.Size = new System.Drawing.Size(925, 32);
+      this.panel1.Size = new System.Drawing.Size(1012, 32);
       this.panel1.TabIndex = 1;
       // 
       // tabPage1
@@ -1725,6 +1736,29 @@
       this.toolStripStatusLabel1.Size = new System.Drawing.Size(15, 20);
       this.toolStripStatusLabel1.Text = "..";
       // 
+      // contextMenuTopNestResults
+      // 
+      this.contextMenuTopNestResults.ImageScalingSize = new System.Drawing.Size(20, 20);
+      this.contextMenuTopNestResults.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem1});
+      this.contextMenuTopNestResults.Name = "contextMenuStrip5";
+      this.contextMenuTopNestResults.Size = new System.Drawing.Size(122, 28);
+      // 
+      // toolStripMenuItem1
+      // 
+      this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+      this.toolStripMenuItem1.Size = new System.Drawing.Size(121, 24);
+      this.toolStripMenuItem1.Text = "Export";
+      // 
+      // label12
+      // 
+      this.label12.AutoSize = true;
+      this.label12.Location = new System.Drawing.Point(2, 154);
+      this.label12.Name = "label12";
+      this.label12.Size = new System.Drawing.Size(244, 17);
+      this.label12.TabIndex = 37;
+      this.label12.Text = "Strict Angles (if set on part, part wins)";
+      // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1791,146 +1825,151 @@
       this.tabPage5.PerformLayout();
       this.statusStrip1.ResumeLayout(false);
       this.statusStrip1.PerformLayout();
+      this.contextMenuTopNestResults.ResumeLayout(false);
       this.ResumeLayout(false);
       this.PerformLayout();
 
-        }
+    }
 
-        #endregion
-        private System.Windows.Forms.PictureBox nestPreview;
-        private System.Windows.Forms.Timer timer1;
-        private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.ListView listView1;
-        private System.Windows.Forms.ColumnHeader columnHeader1;
-        private System.Windows.Forms.ColumnHeader columnHeader2;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem clearAllToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
-        private System.Windows.Forms.StatusStrip statusStrip1;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.ListView listView2;
-        private System.Windows.Forms.ColumnHeader columnHeader3;
-        private System.Windows.Forms.ColumnHeader columnHeader4;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.ToolStripMenuItem moveToSheetsToolStripMenuItem;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
-        private System.Windows.Forms.ToolStripMenuItem clearAllToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem moveToPolygonsToolStripMenuItem;
-        private System.Windows.Forms.ListView listView3;
-        private System.Windows.Forms.ColumnHeader columnHeader5;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip3;
-        private System.Windows.Forms.ToolStripMenuItem importSelectedToolStripMenuItem;
-        private System.Windows.Forms.ColumnHeader columnHeader7;
-        private System.Windows.Forms.ColumnHeader columnHeader6;
-        private System.Windows.Forms.ToolStripMenuItem cloneQntToolStripMenuItem;
-        private System.Windows.Forms.Button button10;
-        private System.Windows.Forms.CheckBox checkBox2;
-        private System.Windows.Forms.CheckBox checkBox3;
-        private System.Windows.Forms.CheckBox checkBox4;
-        private System.Windows.Forms.ComboBox placementTypeCombo;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
-        private System.Windows.Forms.ListView listView4;
-        private System.Windows.Forms.ColumnHeader columnHeader8;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.NumericUpDown numericUpDown2;
-        private System.Windows.Forms.TabPage tabPage4;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.NumericUpDown numericUpDown3;
-        private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.Button button13;
-        private System.Windows.Forms.Button button15;
-        private System.Windows.Forms.Button button14;
-        private System.Windows.Forms.Button button16;
-        private System.Windows.Forms.Button button17;
-        private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.ToolStripButton stopButton;
-        private System.Windows.Forms.ToolStripButton exportButton;
-        private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.TextBox textBox5;
-        private System.Windows.Forms.TextBox textBox4;
-        private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Button button6;
-        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem1;
-        private System.Windows.Forms.ComboBox comboBox2;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.ToolStripButton showHideButton;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
-        private System.Windows.Forms.GroupBox groupBox5;
-        private System.Windows.Forms.GroupBox groupBox6;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.GroupBox groupBox7;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.PictureBox debugPreview;
-        private System.Windows.Forms.Button button7;
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.GroupBox groupBox8;
-        private System.Windows.Forms.RadioButton radioButton3;
-        private System.Windows.Forms.RadioButton radioButton2;
-        private System.Windows.Forms.RadioButton radioButton1;
-        private System.Windows.Forms.Button button8;
-        private System.Windows.Forms.ColumnHeader columnHeader9;
-        private System.Windows.Forms.ColumnHeader columnHeader10;
-        private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.ToolStrip toolStrip2;
-        private System.Windows.Forms.ToolStripButton loadDetailButton;
-        private System.Windows.Forms.PictureBox partsPreview;
-        private System.Windows.Forms.ToolStripButton runButton;
-        private BrightIdeasSoftware.ObjectListView partsList;
-        private BrightIdeasSoftware.OLVColumn olvName;
-        private BrightIdeasSoftware.OLVColumn olvQuantity;
-        private System.Windows.Forms.ToolStripButton runNestingButton;
-        private BrightIdeasSoftware.ObjectListView sheetsList;
-        private BrightIdeasSoftware.OLVColumn olvColumn3;
-        private BrightIdeasSoftware.OLVColumn olvColumn4;
-        private BrightIdeasSoftware.OLVColumn olvColumn5;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip4;
-        private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem2;
-        private System.Windows.Forms.TabPage tabPage5;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.LinkLabel linkLabel1;
-        private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.ToolStrip toolStrip3;
-        private System.Windows.Forms.ToolStripButton toolStripButton8;
-        private System.Windows.Forms.ToolStripButton toolStripButton9;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel7;
-        private System.Windows.Forms.Panel panel4;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox textBox6;
-        private System.Windows.Forms.ToolStripMenuItem quantityToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem setToToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem multiplyToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem divideToolStripMenuItem;
+    #endregion
+    private System.Windows.Forms.PictureBox nestPreview;
+    private System.Windows.Forms.Timer timer1;
+    private System.Windows.Forms.TabControl tabControl1;
+    private System.Windows.Forms.TabPage tabPage1;
+    private System.Windows.Forms.TabPage tabPage2;
+    private System.Windows.Forms.ListView listView1;
+    private System.Windows.Forms.ColumnHeader columnHeader1;
+    private System.Windows.Forms.ColumnHeader columnHeader2;
+    private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+    private System.Windows.Forms.ToolStripMenuItem clearAllToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
+    private System.Windows.Forms.StatusStrip statusStrip1;
+    private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+    private System.Windows.Forms.Label label3;
+    private System.Windows.Forms.TextBox textBox1;
+    private System.Windows.Forms.Label label4;
+    private System.Windows.Forms.TextBox textBox2;
+    private System.Windows.Forms.ListView listView2;
+    private System.Windows.Forms.ColumnHeader columnHeader3;
+    private System.Windows.Forms.ColumnHeader columnHeader4;
+    private System.Windows.Forms.Label label5;
+    private System.Windows.Forms.TextBox textBox3;
+    private System.Windows.Forms.ToolStripMenuItem moveToSheetsToolStripMenuItem;
+    private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
+    private System.Windows.Forms.ToolStripMenuItem clearAllToolStripMenuItem1;
+    private System.Windows.Forms.ToolStripMenuItem moveToPolygonsToolStripMenuItem;
+    private System.Windows.Forms.ListView listView3;
+    private System.Windows.Forms.ColumnHeader columnHeader5;
+    private System.Windows.Forms.ContextMenuStrip contextMenuStrip3;
+    private System.Windows.Forms.ToolStripMenuItem importSelectedToolStripMenuItem;
+    private System.Windows.Forms.ColumnHeader columnHeader7;
+    private System.Windows.Forms.ColumnHeader columnHeader6;
+    private System.Windows.Forms.ToolStripMenuItem cloneQntToolStripMenuItem;
+    private System.Windows.Forms.Button button10;
+    private System.Windows.Forms.CheckBox checkBox2;
+    private System.Windows.Forms.CheckBox checkBox3;
+    private System.Windows.Forms.CheckBox checkBox4;
+    private System.Windows.Forms.ComboBox placementTypeCombo;
+    private System.Windows.Forms.Label label7;
+    private System.Windows.Forms.NumericUpDown numericUpDown1;
+    private System.Windows.Forms.ListView listViewTopNests;
+    private System.Windows.Forms.ColumnHeader columnHeaderFitness;
+    private System.Windows.Forms.Label label6;
+    private System.Windows.Forms.NumericUpDown numericUpDown2;
+    private System.Windows.Forms.TabPage tabPage4;
+    private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+    private System.Windows.Forms.Panel panel1;
+    private System.Windows.Forms.GroupBox groupBox1;
+    private System.Windows.Forms.Button button1;
+    private System.Windows.Forms.Label label8;
+    private System.Windows.Forms.NumericUpDown numericUpDown3;
+    private System.Windows.Forms.GroupBox groupBox2;
+    private System.Windows.Forms.Button button13;
+    private System.Windows.Forms.Button button15;
+    private System.Windows.Forms.Button button14;
+    private System.Windows.Forms.Button button16;
+    private System.Windows.Forms.Button button17;
+    private System.Windows.Forms.ToolStrip toolStrip1;
+    private System.Windows.Forms.ToolStripButton stopButton;
+    private System.Windows.Forms.ToolStripButton exportButton;
+    private System.Windows.Forms.GroupBox groupBox3;
+    private System.Windows.Forms.Label label10;
+    private System.Windows.Forms.Label label9;
+    private System.Windows.Forms.TextBox textBox5;
+    private System.Windows.Forms.TextBox textBox4;
+    private System.Windows.Forms.GroupBox groupBox4;
+    private System.Windows.Forms.Button button5;
+    private System.Windows.Forms.Button button6;
+    private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem1;
+    private System.Windows.Forms.ComboBox comboBox2;
+    private System.Windows.Forms.Label label11;
+    private System.Windows.Forms.Button button2;
+    private System.Windows.Forms.ToolStripButton showHideButton;
+    private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+    private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+    private System.Windows.Forms.Panel panel2;
+    private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+    private System.Windows.Forms.GroupBox groupBox5;
+    private System.Windows.Forms.GroupBox groupBox6;
+    private System.Windows.Forms.Button button3;
+    private System.Windows.Forms.GroupBox groupBox7;
+    private System.Windows.Forms.Button button4;
+    private System.Windows.Forms.PictureBox debugPreview;
+    private System.Windows.Forms.Button button7;
+    private System.Windows.Forms.CheckBox checkBox1;
+    private System.Windows.Forms.GroupBox groupBox8;
+    private System.Windows.Forms.RadioButton radioButton3;
+    private System.Windows.Forms.RadioButton radioButton2;
+    private System.Windows.Forms.RadioButton radioButton1;
+    private System.Windows.Forms.Button button8;
+    private System.Windows.Forms.ColumnHeader columnHeader9;
+    private System.Windows.Forms.ColumnHeader columnHeader10;
+    private System.Windows.Forms.TabPage tabPage3;
+    private System.Windows.Forms.ToolStrip toolStrip2;
+    private System.Windows.Forms.ToolStripButton loadDetailButton;
+    private System.Windows.Forms.PictureBox partsPreview;
+    private System.Windows.Forms.ToolStripButton runButton;
+    private BrightIdeasSoftware.ObjectListView partsList;
+    private BrightIdeasSoftware.OLVColumn olvName;
+    private BrightIdeasSoftware.OLVColumn olvQuantity;
+    private System.Windows.Forms.ToolStripButton runNestingButton;
+    private BrightIdeasSoftware.ObjectListView sheetsList;
+    private BrightIdeasSoftware.OLVColumn olvColumn3;
+    private BrightIdeasSoftware.OLVColumn olvColumn4;
+    private BrightIdeasSoftware.OLVColumn olvColumn5;
+    private System.Windows.Forms.ContextMenuStrip contextMenuStrip4;
+    private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem2;
+    private System.Windows.Forms.TabPage tabPage5;
+    private System.Windows.Forms.Label label1;
+    private System.Windows.Forms.LinkLabel linkLabel1;
+    private System.Windows.Forms.Panel panel3;
+    private System.Windows.Forms.ToolStrip toolStrip3;
+    private System.Windows.Forms.ToolStripButton toolStripButton8;
+    private System.Windows.Forms.ToolStripButton toolStripButton9;
+    private System.Windows.Forms.TableLayoutPanel tableLayoutPanel7;
+    private System.Windows.Forms.Panel panel4;
+    private System.Windows.Forms.Label label2;
+    private System.Windows.Forms.TextBox textBox6;
+    private System.Windows.Forms.ToolStripMenuItem quantityToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem setToToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem multiplyToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem divideToolStripMenuItem;
     private BrightIdeasSoftware.OLVColumn olvInclude;
     private BrightIdeasSoftware.OLVColumn olvPriority;
     private System.Windows.Forms.CheckBox checkBox5;
     private System.Windows.Forms.GroupBox groupBox9;
     private System.Windows.Forms.CheckBox checkBox6;
-    private System.Windows.Forms.ColumnHeader colFitnessAlt;
-    private System.Windows.Forms.CheckBox strictAnglesCheckbox;
     private System.Windows.Forms.NumericUpDown multiplierUpDown;
     private System.Windows.Forms.Label multiplierLabel;
     private BrightIdeasSoftware.OLVColumn olvMultiply;
     private System.Windows.Forms.CheckBox showPartPositions;
+    private System.Windows.Forms.ContextMenuStrip contextMenuTopNestResults;
+    private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+    private System.Windows.Forms.ColumnHeader columnHeaderDate;
+    private System.Windows.Forms.ComboBox strictAnglesCombo;
+    private BrightIdeasSoftware.OLVColumn olvStrictAngle;
+    private System.Windows.Forms.Label label12;
   }
 }
 

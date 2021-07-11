@@ -1,12 +1,9 @@
 ﻿namespace DeepNestLib.CiTests
 {
   using System;
-  using System.Collections.Generic;
-  using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
-  using IxMilia.Dxf.Entities;
   using Xunit;
 
   public class FitFourSmallSquaresInOneLargerSquareSheetPerfectlyFixture
@@ -61,49 +58,37 @@
     [Obsolete]
     public void ShouldHaveExpectedFitness()
     {
-      this.nestResult.fitness.Should().BeApproximately(617.04158790170129, 10);
-    }
-
-    [Fact]
-    public void ShouldHaveSameFitnessAsOriginal()
-    {
-      this.nestResult.Fitness.Should().Be(this.nestResult.FitnessAlt, "fitness local field maintains the difference, not the exposed property.");
+      this.nestResult.Fitness.Should().BeApproximately(976, 10);
     }
 
     [Fact]
     public void ShouldHaveSameFitnessBoundsAsOriginal()
     {
-      this.nestResult.FitnessBounds.Should().BeApproximately(88, 10);
-    }
-
-    [Fact]
-    public void ShouldHaveExpectedFitnessBounds()
-    {
-      OriginalFitness.FitnessBounds(this.nestResult).Should().BeApproximately(968, 10);
+      this.nestResult.FitnessBounds.Should().BeApproximately(322, 10);
     }
 
     [Fact]
     public void ShouldHaveSameFitnessUnplacedAsOriginal()
     {
-      this.nestResult.FitnessUnplaced.Should().BeApproximately(OriginalFitness.FitnessUnplaced(this.nestResult), 10);
+      this.nestResult.FitnessUnplaced.Should().BeApproximately(0, 10);
     }
 
     [Fact]
     public void ShouldHaveSameFitnessSheetsAsOriginal()
     {
-      this.nestResult.FitnessSheets.Should().BeApproximately(OriginalFitness.FitnessSheets(this.nestResult), 10);
+      this.nestResult.FitnessSheets.Should().Be(529);
+    }
+
+    [Fact]
+    public void ShouldHaveExpectedFitnessMaterialWasted()
+    {
+      this.nestResult.MaterialWasted.Should().Be(90);
     }
 
     [Fact]
     public void ShouldHaveExpectedNullRotation()
     {
       this.nestResult.Rotation.Should().BeNull();
-    }
-
-    [Fact]
-    public void ShouldHaveExpectedArea()
-    {
-      this.nestResult.Area.Should().Be(529);
     }
 
     [Fact]

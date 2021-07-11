@@ -12,7 +12,7 @@
     [Fact]
     public void GivenEmptyCollectionWhenAddResultThenCountIncrement()
     {
-      var sut = new TopNestResultsCollection(A.Fake<ISvgNestConfig>());
+      var sut = new TopNestResultsCollection(new DefaultSvgNestConfig());
       sut.Add(A.Fake<INestResult>());
 
       sut.Count.Should().Be(1);
@@ -21,7 +21,7 @@
     [Fact]
     public void GivenEmptyCollectionWhenAddResultThenMemoise()
     {
-      var sut = new TopNestResultsCollection(A.Fake<ISvgNestConfig>());
+      var sut = new TopNestResultsCollection(new DefaultSvgNestConfig());
       var expected = A.Fake<INestResult>();
       sut.Add(expected);
 

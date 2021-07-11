@@ -1,8 +1,6 @@
 ﻿namespace DeepNestLib.CiTests
 {
-  using System;
   using System.Collections.Generic;
-  using System.Diagnostics;
   using FakeItEasy;
   using FluentAssertions;
   using IxMilia.Dxf.Entities;
@@ -31,6 +29,14 @@
       NFP result;
       raw.TryGetNfp(0, out result);
       return result;
+    }
+
+    [Fact]
+    public void AreaShouldMatchGeometryUtil()
+    {
+      // I don't understand why one's a negative, the other positive. Flipping all to positive causes polygons to fit inside other polygons; needs investigation.
+      var square = SvgNest.cleanPolygon2(GetNfp(new List<DxfEntity>() { new DxfGenerator().Rectangle(10) }));
+      ((double)square.Area).Should().BeApproximately(-GeometryUtil.polygonArea(square), 1);
     }
   }
 }

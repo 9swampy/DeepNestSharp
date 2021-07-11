@@ -2,6 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
+  using System.ComponentModel;
   using System.Data;
   using System.Diagnostics;
   using System.Drawing;
@@ -26,6 +27,7 @@
     private object selected = null;
     private Thread dth;
     private object preview;
+    private int errorMessageCount = 0;
 
     public Form1()
     {
@@ -53,7 +55,7 @@
       listView1.DoubleBuffered(true);
       listView2.DoubleBuffered(true);
       listView3.DoubleBuffered(true);
-      listView4.DoubleBuffered(true);
+      listViewTopNests.DoubleBuffered(true);
       progressBar1 = new PictureBoxProgressBar();
       progressBar1.Dock = DockStyle.Fill;
       panel1.Controls.Add(progressBar1);
@@ -74,7 +76,12 @@
 
       this.checkBox5.Checked = SvgNest.Config.DrawSimplification;
       this.checkBox6.Checked = SvgNest.Config.ClipByHull;
-      this.strictAnglesCheckbox.Checked = SvgNest.Config.StrictAngles;
+
+      this.showPartPositions.Checked = SvgNest.Config.ShowPartPositions;
+
+      this.strictAnglesCombo.Items.AddRange(Enum.GetNames(typeof(AnglesEnum)));
+      this.strictAnglesCombo.SelectedItem = SvgNest.Config.StrictAngles.ToString();
+
       this.multiplierUpDown.Value = SvgNest.Config.Multiplier;
 
       UpdateFilesList(@"dxfs");
@@ -236,25 +243,28 @@
         {
           ctx.gr.DrawString("X:" + posx.ToString("0.00") + " Y: " + posy.ToString("0.00"), Font, Brushes.Blue, 0, yy);
           yy += (int)Font.Size + gap;
-          ctx.gr.DrawString($"Material Utilization: {Math.Round(Context.MaterialUtilization * 100.0f, 2)}%   Iterations: {Context.Iterations}    Parts placed: {Context.PlacedPartsCount}/{Polygons.Count}", Font, Brushes.DarkBlue, 0, yy);
-          yy += (int)Font.Size + gap;
-          ctx.gr.DrawString($"Generations: {SvgNest.Generations}    Population: {SvgNest.Population}", Font, Brushes.DarkBlue, 0, yy);
-          yy += (int)Font.Size + gap;
-          ctx.gr.DrawString($"Sheets: {sheets.Count}   Parts:{Polygons.Count}    parts types: {Polygons.GroupBy(z => z.Source).Count()}", Font, Brushes.DarkBlue, 0, yy);
-          yy += (int)Font.Size + gap;
-
-          if (this.Context.Nest != null && this.Context.Nest.TopNestResults.Any())
+          if (this.Context.Nest != null && this.Context.Nest.TopNestResults != null && this.Context.Nest.TopNestResults.Top != null)
           {
-            ctx.gr.DrawString($"Nests: {this.Context.Nest.TopNestResults.Count} Fitness: {this.Context.Nest.TopNestResults.First().Fitness}   Area:{this.Context.Nest.TopNestResults.First().Area}  ", Font, Brushes.DarkBlue, 0, yy);
+            ctx.gr.DrawString($"Material Utilization: {Math.Round(Context.Nest.TopNestResults.Top.MaterialUtilization * 100.0f, 2)}%   Iterations: {Context.Iterations}    Parts placed: {Context.PlacedPartsCount}/{Polygons.Count} ({100 * Context.Nest.TopNestResults.Top.PartsPlacedPercent:N2}%)", Font, Brushes.DarkBlue, 0, yy);
             yy += (int)Font.Size + gap;
-            ctx.gr.DrawString($"Minkowski Calls: {Background.CallCounter};  Last placing time: {Context.LastPlacePartTime}ms;  Average nest time: {Context.Nest.AverageNestTime}", Font, Brushes.DarkBlue, 0, yy);
+            ctx.gr.DrawString($"Generations: {SvgNest.Generations}    Population: {SvgNest.Population}", Font, Brushes.DarkBlue, 0, yy);
+            yy += (int)Font.Size + gap;
+            ctx.gr.DrawString($"Sheets: {sheets.Count}   Parts:{Polygons.Count}    parts types: {Polygons.GroupBy(z => z.Source).Count()}", Font, Brushes.DarkBlue, 0, yy);
+            yy += (int)Font.Size + gap;
+            ctx.gr.DrawString($"Nests: {this.Context.Nest.TopNestResults.Count} Fitness: {this.Context.Nest.TopNestResults.Top.Fitness}   Area:{this.Context.Nest.TopNestResults.Top.TotalSheetsArea}  ", Font, Brushes.DarkBlue, 0, yy);
+            yy += (int)Font.Size + gap;
+            ctx.gr.DrawString($"Minkowski Calls: {Background.CallCounter};  Last placing time: {Context.Nest.LastPlacementTime}ms;  Average nest time: {Context.Nest.AverageNestTime}ms", Font, Brushes.DarkBlue, 0, yy);
             yy += (int)Font.Size + gap;
           }
         }
         else
         {
-          ctx.gr.DrawString($"Iterations: {Context.Iterations}    Parts placed: {Context.PlacedPartsCount}/{Polygons.Count}", Font, Brushes.DarkBlue, 0, yy);
-          yy += (int)Font.Size + gap;
+          if (this.Context.Nest != null && this.Context.Nest.TopNestResults != null && this.Context.Nest.TopNestResults.Top != null)
+          {
+            ctx.gr.DrawString($"Iterations: {Context.Iterations}    Parts placed: {Context.PlacedPartsCount}/{Polygons.Count} ({100 * Context.Nest.TopNestResults.Top.PartsPlacedPercent:N2}%)", Font, Brushes.DarkBlue, 0, yy);
+            yy += (int)Font.Size + gap;
+          }
+
           ctx.gr.DrawString($"Generations: {SvgNest.Generations}    Population: {SvgNest.Population}", Font, Brushes.DarkBlue, 0, yy);
           yy += (int)Font.Size + gap;
           ctx.gr.DrawString($"Sheets: {sheets.Count}   Parts:{Polygons.Count}    Parts types: {Polygons.GroupBy(z => z.Source).Count()}", Font, Brushes.DarkBlue, 0, yy);
@@ -335,37 +345,33 @@
 
             if (item is Sheet)
             {
-              if (this.Context.Nest != null && this.Context.Nest.TopNestResults.Any())
+              if (this.Context.Current != null)
               {
-                var fr = this.Context.Nest.TopNestResults.First();
-                double tot1 = 0;
-                double tot2 = 0;
-                bool was = false;
-                foreach (var zitem in fr.UsedSheets)
+                var trans1 = ctx.Transform(new PointF((float)pnts[0].X, (float)pnts[0].Y - 30));
+                var sheetPlacement = this.Context.Current.UsedSheets.FirstOrDefault(s => s.SheetId == item.Id);
+                if (sheetPlacement != null)
                 {
-                  var sheetid = zitem.SheetId;
-                  if (sheetid != item.Id) continue;
-                  var sheet = sheets.FirstOrDefault(z => z.Id == sheetid);
-                  if (sheet != null)
+                  ctx.gr.DrawString($"util: {100 * sheetPlacement.MaterialUtilization:N2}% {sheetPlacement.ToString()}", Font, Brushes.Black, trans1);
+
+                  if (isInfoShow)
                   {
-                    tot1 += Math.Abs(GeometryUtil.polygonArea(sheet));
-                    was = true;
-                    foreach (var ssitem in zitem.PartPlacements)
+                    var hullPoints = sheetPlacement.Hull.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
+                    m.TransformPoints(hullPoints);
+
+                    path.AddPolygon(hullPoints.Select(z => ctx.Transform(z)).ToArray());
+                    ctx.gr.DrawPath(Pens.Red, path);
+
+                    //var simplifyPoints = sheetPlacement.Simplify.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
+                    //m.TransformPoints(simplifyPoints);
+
+                    //path.AddPolygon(simplifyPoints.Select(z => ctx.Transform(z)).ToArray());
+                    //ctx.gr.DrawPath(Pens.Green, path);
+                    if (sheetPlacement == this.Context.Current.UsedSheets.First())
                     {
-                      var poly = Polygons.FirstOrDefault(z => z.Id == ssitem.id);
-                      if (poly != null)
-                      {
-                        tot2 += Math.Abs(GeometryUtil.polygonArea(poly));
-                      }
+                      var trans2 = ctx.Transform(new PointF((float)pnts[0].X, (float)pnts[0].Y - 30 + (int)Font.Size + gap));
+                      ctx.gr.DrawString($"util: {100 * this.Context.Current.MaterialUtilization:N2}% {this.Context.Current.ToString()}", Font, Brushes.Black, trans2);
                     }
                   }
-                }
-
-                var res = Math.Abs(Math.Round((100.0) * (tot2 / tot1), 2));
-                var trans1 = ctx.Transform(new PointF((float)pnts[0].X, (float)pnts[0].Y - 30));
-                if (was && isInfoShow)
-                {
-                  ctx.gr.DrawString("util: " + res + "%", Font, Brushes.Black, trans1);
                 }
               }
             }
@@ -465,18 +471,18 @@
       {
         if (this.Context.Nest != null)
         {
-          listView4.Invoke((Action)(() =>
+          listViewTopNests.Invoke((Action)(() =>
           {
-            listView4.BeginUpdate();
-            int selectedIndex = listView4.FocusedItem?.Index ?? 0;
-            listView4.Items.Clear();
+            listViewTopNests.BeginUpdate();
+            int selectedIndex = listViewTopNests.FocusedItem?.Index ?? 0;
+            listViewTopNests.Items.Clear();
             int i = 0;
             if (this.Context?.Nest != null)
             {
               foreach (var item in this.Context.Nest.TopNestResults)
               {
-                var listItem = new ListViewItem(new string[] { item.Fitness?.ToString("F6"), item.FitnessAlt.ToString("F6") }) { Tag = item };
-                listView4.Items.Add(listItem);
+                var listItem = new ListViewItem(new string[] { item.Fitness.ToString("N0"), item.CreatedAt.ToString("HH:mm:ss.fff") }) { Tag = item };
+                listViewTopNests.Items.Add(listItem);
                 if (i == selectedIndex)
                 {
                   listItem.Selected = true;
@@ -487,9 +493,17 @@
               }
             }
 
-            listView4.EndUpdate();
+            listViewTopNests.EndUpdate();
           }));
         }
+      }
+      catch (InvalidOperationException)
+      {
+        //NOP
+      }
+      catch (InvalidAsynchronousStateException)
+      {
+        //NOP
       }
       catch (Exception ex)
       {
@@ -817,7 +831,7 @@
             this.Context.StartNest();
             UpdateNestsList();
 
-            while (true)
+            while (!this.stop)
             {
               Stopwatch sw = new Stopwatch();
               sw.Start();
@@ -834,7 +848,7 @@
                 this.ProgressDisplayerInstance.DisplayToolStripMessage($"Nesting time: {sw.ElapsedMilliseconds}ms");
               }
 
-              if (this.stop || this.Context.IsErrored)
+              if (this.Context.IsErrored)
               {
                 break;
               }
@@ -937,7 +951,6 @@
       {
         SvgNest.Config.PlacementType = PlacementTypeEnum.Squeeze;
       }
-
     }
 
     private void numericUpDown1_ValueChanged(object sender, EventArgs e)
@@ -945,11 +958,11 @@
       SvgNest.Config.PopulationSize = (int)numericUpDown1.Value;
     }
 
-    private void listView4_SelectedIndexChanged(object sender, EventArgs e)
+    private void listViewTopNests_SelectedIndexChanged(object sender, EventArgs e)
     {
-      if (listView4.SelectedItems.Count > 0)
+      if (listViewTopNests.SelectedItems.Count > 0)
       {
-        var nestResult = listView4.SelectedItems[0].Tag as NestResult;
+        var nestResult = listViewTopNests.SelectedItems[0].Tag as NestResult;
         Context.AssignPlacement(nestResult);
       }
     }
@@ -1191,11 +1204,19 @@
 
     private void stopButton_Click(object sender, EventArgs e)
     {
-      ContextualiseRunStopButtons(false);
-      stop = true;
-      this.context.StopNest();
-      _ = this.Invoke((MethodInvoker)(() => { this.progressBar1.Visible = false; }));
-      Application.DoEvents();
+      try
+      {
+        stop = true;
+        this.Context.StopNest();
+        ContextualiseRunStopButtons(!stop);
+
+        _ = this.Invoke((MethodInvoker)(() => { this.progressBar1.Visible = false; }));
+        Application.DoEvents();
+      }
+      catch (Exception ex)
+      {
+        ShowMessage(ex);
+      }
     }
 
     internal ICollection<NFP> Polygons { get { return Context.Polygons; } }
@@ -1216,6 +1237,7 @@
         {
           src = Polygons.Max(z => z.Source) + 1;
         }
+
         Polygons.Add(pl);
         pl.Source = src;
         pl.AddPoint(new SvgPoint(0, 0));
@@ -1235,8 +1257,8 @@
         hole.AddPoint(new SvgPoint(0 + gap, 0 + hh - gap));
         hole.x = xx;
         hole.y = yy;
-
       }
+
       UpdateList();
     }
 
@@ -1255,6 +1277,7 @@
         {
           src = Polygons.Max(z => z.Source) + 1;
         }
+
         pl.Source = src;
         Polygons.Add(pl);
 
@@ -1268,13 +1291,13 @@
           var yy2 = (float)(rad2 * Math.Sin(ang * Math.PI / 180.0f));
           hole.AddPoint(new SvgPoint(xx2, yy2));
         }
+
         pl.Children = new List<NFP>();
         pl.Children.Add(hole);
         pl.x = xx;
         pl.y = yy;
-
-
       }
+
       UpdateList();
     }
 
@@ -1480,15 +1503,30 @@
           }
           else
           {
-            Infos.Add(new DetailLoadInfo()
+            var det = new DetailLoadInfo()
             {
               Quantity = 1,
               Name = new FileInfo(ofd.FileNames[i]).Name,
               Path = ofd.FileNames[i],
               IsIncluded = true,
-              IsPriority = Name.Contains("SwitchBack"),
+              IsPriority = false,
               IsMultiplied = true,
-            });
+              StrictAngle = AnglesEnum.None,
+            };
+
+            if (new FileInfo(ofd.FileNames[i]).Name.Contains("FrontLowerSectionL") ||
+                new FileInfo(ofd.FileNames[i]).Name.Contains("SideConnection"))
+            {
+              det.Quantity = 2;
+            }
+            else if (new FileInfo(ofd.FileNames[i]).Name.Contains("SwitchBack"))
+            {
+              det.Quantity = 3;
+              det.StrictAngle = AnglesEnum.Vertical;
+              det.IsPriority = true;
+            }
+
+            Infos.Add(det);
           }
         }
         catch (Exception ex)
@@ -1536,7 +1574,7 @@
         this.ProgressDisplayerInstance.DisplayToolStripMessage($"Preload {item.Path}. . .");
         var det = LoadRawDetail(new FileInfo(item.Path));
 
-        AddToPolygons(src, det, item.Quantity, isPrimary: item.IsPriority, isMultiplied: item.IsMultiplied);
+        AddToPolygons(src, det, item.Quantity, isPriority: item.IsPriority, isMultiplied: item.IsMultiplied, strictAngles: item.StrictAngle);
 
         src++;
       }
@@ -1552,9 +1590,9 @@
       }
     }
 
-    private void AddToPolygons(int src, RawDetail det, int quantity, bool isIncluded = true, bool isPrimary = false, bool isMultiplied = false)
+    private void AddToPolygons(int src, RawDetail det, int quantity, bool isIncluded = true, bool isPriority = false, bool isMultiplied = false, AnglesEnum strictAngles = AnglesEnum.Vertical)
     {
-      var item = new DetailLoadInfo() { Quantity = quantity, IsIncluded = isIncluded, IsPriority = isPrimary, IsMultiplied = isMultiplied };
+      var item = new DetailLoadInfo() { Quantity = quantity, IsIncluded = isIncluded, IsPriority = isPriority, IsMultiplied = isMultiplied, StrictAngle = strictAngles };
       AddToPolygons(src, det, item);
     }
 
@@ -1564,6 +1602,7 @@
       if (det.TryGetNfp(src, out loadedNfp))
       {
         loadedNfp.IsPriority = item.IsPriority;
+        loadedNfp.StrictAngle = item.StrictAngle;
         var quantity = item.Quantity * (item.IsMultiplied ? SvgNest.Config.Multiplier : 1);
         for (int i = 0; i < quantity; i++)
         {
@@ -1587,7 +1626,18 @@
 
     private void ShowMessage(Exception ex)
     {
-      this.ShowMessage(ex.Message + "/r" + ex.StackTrace, MessageBoxIcon.Error);
+      errorMessageCount++;
+      string message = ex.Message + "/r" + ex.GetType().Name + "/r" + ex.StackTrace;
+
+      if (errorMessageCount <= 3)
+      {
+        this.ShowMessage(message, MessageBoxIcon.Error);
+      }
+      else if (errorMessageCount > 10)
+      {
+        this.ShowMessage(message, MessageBoxIcon.Stop);
+        Application.Exit();
+      }
     }
 
     private void ShowMessage(string text, MessageBoxIcon type)
@@ -1617,12 +1667,16 @@
       if (ShowQuestion($"Are you to sure to delete {partsList.SelectedObjects.Count} items?") == DialogResult.No) return;
       foreach (var item in partsList.SelectedObjects)
       {
-        if (preview != null && (item as DetailLoadInfo).Path == (preview as RawDetail).Name) preview = null;
+        if (preview != null && (item as DetailLoadInfo).Path == (preview as RawDetail).Name)
+        {
+          preview = null;
+        }
+
         Infos.Remove(item as DetailLoadInfo);
       }
+
       partsList.SetObjects(Infos);
     }
-
 
     private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
     {
@@ -1745,7 +1799,7 @@
 
     private void strictAnglesCheckbox_CheckedChanged(object sender, EventArgs e)
     {
-      SvgNest.Config.StrictAngles = strictAnglesCheckbox.Checked;
+      SvgNest.Config.StrictAngles = (AnglesEnum)strictAnglesCombo.SelectedValue;
     }
 
     private void multiplierUpDown_ValueChanged(object sender, EventArgs e)
@@ -1756,6 +1810,36 @@
     private void showPartPositions_CheckedChanged(object sender, EventArgs e)
     {
       SvgNest.Config.ShowPartPositions = showPartPositions.Checked;
+    }
+
+    private void listView4_KeyPress(object sender, KeyPressEventArgs e)
+    {
+      if (e.KeyChar == 'e')
+      {
+        SaveFileDialog sfd = new SaveFileDialog();
+        sfd.Filter = "Json files (*.json)|*.json";
+        if (sfd.ShowDialog() == DialogResult.OK)
+        {
+          using (StreamWriter outputFile = new StreamWriter(sfd.FileName))
+          {
+            outputFile.WriteLine(this.context.Current.UsedSheets.First().ToJson());
+          }
+        }
+      }
+    }
+
+    private void strictAnglesCombo_SelectedValueChanged(object sender, EventArgs e)
+    {
+      AnglesEnum strictAngle;
+      if (Enum.TryParse<AnglesEnum>(strictAnglesCombo.SelectedItem as string, out strictAngle))
+      {
+        SvgNest.Config.StrictAngles = strictAngle;
+      }
+      else
+      {
+        SvgNest.Config.StrictAngles = AnglesEnum.None;
+        ShowMessage("Defaulted to AnglesEnum.None", MessageBoxIcon.Information);
+      }
     }
   }
 }

@@ -3,6 +3,8 @@
   using System;
   using System.Collections.Generic;
   using System.Linq;
+  using System.Text.Json;
+  using DeepNestLib.Placement;
 
   public class NFP : PolygonBase, INfp, IHiddenNfp, IStringify
   {
@@ -66,6 +68,11 @@
     {
       get
       {
+        if (this.points.Length == 0)
+        {
+          return 0;
+        }
+
         var maxx = this.points.Max(z => z.x);
         var minx = this.points.Min(z => z.x);
 
@@ -77,6 +84,11 @@
     {
       get
       {
+        if (this.points.Length == 0)
+        {
+          return 0;
+        }
+
         var maxy = this.points.Max(z => z.y);
         var miny = this.points.Min(z => z.y);
         return maxy - miny;
@@ -135,6 +147,11 @@
       {
         return this.points;
       }
+
+      set
+      {
+        this.points = value;
+      }
     }
 
     public SvgPoint[] ReplacePoints(IEnumerable<SvgPoint> points)
@@ -169,6 +186,8 @@
 
     public bool IsPriority { get; set; }
 
+    public AnglesEnum StrictAngle { get; set; }
+
     void IHiddenNfp.Push(SvgPoint svgPoint)
     {
       this.points = this.points.Append(svgPoint).ToArray();
@@ -199,6 +218,7 @@
       result.Source = this.Source;
       result.Rotation = this.Rotation;
       result.IsPriority = this.IsPriority;
+      result.StrictAngle = this.StrictAngle;
       result.Name = this.Name;
 
       for (var i = 0; i < this.Length; i++)
@@ -227,6 +247,8 @@
       clone.Id = this.Id;
       clone.Source = this.Source;
       clone.IsPriority = this.IsPriority;
+      clone.StrictAngle = this.StrictAngle;
+      clone.Name = this.Name;
       clone.ReplacePoints(this.Points.Select(z => new SvgPoint(z.x, z.y) { Exact = z.Exact }));
       if (this.Children != null)
       {
@@ -283,11 +305,11 @@
       }
 
       // jwb added the properties
-      // newtree.Id = this.Id;
-      // newtree.Source = this.Source;
+      // newtree.Id = this.Id; //Id is set unique within the chromosome
+      // newtree.Source = this.Source; //Source is set to the original Id cloned to form Adam.
       newtree.IsPriority = this.IsPriority;
-
-      // newtree.Name = this.Name;
+      newtree.StrictAngle = this.StrictAngle;
+      newtree.Name = this.Name;
       // jwb added the properties
       if (this.Children != null && this.Children.Count > 0)
       {
@@ -298,6 +320,48 @@
       }
 
       return newtree;
+    }
+
+    public NFP GetHull()
+    {
+      // convert to hulljs format
+      /*var hull = new ConvexHullGrahamScan();
+      for(var i=0; i<polygon.length; i++){
+          hull.addPoint(polygon[i].x, polygon[i].y);
+      }
+
+      return hull.getHull();*/
+      double[][] points = new double[this.Length][];
+      for (var i = 0; i < this.Length; i++)
+      {
+        points[i] = new double[] { this[i].x, this[i].y };
+      }
+
+      var hullpoints = D3.polygonHull(points);
+      if (hullpoints == null)
+      {
+        return new NFP(this.Points);
+      }
+      else
+      {
+        var svgPoints = new SvgPoint[hullpoints.Length];
+        for (int i = 0; i < hullpoints.Length; i++)
+        {
+          svgPoints[i] = new SvgPoint(hullpoints[i][0], hullpoints[i][1]);
+        }
+
+        return new NFP(svgPoints);
+      }
+    }
+
+    public string ToJson()
+    {
+      return JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
+    }
+
+    public static NFP FromJson(string json)
+    {
+      return JsonSerializer.Deserialize<NFP>(json);
     }
   }
 }
