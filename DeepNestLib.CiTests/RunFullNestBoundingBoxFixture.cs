@@ -16,7 +16,7 @@
     private DefaultSvgNestConfig config;
     private RawDetail loadedRawDetail;
     private NestingContext nestingContext;
-    private NFP loadedNfp;
+    private INfp loadedNfp;
     private bool hasImportedRawDetail;
     private int terminateNestResultCount = 2;
     private int firstSheetIdSrc = new Random().Next();
@@ -42,7 +42,7 @@
           this.nestingContext.Polygons.Add(this.loadedNfp.Clone());
           this.nestingContext.Polygons.Count.Should().Be(2);
 
-          NFP firstSheet;
+          INfp firstSheet;
           dxfGenerator.GenerateRectangle("Sheet", 595D, 395D, RectangleType.FileLoad).TryImportFromRawDetail(firstSheetIdSrc, out firstSheet).Should().BeTrue();
           this.nestingContext.Sheets.Add(firstSheet);
 

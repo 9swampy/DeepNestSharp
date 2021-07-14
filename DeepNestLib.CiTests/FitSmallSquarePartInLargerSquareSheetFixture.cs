@@ -15,11 +15,11 @@
     public FitSmallSquarePartInLargerSquareSheetFixture()
     {
       var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
-      NFP sheet;
+      INfp sheet;
       DxfGenerator.GenerateSquare("Sheet", 22D, RectangleType.FileLoad).TryImportFromRawDetail(0, out sheet).Should().BeTrue();
-      NFP part;
+      INfp part;
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryImportFromRawDetail(0, out part).Should().BeTrue();
-      this.nestResult = new Background(A.Fake<IProgressDisplayer>()).PlaceParts(new NFP[] { sheet }, new NFP[] { part }, new SvgNestConfig(), 0);
+      this.nestResult = new Background(A.Fake<IProgressDisplayer>()).PlaceParts(new INfp[] { sheet }, new INfp[] { part }, new SvgNestConfig(), 0);
     }
 
     [Fact]
@@ -32,9 +32,9 @@
     private void TestAnActualCallOutToMinkowskiBecauseWhyDoTestsWorkButApplicationCrashes()
     {
       var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
-      NFP sheet;
+      INfp sheet;
       DxfGenerator.GenerateSquare("Sheet", 22D, RectangleType.FileLoad).TryImportFromRawDetail(0, out sheet).Should().BeTrue();
-      NFP part;
+      INfp part;
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryImportFromRawDetail(0, out part).Should().BeTrue();
 
       var frame = Background.getFrame(sheet);

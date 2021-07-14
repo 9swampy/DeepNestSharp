@@ -29,7 +29,7 @@
     [Fact]
     public void GivenSimpleSquareWhenToJsonThenShouldNotThrow()
     {
-      NFP firstSheet;
+      INfp firstSheet;
       new DxfGenerator().GenerateRectangle("Sheet", 1D, 2D, RectangleType.FileLoad).TryImportFromRawDetail(3, out firstSheet).Should().BeTrue();
 
       Action act = () => _ = firstSheet.ToJson();
@@ -40,7 +40,7 @@
     [Fact]
     public void GivenSimpleSquareWhenToJsonThenShouldBeExpected()
     {
-      NFP firstSheet;
+      INfp firstSheet;
       new DxfGenerator().GenerateRectangle("Sheet", 1D, 2D, RectangleType.FileLoad).TryImportFromRawDetail(3, out firstSheet).Should().BeTrue();
 
       var json = firstSheet.ToJson();
@@ -56,7 +56,7 @@
     [Fact]
     public void ShouldRoundTripSerialise()
     {
-      NFP expected;
+      INfp expected;
       new DxfGenerator().GenerateRectangle("Sheet", 1D, 2D, RectangleType.FileLoad).TryImportFromRawDetail(3, out expected).Should().BeTrue();
       expected.Rotation = 12;
 

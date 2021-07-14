@@ -239,7 +239,7 @@
       return ret.ToArray();
     }
 
-    public void Export(string path, IEnumerable<NFP> polygons, IEnumerable<NFP> sheets)
+    public void Export(string path, IEnumerable<INfp> polygons, IEnumerable<INfp> sheets)
     {
       Dictionary<DxfFile, int> dxfexports = new Dictionary<DxfFile, int>();
       for (int i = 0; i < sheets.Count(); i++)
@@ -289,7 +289,7 @@
       }
     }
 
-    private static void GenerateSheetOutline(IEnumerable<NFP> sheets, int i, out DxfFile sheetdxf, out double sheetwidth)
+    private static void GenerateSheetOutline(IEnumerable<INfp> sheets, int i, out DxfFile sheetdxf, out double sheetwidth)
     {
       // Generate Sheet Outline in Dxf
       sheetdxf = new DxfFile();

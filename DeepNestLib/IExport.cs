@@ -4,7 +4,7 @@
 
   public interface IExport
   {
-    void Export(string path, IEnumerable<NFP> polygons, IEnumerable<NFP> sheets);
+    void Export(string path, IEnumerable<INfp> polygons, IEnumerable<INfp> sheets);
 
     string SaveFileDialogFilter { get; }
   }

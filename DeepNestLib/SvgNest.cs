@@ -52,7 +52,7 @@
       public double distance;
     }
 
-    public static SvgPoint getTarget(SvgPoint o, NFP simple, double tol)
+    public static SvgPoint getTarget(SvgPoint o, INfp simple, double tol)
     {
       List<InrangeItem> inrange = new List<InrangeItem>();
 
@@ -105,7 +105,7 @@
 
     public static ISvgNestConfig Config { get; } = new SvgNestConfig();
 
-    public static NFP clone(NFP p)
+    public static INfp clone(INfp p)
     {
       var newp = new NFP();
       for (var i = 0; i < p.Length; i++)
@@ -118,7 +118,7 @@
       return newp;
     }
 
-    public static bool pointInPolygon(SvgPoint point, NFP polygon)
+    public static bool pointInPolygon(SvgPoint point, INfp polygon)
     {
       // scaling is deliberately coarse to filter out points that lie *on* the polygon
       var p = svgToClipper2(polygon, 1000);
@@ -128,7 +128,7 @@
     }
 
     // returns true if any complex vertices fall outside the simple polygon
-    private static bool exterior(NFP simple, NFP complex, bool inside, double curveTolerance)
+    private static bool exterior(INfp simple, INfp complex, bool inside, double curveTolerance)
     {
       // find all protruding vertices
       for (var i = 0; i < complex.Length; i++)
@@ -152,7 +152,7 @@
 
     private static volatile object cacheSyncLock = new object();
 
-    public static NFP simplifyFunction(NFP polygon, bool inside)
+    public static INfp simplifyFunction(INfp polygon, bool inside)
     {
       return simplifyFunction(polygon, inside, Config.CurveTolerance, Config.Simplify);
     }
@@ -164,7 +164,7 @@
     /// <param name="inside"></param>
     /// <param name="curveTolerance"></param>
     /// <returns></returns>
-    internal static NFP simplifyFunction(NFP polygon, bool inside, double curveTolerance, bool useHull)
+    internal static INfp simplifyFunction(INfp polygon, bool inside, double curveTolerance, bool useHull)
     {
       var markExact = true;
       var straighten = true;
@@ -217,7 +217,7 @@
         return new NFP(resultSource);
       }
 
-      NFP simple = null;
+      INfp simple = null;
       if (doSimplify)
       {
         // polygon to polyline
@@ -257,9 +257,9 @@
 
       var offsets = polygonOffsetDeepNest(simple, inside ? -tolerance : tolerance);
 
-      NFP offset = null;
+      INfp offset = null;
       double offsetArea = 0;
-      List<NFP> holes = new List<NFP>();
+      List<INfp> holes = new List<INfp>();
       for (i = 0; i < offsets.Length; i++)
       {
         var area = GeometryUtil.polygonArea(offsets[i]);
@@ -281,7 +281,7 @@
       }
 
       var numshells = 4;
-      NFP[] shells = new NFP[numshells];
+      INfp[] shells = new INfp[numshells];
 
       for (j = 1; j < numshells; j++)
       {
@@ -476,10 +476,10 @@
     /// <param name="clipBounds"></param>
     /// <param name="clipperScale"></param>
     /// <returns></returns>
-    internal static NFP ClipSubject(NFP subject, NFP clipBounds, double clipperScale)
+    internal static INfp ClipSubject(INfp subject, INfp clipBounds, double clipperScale)
     {
-      var clipperSubject = Background.InnerNfpToClipperCoordinates(new NFP[] { subject }, clipperScale);
-      var clipperClip = Background.InnerNfpToClipperCoordinates(new NFP[] { clipBounds }, clipperScale);
+      var clipperSubject = Background.InnerNfpToClipperCoordinates(new INfp[] { subject }, clipperScale);
+      var clipperClip = Background.InnerNfpToClipperCoordinates(new INfp[] { clipBounds }, clipperScale);
 
       var clipper = new Clipper();
       clipper.AddPaths(clipperClip.Select(z => z.ToList()).ToList(), PolyType.ptClip, true);
@@ -499,7 +499,7 @@
     /// </summary>
     /// <param name="polygon">This is the one that's checked against.</param>
     /// <param name="offset">This is iterated and elements are marked exact when matched to a point in polygon.</param>
-    private static void MarkExactSvg(NFP polygon, NFP offset, double curveTolerance)
+    private static void MarkExactSvg(INfp polygon, INfp offset, double curveTolerance)
     {
       int i;
       for (i = 0; i < offset.Length; i++)
@@ -530,7 +530,7 @@
     /// </summary>
     /// <param name="polygon">This is the one that's checked against.</param>
     /// <param name="simple">This is iterated and elements are marked exact when matched to a point in polygon.</param>
-    private static void MarkExact(NFP polygon, NFP simple, double curveTolerance)
+    private static void MarkExact(INfp polygon, INfp simple, double curveTolerance)
     {
       for (int i = 0; i < simple.Length; i++)
       {
@@ -549,12 +549,12 @@
       }
     }
 
-    private static bool IsExactMatch(NFP polygon, int? index1, int? index2)
+    private static bool IsExactMatch(INfp polygon, int? index1, int? index2)
     {
       return index1 + 1 == index2 || index2 + 1 == index1 || (index1 == 0 && index2 == polygon.Length - 1) || (index2 == 0 && index1 == polygon.Length - 1);
     }
 
-    private static int? find(SvgPoint v, NFP p, double curveTolerance)
+    private static int? find(SvgPoint v, INfp p, double curveTolerance)
     {
       for (var i = 0; i < p.Length; i++)
       {
@@ -568,10 +568,10 @@
     }
 
     // offset tree recursively
-    public static void OffsetTree(NFP t, double offset, bool? inside = null)
+    public static void OffsetTree(INfp t, double offset, bool? inside = null)
     {
       var simple = simplifyFunction(t, (inside == null) ? false : inside.Value);
-      var offsetpaths = new NFP[] { simple };
+      var offsetpaths = new INfp[] { simple };
       if (Math.Abs(offset) > 0)
       {
         offsetpaths = polygonOffsetDeepNest(simple, offset);
@@ -593,7 +593,7 @@
       {
         if (t.Children == null)
         {
-          t.Children = new List<NFP>();
+          t.Children = new List<INfp>();
         }
 
         for (var i = 0; i < simple.Children.Count; i++)
@@ -613,7 +613,7 @@
 
     // use the clipper library to return an offset to the given polygon. Positive offset expands the polygon, negative contracts
     // note that this returns an array of polygons
-    public static NFP[] polygonOffsetDeepNest(NFP polygon, double offset)
+    public static INfp[] polygonOffsetDeepNest(INfp polygon, double offset)
     {
       if (offset == 0 || GeometryUtil._almostEqual(offset, 0))
       {
@@ -639,14 +639,14 @@
     }
 
     // converts a polygon from normal float coordinates to integer coordinates used by clipper, as well as x/y -> X/Y
-    public static IntPoint[] svgToClipper2(NFP polygon, double? scale = null)
+    public static IntPoint[] svgToClipper2(INfp polygon, double? scale = null)
     {
       var d = DeepNestClipper.ScaleUpPaths(polygon.Points, scale == null ? Config.ClipperScale : scale.Value);
       return d.ToArray();
     }
 
     // converts a polygon from normal float coordinates to integer coordinates used by clipper, as well as x/y -> X/Y
-    public static ClipperLib.IntPoint[] svgToClipper(NFP polygon)
+    public static ClipperLib.IntPoint[] svgToClipper(INfp polygon)
     {
       var d = DeepNestClipper.ScaleUpPaths(polygon.Points, Config.ClipperScale);
       return d.ToArray();
@@ -655,7 +655,7 @@
     }
 
     // returns a less complex polygon that satisfies the curve tolerance
-    public static NFP cleanPolygon(NFP polygon)
+    public static INfp cleanPolygon(INfp polygon)
     {
       var p = svgToClipper2(polygon);
 
@@ -690,7 +690,7 @@
       return clipperToSvg(clean);
     }
 
-    public static NFP cleanPolygon2(NFP polygon)
+    public static INfp cleanPolygon2(INfp polygon)
     {
       var p = svgToClipper(polygon);
 
@@ -872,10 +872,10 @@
             Interlocked.Exchange(ref population, 0);
           }
 
-          List<NFP> sheets = new List<NFP>();
+          List<INfp> sheets = new List<INfp>();
           List<int> sheetids = new List<int>();
           List<int> sheetsources = new List<int>();
-          List<List<NFP>> sheetchildren = new List<List<NFP>>();
+          List<List<INfp>> sheetchildren = new List<List<INfp>>();
           var sid = 0;
           for (int i = 0; i < parts.Count(); i++)
           {
@@ -914,7 +914,7 @@
               // hash values on arrays don't make it across ipc, store them in an array and reassemble on the other side....
               List<int> ids = new List<int>();
               List<int> sources = new List<int>();
-              List<List<NFP>> children = new List<List<NFP>>();
+              List<List<INfp>> children = new List<List<INfp>>();
 
               for (int j = 0; j < this.ga.Population[i].Placements.Count; j++)
               {
@@ -1046,22 +1046,22 @@
   public class DataInfo
   {
     public int index;
-    public List<NFP> sheets;
+    public List<INfp> sheets;
     public int[] sheetids;
     public int[] sheetsources;
-    public List<List<NFP>> sheetchildren;
+    public List<List<INfp>> sheetchildren;
     public PopulationItem individual;
     public ISvgNestConfig config;
     public int[] ids;
     public int[] sources;
-    public List<List<NFP>> children;
+    public List<List<INfp>> children;
     //ipcRenderer.send('background-start', { index: i, sheets: sheets, sheetids: sheetids, sheetsources: sheetsources, sheetchildren: sheetchildren, 
     //individual: GA.population[i], config: config, ids: ids, sources: sources, children: children});
   }
 
   public class PolygonTreeItem
   {
-    public NFP Polygon;
+    public INfp Polygon;
     public PolygonTreeItem Parent;
     public List<PolygonTreeItem> Childs = new List<PolygonTreeItem>();
   }
@@ -1075,7 +1075,7 @@
 
   public class DbCacheKey
   {
-    public DbCacheKey(int? a, int? b, float aRotation, float bRotation, IEnumerable<NFP> nfps)
+    public DbCacheKey(int? a, int? b, float aRotation, float bRotation, IEnumerable<INfp> nfps)
     {
       A = a;
       B = b;
@@ -1101,7 +1101,7 @@
 
     public float BRotation { get; }
 
-    public NFP[] nfp { get; }
+    public INfp[] nfp { get; }
 
     public int Type { get; }
 
@@ -1128,11 +1128,11 @@
 
   public class NfpPair
   {
-    public NFP A { get; internal set; }
+    public INfp A { get; internal set; }
 
-    public NFP B { get; internal set; }
+    public INfp B { get; internal set; }
 
-    public NFP nfp { get; internal set; }
+    public INfp nfp { get; internal set; }
 
     public float ARotation { get; internal set; }
 
