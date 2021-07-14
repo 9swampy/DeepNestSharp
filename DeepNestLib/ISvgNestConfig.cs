@@ -54,7 +54,7 @@
 
     int Multiplier { get; set; }
 
-    int ParallelNests { get; }
+    int ParallelNests { get; set; }
 
     bool ShowPartPositions { get; set; }
   }

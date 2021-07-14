@@ -32,7 +32,7 @@
     public int PlacedPartsCount { get; private set; } = 0;
 
     public INestResult Current { get; private set; } = null;
-    
+
     public SvgNest Nest
     {
       get;

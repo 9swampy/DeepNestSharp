@@ -69,6 +69,9 @@
       this.numericUpDown2.Minimum = SvgNestConfig.MutationRateMin;
       this.numericUpDown2.Maximum = SvgNestConfig.MutationRateMax;
       this.numericUpDown2.Value = SvgNest.Config.MutationRate;
+      this.parallelNestsNud.Minimum = SvgNestConfig.ParallelNestsMin;
+      this.parallelNestsNud.Maximum = SvgNestConfig.ParallelNestsMax;
+      this.parallelNestsNud.Value = SvgNest.Config.ParallelNests;
 
       this.placementTypeCombo.SelectedItem = SvgNest.Config.PlacementType.ToString();
       this.textBox1.Text = SvgNest.Config.Spacing.ToString();
@@ -247,7 +250,14 @@
           {
             ctx.gr.DrawString($"Material Utilization: {Math.Round(Context.Nest.TopNestResults.Top.MaterialUtilization * 100.0f, 2)}%   Iterations: {Context.Iterations}    Parts placed: {Context.PlacedPartsCount}/{Polygons.Count} ({100 * Context.Nest.TopNestResults.Top.PartsPlacedPercent:N2}%)", Font, Brushes.DarkBlue, 0, yy);
             yy += (int)Font.Size + gap;
-            ctx.gr.DrawString($"Generations: {SvgNest.Generations}    Population: {SvgNest.Population}", Font, Brushes.DarkBlue, 0, yy);
+            if (SvgNest.Config.UseParallel)
+            {
+              ctx.gr.DrawString($"Generations: {SvgNest.Generations}    Population: {SvgNest.Population}    Threads: {SvgNest.Threads}", Font, Brushes.DarkBlue, 0, yy);
+            }
+            else
+            {
+              ctx.gr.DrawString($"Generations: {SvgNest.Generations}    Population: {SvgNest.Population}", Font, Brushes.DarkBlue, 0, yy);
+            }
             yy += (int)Font.Size + gap;
             ctx.gr.DrawString($"Sheets: {sheets.Count}   Parts:{Polygons.Count}    parts types: {Polygons.GroupBy(z => z.Source).Count()}", Font, Brushes.DarkBlue, 0, yy);
             yy += (int)Font.Size + gap;
@@ -469,32 +479,42 @@
     {
       try
       {
-        if (this.Context.Nest != null)
+        if (IsHandleCreated)
         {
-          listViewTopNests.Invoke((Action)(() =>
+          if (InvokeRequired)
           {
-            listViewTopNests.BeginUpdate();
-            int selectedIndex = listViewTopNests.FocusedItem?.Index ?? 0;
-            listViewTopNests.Items.Clear();
-            int i = 0;
-            if (this.Context?.Nest != null)
+            _ = this.Invoke((MethodInvoker)UpdateNestsList);
+          }
+          else
+          {
+            if (this.Context.Nest != null)
             {
-              foreach (var item in this.Context.Nest.TopNestResults)
+              listViewTopNests.Invoke((Action)(() =>
               {
-                var listItem = new ListViewItem(new string[] { item.Fitness.ToString("N0"), item.CreatedAt.ToString("HH:mm:ss.fff") }) { Tag = item };
-                listViewTopNests.Items.Add(listItem);
-                if (i == selectedIndex)
+                listViewTopNests.BeginUpdate();
+                int selectedIndex = listViewTopNests.FocusedItem?.Index ?? 0;
+                listViewTopNests.Items.Clear();
+                int i = 0;
+                if (this.Context?.Nest != null)
                 {
-                  listItem.Selected = true;
-                  listItem.Focused = true;
+                  foreach (var item in this.Context.Nest.TopNestResults)
+                  {
+                    var listItem = new ListViewItem(new string[] { item.Fitness.ToString("N0"), item.CreatedAt.ToString("HH:mm:ss.fff") }) { Tag = item };
+                    listViewTopNests.Items.Add(listItem);
+                    if (i == selectedIndex)
+                    {
+                      listItem.Selected = true;
+                      listItem.Focused = true;
+                    }
+
+                    i++;
+                  }
                 }
 
-                i++;
-              }
+                listViewTopNests.EndUpdate();
+              }));
             }
-
-            listViewTopNests.EndUpdate();
-          }));
+          }
         }
       }
       catch (InvalidOperationException)
@@ -910,10 +930,20 @@
 
     private void ContextualiseRunStopButtons(bool isRunning)
     {
-      runButton.Enabled = !isRunning;
-      this.runNestingButton.Enabled = !isRunning;
-      this.stopButton.Enabled = isRunning;
-      Application.DoEvents();
+      if (IsHandleCreated)
+      {
+        if (InvokeRequired)
+        {
+          _ = this.Invoke((MethodInvoker)(() => ContextualiseRunStopButtons(isRunning)));
+        }
+        else
+        {
+          runButton.Enabled = !isRunning;
+          this.runNestingButton.Enabled = !isRunning;
+          this.stopButton.Enabled = isRunning;
+          Application.DoEvents();
+        }
+      }
     }
 
     private void button10_Click(object sender, EventArgs e)
@@ -943,10 +973,12 @@
       {
         SvgNest.Config.PlacementType = PlacementTypeEnum.Gravity;
       }
+
       if (t.ToLower().Contains("box"))
       {
         SvgNest.Config.PlacementType = PlacementTypeEnum.BoundingBox;
       }
+
       if (t.ToLower().Contains("squ"))
       {
         SvgNest.Config.PlacementType = PlacementTypeEnum.Squeeze;
@@ -1525,6 +1557,21 @@
               det.StrictAngle = AnglesEnum.Vertical;
               det.IsPriority = true;
             }
+            else if (new FileInfo(ofd.FileNames[i]).Name.Contains("HalfCrossConnector"))
+            {
+              det.Quantity = 18;
+              det.IsMultiplied = false;
+            }
+            else if (new FileInfo(ofd.FileNames[i]).Name.Contains("LowerSectionR"))
+            {
+              det.Quantity = 11;
+              det.IsMultiplied = false;
+            }
+            else if (new FileInfo(ofd.FileNames[i]).Name.Contains("CrossConnector"))
+            {
+              det.Quantity = 4;
+              det.IsMultiplied = false;
+            }
 
             Infos.Add(det);
           }
@@ -1542,7 +1589,14 @@
 
     private void UpdateInfos()
     {
-      partsList.SetObjects(Infos);
+      try
+      {
+        partsList.SetObjects(Infos);
+      }
+      catch (Exception ex)
+      {
+        ShowMessage(ex);
+      }
     }
 
     public List<DetailLoadInfo> Infos = new List<DetailLoadInfo>();
@@ -1840,6 +1894,11 @@
         SvgNest.Config.StrictAngles = AnglesEnum.None;
         ShowMessage("Defaulted to AnglesEnum.None", MessageBoxIcon.Information);
       }
+    }
+
+    private void parallelNestsNud_ValueChanged(object sender, EventArgs e)
+    {
+      SvgNest.Config.ParallelNests = (int)parallelNestsNud.Value;
     }
   }
 }

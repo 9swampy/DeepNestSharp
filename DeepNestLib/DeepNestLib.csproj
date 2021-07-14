@@ -179,6 +179,7 @@
     <Compile Include="NFP.cs" />
     <Compile Include="NfpExtensions.cs" />
     <Compile Include="NfpJsonConverter.cs" />
+    <Compile Include="NfpPair.cs" />
     <Compile Include="NfpPairDictionary.cs" />
     <Compile Include="NfpPairEqualityComparer.cs" />
     <Compile Include="NfpPairEqualityComparerKey.cs" />
