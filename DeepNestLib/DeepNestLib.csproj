@@ -211,6 +211,10 @@
     <Compile Include="SvgPoint.cs" />
     <Compile Include="SvgPointArrayExtensions.cs" />
     <Compile Include="TopNestResultsCollection.cs" />
+    <Compile Include="Ui\DeepNestState.cs" />
+    <Compile Include="Ui\DetailLoadInfo.cs" />
+    <Compile Include="Ui\ISheetLoadInfo.cs" />
+    <Compile Include="Ui\SheetLoadInfoDto.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\clipper_library\clipper_library.csproj">

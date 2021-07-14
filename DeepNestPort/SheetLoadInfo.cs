@@ -1,8 +1,9 @@
-﻿namespace DeepNestPort
+﻿namespace DeepNestSharp
 {
   using DeepNestLib;
+  using DeepNestLib.Ui;
 
-  public class SheetLoadInfo
+  public class SheetLoadInfo : ISheetLoadInfo
   {
     public int Width
     {

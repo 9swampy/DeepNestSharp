@@ -1,4 +1,4 @@
-﻿namespace DeepNestPort
+﻿namespace DeepNestSharp
 {
   using System;
   using System.Collections.Generic;
@@ -15,6 +15,7 @@
   using System.Xml.Linq;
   using DeepNestLib;
   using DeepNestLib.Placement;
+  using DeepNestLib.Ui;
 
   public partial class Form1 : Form
   {
@@ -125,7 +126,7 @@
 
     private void LoadSettings()
     {
-      if (!File.Exists("settings.xml"))
+      if (!System.IO.File.Exists("settings.xml"))
       {
         return;
       }
@@ -939,7 +940,8 @@
         else
         {
           runButton.Enabled = !isRunning;
-          this.runNestingButton.Enabled = !isRunning;
+          this.startNestToolStripMenuItem.Enabled = !isRunning;
+          this.stopNestToolStripMenuItem.Enabled = isRunning;
           this.stopButton.Enabled = isRunning;
           Application.DoEvents();
         }
@@ -1078,7 +1080,7 @@
 
     private int GetCountFromDialog()
     {
-      QntDialog q = new DeepNestPort.QntDialog();
+      QntDialog q = new DeepNestSharp.QntDialog();
       if (q.ShowDialog() == DialogResult.OK)
       {
         return q.Qnt;
@@ -1732,11 +1734,6 @@
       partsList.SetObjects(Infos);
     }
 
-    private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-    {
-      Process.Start(linkLabel1.Text);
-    }
-
     private void radioButton1_CheckedChanged(object sender, EventArgs e)
     {
 
@@ -1899,6 +1896,87 @@
     private void parallelNestsNud_ValueChanged(object sender, EventArgs e)
     {
       SvgNest.Config.ParallelNests = (int)parallelNestsNud.Value;
+    }
+
+    private void deepNestToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      SetActiveView(UiTab.About);
+    }
+
+    private void deepNestPortToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      SetActiveView(UiTab.About);
+    }
+
+    private void SetActiveView(UiTab uiTab)
+    {
+      tabControl1.Visible = uiTab != UiTab.About;
+      about.Visible = uiTab == UiTab.About;
+    }
+
+    private void deepNestToolStripMenuItem1_Click(object sender, EventArgs e)
+    {
+      SetActiveView(UiTab.About);
+    }
+
+    private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      this.Context?.StopNest();
+      Application.Exit();
+    }
+
+    private void nestToolStripMenuItem_MouseDown(object sender, MouseEventArgs e)
+    {
+      SetActiveView(UiTab.Nest);
+    }
+
+    private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      SetActiveView(UiTab.Settings);
+    }
+
+    private void savePartsListToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      var deepNestState = new DeepNestState()
+      {
+        Polygons = this.Polygons.ToList(),
+        Sheets = this.sheets.ToList(),
+        NestResults = this.Context.Nest.TopNestResults,
+        PartInfos = this.Infos,
+        SheetInfos = this.sheetsInfos.Select(o => new SheetLoadInfoDto() { Height = o.Height, Quantity = o.Quantity, Width = o.Width }).ToList(),
+      };
+
+      SaveFileDialog sfd = new SaveFileDialog();
+      sfd.Filter = "DeepNest files (*.deepnest)|*.deepnest";
+      if (sfd.ShowDialog() == DialogResult.OK)
+      {
+        using (StreamWriter outputFile = new StreamWriter(sfd.FileName))
+        {
+          outputFile.WriteLine(deepNestState.ToJson());
+        }
+      }
+    }
+
+    private void loadPartsListToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      OpenFileDialog dialog = new OpenFileDialog();
+      dialog.Filter = "DeepNest files (*.deepnest)|*.deepnest";
+      if (dialog.ShowDialog() == DialogResult.OK)
+      {
+        using (StreamReader inputFile = new StreamReader(dialog.FileName))
+        {
+          var state = DeepNestState.FromJson(inputFile.ReadToEnd());
+
+          this.Polygons.Clear();
+          state.Polygons.ForEach(o => this.Polygons.Add(o));
+          this.sheets.Clear();
+          state.Sheets.ForEach(o => this.sheets.Add(o));
+          this.sheetsInfos.Clear();
+          state.SheetInfos.ForEach(o => this.sheetsInfos.Add(new SheetLoadInfo() { Height = o.Height, Quantity = o.Quantity, Width = o.Width }));
+          this.Infos.Clear();
+          state.PartInfos.ForEach(o => this.Infos.Add(o));
+        }
+      }
     }
   }
 }

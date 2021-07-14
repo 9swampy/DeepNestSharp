@@ -93,8 +93,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="About.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="About.Designer.cs">
+      <DependentUpon>About.cs</DependentUpon>
+    </Compile>
     <Compile Include="ControlExtensions.cs" />
-    <Compile Include="DetailLoadInfo.cs" />
     <Compile Include="DrawingContext.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -104,6 +109,12 @@
     </Compile>
     <Compile Include="MessageBoxService.cs" />
     <Compile Include="MessageFilter.cs" />
+    <Compile Include="PartsList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PartsList.Designer.cs">
+      <DependentUpon>PartsList.cs</DependentUpon>
+    </Compile>
     <Compile Include="PictureBoxProgressBar.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -117,8 +128,15 @@
       <DependentUpon>QntDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="SheetLoadInfo.cs" />
+    <Compile Include="UiTab.cs" />
+    <EmbeddedResource Include="About.resx">
+      <DependentUpon>About.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PartsList.resx">
+      <DependentUpon>PartsList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

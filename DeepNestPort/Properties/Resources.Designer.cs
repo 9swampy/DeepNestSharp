@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DeepNestPort.Properties {
+namespace DeepNestSharp.Properties {
     using System;
     
     

@@ -1,6 +1,4 @@
-﻿using DeepNestLib;
-
-namespace DeepNestPort
+﻿namespace DeepNestLib.Ui
 {
   public class DetailLoadInfo
   {
