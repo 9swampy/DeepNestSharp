@@ -15,7 +15,7 @@
     private static readonly NfpPairDictionary NfpPairCache = new NfpPairDictionary();
     private static volatile object nfpPairCacheSyncLock = new object();
 
-  public PmapWorker(IList<NfpPair> pairs, IProgressDisplayer progressDisplayer, bool useParallel)
+    public PmapWorker(IList<NfpPair> pairs, IProgressDisplayer progressDisplayer, bool useParallel)
     {
       this.pairs = pairs;
       this.progressDisplayer = progressDisplayer;

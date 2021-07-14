@@ -13,6 +13,7 @@
   {
     private static int generations = 0;
     private static int population = 0;
+    private static int threads = 0;
     private static int nestCount = 0;
     private static long totalNestTime = 0;
     private static long lastPlacementTime = 0;
@@ -43,6 +44,8 @@
     public static int NestCount => nestCount;
 
     public static int Population => population;
+
+    public static int Threads => threads;
 
     public static int Generations => generations;
 
@@ -859,6 +862,7 @@
         {
           if (this.ga == null)
           {
+            Reset();
             this.ga = new Procreant(parts, config);
           }
 
@@ -907,7 +911,7 @@
 
             // if(running < config.threads && !GA.population[i].processing && !GA.population[i].fitness){
             // only one background window now...
-            if (ThrottleReadyForMore(config, threadList) && this.ga.Population[i].IsPending)
+            if (ThrottleReadyForMore(config, threadList.Count) && this.ga.Population[i].IsPending)
             {
               this.ga.Population[i].Processing = true;
 
@@ -955,7 +959,7 @@
                 threadList.Enqueue(t);
                 t.Start();
 
-                if (!ThrottleReadyForMore(config, threadList))
+                if (!ThrottleReadyForMore(config, threadList.Count))
                 {
                   WaitAll(threadList);
                 }
@@ -989,6 +993,8 @@
         background.ResponseAction = this.ResponseProcessor;
         background.BackgroundStart(data, data.config);
       }
+
+      Interlocked.Decrement(ref threads);
     }
 
     private int PopulationRunning
@@ -999,9 +1005,9 @@
       }
     }
 
-    private bool ThrottleReadyForMore(ISvgNestConfig config, Queue<Thread> threadList)
+    private bool ThrottleReadyForMore(ISvgNestConfig config, int taskCount)
     {
-      if (!this.isStopped && ((config.UseParallel && threadList.Count < config.ParallelNests) || PopulationRunning < 1))
+      if (!this.isStopped && ((config.UseParallel && taskCount < config.ParallelNests) || threads < 1))
       {
         return true;
       }
@@ -1124,23 +1130,6 @@
         return key;
       }
     }
-  }
-
-  public class NfpPair
-  {
-    public INfp A { get; internal set; }
-
-    public INfp B { get; internal set; }
-
-    public INfp nfp { get; internal set; }
-
-    public float ARotation { get; internal set; }
-
-    public float BRotation { get; internal set; }
-
-    public int Asource { get; internal set; }
-
-    public int Bsource { get; internal set; }
   }
 
   public interface IStringify

@@ -54,7 +54,7 @@
 
     public int Multiplier { get; set; } = 1;
 
-    public int ParallelNests => 1;
+    public int ParallelNests { get; set; } = 10;
 
     public bool ShowPartPositions { get; set; } = false;
   }

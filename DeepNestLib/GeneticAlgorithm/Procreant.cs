@@ -109,7 +109,7 @@
       {
         for (int i = 0; i < this.Population.Count; i++)
         {
-          if (this.Population[i].Fitness == null)
+          if (this.Population[i].Fitness == -1)
           {
             return false;
           }
