@@ -19,27 +19,27 @@
     public FitFourSmallSquaresInOneLargerSquareSheetPerfectlyFixture()
     {
       var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
-      NFP firstSheet;
+      INfp firstSheet;
       DxfGenerator.GenerateSquare("Sheet", 23D, RectangleType.FileLoad).TryImportFromRawDetail(firstSheetIdSrc, out firstSheet).Should().BeTrue();
-      NFP firstPart;
+      INfp firstPart;
       DxfGenerator.GenerateSquare("firstPart", 11D, RectangleType.FitFour).TryImportFromRawDetail(firstPartIdSrc, out firstPart).Should().BeTrue();
       // firstPart = firstPart.Rotate(180);
       firstPart.Rotation = 180;
-      NFP secondPart;
+      INfp secondPart;
       DxfGenerator.GenerateSquare("secondPart", 11D, RectangleType.FitFour).TryImportFromRawDetail(secondPartIdSrc, out secondPart).Should().BeTrue();
       // secondPart = secondPart.Rotate(180);
       secondPart.Rotation = 180;
-      NFP thirdPart;
+      INfp thirdPart;
       DxfGenerator.GenerateSquare("thirdPart", 11D, RectangleType.FitFour).TryImportFromRawDetail(thirdPartIdSrc, out thirdPart).Should().BeTrue();
       // thirdPart = thirdPart.Rotate(180);
       thirdPart.Rotation = 180;
-      NFP fourthPart;
+      INfp fourthPart;
       DxfGenerator.GenerateSquare("fourthPart", 11D, RectangleType.FitFour).TryImportFromRawDetail(fourthPartIdSrc, out fourthPart).Should().BeTrue();
       // fourthPart = fourthPart.Rotate(180);
       fourthPart.Rotation = 180;
       var config = new DefaultSvgNestConfig();
       config.PlacementType = PlacementTypeEnum.Gravity;
-      this.nestResult = new Background(A.Fake<IProgressDisplayer>()).PlaceParts(new NFP[] { firstSheet }, new NFP[] { firstPart, secondPart, thirdPart, fourthPart }, config, 0);
+      this.nestResult = new Background(A.Fake<IProgressDisplayer>()).PlaceParts(new INfp[] { firstSheet }, new INfp[] { firstPart, secondPart, thirdPart, fourthPart }, config, 0);
     }
 
     [Fact]

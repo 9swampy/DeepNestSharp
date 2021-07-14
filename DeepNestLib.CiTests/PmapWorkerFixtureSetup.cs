@@ -38,8 +38,8 @@
     private int secondPartIdSrc = new Random().Next();
     private int thirdPartIdSrc = new Random().Next();
     private int fourthPartIdSrc = new Random().Next();
-    protected NFP firstPart;
-    protected NFP secondPart;
+    protected INfp firstPart;
+    protected INfp secondPart;
     protected NfpPair pair1;
     protected NfpPair pair2;
 
@@ -61,11 +61,11 @@
       pair1.ARotation = firstPart.Rotation;
       pair1.BRotation = secondPart.Rotation;
 
-      NFP thirdPart;
+      INfp thirdPart;
       DxfGenerator.GenerateSquare("thirdPart", 11D, RectangleType.FileLoad).TryImportFromRawDetail(thirdPartIdSrc, out thirdPart).Should().BeTrue();
       thirdPart = SvgNest.cleanPolygon2(thirdPart);
       thirdPart.Rotation = 0;
-      NFP fourthPart;
+      INfp fourthPart;
       DxfGenerator.GenerateSquare("fourthPart", 11D, RectangleType.FileLoad).TryImportFromRawDetail(fourthPartIdSrc, out fourthPart).Should().BeTrue();
       fourthPart = SvgNest.cleanPolygon2(fourthPart);
       fourthPart.Rotation = 180;

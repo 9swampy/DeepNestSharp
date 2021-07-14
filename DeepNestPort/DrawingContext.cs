@@ -27,7 +27,7 @@ namespace DeepNestPort
       pb.MouseWheel += Pb_MouseWheel;
     }
 
-    GraphicsPath GetGraphicsPath(NFP nfp)
+    GraphicsPath GetGraphicsPath(INfp nfp)
     {
       GraphicsPath gp = new GraphicsPath();
       gp.AddPolygon(nfp.Points.Select(z => Transform(z.x, z.y)).ToArray());
@@ -66,7 +66,7 @@ namespace DeepNestPort
       return ms;
     }
 
-    public GraphicsPath Draw(NFP nfp, Pen pen = null, Brush brush = null)
+    public GraphicsPath Draw(INfp nfp, Pen pen = null, Brush brush = null)
     {
       var gp = GetGraphicsPath(nfp);
       if (brush != null)

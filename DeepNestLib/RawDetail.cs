@@ -23,12 +23,12 @@
 
     public string Name { get; set; }
 
-    public bool TryImportFromRawDetail(int src, out NFP loadedNfp)
+    public bool TryImportFromRawDetail(int src, out INfp loadedNfp)
     {
       return this.TryGetNfp(src, out loadedNfp);
     }
 
-    public bool TryGetNfp(int src, out NFP loadedNfp)
+    public bool TryGetNfp(int src, out INfp loadedNfp)
     {
       if (this == null)
       {
@@ -75,7 +75,7 @@
 
           if (po.Children == null)
           {
-            po.Children = new List<NFP>();
+            po.Children = new List<INfp>();
           }
 
           po.Children.Add(r);

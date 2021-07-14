@@ -4,7 +4,6 @@
   using System.Collections.Generic;
   using System.Linq;
   using System.Text.Json;
-  using DeepNestLib.Placement;
 
   public class NFP : PolygonBase, INfp, IHiddenNfp, IStringify
   {
@@ -13,13 +12,7 @@
       get { return this.Sheet != null; }
     }
 
-    public NFP Sheet { get; set; }
-
-    //public T CloneType<T>()
-    //  where T : NFP
-    //{
-    //  return NfpFactory.CloneType((T)this);
-    //}
+    public INfp Sheet { get; set; }
 
     public override string ToString()
     {
@@ -27,7 +20,7 @@
       return $"nfp: id: {this.Id}; source: {this.Source}; rotation: {this.Rotation}; points: {str1}";
     }
 
-    public NFP(IList<NFP> children)
+    public NFP(IList<INfp> children)
         : this()
     {
       Children = children;
@@ -103,7 +96,7 @@
       }
     }
 
-    public IList<NFP> Children { get; set; } = new List<NFP>();
+    public IList<INfp> Children { get; set; } = new List<INfp>();
 
     public int Length
     {
@@ -115,8 +108,9 @@
 
     public int Id { get; set; }
 
-    public double? Offsetx;
-    public double? Offsety;
+    public double? Offsetx { get; set; }
+
+    public double? Offsety { get; set; }
 
     public int Source { get; set; } = -1;
 
@@ -193,7 +187,7 @@
       this.points = this.points.Append(svgPoint).ToArray();
     }
 
-    public NFP slice(int v)
+    public INfp slice(int v)
     {
       var ret = new NFP();
       List<SvgPoint> pp = new List<SvgPoint>();

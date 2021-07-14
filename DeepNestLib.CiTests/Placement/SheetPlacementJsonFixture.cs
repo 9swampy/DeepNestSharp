@@ -33,9 +33,9 @@
     [Fact]
     public void GivenSimpleSquareOnSheetPlacementWhenToJsonThenShouldBeExpected()
     {
-      NFP firstSheet;
+      INfp firstSheet;
       new DxfGenerator().GenerateRectangle("firstSheet", 5D, 5D, RectangleType.FileLoad).TryImportFromRawDetail(3, out firstSheet).Should().BeTrue();
-      NFP firstPart;
+      INfp firstPart;
       new DxfGenerator().GenerateRectangle("firstPart", 1D, 2D, RectangleType.FileLoad).TryImportFromRawDetail(3, out firstPart).Should().BeTrue();
 
       var sut = new SheetPlacement(A.Dummy<PlacementTypeEnum>(), firstSheet, new List<PartPlacement>() { new PartPlacement(firstPart) });
@@ -53,9 +53,9 @@
     [Fact]
     public void GivenSimpleSquareOnSheetPlacementWhenToJsonThenShouldRoundTrip()
     {
-      NFP firstSheet;
+      INfp firstSheet;
       new DxfGenerator().GenerateRectangle("firstSheet", 5D, 5D, RectangleType.FileLoad).TryImportFromRawDetail(3, out firstSheet).Should().BeTrue();
-      NFP firstPart;
+      INfp firstPart;
       new DxfGenerator().GenerateRectangle("firstPart", 1D, 2D, RectangleType.FileLoad).TryImportFromRawDetail(3, out firstPart).Should().BeTrue();
       var expected = new SheetPlacement(A.Dummy<PlacementTypeEnum>(), firstSheet, new List<PartPlacement>() { new PartPlacement(firstPart) });
 

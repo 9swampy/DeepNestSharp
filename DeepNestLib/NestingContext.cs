@@ -25,9 +25,9 @@
 
     public bool IsErrored { get; private set; }
 
-    public ICollection<NFP> Polygons { get; } = new HashSet<NFP>();
+    public ICollection<INfp> Polygons { get; } = new HashSet<INfp>();
 
-    public List<NFP> Sheets { get; private set; } = new List<NFP>();
+    public List<INfp> Sheets { get; private set; } = new List<INfp>();
 
     public int PlacedPartsCount { get; private set; } = 0;
 
@@ -211,7 +211,7 @@
       Current = plcpr;
 
       PlacedPartsCount = 0;
-      List<NFP> placed = new List<NFP>();
+      List<INfp> placed = new List<INfp>();
       foreach (var item in Polygons)
       {
         item.Sheet = null;
@@ -309,6 +309,7 @@
       {
         return Polygons.Max(z => z.Source) + 1;
       }
+
       return 0;
     }
 
@@ -318,6 +319,7 @@
       {
         return Sheets.Max(z => z.Source) + 1;
       }
+
       return 0;
     }
 
@@ -354,6 +356,7 @@
           AddSheet(ww, hh, src);
         }
       }
+
       foreach (var item in d.Descendants("part"))
       {
         var cnt = int.Parse(item.Attribute("count").Value);
@@ -376,7 +379,7 @@
 
         for (int i = 0; i < cnt; i++)
         {
-          NFP loadedNfp;
+          INfp loadedNfp;
           if (r.TryGetNfp(src, out loadedNfp))
           {
             this.Polygons.Add(loadedNfp);

@@ -17,13 +17,13 @@
     public FitOnlyOneOfTwoSmallSquaresPartInOneLargerSquareSheetsFixture()
     {
       var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
-      NFP firstSheet;
+      INfp firstSheet;
       DxfGenerator.GenerateSquare("Sheet", 20D, RectangleType.FileLoad).TryImportFromRawDetail(firstSheetIdSrc, out firstSheet).Should().BeTrue();
-      NFP firstPart;
+      INfp firstPart;
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryImportFromRawDetail(firstPartIdSrc, out firstPart).Should().BeTrue();
-      NFP secondPart;
+      INfp secondPart;
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryImportFromRawDetail(secondPartIdSrc, out secondPart).Should().BeTrue();
-      this.nestResult = new Background(A.Fake<IProgressDisplayer>()).PlaceParts(new NFP[] { firstSheet }, new NFP[] { firstPart, secondPart }, new SvgNestConfig(), 0);
+      this.nestResult = new Background(A.Fake<IProgressDisplayer>()).PlaceParts(new INfp[] { firstSheet }, new INfp[] { firstPart, secondPart }, new SvgNestConfig(), 0);
     }
 
     [Fact]

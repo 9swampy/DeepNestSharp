@@ -2,7 +2,6 @@
 {
   using System;
   using System.Collections.Generic;
-  using System.Threading;
   using FakeItEasy;
   using FluentAssertions;
   using IxMilia.Dxf.Entities;
@@ -16,7 +15,7 @@
     private DefaultSvgNestConfig config;
     private RawDetail loadedRawDetail;
     private NestingContext nestingContext;
-    private NFP loadedNfp;
+    private INfp loadedNfp;
     private bool hasImportedRawDetail;
     private int terminateNestResultCount = 2;
     private int firstSheetIdSrc = new Random().Next();
@@ -40,7 +39,7 @@
           this.nestingContext.Polygons.Add(this.loadedNfp);
           this.nestingContext.Polygons.Add(this.loadedNfp.Clone());
 
-          NFP firstSheet;
+          INfp firstSheet;
           DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { new DxfGenerator().Rectangle(595D, 395D, RectangleType.FileLoad) }).TryImportFromRawDetail(firstSheetIdSrc, out firstSheet).Should().BeTrue();
           this.nestingContext.Sheets.Add(firstSheet);
 
@@ -77,7 +76,7 @@
     [Fact]
     public void FitnessShouldBeExpected()
     {
-      this.nestingContext.Nest.TopNestResults.Top.Fitness.Should().BeApproximately(581724, 1);
+      this.nestingContext.Nest.TopNestResults.Top.Fitness.Should().BeApproximately(581724, 100);
     }
 
     [Fact]

@@ -23,7 +23,7 @@
       }
     }
 
-    internal static NFP DllImportExecute(INfp a, INfp b, MinkowskiSumCleaning minkowskiSumCleaning = MinkowskiSumCleaning.None)
+    internal static INfp DllImportExecute(INfp a, INfp b, MinkowskiSumCleaning minkowskiSumCleaning = MinkowskiSumCleaning.None)
     {
       Dictionary<string, List<PointF>> dic1 = new Dictionary<string, List<PointF>>();
       Dictionary<string, List<double>> dic2 = new Dictionary<string, List<double>>();
@@ -59,7 +59,7 @@
       var arr1 = a.Children.Select(z => z.Points.Count() * 2).ToArray();
 
       var key = new MinkowskiKey(aa.Count, aa.ToArray(), a.Children.Count, arr1, hdat.ToArray(), bb.Count, bb.ToArray());
-      NFP ret;
+      INfp ret;
       if (!minkowskiCache.TryGetValue(key, out ret))
       {
         lock (minkowskiSyncLock)

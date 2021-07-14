@@ -1219,7 +1219,7 @@
       }
     }
 
-    internal ICollection<NFP> Polygons { get { return Context.Polygons; } }
+    internal ICollection<INfp> Polygons { get { return Context.Polygons; } }
 
     private void button6_Click(object sender, EventArgs e)
     {
@@ -1248,7 +1248,7 @@
         pl.y = yy;
         var hole = new NFP();
 
-        pl.Children = new List<NFP>();
+        pl.Children = new List<INfp>();
         pl.Children.Add(hole);
         int gap = 10;
         hole.AddPoint(new SvgPoint(0 + gap, 0 + gap));
@@ -1292,7 +1292,7 @@
           hole.AddPoint(new SvgPoint(xx2, yy2));
         }
 
-        pl.Children = new List<NFP>();
+        pl.Children = new List<INfp>();
         pl.Children.Add(hole);
         pl.x = xx;
         pl.y = yy;
@@ -1380,7 +1380,7 @@
       }
     }
 
-    private List<NFP> sheets { get { return Context.Sheets; } }
+    private List<INfp> sheets { get { return Context.Sheets; } }
 
     private int lastSaveFilterIndex = 1;
 
@@ -1443,7 +1443,7 @@
       pl.AddPoint(new SvgPoint(0, 0 + hh));
       pl.x = xx;
       pl.y = yy;
-      pl.Children = new List<NFP>();
+      pl.Children = new List<INfp>();
       int gap = 10;
       int szx = ww / 4;
       int szy = hh / 3;
@@ -1598,7 +1598,7 @@
 
     private void AddToPolygons(int src, RawDetail det, DetailLoadInfo item)
     {
-      NFP loadedNfp;
+      INfp loadedNfp;
       if (det.TryGetNfp(src, out loadedNfp))
       {
         loadedNfp.IsPriority = item.IsPriority;

@@ -20,13 +20,13 @@
       clip.Should().BeEquivalentTo(triangle);
     }
 
-    private static NFP GetNfp(List<DxfEntity> dxfEntities)
+    private static INfp GetNfp(List<DxfEntity> dxfEntities)
     {
       RawDetail raw;
       NestingContext ctx;
       raw = DxfParser.ConvertDxfToRawDetail(string.Empty, dxfEntities);
       ctx = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
-      NFP result;
+      INfp result;
       raw.TryGetNfp(0, out result);
       return result;
     }
