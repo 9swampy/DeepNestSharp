@@ -3,15 +3,17 @@
   using System.Collections.Generic;
   using System.Text.Json;
 
-  public class DeepNestState
+  public class DeepNestState : IDeepNestState
   {
+    public readonly static DeepNestState Default = new DeepNestState();
+
     public List<DetailLoadInfo> PartInfos { get; set; }
 
-    public List<SheetLoadInfoDto> SheetInfos { get; set; }
+    public List<ISheetLoadInfo> SheetInfos { get; set; }
 
     public TopNestResultsCollection NestResults { get; set; }
 
-    public List<INfp> Polygons { get; set; }
+    public ICollection<INfp> Polygons { get; set; }
 
     public List<INfp> Sheets { get; set; }
 

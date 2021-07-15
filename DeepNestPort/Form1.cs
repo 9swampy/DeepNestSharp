@@ -16,10 +16,15 @@
   using DeepNestLib;
   using DeepNestLib.Placement;
   using DeepNestLib.Ui;
+  using DeepNestPort;
 
   public partial class Form1 : Form
   {
+    public static IDeepNestState DeepNestState;
+
     private static volatile object contextSyncLock = new object();
+
+    private MessageBoxService messageBoxService = MessageBoxService.Default;
 
     private NestingContext context;
     private MessageFilter mf = null;
@@ -28,7 +33,6 @@
     private object selected = null;
     private Thread dth;
     private object preview;
-    private int errorMessageCount = 0;
 
     public Form1()
     {
@@ -38,24 +42,9 @@
       this.ContextualiseRunStopButtons(false);
 
       LoadSettings();
-      sheetsInfos.Add(new SheetLoadInfo() { Width = SvgNest.Config.SheetWidth, Height = SvgNest.Config.SheetHeight, Quantity = SvgNest.Config.SheetQuantity });
-
-      //hack
-      toolStripButton9.BackgroundImageLayout = ImageLayout.None;
-      toolStripButton9.BackgroundImage = new Bitmap(1, 1);
-      toolStripButton9.BackColor = Color.LightGreen;
-
-      sheetsList.SetObjects(sheetsInfos);
 
       ctx = new DrawingContext(nestPreview);
-      ctx2 = new DrawingContext(debugPreview);
-      ctx3 = new DrawingContext(partsPreview);
-      ctx3.FocusOnMove = false;
-      ctx2.FocusOnMove = false;
 
-      listView1.DoubleBuffered(true);
-      listView2.DoubleBuffered(true);
-      listView3.DoubleBuffered(true);
       listViewTopNests.DoubleBuffered(true);
       progressBar1 = new PictureBoxProgressBar();
       progressBar1.Dock = DockStyle.Fill;
@@ -86,9 +75,8 @@
       this.strictAnglesCombo.Items.AddRange(Enum.GetNames(typeof(AnglesEnum)));
       this.strictAnglesCombo.SelectedItem = SvgNest.Config.StrictAngles.ToString();
 
-      this.multiplierUpDown.Value = SvgNest.Config.Multiplier;
+      Form1.DeepNestState = new DeepNestState(new List<DetailLoadInfo>(), new List<ISheetLoadInfo>(), Context);
 
-      UpdateFilesList(@"dxfs");
       Load += Form1_Load;
     }
 
@@ -109,13 +97,13 @@
         return this.context;
       }
 
-      set
-      {
-        lock (contextSyncLock)
-        {
-          this.context = value;
-        }
-      }
+      //set
+      //{
+      //  lock (contextSyncLock)
+      //  {
+      //    this.context = value;
+      //  }
+      //}
     }
 
     private void Form1_Load(object sender, EventArgs e)
@@ -152,75 +140,6 @@
       }
     }
 
-    public void UpdateList()
-    {
-      listView1.Items.Clear();
-      foreach (var item in Polygons)
-      {
-        listView1.Items.Add(new ListViewItem(new string[] { item.Id.ToString(), item.Source.ToString(), item.Name, item.Points.Count().ToString() }) { Tag = item });
-      }
-      listView2.Items.Clear();
-      foreach (var item in sheets)
-      {
-        listView2.Items.Add(new ListViewItem(new string[] { item.Id.ToString(), item.Source.ToString(), item.Name, item.Points.Count().ToString() }) { Tag = item });
-      }
-
-      groupBox5.Text = "Parts: " + Polygons.Count();
-      groupBox6.Text = "Sheets: " + sheets.Count;
-    }
-
-    private void RedrawPreview(DrawingContext ctx2, object previewObject)
-    {
-      ctx2.Update();
-      ctx2.Clear(Color.White);
-
-      //ctx2.gr.DrawLine(Pens.Blue, ctx2.Transform(new PointF(0, 0)), ctx2.Transform(100, 0));
-      //ctx2.gr.DrawLine(Pens.Red, ctx2.Transform(new PointF(0, 0)), ctx2.Transform(0, 100));
-      ctx2.Reset();
-
-      if (previewObject != null)
-      {
-        RectangleF bnd;
-        if (previewObject is RawDetail || previewObject is NFP)
-        {
-          if (previewObject is RawDetail raw)
-          {
-            ctx2.Draw(raw, Pens.Black, Brushes.LightBlue);
-            if (SvgNest.Config.DrawSimplification)
-            {
-              AddApproximation(ctx2, raw);
-            }
-
-            bnd = raw.BoundingBox();
-          }
-          else
-          {
-            var g = ctx2.Draw(previewObject as NFP, Pens.Black, Brushes.LightBlue);
-            bnd = g.GetBounds();
-          }
-
-          var cap = $"{bnd.Width:N2} x {bnd.Height:N2}";
-          ctx2.DrawLabel(cap, Brushes.Black, Color.LightGreen, 5, 5);
-        }
-      }
-
-      ctx2.Setup();
-    }
-
-    /// <summary>
-    /// Display the bounds that will be used by the nesting algorithym.
-    /// </summary>
-    /// <param name="ctx">Drawing context upon which to draw.</param>
-    /// <param name="raw">The part to approximate.</param>
-    private void AddApproximation(DrawingContext ctx, RawDetail raw)
-    {
-      NFP part = raw.ToNfp();
-      var simplification = SvgNest.simplifyFunction(part, false);
-      ctx.Draw(simplification, Pens.Red);
-      var pointsChange = $"{part.Points.Length} => {simplification.Points.Length} points";
-      ctx.DrawLabel(pointsChange, Brushes.Black, Color.Orange, 5, (int)(10 + ctx.GetLabelHeight()));
-    }
-
     private void Redraw()
     {
       try
@@ -231,8 +150,7 @@
         var posy = pos1.Y;
         ctx.Update();
 
-        RedrawPreview(ctx2, preview);
-        RedrawPreview(ctx3, preview);
+        partsList1.RedrawPreview();
 
         ctx.gr.SmoothingMode = SmoothingMode.AntiAlias;
         ctx.Clear(Color.White);
@@ -282,24 +200,9 @@
           yy += (int)Font.Size + gap;
         }
 
-        if (!checkBox1.Checked)
-        {
-          if (bb != null)
-          {
-            //ctx.gr.TranslateTransform((float)sheets[0].x, (float)sheets[0].y);
-            var pp = ctx.Transform((float)sheets[0].x, (float)sheets[0].y);
-            ctx.gr.DrawImage(bb, new RectangleF(pp.X, pp.Y, bb.Width * ctx.zoom, bb.Height * ctx.zoom), new Rectangle(0, 0, bb.Width, bb.Height), GraphicsUnit.Pixel);
-          }
-        }
-
         int i = 0;
         foreach (var item in Polygons.Union(sheets))
         {
-          if (!checkBox1.Checked)
-          {
-            continue;
-          }
-
           if (!(item is Sheet))
           {
             if (!item.Fitted) continue;
@@ -321,7 +224,6 @@
             if (!(item is Sheet) && isInfoShow && SvgNest.Config.ShowPartPositions)
             {
               var label = $"{item.PlacementOrder} ({item.x:N0},{item.y:N0})@{item.Rotation}";
-              var ms = ctx2.gr.MeasureString(label, SystemFonts.DefaultFont);
               var midPnt = new PointF(pnts.Average(o => o.X), pnts.Average(o => o.Y));
               ctx.gr.DrawString(label, Font, Brushes.Black, ctx.Transform(midPnt));
             }
@@ -394,7 +296,7 @@
       catch (Exception ex)
       {
         // NOP - the code iterates collections that could change during the Redraw; so just swallow and let it recover next tick.
-        this.ShowMessage(ex);
+        messageBoxService.ShowMessage(ex);
       }
     }
 
@@ -473,8 +375,6 @@
     }
 
     public DrawingContext ctx;
-    public DrawingContext ctx2;
-    public DrawingContext ctx3;
 
     public void UpdateNestsList()
     {
@@ -528,7 +428,7 @@
       }
       catch (Exception ex)
       {
-        this.ShowMessage(ex);
+        messageBoxService.ShowMessage(ex);
       }
     }
 
@@ -557,37 +457,9 @@
 
     public float progressVal = 0;
 
-    private void listView1_SelectedIndexChanged(object sender, EventArgs e)
-    {
-      if (listView1.SelectedItems.Count > 0)
-      {
-        selected = listView1.SelectedItems[0].Tag;
-        preview = selected;
-      }
-    }
-
     private void pictureBox1_MouseEnter(object sender, EventArgs e)
     {
       //pictureBox1.Focus();
-    }
-
-
-    private void UpdateFilesList(string path)
-    {
-      var di = new DirectoryInfo(path);
-      groupBox3.Text = "Files: " + di.FullName;
-      listView3.Items.Clear();
-      listView3.Items.Add(new ListViewItem(new string[] { ".." }) { Tag = di.Parent, BackColor = Color.LightBlue });
-      foreach (var item in di.GetDirectories())
-      {
-        listView3.Items.Add(new ListViewItem(new string[] { item.Name }) { Tag = item, BackColor = Color.LightBlue });
-      }
-
-      foreach (var item in di.GetFiles())
-      {
-        if (!(item.Extension.Contains("svg") || item.Extension.Contains("dxf"))) continue;
-        listView3.Items.Add(new ListViewItem(new string[] { item.Name }) { Tag = item });
-      }
     }
 
     private Sheet NewSheet(int w = 3000, int h = 1500)
@@ -643,20 +515,7 @@
 
     private void clearAllToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      Polygons.Clear();
-      UpdateList();
-    }
-
-    private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      if (listView1.SelectedItems.Count > 0)
-      {
-        for (int i = 0; i < listView1.SelectedItems.Count; i++)
-        {
-          Polygons.Remove(listView1.SelectedItems[i].Tag as NFP);
-        }
-        UpdateList();
-      }
+      partsList1.clearToolStripMenuItem_Click(sender, e);
     }
 
     private void textBox1_TextChanged(object sender, EventArgs e)
@@ -701,140 +560,6 @@
       {
         textBox3.BackColor = Color.Red;
         textBox3.ForeColor = Color.White;
-      }
-    }
-
-    private void moveToSheetsToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-
-      if (listView1.SelectedItems.Count > 0)
-      {
-        var pol = listView1.SelectedItems[0].Tag as NFP;
-        Polygons.Remove(pol);
-        var b = GeometryUtil.getPolygonBounds(pol);
-        Sheet sheet = new Sheet();
-        foreach (var item in pol.Points)
-        {
-          sheet.AddPoint(new SvgPoint(item.x - b.x, item.y - b.y));
-        }
-        /*if (pol.children != null)
-        {
-            sheet.children = new List<NFP>();
-            for (int i = 0; i < pol.children.Count; i++)
-            {
-                var child = pol.children[i];
-                NFP newchild = new NFP();
-                for (var j = 0; j < child.length; j++)
-                {
-                    newchild.AddPoint(new SvgPoint(child[j].x - b.x, child[j].y - b.y));
-                }
-                sheet.children.Add(newchild);
-            }
-        }*/
-
-        sheet.Width = (float)b.width;
-        sheet.Height = (float)b.height;
-
-        sheet.Source = Context.GetNextSheetSource();
-        sheets.Add(sheet);
-        Context.ReorderSheets();
-        UpdateList();
-      }
-    }
-
-    private void clearAllToolStripMenuItem1_Click(object sender, EventArgs e)
-    {
-      sheets.Clear();
-      UpdateList();
-    }
-
-    private void moveToPolygonsToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      if (listView2.SelectedItems.Count > 0)
-      {
-        var pol = listView2.SelectedItems[0].Tag as NFP;
-        sheets.Remove(pol);
-        Polygons.Add(pol);
-        UpdateList();
-      }
-    }
-
-    private void listView2_SelectedIndexChanged(object sender, EventArgs e)
-    {
-      if (listView2.SelectedItems.Count > 0)
-      {
-        selected = listView2.SelectedItems[0].Tag;
-        preview = selected;
-      }
-    }
-
-    private void listView3_MouseDoubleClick(object sender, MouseEventArgs e)
-    {
-      if (listView3.SelectedItems.Count <= 0) return;
-
-      var si = listView3.SelectedItems[0].Tag;
-      if (si is DirectoryInfo)
-      {
-        UpdateFilesList((si as DirectoryInfo).FullName);
-
-      }
-      if (si is FileInfo)
-      {
-        var f = (si as FileInfo);
-        QntDialog q = new QntDialog();
-        if (q.ShowDialog() == DialogResult.OK)
-        {
-          RawDetail det = LoadRawDetail(f);
-
-          int src = 0;
-          if (Polygons.Any())
-          {
-            src = Polygons.Max(z => z.Source) + 1;
-          }
-
-          AddToPolygons(src, det, q.Qnt);
-          UpdateList();
-        }
-      }
-    }
-
-    private static RawDetail LoadRawDetail(FileInfo f)
-    {
-      RawDetail det = null;
-      if (f.Extension == ".svg")
-      {
-        det = SvgParser.LoadSvg(f.FullName);
-      }
-      if (f.Extension == ".dxf")
-      {
-        det = DxfParser.LoadDxfFile(f.FullName);
-      }
-
-      return det;
-    }
-
-    private void importSelectedToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      if (listView3.SelectedItems.Count <= 0) return;
-
-      QntDialog q = new QntDialog();
-      if (q.ShowDialog() == DialogResult.OK)
-      {
-        foreach (var item in listView3.SelectedItems)
-        {
-          var t = (item as ListViewItem).Tag as FileInfo;
-          var det = LoadRawDetail(t);
-
-          int src = 0;
-          if (Polygons.Any())
-          {
-            src = Polygons.Max(z => z.Source) + 1;
-          }
-
-          AddToPolygons(src, det, q.Qnt);
-        }
-
-        UpdateList();
       }
     }
 
@@ -890,25 +615,6 @@
     }
 
     Random r = new Random();
-
-    private void cloneQntToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      if (listView1.SelectedItems.Count > 0)
-      {
-        QntDialog qd = new QntDialog();
-        if (qd.ShowDialog() == DialogResult.OK)
-        {
-          var nfp = (listView1.SelectedItems[0].Tag as NFP);
-          for (int i = 0; i < qd.Qnt; i++)
-          {
-            var r = nfp.Clone();
-            Polygons.Add(r);
-          }
-
-          UpdateList();
-        }
-      }
-    }
 
     void run()
     {
@@ -1006,78 +712,6 @@
       SvgNest.Config.MutationRate = (int)numericUpDown2.Value;
     }
 
-
-    private void button1_Click(object sender, EventArgs e)
-    {
-      var cnt = (int)numericUpDown3.Value;
-      int? ww = null;
-      int? hh = null;
-
-      try
-      {
-        ww = int.Parse(textBox4.Text);
-        textBox4.BackColor = Color.White;
-        textBox4.ForeColor = Color.Black;
-      }
-      catch (Exception ex)
-      {
-        textBox4.BackColor = Color.Red;
-        textBox4.ForeColor = Color.White;
-      }
-
-      try
-      {
-        hh = int.Parse(textBox5.Text);
-        textBox5.BackColor = Color.White;
-        textBox5.ForeColor = Color.Black;
-      }
-      catch (Exception ex)
-      {
-        textBox5.BackColor = Color.Red;
-        textBox5.ForeColor = Color.White;
-      }
-
-      if (ww == null || hh == null)
-      {
-        MessageBox.Show("Wrong sizes", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-        return;
-      }
-
-
-      if (comboBox2.SelectedItem == null)
-      {
-        label11.BackColor = Color.Red;
-        label11.ForeColor = Color.White;
-        return;
-      }
-      label11.BackColor = label11.Parent.BackColor;
-      label11.ForeColor = label11.Parent.ForeColor;
-      List<Sheet> sh = new List<Sheet>();
-      var src = Context.GetNextSheetSource();
-      for (int i = 0; i < cnt; i++)
-      {
-        switch (comboBox2.SelectedItem.ToString())
-        {
-          case "Rectangle":
-            sh.Add(NewSheet(ww.Value, hh.Value));
-            break;
-          case "Rhombus":
-            sh.Add(NewRhombusSheet(ww.Value, hh.Value));
-            break;
-          case "Circle":
-            sh.Add(NewCircleSheet(ww.Value));
-            break;
-        }
-      }
-      foreach (var item in sh)
-      {
-        item.Source = src;
-        Context.Sheets.Add(item);
-      }
-      UpdateList();
-      Context.ReorderSheets();
-    }
-
     private int GetCountFromDialog()
     {
       QntDialog q = new DeepNestSharp.QntDialog();
@@ -1086,154 +720,6 @@
         return q.Qnt;
       }
       return 0;
-    }
-
-    private void button13_Click(object sender, EventArgs e)
-    {
-      var cnt = GetCountFromDialog();
-      Random r = new Random();
-      for (int i = 0; i < cnt; i++)
-      {
-        var xx = r.Next(2000) + 100;
-        var yy = r.Next(2000);
-        var ww = r.Next(60) + 10;
-        var hh = r.Next(60) + 5;
-        NFP pl = new NFP();
-        int src = 0;
-        if (Polygons.Any())
-        {
-          src = Polygons.Max(z => z.Source) + 1;
-        }
-        Polygons.Add(pl);
-        pl.Source = src;
-        pl.x = xx;
-        pl.y = yy;
-        pl.AddPoint(new SvgPoint(0, 0));
-        pl.AddPoint(new SvgPoint(ww, 0));
-        pl.AddPoint(new SvgPoint(ww, hh));
-        pl.AddPoint(new SvgPoint(0, hh));
-      }
-      UpdateList();
-    }
-
-    private void button14_Click(object sender, EventArgs e)
-    {
-      Random r = new Random();
-      for (int i = 0; i < 10; i++)
-      {
-        var xx = r.Next(2000) + 100;
-        var yy = r.Next(2000);
-        var rad = r.Next(60) + 10;
-
-        NFP pl = new NFP();
-        int src = 0;
-        if (Polygons.Any())
-        {
-          src = Polygons.Max(z => z.Source) + 1;
-        }
-
-        pl.Source = src;
-        Polygons.Add(pl);
-        pl.x = xx;
-        pl.y = yy;
-        for (int ang = 0; ang < 360; ang += 15)
-        {
-          var xx1 = (float)(rad * Math.Cos(ang * Math.PI / 180.0f));
-          var yy1 = (float)(rad * Math.Sin(ang * Math.PI / 180.0f));
-          pl.AddPoint(new SvgPoint(xx1, yy1));
-        }
-      }
-
-      UpdateList();
-    }
-
-    private void button15_Click(object sender, EventArgs e)
-    {
-
-      Random r = new Random();
-      for (int i = 0; i < 10; i++)
-      {
-        var xx = r.Next(2000) + 100;
-        var yy = r.Next(2000);
-        var ww = r.Next(60) + 10;
-        var hh = r.Next(60) + 5;
-        NFP pl = new NFP();
-        int src = 0;
-        if (Polygons.Any())
-        {
-          src = Polygons.Max(z => z.Source) + 1;
-        }
-        pl.Source = src;
-        Polygons.Add(pl);
-        pl.x = xx;
-        pl.y = yy;
-        pl.AddPoint(new SvgPoint(-ww, 0));
-        pl.AddPoint(new SvgPoint(+ww, 0));
-        pl.AddPoint(new SvgPoint(0, +hh));
-
-      }
-      UpdateList();
-    }
-
-    private void button16_Click(object sender, EventArgs e)
-    {
-
-      Random r = new Random();
-      for (int i = 0; i < 10; i++)
-      {
-        var xx = r.Next(2000) + 100;
-        var yy = r.Next(2000);
-        var ww = r.Next(400) + 10;
-        var hh = r.Next(400) + 5;
-        NFP pl = new NFP();
-        int src = 0;
-        if (Polygons.Any())
-        {
-          src = Polygons.Max(z => z.Source) + 1;
-        }
-
-        pl.Source = src;
-        Polygons.Add(pl);
-        pl.AddPoint(new SvgPoint(xx, yy));
-        pl.AddPoint(new SvgPoint(xx + ww, yy));
-        pl.AddPoint(new SvgPoint(xx + ww, yy + hh));
-        pl.AddPoint(new SvgPoint(xx, yy + hh));
-      }
-
-      UpdateList();
-    }
-
-    private void button17_Click(object sender, EventArgs e)
-    {
-      var ww = r.Next(400) + 10;
-      var hh = r.Next(400) + 5;
-      QntDialog q = new QntDialog();
-      int src = 0;
-      if (Polygons.Any())
-      {
-        src = Polygons.Max(z => z.Source) + 1;
-      }
-      if (q.ShowDialog() == DialogResult.OK)
-      {
-        for (int i = 0; i < q.Qnt; i++)
-        {
-          var xx = r.Next(2000) + 100;
-          var yy = r.Next(2000);
-
-          NFP pl = new NFP();
-
-          pl.Source = src;
-          Polygons.Add(pl);
-          pl.x = xx;
-          pl.y = yy;
-          pl.AddPoint(new SvgPoint(0, 0));
-          pl.AddPoint(new SvgPoint(0 + ww, 0));
-          pl.AddPoint(new SvgPoint(0 + ww, 0 + hh));
-          pl.AddPoint(new SvgPoint(0, 0 + hh));
-        }
-
-        UpdateList();
-      }
     }
 
     private void stopButton_Click(object sender, EventArgs e)
@@ -1249,130 +735,11 @@
       }
       catch (Exception ex)
       {
-        ShowMessage(ex);
+        messageBoxService.ShowMessage(ex);
       }
     }
 
     internal ICollection<INfp> Polygons { get { return Context.Polygons; } }
-
-    private void button6_Click(object sender, EventArgs e)
-    {
-      var cnt = GetCountFromDialog();
-      Random r = new Random();
-      for (int i = 0; i < cnt; i++)
-      {
-        var xx = r.Next(2000) + 100;
-        var yy = r.Next(2000);
-        var ww = r.Next(250) + 150;
-        var hh = r.Next(250) + 120;
-        NFP pl = new NFP();
-        int src = 0;
-        if (Polygons.Any())
-        {
-          src = Polygons.Max(z => z.Source) + 1;
-        }
-
-        Polygons.Add(pl);
-        pl.Source = src;
-        pl.AddPoint(new SvgPoint(0, 0));
-        pl.AddPoint(new SvgPoint(0 + ww, 0));
-        pl.AddPoint(new SvgPoint(0 + ww, 0 + hh));
-        pl.AddPoint(new SvgPoint(0, 0 + hh));
-        pl.x = xx;
-        pl.y = yy;
-        var hole = new NFP();
-
-        pl.Children = new List<INfp>();
-        pl.Children.Add(hole);
-        int gap = 10;
-        hole.AddPoint(new SvgPoint(0 + gap, 0 + gap));
-        hole.AddPoint(new SvgPoint(0 + ww - gap, 0 + gap));
-        hole.AddPoint(new SvgPoint(0 + ww - gap, 0 + hh - gap));
-        hole.AddPoint(new SvgPoint(0 + gap, 0 + hh - gap));
-        hole.x = xx;
-        hole.y = yy;
-      }
-
-      UpdateList();
-    }
-
-    private void button5_Click(object sender, EventArgs e)
-    {
-      for (int i = 0; i < 10; i++)
-      {
-        var xx = r.Next(2000) + 100;
-        var yy = r.Next(2000);
-        var rad = r.Next(60) + 10;
-        int rad2 = rad - 8;
-
-        NFP pl = new NFP();
-        int src = 0;
-        if (Polygons.Any())
-        {
-          src = Polygons.Max(z => z.Source) + 1;
-        }
-
-        pl.Source = src;
-        Polygons.Add(pl);
-
-        NFP hole = new NFP();
-        for (int ang = 0; ang < 360; ang += 15)
-        {
-          var xx1 = (float)(rad * Math.Cos(ang * Math.PI / 180.0f));
-          var yy1 = (float)(rad * Math.Sin(ang * Math.PI / 180.0f));
-          pl.AddPoint(new SvgPoint(xx1, yy1));
-          var xx2 = (float)(rad2 * Math.Cos(ang * Math.PI / 180.0f));
-          var yy2 = (float)(rad2 * Math.Sin(ang * Math.PI / 180.0f));
-          hole.AddPoint(new SvgPoint(xx2, yy2));
-        }
-
-        pl.Children = new List<INfp>();
-        pl.Children.Add(hole);
-        pl.x = xx;
-        pl.y = yy;
-      }
-
-      UpdateList();
-    }
-
-    private void deleteToolStripMenuItem1_Click(object sender, EventArgs e)
-    {
-      if (listView2.SelectedItems.Count > 0)
-      {
-        var f = listView2.SelectedItems[0].Tag as NFP;
-        sheets.Remove(f);
-        UpdateList();
-        Context.ReorderSheets();
-      }
-    }
-
-    private void button2_Click(object sender, EventArgs e)
-    {
-
-      Random r = new Random();
-
-
-      var xx = r.Next(2000) + 100;
-      var yy = r.Next(2000);
-      var ww = 20;
-      var hh = 20;
-      NFP pl = new NFP();
-      int src = 0;
-      if (Polygons.Any())
-      {
-        src = Polygons.Max(z => z.Source) + 1;
-      }
-      Polygons.Add(pl);
-      pl.Source = src;
-      pl.x = xx;
-      pl.y = yy;
-      pl.AddPoint(new SvgPoint(0, 0));
-      pl.AddPoint(new SvgPoint(ww, 0));
-      pl.AddPoint(new SvgPoint(ww, hh));
-      pl.AddPoint(new SvgPoint(0, hh));
-
-      UpdateList();
-    }
 
     private void showHideButton_Click(object sender, EventArgs e)
     {
@@ -1388,30 +755,6 @@
     private void button4_Click(object sender, EventArgs e)
     {
       Font = new Font(Font.FontFamily.Name, Font.Size - 1);
-    }
-
-    private void listView3_SelectedIndexChanged(object sender, EventArgs e)
-    {
-      if (!(listView3.SelectedItems.Count > 0 && listView3.SelectedItems[0].Tag is FileInfo)) return;
-      try
-      {
-        var path = (FileInfo)listView3.SelectedItems[0].Tag;
-        RawDetail det = null;
-        if (path.Extension == ".svg")
-        {
-          det = SvgParser.LoadSvg(path.FullName);
-        }
-        if (path.Extension == ".dxf")
-        {
-          det = DxfParser.LoadDxfFile(path.FullName);
-        }
-
-        preview = det;
-      }
-      catch (Exception ex)
-      {
-        preview = null;
-      }
     }
 
     private List<INfp> sheets { get { return Context.Sheets; } }
@@ -1457,53 +800,6 @@
       Clipboard.SetImage(bb);
     }
 
-    private void button8_Click(object sender, EventArgs e)
-    {
-      var xx = r.Next(2000) + 100;
-      var yy = r.Next(2000);
-      var ww = r.Next(250) + 150;
-      var hh = r.Next(250) + 120;
-      NFP pl = new NFP();
-      int src = 0;
-      if (Polygons.Any())
-      {
-        src = Polygons.Max(z => z.Source) + 1;
-      }
-      Polygons.Add(pl);
-      pl.Source = src;
-      pl.AddPoint(new SvgPoint(0, 0));
-      pl.AddPoint(new SvgPoint(0 + ww, 0));
-      pl.AddPoint(new SvgPoint(0 + ww, 0 + hh));
-      pl.AddPoint(new SvgPoint(0, 0 + hh));
-      pl.x = xx;
-      pl.y = yy;
-      pl.Children = new List<INfp>();
-      int gap = 10;
-      int szx = ww / 4;
-      int szy = hh / 3;
-      for (int i = 0; i < 3; i++)
-      {
-        for (int j = 0; j < 2; j++)
-        {
-          var hole = new NFP();
-
-          pl.Children.Add(hole);
-
-          int hx = (i * ww / 4) + gap * (i + 1);
-          int hy = (j * hh / 3) + gap * (j + 1);
-
-          hole.AddPoint(new SvgPoint(hx + szx, hy + szy));
-          hole.AddPoint(new SvgPoint(hx, hy + szy));
-          hole.AddPoint(new SvgPoint(hx, hy));
-          hole.AddPoint(new SvgPoint(hx + szx, hy));
-          hole.x = xx;
-          hole.y = yy;
-        }
-      }
-
-      UpdateList();
-    }
-
     int lastOpenFilterIndex = 1;
 
     private void loadDetailButton_Click(object sender, EventArgs e)
@@ -1530,7 +826,7 @@
             SvgParser.LoadSvg(ofd.FileNames[i]);
           }
 
-          var fr = Infos.FirstOrDefault(z => z.Path == ofd.FileNames[i]);
+          var fr = DeepNestState.PartInfos.FirstOrDefault(z => z.Path == ofd.FileNames[i]);
           if (fr != null)
           {
             fr.Quantity++;
@@ -1575,7 +871,7 @@
               det.IsMultiplied = false;
             }
 
-            Infos.Add(det);
+            DeepNestState.PartInfos.Add(det);
           }
         }
         catch (Exception ex)
@@ -1584,24 +880,11 @@
         }
       }
 
-      UpdateInfos();
+      partsList1.UpdateInfos();
       this.ProgressDisplayerInstance.DisplayToolStripMessage(string.Empty);
       Cursor.Current = Cursors.Default;
     }
 
-    private void UpdateInfos()
-    {
-      try
-      {
-        partsList.SetObjects(Infos);
-      }
-      catch (Exception ex)
-      {
-        ShowMessage(ex);
-      }
-    }
-
-    public List<DetailLoadInfo> Infos = new List<DetailLoadInfo>();
 
     private void runNestingButton_Click(object sender, EventArgs e)
     {
@@ -1611,7 +894,7 @@
       Application.DoEvents();
 
       int src = 0;
-      foreach (var item in sheetsInfos)
+      foreach (var item in DeepNestState.SheetInfos)
       {
         src = Context.GetNextSheetSource();
         for (int i = 0; i < item.Quantity; i++)
@@ -1625,10 +908,10 @@
       Context.ReorderSheets();
 
       src = 0;
-      foreach (var item in Infos.Where(o => o.IsIncluded))
+      foreach (var item in DeepNestState.PartInfos.Where(o => o.IsIncluded))
       {
         this.ProgressDisplayerInstance.DisplayToolStripMessage($"Preload {item.Path}. . .");
-        var det = LoadRawDetail(new FileInfo(item.Path));
+        var det = FileService.Default.LoadRawDetail(new FileInfo(item.Path));
 
         AddToPolygons(src, det, item.Quantity, isPriority: item.IsPriority, isMultiplied: item.IsMultiplied, strictAngles: item.StrictAngle);
 
@@ -1671,69 +954,6 @@
       }
     }
 
-    private void objectListView1_SelectedIndexChanged(object sender, EventArgs e)
-    {
-      if (partsList.SelectedObject == null) return;
-      Cursor.Current = Cursors.WaitCursor;
-      preview = LoadRawDetail(new FileInfo((partsList.SelectedObject as DetailLoadInfo).Path));
-      if (autoFit) fitAll();
-      Cursor.Current = Cursors.Default;
-    }
-
-    private void ShowMessage(Exception ex)
-    {
-      errorMessageCount++;
-      string message = ex.Message + "/r" + ex.GetType().Name + "/r" + ex.StackTrace;
-
-      if (errorMessageCount <= 3)
-      {
-        this.ShowMessage(message, MessageBoxIcon.Error);
-      }
-      else if (errorMessageCount > 10)
-      {
-        this.ShowMessage(message, MessageBoxIcon.Stop);
-        Application.Exit();
-      }
-    }
-
-    private void ShowMessage(string text, MessageBoxIcon type)
-    {
-      MessageBox.Show(text, Text, MessageBoxButtons.OK, type);
-    }
-
-    private DialogResult ShowQuestion(string text)
-    {
-      return MessageBox.Show(text, Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-    }
-
-    private void clearToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      if (Infos.Count == 0) { ShowMessage("There are no parts.", MessageBoxIcon.Warning); return; }
-      if (ShowQuestion("Are you to sure to delete all items?") == DialogResult.No) return;
-      Infos.Clear();
-      partsList.SetObjects(Infos);
-      preview = null;
-    }
-
-    List<SheetLoadInfo> sheetsInfos = new List<SheetLoadInfo>();
-
-    private void deleteToolStripMenuItem2_Click(object sender, EventArgs e)
-    {
-      if (partsList.SelectedObjects.Count == 0) return;
-      if (ShowQuestion($"Are you to sure to delete {partsList.SelectedObjects.Count} items?") == DialogResult.No) return;
-      foreach (var item in partsList.SelectedObjects)
-      {
-        if (preview != null && (item as DetailLoadInfo).Path == (preview as RawDetail).Name)
-        {
-          preview = null;
-        }
-
-        Infos.Remove(item as DetailLoadInfo);
-      }
-
-      partsList.SetObjects(Infos);
-    }
-
     private void radioButton1_CheckedChanged(object sender, EventArgs e)
     {
 
@@ -1742,44 +962,6 @@
     private void radioButton2_CheckedChanged(object sender, EventArgs e)
     {
 
-    }
-
-    private void toolStripButton8_Click(object sender, EventArgs e)
-    {
-      fitAll();
-    }
-
-    void fitAll()
-    {
-      if (preview == null) return;
-      if (!(preview is RawDetail raw)) return;
-
-      GraphicsPath gp = new GraphicsPath();
-      foreach (var item in raw.Outers)
-      {
-        gp.AddPolygon(item.Points.ToArray());
-      }
-
-      if (raw.Outers.Count > 0)
-      {
-        ctx3.FitToPoints(gp.PathPoints, 5);
-      }
-    }
-
-    bool autoFit = true;
-
-    private void toolStripButton9_CheckedChanged(object sender, EventArgs e)
-    {
-      autoFit = toolStripButton9.Checked;
-      if (autoFit)
-      {
-        fitAll();
-        toolStripButton9.BackColor = Color.LightGreen;
-      }
-      else
-      {
-        toolStripButton9.BackColor = Color.Transparent;
-      }
     }
 
     private void textBox6_TextChanged(object sender, EventArgs e)
@@ -1797,47 +979,6 @@
       }
     }
 
-    private void setToToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      if (partsList.SelectedObjects.Count == 0) return;
-      QntDialog q = new QntDialog();
-      q.ShowDialog();
-
-      foreach (var item in partsList.SelectedObjects)
-      {
-        (item as DetailLoadInfo).Quantity = q.Qnt;
-      }
-
-      partsList.RefreshObjects(partsList.SelectedObjects);
-    }
-
-    private void multiplyToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      if (partsList.SelectedObjects.Count == 0) return;
-      QntDialog q = new QntDialog();
-      q.ShowDialog();
-
-      foreach (var item in partsList.SelectedObjects)
-      {
-        (item as DetailLoadInfo).Quantity *= q.Qnt;
-      }
-      partsList.RefreshObjects(partsList.SelectedObjects);
-    }
-
-    private void divideToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      if (partsList.SelectedObjects.Count == 0) return;
-      QntDialog q = new QntDialog();
-      q.ShowDialog();
-      if (q.Qnt == 0) return;
-      foreach (var item in partsList.SelectedObjects)
-      {
-        (item as DetailLoadInfo).Quantity /= q.Qnt;
-      }
-
-      partsList.RefreshObjects(partsList.SelectedObjects);
-    }
-
     private void checkBox5_CheckedChanged(object sender, EventArgs e)
     {
       SvgNest.Config.DrawSimplification = checkBox5.Checked;
@@ -1853,10 +994,6 @@
       SvgNest.Config.StrictAngles = (AnglesEnum)strictAnglesCombo.SelectedValue;
     }
 
-    private void multiplierUpDown_ValueChanged(object sender, EventArgs e)
-    {
-      SvgNest.Config.Multiplier = (int)multiplierUpDown.Value;
-    }
 
     private void showPartPositions_CheckedChanged(object sender, EventArgs e)
     {
@@ -1889,7 +1026,7 @@
       else
       {
         SvgNest.Config.StrictAngles = AnglesEnum.None;
-        ShowMessage("Defaulted to AnglesEnum.None", MessageBoxIcon.Information);
+        messageBoxService.ShowMessage("Defaulted to AnglesEnum.None", MessageBoxIcon.Information);
       }
     }
 
@@ -1910,7 +1047,8 @@
 
     private void SetActiveView(UiTab uiTab)
     {
-      tabControl1.Visible = uiTab != UiTab.About;
+      tabControl1.Visible = uiTab == UiTab.Settings || uiTab == UiTab.Debug || uiTab == UiTab.Nest;
+      partsList1.Visible = uiTab == UiTab.Input;
       about.Visible = uiTab == UiTab.About;
     }
 
@@ -1937,13 +1075,13 @@
 
     private void savePartsListToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      var deepNestState = new DeepNestState()
+      var deepNestState = new DeepNestLib.Ui.DeepNestState()
       {
         Polygons = this.Polygons.ToList(),
         Sheets = this.sheets.ToList(),
         NestResults = this.Context.Nest.TopNestResults,
-        PartInfos = this.Infos,
-        SheetInfos = this.sheetsInfos.Select(o => new SheetLoadInfoDto() { Height = o.Height, Quantity = o.Quantity, Width = o.Width }).ToList(),
+        PartInfos = DeepNestState.PartInfos,
+        SheetInfos = DeepNestState.SheetInfos.Select(o => new SheetLoadInfoDto() { Height = o.Height, Quantity = o.Quantity, Width = o.Width }).ToList<ISheetLoadInfo>(),
       };
 
       SaveFileDialog sfd = new SaveFileDialog();
@@ -1965,18 +1103,23 @@
       {
         using (StreamReader inputFile = new StreamReader(dialog.FileName))
         {
-          var state = DeepNestState.FromJson(inputFile.ReadToEnd());
+          var state = DeepNestLib.Ui.DeepNestState.FromJson(inputFile.ReadToEnd());
 
           this.Polygons.Clear();
-          state.Polygons.ForEach(o => this.Polygons.Add(o));
+          state.Polygons.ToList().ForEach(o => this.Polygons.Add(o));
           this.sheets.Clear();
           state.Sheets.ForEach(o => this.sheets.Add(o));
-          this.sheetsInfos.Clear();
-          state.SheetInfos.ForEach(o => this.sheetsInfos.Add(new SheetLoadInfo() { Height = o.Height, Quantity = o.Quantity, Width = o.Width }));
-          this.Infos.Clear();
-          state.PartInfos.ForEach(o => this.Infos.Add(o));
+          DeepNestState.SheetInfos.Clear();
+          state.SheetInfos.ForEach(o => DeepNestState.SheetInfos.Add(new SheetLoadInfo() { Height = o.Height, Quantity = o.Quantity, Width = o.Width }));
+          DeepNestState.PartInfos.Clear();
+          state.PartInfos.ForEach(o => DeepNestState.PartInfos.Add(o));
         }
       }
+    }
+
+    private void partsToolStripMenuItem_MouseDown(object sender, MouseEventArgs e)
+    {
+      SetActiveView(UiTab.Input);
     }
   }
 }

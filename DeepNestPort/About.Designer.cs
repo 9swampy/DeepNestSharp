@@ -72,7 +72,7 @@
       this.Controls.Add(this.linkLabel2);
       this.Controls.Add(this.label1);
       this.Name = "About";
-      this.Size = new System.Drawing.Size(385, 169);
+      this.Size = new System.Drawing.Size(823, 456);
       this.ResumeLayout(false);
       this.PerformLayout();
 

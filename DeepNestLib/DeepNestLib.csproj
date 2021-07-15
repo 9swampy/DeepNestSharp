@@ -213,6 +213,7 @@
     <Compile Include="TopNestResultsCollection.cs" />
     <Compile Include="Ui\DeepNestState.cs" />
     <Compile Include="Ui\DetailLoadInfo.cs" />
+    <Compile Include="Ui\IDeepNestState.cs" />
     <Compile Include="Ui\ISheetLoadInfo.cs" />
     <Compile Include="Ui\SheetLoadInfoDto.cs" />
   </ItemGroup>

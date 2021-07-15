@@ -43,7 +43,7 @@
       this.panel4 = new System.Windows.Forms.Panel();
       this.multiplierLabel = new System.Windows.Forms.Label();
       this.multiplierUpDown = new System.Windows.Forms.NumericUpDown();
-      this.objectListView1 = new BrightIdeasSoftware.ObjectListView();
+      this.objectListView = new BrightIdeasSoftware.ObjectListView();
       this.olvName = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
       this.olvQuantity = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
       this.olvInclude = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
@@ -57,7 +57,7 @@
       ((System.ComponentModel.ISupportInitialize)(this.sheetsList)).BeginInit();
       this.panel4.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.multiplierUpDown)).BeginInit();
-      ((System.ComponentModel.ISupportInitialize)(this.objectListView1)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)(this.objectListView)).BeginInit();
       this.SuspendLayout();
       // 
       // toolStrip2
@@ -188,7 +188,7 @@
       // 
       this.panel4.Controls.Add(this.multiplierLabel);
       this.panel4.Controls.Add(this.multiplierUpDown);
-      this.panel4.Controls.Add(this.objectListView1);
+      this.panel4.Controls.Add(this.objectListView);
       this.panel4.Controls.Add(this.toolStrip2);
       this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
       this.panel4.Location = new System.Drawing.Point(4, 4);
@@ -224,36 +224,37 @@
             0,
             0});
       // 
-      // objectListView1
+      // objectListView
       // 
-      this.objectListView1.AllColumns.Add(this.olvName);
-      this.objectListView1.AllColumns.Add(this.olvQuantity);
-      this.objectListView1.AllColumns.Add(this.olvInclude);
-      this.objectListView1.AllColumns.Add(this.olvPriority);
-      this.objectListView1.AllColumns.Add(this.olvMultiply);
-      this.objectListView1.AllColumns.Add(this.olvStrictAngle);
-      this.objectListView1.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.DoubleClick;
-      this.objectListView1.CellEditUseWholeCell = false;
-      this.objectListView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+      this.objectListView.AllColumns.Add(this.olvName);
+      this.objectListView.AllColumns.Add(this.olvQuantity);
+      this.objectListView.AllColumns.Add(this.olvInclude);
+      this.objectListView.AllColumns.Add(this.olvPriority);
+      this.objectListView.AllColumns.Add(this.olvMultiply);
+      this.objectListView.AllColumns.Add(this.olvStrictAngle);
+      this.objectListView.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.DoubleClick;
+      this.objectListView.CellEditUseWholeCell = false;
+      this.objectListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.olvName,
             this.olvQuantity,
             this.olvInclude,
             this.olvPriority,
             this.olvMultiply,
             this.olvStrictAngle});
-      this.objectListView1.Cursor = System.Windows.Forms.Cursors.Default;
-      this.objectListView1.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.objectListView1.FullRowSelect = true;
-      this.objectListView1.GridLines = true;
-      this.objectListView1.HideSelection = false;
-      this.objectListView1.Location = new System.Drawing.Point(0, 25);
-      this.objectListView1.Margin = new System.Windows.Forms.Padding(4);
-      this.objectListView1.Name = "objectListView1";
-      this.objectListView1.ShowGroups = false;
-      this.objectListView1.Size = new System.Drawing.Size(799, 375);
-      this.objectListView1.TabIndex = 2;
-      this.objectListView1.UseCompatibleStateImageBehavior = false;
-      this.objectListView1.View = System.Windows.Forms.View.Details;
+      this.objectListView.Cursor = System.Windows.Forms.Cursors.Default;
+      this.objectListView.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.objectListView.FullRowSelect = true;
+      this.objectListView.GridLines = true;
+      this.objectListView.HideSelection = false;
+      this.objectListView.Location = new System.Drawing.Point(0, 25);
+      this.objectListView.Margin = new System.Windows.Forms.Padding(4);
+      this.objectListView.Name = "objectListView";
+      this.objectListView.ShowGroups = false;
+      this.objectListView.Size = new System.Drawing.Size(799, 375);
+      this.objectListView.TabIndex = 2;
+      this.objectListView.UseCompatibleStateImageBehavior = false;
+      this.objectListView.View = System.Windows.Forms.View.Details;
+      this.objectListView.SelectedIndexChanged += new System.EventHandler(this.objectListView1_SelectedIndexChanged);
       // 
       // olvName
       // 
@@ -307,7 +308,7 @@
       this.panel4.ResumeLayout(false);
       this.panel4.PerformLayout();
       ((System.ComponentModel.ISupportInitialize)(this.multiplierUpDown)).EndInit();
-      ((System.ComponentModel.ISupportInitialize)(this.objectListView1)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this.objectListView)).EndInit();
       this.ResumeLayout(false);
 
     }
@@ -328,7 +329,7 @@
     private System.Windows.Forms.Panel panel4;
     private System.Windows.Forms.Label multiplierLabel;
     private System.Windows.Forms.NumericUpDown multiplierUpDown;
-    private BrightIdeasSoftware.ObjectListView objectListView1;
+    private BrightIdeasSoftware.ObjectListView objectListView;
     private BrightIdeasSoftware.OLVColumn olvName;
     private BrightIdeasSoftware.OLVColumn olvQuantity;
     private BrightIdeasSoftware.OLVColumn olvInclude;
