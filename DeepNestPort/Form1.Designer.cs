@@ -33,13 +33,6 @@
       this.clearAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.moveToSheetsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.cloneQntToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.contextMenuStrip4 = new System.Windows.Forms.ContextMenuStrip(this.components);
-      this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.deleteToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-      this.quantityToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.setToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.multiplyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.divideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.timer1 = new System.Windows.Forms.Timer(this.components);
       this.statusStrip1 = new System.Windows.Forms.StatusStrip();
       this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -66,6 +59,8 @@
       this.deepNestToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.about1 = new DeepNestSharp.About();
       this.panel2 = new System.Windows.Forms.Panel();
+      this.partsList1 = new DeepNestPort.PartsList();
+      this.about = new DeepNestSharp.About();
       this.tabControl1 = new System.Windows.Forms.TabControl();
       this.tabPage4 = new System.Windows.Forms.TabPage();
       this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -110,9 +105,6 @@
       this.textBox2 = new System.Windows.Forms.TextBox();
       this.label3 = new System.Windows.Forms.Label();
       this.textBox1 = new System.Windows.Forms.TextBox();
-      this.about = new DeepNestSharp.About();
-      this.partsList1 = new DeepNestPort.PartsList();
-      this.contextMenuStrip4.SuspendLayout();
       this.statusStrip1.SuspendLayout();
       this.contextMenuTopNestResults.SuspendLayout();
       this.menuStrip1.SuspendLayout();
@@ -149,56 +141,6 @@
       this.cloneQntToolStripMenuItem.Name = "cloneQntToolStripMenuItem";
       this.cloneQntToolStripMenuItem.Size = new System.Drawing.Size(178, 24);
       this.cloneQntToolStripMenuItem.Text = "clone qnt";
-      // 
-      // contextMenuStrip4
-      // 
-      this.contextMenuStrip4.ImageScalingSize = new System.Drawing.Size(20, 20);
-      this.contextMenuStrip4.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.clearToolStripMenuItem,
-            this.deleteToolStripMenuItem2,
-            this.quantityToolStripMenuItem});
-      this.contextMenuStrip4.Name = "contextMenuStrip4";
-      this.contextMenuStrip4.Size = new System.Drawing.Size(133, 76);
-      // 
-      // clearToolStripMenuItem
-      // 
-      this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
-      this.clearToolStripMenuItem.Size = new System.Drawing.Size(132, 24);
-      this.clearToolStripMenuItem.Text = "clear";
-      // 
-      // deleteToolStripMenuItem2
-      // 
-      this.deleteToolStripMenuItem2.Name = "deleteToolStripMenuItem2";
-      this.deleteToolStripMenuItem2.Size = new System.Drawing.Size(132, 24);
-      this.deleteToolStripMenuItem2.Text = "delete";
-      // 
-      // quantityToolStripMenuItem
-      // 
-      this.quantityToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.setToToolStripMenuItem,
-            this.multiplyToolStripMenuItem,
-            this.divideToolStripMenuItem});
-      this.quantityToolStripMenuItem.Name = "quantityToolStripMenuItem";
-      this.quantityToolStripMenuItem.Size = new System.Drawing.Size(132, 24);
-      this.quantityToolStripMenuItem.Text = "quantity";
-      // 
-      // setToToolStripMenuItem
-      // 
-      this.setToToolStripMenuItem.Name = "setToToolStripMenuItem";
-      this.setToToolStripMenuItem.Size = new System.Drawing.Size(138, 26);
-      this.setToToolStripMenuItem.Text = "set to";
-      // 
-      // multiplyToolStripMenuItem
-      // 
-      this.multiplyToolStripMenuItem.Name = "multiplyToolStripMenuItem";
-      this.multiplyToolStripMenuItem.Size = new System.Drawing.Size(138, 26);
-      this.multiplyToolStripMenuItem.Text = "multiply";
-      // 
-      // divideToolStripMenuItem
-      // 
-      this.divideToolStripMenuItem.Name = "divideToolStripMenuItem";
-      this.divideToolStripMenuItem.Size = new System.Drawing.Size(138, 26);
-      this.divideToolStripMenuItem.Text = "divide";
       // 
       // timer1
       // 
@@ -329,31 +271,31 @@
       // toolStripSeparator2
       // 
       this.toolStripSeparator2.Name = "toolStripSeparator2";
-      this.toolStripSeparator2.Size = new System.Drawing.Size(146, 6);
+      this.toolStripSeparator2.Size = new System.Drawing.Size(213, 6);
       // 
       // startNestToolStripMenuItem
       // 
       this.startNestToolStripMenuItem.Name = "startNestToolStripMenuItem";
-      this.startNestToolStripMenuItem.Size = new System.Drawing.Size(149, 26);
+      this.startNestToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
       this.startNestToolStripMenuItem.Text = "Start Nest";
       this.startNestToolStripMenuItem.Click += new System.EventHandler(this.runNestingButton_Click);
       // 
       // stopNestToolStripMenuItem
       // 
       this.stopNestToolStripMenuItem.Name = "stopNestToolStripMenuItem";
-      this.stopNestToolStripMenuItem.Size = new System.Drawing.Size(149, 26);
+      this.stopNestToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
       this.stopNestToolStripMenuItem.Text = "Stop Nest";
       this.stopNestToolStripMenuItem.Click += new System.EventHandler(this.stopButton_Click);
       // 
       // toolStripSeparator3
       // 
       this.toolStripSeparator3.Name = "toolStripSeparator3";
-      this.toolStripSeparator3.Size = new System.Drawing.Size(146, 6);
+      this.toolStripSeparator3.Size = new System.Drawing.Size(213, 6);
       // 
       // settingsToolStripMenuItem
       // 
       this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-      this.settingsToolStripMenuItem.Size = new System.Drawing.Size(149, 26);
+      this.settingsToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
       this.settingsToolStripMenuItem.Text = "Settings";
       this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
       // 
@@ -400,13 +342,30 @@
       this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+      this.panel2.Controls.Add(this.tabControl1);
       this.panel2.Controls.Add(this.partsList1);
       this.panel2.Controls.Add(this.about);
-      this.panel2.Controls.Add(this.tabControl1);
       this.panel2.Location = new System.Drawing.Point(0, 31);
       this.panel2.Name = "panel2";
       this.panel2.Size = new System.Drawing.Size(1203, 497);
       this.panel2.TabIndex = 8;
+      // 
+      // partsList1
+      // 
+      this.partsList1.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.partsList1.Location = new System.Drawing.Point(0, 0);
+      this.partsList1.Name = "partsList1";
+      this.partsList1.Size = new System.Drawing.Size(1203, 497);
+      this.partsList1.TabIndex = 8;
+      this.partsList1.Visible = false;
+      // 
+      // about
+      // 
+      this.about.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.about.Location = new System.Drawing.Point(0, 0);
+      this.about.Name = "about";
+      this.about.Size = new System.Drawing.Size(1203, 497);
+      this.about.TabIndex = 7;
       // 
       // tabControl1
       // 
@@ -499,38 +458,34 @@
       // 
       // runButton
       // 
-      this.runButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
       this.runButton.Image = ((System.Drawing.Image)(resources.GetObject("runButton.Image")));
       this.runButton.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.runButton.Name = "runButton";
-      this.runButton.Size = new System.Drawing.Size(38, 24);
+      this.runButton.Size = new System.Drawing.Size(58, 24);
       this.runButton.Text = "Run";
       // 
       // stopButton
       // 
-      this.stopButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
       this.stopButton.Image = ((System.Drawing.Image)(resources.GetObject("stopButton.Image")));
       this.stopButton.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.stopButton.Name = "stopButton";
-      this.stopButton.Size = new System.Drawing.Size(44, 24);
+      this.stopButton.Size = new System.Drawing.Size(64, 24);
       this.stopButton.Text = "Stop";
       // 
       // exportButton
       // 
-      this.exportButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
       this.exportButton.Image = ((System.Drawing.Image)(resources.GetObject("exportButton.Image")));
       this.exportButton.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.exportButton.Name = "exportButton";
-      this.exportButton.Size = new System.Drawing.Size(56, 24);
+      this.exportButton.Size = new System.Drawing.Size(76, 24);
       this.exportButton.Text = "Export";
       // 
       // showHideButton
       // 
-      this.showHideButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
       this.showHideButton.Image = ((System.Drawing.Image)(resources.GetObject("showHideButton.Image")));
       this.showHideButton.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.showHideButton.Name = "showHideButton";
-      this.showHideButton.Size = new System.Drawing.Size(117, 24);
+      this.showHideButton.Size = new System.Drawing.Size(137, 24);
       this.showHideButton.Text = "Show/Hide Info";
       // 
       // nestPreview
@@ -578,7 +533,7 @@
       this.tabPage2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
       this.tabPage2.Name = "tabPage2";
       this.tabPage2.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-      this.tabPage2.Size = new System.Drawing.Size(1195, 350);
+      this.tabPage2.Size = new System.Drawing.Size(1195, 468);
       this.tabPage2.TabIndex = 1;
       this.tabPage2.Text = "Settings";
       this.tabPage2.UseVisualStyleBackColor = true;
@@ -931,23 +886,6 @@
       this.textBox1.TabIndex = 0;
       this.textBox1.Text = "10";
       // 
-      // about
-      // 
-      this.about.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.about.Location = new System.Drawing.Point(0, 0);
-      this.about.Name = "about";
-      this.about.Size = new System.Drawing.Size(1203, 497);
-      this.about.TabIndex = 7;
-      // 
-      // partsList1
-      // 
-      this.partsList1.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.partsList1.Location = new System.Drawing.Point(0, 0);
-      this.partsList1.Name = "partsList1";
-      this.partsList1.Size = new System.Drawing.Size(1203, 497);
-      this.partsList1.TabIndex = 8;
-      this.partsList1.Visible = false;
-      // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -961,7 +899,6 @@
       this.Name = "Form1";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "DeepNest#";
-      this.contextMenuStrip4.ResumeLayout(false);
       this.statusStrip1.ResumeLayout(false);
       this.statusStrip1.PerformLayout();
       this.contextMenuTopNestResults.ResumeLayout(false);
@@ -997,13 +934,6 @@
     private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
     private System.Windows.Forms.ToolStripMenuItem moveToSheetsToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem cloneQntToolStripMenuItem;
-    private System.Windows.Forms.ContextMenuStrip contextMenuStrip4;
-    private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
-    private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem2;
-    private System.Windows.Forms.ToolStripMenuItem quantityToolStripMenuItem;
-    private System.Windows.Forms.ToolStripMenuItem setToToolStripMenuItem;
-    private System.Windows.Forms.ToolStripMenuItem multiplyToolStripMenuItem;
-    private System.Windows.Forms.ToolStripMenuItem divideToolStripMenuItem;
     private System.Windows.Forms.ContextMenuStrip contextMenuTopNestResults;
     private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
     private System.Windows.Forms.MenuStrip menuStrip1;

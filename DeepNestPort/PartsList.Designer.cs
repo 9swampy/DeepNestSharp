@@ -28,6 +28,7 @@
     /// </summary>
     private void InitializeComponent()
     {
+      this.components = new System.ComponentModel.Container();
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PartsList));
       this.toolStrip2 = new System.Windows.Forms.ToolStrip();
       this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
@@ -50,6 +51,16 @@
       this.olvPriority = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
       this.olvMultiply = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
       this.olvStrictAngle = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+      this.contextMenuStrip4 = new System.Windows.Forms.ContextMenuStrip(this.components);
+      this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.deleteToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+      this.quantityToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.setToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.multiplyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.divideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+      this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
+      this.toolStrip2.SuspendLayout();
       this.tableLayoutPanel7.SuspendLayout();
       this.panel3.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.partsPreview)).BeginInit();
@@ -58,14 +69,18 @@
       this.panel4.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.multiplierUpDown)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.objectListView)).BeginInit();
+      this.contextMenuStrip4.SuspendLayout();
       this.SuspendLayout();
       // 
       // toolStrip2
       // 
       this.toolStrip2.ImageScalingSize = new System.Drawing.Size(20, 20);
+      this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripButton1,
+            this.toolStripButton2});
       this.toolStrip2.Location = new System.Drawing.Point(0, 0);
       this.toolStrip2.Name = "toolStrip2";
-      this.toolStrip2.Size = new System.Drawing.Size(799, 25);
+      this.toolStrip2.Size = new System.Drawing.Size(799, 27);
       this.toolStrip2.TabIndex = 0;
       this.toolStrip2.Text = "toolStrip2";
       // 
@@ -246,11 +261,11 @@
       this.objectListView.FullRowSelect = true;
       this.objectListView.GridLines = true;
       this.objectListView.HideSelection = false;
-      this.objectListView.Location = new System.Drawing.Point(0, 25);
+      this.objectListView.Location = new System.Drawing.Point(0, 27);
       this.objectListView.Margin = new System.Windows.Forms.Padding(4);
       this.objectListView.Name = "objectListView";
       this.objectListView.ShowGroups = false;
-      this.objectListView.Size = new System.Drawing.Size(799, 375);
+      this.objectListView.Size = new System.Drawing.Size(799, 373);
       this.objectListView.TabIndex = 2;
       this.objectListView.UseCompatibleStateImageBehavior = false;
       this.objectListView.View = System.Windows.Forms.View.Details;
@@ -291,6 +306,79 @@
       this.olvStrictAngle.AspectName = "StrictAngle";
       this.olvStrictAngle.Text = "StrictAngle";
       // 
+      // contextMenuStrip4
+      // 
+      this.contextMenuStrip4.ImageScalingSize = new System.Drawing.Size(20, 20);
+      this.contextMenuStrip4.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.clearToolStripMenuItem,
+            this.deleteToolStripMenuItem2,
+            this.quantityToolStripMenuItem});
+      this.contextMenuStrip4.Name = "contextMenuStrip4";
+      this.contextMenuStrip4.Size = new System.Drawing.Size(133, 76);
+      // 
+      // clearToolStripMenuItem
+      // 
+      this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
+      this.clearToolStripMenuItem.Size = new System.Drawing.Size(132, 24);
+      this.clearToolStripMenuItem.Text = "clear";
+      this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
+      // 
+      // deleteToolStripMenuItem2
+      // 
+      this.deleteToolStripMenuItem2.Name = "deleteToolStripMenuItem2";
+      this.deleteToolStripMenuItem2.Size = new System.Drawing.Size(132, 24);
+      this.deleteToolStripMenuItem2.Text = "delete";
+      this.deleteToolStripMenuItem2.Click += new System.EventHandler(this.deleteToolStripMenuItem2_Click);
+      // 
+      // quantityToolStripMenuItem
+      // 
+      this.quantityToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.setToToolStripMenuItem,
+            this.multiplyToolStripMenuItem,
+            this.divideToolStripMenuItem});
+      this.quantityToolStripMenuItem.Name = "quantityToolStripMenuItem";
+      this.quantityToolStripMenuItem.Size = new System.Drawing.Size(132, 24);
+      this.quantityToolStripMenuItem.Text = "quantity";
+      // 
+      // setToToolStripMenuItem
+      // 
+      this.setToToolStripMenuItem.Name = "setToToolStripMenuItem";
+      this.setToToolStripMenuItem.Size = new System.Drawing.Size(138, 26);
+      this.setToToolStripMenuItem.Text = "set to";
+      this.setToToolStripMenuItem.Click += new System.EventHandler(this.setToToolStripMenuItem_Click);
+      // 
+      // multiplyToolStripMenuItem
+      // 
+      this.multiplyToolStripMenuItem.Name = "multiplyToolStripMenuItem";
+      this.multiplyToolStripMenuItem.Size = new System.Drawing.Size(138, 26);
+      this.multiplyToolStripMenuItem.Text = "multiply";
+      this.multiplyToolStripMenuItem.Click += new System.EventHandler(this.multiplyToolStripMenuItem_Click);
+      // 
+      // divideToolStripMenuItem
+      // 
+      this.divideToolStripMenuItem.Name = "divideToolStripMenuItem";
+      this.divideToolStripMenuItem.Size = new System.Drawing.Size(138, 26);
+      this.divideToolStripMenuItem.Text = "divide";
+      this.divideToolStripMenuItem.Click += new System.EventHandler(this.divideToolStripMenuItem_Click);
+      // 
+      // toolStripButton1
+      // 
+      this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+      this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
+      this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButton1.Name = "toolStripButton1";
+      this.toolStripButton1.Size = new System.Drawing.Size(24, 24);
+      this.toolStripButton1.Text = "toolStripButton1";
+      // 
+      // toolStripButton2
+      // 
+      this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+      this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
+      this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripButton2.Name = "toolStripButton2";
+      this.toolStripButton2.Size = new System.Drawing.Size(24, 24);
+      this.toolStripButton2.Text = "toolStripButton2";
+      // 
       // PartsList
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -298,6 +386,8 @@
       this.Controls.Add(this.tableLayoutPanel7);
       this.Name = "PartsList";
       this.Size = new System.Drawing.Size(1420, 816);
+      this.toolStrip2.ResumeLayout(false);
+      this.toolStrip2.PerformLayout();
       this.tableLayoutPanel7.ResumeLayout(false);
       this.panel3.ResumeLayout(false);
       this.panel3.PerformLayout();
@@ -309,6 +399,7 @@
       this.panel4.PerformLayout();
       ((System.ComponentModel.ISupportInitialize)(this.multiplierUpDown)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.objectListView)).EndInit();
+      this.contextMenuStrip4.ResumeLayout(false);
       this.ResumeLayout(false);
 
     }
@@ -336,5 +427,14 @@
     private BrightIdeasSoftware.OLVColumn olvPriority;
     private BrightIdeasSoftware.OLVColumn olvMultiply;
     private BrightIdeasSoftware.OLVColumn olvStrictAngle;
+    private System.Windows.Forms.ContextMenuStrip contextMenuStrip4;
+    private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem2;
+    private System.Windows.Forms.ToolStripMenuItem quantityToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem setToToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem multiplyToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem divideToolStripMenuItem;
+    private System.Windows.Forms.ToolStripButton toolStripButton1;
+    private System.Windows.Forms.ToolStripButton toolStripButton2;
   }
 }
