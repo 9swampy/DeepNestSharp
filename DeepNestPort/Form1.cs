@@ -42,7 +42,7 @@
       this.ContextualiseRunStopButtons(false);
 
       LoadSettings();
-
+      
       ctx = new DrawingContext(nestPreview);
 
       listViewTopNests.DoubleBuffered(true);
@@ -82,7 +82,7 @@
 
     private ProgressDisplayer ProgressDisplayerInstance { get; }
 
-    private NestingContext Context
+    public NestingContext Context
     {
       get
       {
@@ -375,63 +375,7 @@
     }
 
     public DrawingContext ctx;
-
-    public void UpdateNestsList()
-    {
-      try
-      {
-        if (IsHandleCreated)
-        {
-          if (InvokeRequired)
-          {
-            _ = this.Invoke((MethodInvoker)UpdateNestsList);
-          }
-          else
-          {
-            if (this.Context.Nest != null)
-            {
-              listViewTopNests.Invoke((Action)(() =>
-              {
-                listViewTopNests.BeginUpdate();
-                int selectedIndex = listViewTopNests.FocusedItem?.Index ?? 0;
-                listViewTopNests.Items.Clear();
-                int i = 0;
-                if (this.Context?.Nest != null)
-                {
-                  foreach (var item in this.Context.Nest.TopNestResults)
-                  {
-                    var listItem = new ListViewItem(new string[] { item.Fitness.ToString("N0"), item.CreatedAt.ToString("HH:mm:ss.fff") }) { Tag = item };
-                    listViewTopNests.Items.Add(listItem);
-                    if (i == selectedIndex)
-                    {
-                      listItem.Selected = true;
-                      listItem.Focused = true;
-                    }
-
-                    i++;
-                  }
-                }
-
-                listViewTopNests.EndUpdate();
-              }));
-            }
-          }
-        }
-      }
-      catch (InvalidOperationException)
-      {
-        //NOP
-      }
-      catch (InvalidAsynchronousStateException)
-      {
-        //NOP
-      }
-      catch (Exception ex)
-      {
-        messageBoxService.ShowMessage(ex);
-      }
-    }
-
+    
     Thread th;
 
     internal void DisplayProgress(float progressVal)
@@ -565,6 +509,9 @@
 
     bool stop = false;
 
+    
+    Random r = new Random();
+
     private void RunDeepnest()
     {
       try
@@ -575,7 +522,7 @@
           {
             _ = this.Invoke((MethodInvoker)(() => { this.progressBar1.Visible = true; }));
             this.Context.StartNest();
-            UpdateNestsList();
+            nestResults1.UpdateNestsList();
 
             while (!this.stop)
             {
@@ -583,7 +530,7 @@
               sw.Start();
               Cursor.Current = Cursors.Default;
               this.Context.NestIterate(SvgNest.Config);
-              UpdateNestsList();
+              nestResults1.UpdateNestsList();
               sw.Stop();
               if (SvgNest.Config.UseParallel)
               {
@@ -613,8 +560,6 @@
         MessageBox.Show("Error occurred during Nest. . .", ex.Message);
       }
     }
-
-    Random r = new Random();
 
     void run()
     {

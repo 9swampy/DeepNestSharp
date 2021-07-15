@@ -111,6 +111,12 @@
     </Compile>
     <Compile Include="MessageBoxService.cs" />
     <Compile Include="MessageFilter.cs" />
+    <Compile Include="NestResults.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="NestResults.Designer.cs">
+      <DependentUpon>NestResults.cs</DependentUpon>
+    </Compile>
     <Compile Include="PartsList.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -137,6 +143,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NestResults.resx">
+      <DependentUpon>NestResults.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PartsList.resx">
       <DependentUpon>PartsList.cs</DependentUpon>
