@@ -9,6 +9,7 @@
   using System.Threading.Tasks;
   using ClipperLib;
   using DeepNestLib.Placement;
+  using Light.GuardClauses;
 
   public class Background
   {
@@ -258,23 +259,23 @@
       return frame;
     }
 
-    private INfp[] getInnerNfp(INfp A, INfp B, MinkowskiCache type, double clipperScale)
+    private INfp[] GetInnerNfp(INfp a, INfp b, MinkowskiCache type, double clipperScale)
     {
-      if (A.Source != null && B.Source != null)
-      {
-        var key = new DbCacheKey(A.Source, B.Source, 0, B.Rotation);
+      a.MustNotBeNull();
+      b.MustNotBeNull();
 
-        // var doc = window.db.find({ A: A.source, B: B.source, Arotation: 0, Brotation: B.rotation }, true);
-        var res = window.Find(key, true);
-        if (res != null)
-        {
-          return res;
-        }
+      var key = new DbCacheKey(a.Source, b.Source, 0, b.Rotation);
+
+      // var doc = window.db.find({ A: A.source, B: B.source, Arotation: 0, Brotation: B.rotation }, true);
+      var res = window.Find(key, true);
+      if (res != null)
+      {
+        return res;
       }
 
-      var frame = getFrame(A);
+      var frame = getFrame(a);
 
-      var nfp = GetOuterNfp(frame, B, type, true);
+      var nfp = GetOuterNfp(frame, b, type, true);
 
       if (nfp == null || nfp.Children == null || nfp.Children.Count == 0)
       {
@@ -282,11 +283,11 @@
       }
 
       List<INfp> holes = new List<INfp>();
-      if (A.Children != null && A.Children.Count > 0)
+      if (a.Children != null && a.Children.Count > 0)
       {
-        for (var i = 0; i < A.Children.Count; i++)
+        for (var i = 0; i < a.Children.Count; i++)
         {
-          var hnfp = GetOuterNfp(A.Children[i], B, MinkowskiCache.NoCache);
+          var hnfp = GetOuterNfp(a.Children[i], b, MinkowskiCache.NoCache);
           if (hnfp != null)
           {
             holes.Add(hnfp);
@@ -324,11 +325,11 @@
         f.Add(finalNfp[i].ToArray().ToNestCoordinates(clipperScale));
       }
 
-      if (A.Source != null && B.Source != null)
+      if (a.Source != null && b.Source != null)
       {
         // insert into db
         // console.log('inserting inner: ', A.source, B.source, B.rotation, f);
-        var doc = new DbCacheKey(A.Source, B.Source, 0, B.Rotation, f.ToArray());
+        var doc = new DbCacheKey(a.Source, b.Source, 0, b.Rotation, f.ToArray());
         window.Insert(doc, true);
       }
 
@@ -380,7 +381,7 @@
         // open a new sheet
         INfp sheet = null;
         var requeue = new Queue<INfp>();
-        while (sheet == null)
+        while (unusedSheets.Count > 0 && sheet == null)
         {
           sheet = unusedSheets.Pop();
           if (allplacements.Any(o => o.Sheet == sheet))
@@ -406,6 +407,11 @@
             placements = new List<PartPlacement>();
             placed = new List<INfp>();
           }
+        }
+
+        if (sheet == null)
+        {
+          break;
         }
 
         string clipkey = string.Empty;
@@ -801,7 +807,7 @@
 
     private bool CanBePlaced(INfp sheet, INfp part, double clipperScale, out INfp[] sheetNfp)
     {
-      sheetNfp = getInnerNfp(sheet, part, 0, clipperScale);
+      sheetNfp = GetInnerNfp(sheet, part, 0, clipperScale);
       if (sheetNfp != null && sheetNfp.Count() > 0)
       {
         if (sheetNfp[0].Length == 0)
@@ -875,6 +881,10 @@
           this.SyncPlaceParts(parts, data.Sheets, config, data.Index);
         }
       }
+      catch (ArgumentNullException)
+      {
+        throw;
+      }
       catch (DllNotFoundException)
       {
         throw;
@@ -930,7 +940,7 @@
           var cbounds = GeometryUtil.getPolygonBounds(Achildren[j]);
           if (cbounds.width > bbounds.width && cbounds.height > bbounds.height)
           {
-            var n = getInnerNfp(Achildren[j], Brotated, MinkowskiCache.NoCache, clipperScale);
+            var n = GetInnerNfp(Achildren[j], Brotated, MinkowskiCache.NoCache, clipperScale);
             if (n != null && n.Count() > 0)
             {
               cnfp.AddRange(n);
