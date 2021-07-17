@@ -160,6 +160,7 @@
     <Compile Include="FitSmallSquarePartInLargerSquareSheetFixture.cs" />
     <Compile Include="FitOnlyOneOfTwoSmallSquaresPartInOneLargerSquareSheetsFixture.cs" />
     <Compile Include="FitTwoSmallSquaresPartInTwoLargerSquareSheetsFixture.cs" />
+    <Compile Include="GeneticAlgorithm\GravityFitnessFixture.cs" />
     <Compile Include="NfpFixture.cs" />
     <Compile Include="Placement\NfpJsonFixture.cs" />
     <Compile Include="Placement\SheetPlacementJsonFixture.cs" />
@@ -193,6 +194,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="DeepNestLib.CiTests.ruleset" />
+    <EmbeddedResource Include="GeneticAlgorithm\SheetPlacementScenario1.json" />
+    <EmbeddedResource Include="GeneticAlgorithm\SheetPlacementScenario2.json" />
     <None Include="packages.config" />
     <Content Include="SquareInSquare.dxf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

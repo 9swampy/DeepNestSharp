@@ -28,6 +28,25 @@
     private Thread dth;
     private object preview;
     private int errorMessageCount = 0;
+    private DrawingContext nestPreviewDrawingContext;
+    private DrawingContext debugPreviewDrawingContext;
+    private DrawingContext partsPreviewDrawingContext;
+    private Thread th;
+    private float progressVal = 0;
+    private bool stop = false;
+    private Random r = new Random();
+    private int lastOpenFilterIndex = 1;
+    private List<DetailLoadInfo> infos = new List<DetailLoadInfo>();
+    private List<SheetLoadInfo> sheetsInfos = new List<SheetLoadInfo>();
+    private bool autoFit = true;
+
+    internal ICollection<INfp> Polygons
+    {
+      get
+      {
+        return Context.Polygons;
+      }
+    }
 
     public Form1()
     {
@@ -46,11 +65,11 @@
 
       sheetsList.SetObjects(sheetsInfos);
 
-      ctx = new DrawingContext(nestPreview);
-      ctx2 = new DrawingContext(debugPreview);
-      ctx3 = new DrawingContext(partsPreview);
-      ctx3.FocusOnMove = false;
-      ctx2.FocusOnMove = false;
+      nestPreviewDrawingContext = new DrawingContext(nestPreview);
+      debugPreviewDrawingContext = new DrawingContext(debugPreview);
+      partsPreviewDrawingContext = new DrawingContext(partsPreview);
+      partsPreviewDrawingContext.FocusOnMove = false;
+      debugPreviewDrawingContext.FocusOnMove = false;
 
       listView1.DoubleBuffered(true);
       listView2.DoubleBuffered(true);
@@ -168,280 +187,28 @@
       groupBox6.Text = "Sheets: " + sheets.Count;
     }
 
-    private void RedrawPreview(DrawingContext ctx2, object previewObject)
-    {
-      ctx2.Update();
-      ctx2.Clear(Color.White);
-
-      //ctx2.gr.DrawLine(Pens.Blue, ctx2.Transform(new PointF(0, 0)), ctx2.Transform(100, 0));
-      //ctx2.gr.DrawLine(Pens.Red, ctx2.Transform(new PointF(0, 0)), ctx2.Transform(0, 100));
-      ctx2.Reset();
-
-      if (previewObject != null)
-      {
-        RectangleF bnd;
-        if (previewObject is RawDetail || previewObject is NFP)
-        {
-          if (previewObject is RawDetail raw)
-          {
-            ctx2.Draw(raw, Pens.Black, Brushes.LightBlue);
-            if (SvgNest.Config.DrawSimplification)
-            {
-              AddApproximation(ctx2, raw);
-            }
-
-            bnd = raw.BoundingBox();
-          }
-          else
-          {
-            var g = ctx2.Draw(previewObject as NFP, Pens.Black, Brushes.LightBlue);
-            bnd = g.GetBounds();
-          }
-
-          var cap = $"{bnd.Width:N2} x {bnd.Height:N2}";
-          ctx2.DrawLabel(cap, Brushes.Black, Color.LightGreen, 5, 5);
-        }
-      }
-
-      ctx2.Setup();
-    }
-
-    /// <summary>
-    /// Display the bounds that will be used by the nesting algorithym.
-    /// </summary>
-    /// <param name="ctx">Drawing context upon which to draw.</param>
-    /// <param name="raw">The part to approximate.</param>
-    private void AddApproximation(DrawingContext ctx, RawDetail raw)
-    {
-      NFP part = raw.ToNfp();
-      var simplification = SvgNest.simplifyFunction(part, false);
-      ctx.Draw(simplification, Pens.Red);
-      var pointsChange = $"{part.Points.Length} => {simplification.Points.Length} points";
-      ctx.DrawLabel(pointsChange, Brushes.Black, Color.Orange, 5, (int)(10 + ctx.GetLabelHeight()));
-    }
-
     private void Redraw()
     {
       try
       {
-        var pos = nestPreview.PointToClient(Cursor.Position);
-        var pos1 = ctx.GetPos();
-        var posx = pos1.X;
-        var posy = pos1.Y;
-        ctx.Update();
+        debugPreviewDrawingContext.RenderPreview(preview);
+        partsPreviewDrawingContext.RenderPreview(preview);
 
-        RedrawPreview(ctx2, preview);
-        RedrawPreview(ctx3, preview);
-
-        ctx.gr.SmoothingMode = SmoothingMode.AntiAlias;
-        ctx.Clear(Color.White);
-
-        ctx.Reset();
-
-        ctx.gr.DrawLine(Pens.Red, ctx.Transform(new PointF(0, 0)), ctx.Transform(new PointF(1000, 0)));
-        ctx.gr.DrawLine(Pens.Blue, ctx.Transform(new PointF(0, 0)), ctx.Transform(new PointF(0, 1000)));
-        int yy = 0;
-        int gap = (int)Font.Size;
-        if (isInfoShow)
+        if (!nativeModeCheckBox.Checked)
         {
-          ctx.gr.DrawString("X:" + posx.ToString("0.00") + " Y: " + posy.ToString("0.00"), Font, Brushes.Blue, 0, yy);
-          yy += (int)Font.Size + gap;
-          if (this.Context.Nest != null && this.Context.Nest.TopNestResults != null && this.Context.Nest.TopNestResults.Top != null)
-          {
-            ctx.gr.DrawString($"Material Utilization: {Math.Round(Context.Nest.TopNestResults.Top.MaterialUtilization * 100.0f, 2)}%   Iterations: {Context.Iterations}    Parts placed: {Context.PlacedPartsCount}/{Polygons.Count} ({100 * Context.Nest.TopNestResults.Top.PartsPlacedPercent:N2}%)", Font, Brushes.DarkBlue, 0, yy);
-            yy += (int)Font.Size + gap;
-            if (SvgNest.Config.UseParallel)
-            {
-              ctx.gr.DrawString($"Generations: {SvgNest.Generations}    Population: {SvgNest.Population}    Threads: {SvgNest.Threads}", Font, Brushes.DarkBlue, 0, yy);
-            }
-            else
-            {
-              ctx.gr.DrawString($"Generations: {SvgNest.Generations}    Population: {SvgNest.Population}", Font, Brushes.DarkBlue, 0, yy);
-            }
-            yy += (int)Font.Size + gap;
-            ctx.gr.DrawString($"Sheets: {sheets.Count}   Parts:{Polygons.Count}    parts types: {Polygons.GroupBy(z => z.Source).Count()}", Font, Brushes.DarkBlue, 0, yy);
-            yy += (int)Font.Size + gap;
-            ctx.gr.DrawString($"Nests: {this.Context.Nest.TopNestResults.Count} Fitness: {this.Context.Nest.TopNestResults.Top.Fitness}   Area:{this.Context.Nest.TopNestResults.Top.TotalSheetsArea}  ", Font, Brushes.DarkBlue, 0, yy);
-            yy += (int)Font.Size + gap;
-            ctx.gr.DrawString($"Minkowski Calls: {Background.CallCounter};  Last placing time: {Context.Nest.LastPlacementTime}ms;  Average nest time: {Context.Nest.AverageNestTime}ms", Font, Brushes.DarkBlue, 0, yy);
-            yy += (int)Font.Size + gap;
-          }
-        }
-        else
-        {
-          if (this.Context.Nest != null && this.Context.Nest.TopNestResults != null && this.Context.Nest.TopNestResults.Top != null)
-          {
-            ctx.gr.DrawString($"Iterations: {Context.Iterations}    Parts placed: {Context.PlacedPartsCount}/{Polygons.Count} ({100 * Context.Nest.TopNestResults.Top.PartsPlacedPercent:N2}%)", Font, Brushes.DarkBlue, 0, yy);
-            yy += (int)Font.Size + gap;
-          }
-
-          ctx.gr.DrawString($"Generations: {SvgNest.Generations}    Population: {SvgNest.Population}", Font, Brushes.DarkBlue, 0, yy);
-          yy += (int)Font.Size + gap;
-          ctx.gr.DrawString($"Sheets: {sheets.Count}   Parts:{Polygons.Count}    Parts types: {Polygons.GroupBy(z => z.Source).Count()}", Font, Brushes.DarkBlue, 0, yy);
-          yy += (int)Font.Size + gap;
+          throw new NotImplementedException("Didn't think was worth carrying forward.");
         }
 
-        if (!checkBox1.Checked)
+        if (this.tabControl1.Visible && this.tabControl1.SelectedIndex == (int)UiTab.Nest)
         {
-          if (bb != null)
-          {
-            //ctx.gr.TranslateTransform((float)sheets[0].x, (float)sheets[0].y);
-            var pp = ctx.Transform((float)sheets[0].x, (float)sheets[0].y);
-            ctx.gr.DrawImage(bb, new RectangleF(pp.X, pp.Y, bb.Width * ctx.zoom, bb.Height * ctx.zoom), new Rectangle(0, 0, bb.Width, bb.Height), GraphicsUnit.Pixel);
-          }
+          var pos = nestPreview.PointToClient(Cursor.Position);
+          nestPreviewDrawingContext.RenderNestResult(Font, isInfoShow, this.Context, sheets, Polygons);
         }
-
-        int i = 0;
-        foreach (var item in Polygons.Union(sheets))
-        {
-          if (!checkBox1.Checked)
-          {
-            continue;
-          }
-
-          if (!(item is Sheet))
-          {
-            if (!item.Fitted) continue;
-          }
-
-          GraphicsPath path = new GraphicsPath();
-          if (item.Points != null && item.Points.Any())
-          {
-            // rotate first;
-            var m = new Matrix();
-            m.Translate((float)item.x, (float)item.y);
-            m.Rotate(item.Rotation);
-
-            var pnts = item.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
-            m.TransformPoints(pnts);
-
-            path.AddPolygon(pnts.Select(z => ctx.Transform(z)).ToArray());
-
-            if (!(item is Sheet) && isInfoShow && SvgNest.Config.ShowPartPositions)
-            {
-              var label = $"{item.PlacementOrder} ({item.x:N0},{item.y:N0})@{item.Rotation}";
-              var ms = ctx2.gr.MeasureString(label, SystemFonts.DefaultFont);
-              var midPnt = new PointF(pnts.Average(o => o.X), pnts.Average(o => o.Y));
-              ctx.gr.DrawString(label, Font, Brushes.Black, ctx.Transform(midPnt));
-            }
-
-            if (item.Children != null)
-            {
-              foreach (var citem in item.Children)
-              {
-                var pnts2 = citem.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
-                m.TransformPoints(pnts2);
-                path.AddPolygon(pnts2.Select(z => ctx.Transform(z)).ToArray());
-              }
-            }
-
-            ctx.gr.ResetTransform();
-
-            /*if (selected == item)
-            {
-                ctx.gr.FillPath(new SolidBrush(Color.FromArgb(128, Color.Orange)), path);
-                ctx.gr.DrawPath(Pens.DarkBlue, path);
-
-            }
-            else*/
-            {
-              if (!sheets.Contains(item))
-              {
-                ctx.gr.FillPath(new SolidBrush(Color.FromArgb(128, Color.LightBlue)), path);
-              }
-
-              ctx.gr.DrawPath(Pens.Black, path);
-            }
-
-            if (item is Sheet)
-            {
-              if (this.Context.Current != null)
-              {
-                var trans1 = ctx.Transform(new PointF((float)pnts[0].X, (float)pnts[0].Y - 30));
-                var sheetPlacement = this.Context.Current.UsedSheets.FirstOrDefault(s => s.SheetId == item.Id);
-                if (sheetPlacement != null)
-                {
-                  ctx.gr.DrawString($"util: {100 * sheetPlacement.MaterialUtilization:N2}% {sheetPlacement.ToString()}", Font, Brushes.Black, trans1);
-
-                  if (isInfoShow)
-                  {
-                    var hullPoints = sheetPlacement.Hull.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
-                    m.TransformPoints(hullPoints);
-
-                    path.AddPolygon(hullPoints.Select(z => ctx.Transform(z)).ToArray());
-                    ctx.gr.DrawPath(Pens.Red, path);
-
-                    //var simplifyPoints = sheetPlacement.Simplify.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
-                    //m.TransformPoints(simplifyPoints);
-
-                    //path.AddPolygon(simplifyPoints.Select(z => ctx.Transform(z)).ToArray());
-                    //ctx.gr.DrawPath(Pens.Green, path);
-                    if (sheetPlacement == this.Context.Current.UsedSheets.First())
-                    {
-                      var trans2 = ctx.Transform(new PointF((float)pnts[0].X, (float)pnts[0].Y - 30 + (int)Font.Size + gap));
-                      ctx.gr.DrawString($"util: {100 * this.Context.Current.MaterialUtilization:N2}% {this.Context.Current.ToString()}", Font, Brushes.Black, trans2);
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-
-        ctx.Setup();
       }
       catch (Exception ex)
       {
         // NOP - the code iterates collections that could change during the Redraw; so just swallow and let it recover next tick.
         this.ShowMessage(ex);
-      }
-    }
-
-    private void RenderSheet()
-    {
-      ctx.gr.SmoothingMode = SmoothingMode.AntiAlias;
-      ctx.Clear(Color.White);
-      ctx.Reset();
-
-      foreach (var item in Polygons.Union(sheets))
-      {
-        if (!(item is Sheet))
-        {
-          if (!item.Fitted) continue;
-        }
-
-        GraphicsPath path = new GraphicsPath();
-        if (item.Points != null && item.Points.Any())
-        {
-          //rotate first;
-          var m = new Matrix();
-          m.Translate((float)item.x, (float)item.y);
-          m.Rotate(item.Rotation);
-
-          var pnts = item.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
-          m.TransformPoints(pnts);
-
-          path.AddPolygon(pnts.Select(z => ctx.Transform(z)).ToArray());
-
-          if (item.Children != null)
-          {
-            foreach (var citem in item.Children)
-            {
-              var pnts2 = citem.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
-              m.TransformPoints(pnts2);
-              path.AddPolygon(pnts2.Select(z => ctx.Transform(z)).ToArray());
-            }
-          }
-
-          ctx.gr.ResetTransform();
-
-          if (!sheets.Contains(item))
-          {
-            ctx.gr.FillPath(new SolidBrush(Color.FromArgb(128, Color.LightBlue)), path);
-          }
-
-          ctx.gr.DrawPath(Pens.Black, path);
-        }
       }
     }
 
@@ -470,10 +237,6 @@
         //NOP
       }
     }
-
-    public DrawingContext ctx;
-    public DrawingContext ctx2;
-    public DrawingContext ctx3;
 
     public void UpdateNestsList()
     {
@@ -531,8 +294,6 @@
       }
     }
 
-    Thread th;
-
     internal void DisplayProgress(float progressVal)
     {
       this.progressVal = progressVal;
@@ -554,8 +315,6 @@
       }
     }
 
-    public float progressVal = 0;
-
     private void listView1_SelectedIndexChanged(object sender, EventArgs e)
     {
       if (listView1.SelectedItems.Count > 0)
@@ -569,7 +328,6 @@
     {
       //pictureBox1.Focus();
     }
-
 
     private void UpdateFilesList(string path)
     {
@@ -837,8 +595,6 @@
       }
     }
 
-    bool stop = false;
-
     private void RunDeepnest()
     {
       try
@@ -887,8 +643,6 @@
         MessageBox.Show("Error occurred during Nest. . .", ex.Message);
       }
     }
-
-    Random r = new Random();
 
     private void cloneQntToolStripMenuItem_Click(object sender, EventArgs e)
     {
@@ -1003,7 +757,6 @@
     {
       SvgNest.Config.MutationRate = (int)numericUpDown2.Value;
     }
-
 
     private void button1_Click(object sender, EventArgs e)
     {
@@ -1251,8 +1004,6 @@
       }
     }
 
-    internal ICollection<INfp> Polygons { get { return Context.Polygons; } }
-
     private void button6_Click(object sender, EventArgs e)
     {
       var cnt = GetCountFromDialog();
@@ -1414,8 +1165,6 @@
 
     private List<INfp> sheets { get { return Context.Sheets; } }
 
-    private int lastSaveFilterIndex = 1;
-
     private void exportButton_Click_1(object sender, EventArgs e)
     {
       SaveFileDialog sfd = new SaveFileDialog();
@@ -1434,25 +1183,10 @@
       }
     }
 
-    Bitmap bb;
-
     private void button7_Click(object sender, EventArgs e)
     {
       var sh = sheets[0] as Sheet;
-      ctx.sx = (float)sh.x;
-      ctx.sy = (float)sh.y;
-      ctx.InvertY = false;
-      bb = new Bitmap(1 + (int)sh.Width, 1 + (int)sh.Height);
-      var gr = Graphics.FromImage(bb);
-      var tmpbmp = ctx.bmp;
-      ctx.gr = gr;
-      ctx.bmp = bb;
-
-      RenderSheet();
-      ctx.gr = gr;
-      ctx.bmp = tmpbmp;
-      ctx.InvertY = true;
-      Clipboard.SetImage(bb);
+      nestPreviewDrawingContext.RenderSheetToClipboard(sh, Polygons, sheets);
     }
 
     private void button8_Click(object sender, EventArgs e)
@@ -1502,8 +1236,6 @@
       UpdateList();
     }
 
-    int lastOpenFilterIndex = 1;
-
     private void loadDetailButton_Click(object sender, EventArgs e)
     {
       OpenFileDialog ofd = new OpenFileDialog();
@@ -1528,7 +1260,7 @@
             SvgParser.LoadSvg(ofd.FileNames[i]);
           }
 
-          var fr = Infos.FirstOrDefault(z => z.Path == ofd.FileNames[i]);
+          var fr = infos.FirstOrDefault(z => z.Path == ofd.FileNames[i]);
           if (fr != null)
           {
             fr.Quantity++;
@@ -1577,7 +1309,7 @@
               det.IsMultiplied = false;
             }
 
-            Infos.Add(det);
+            infos.Add(det);
           }
         }
         catch (Exception ex)
@@ -1595,15 +1327,13 @@
     {
       try
       {
-        partsList.SetObjects(Infos);
+        partsList.SetObjects(infos);
       }
       catch (Exception ex)
       {
         ShowMessage(ex);
       }
     }
-
-    public List<DetailLoadInfo> Infos = new List<DetailLoadInfo>();
 
     private void runNestingButton_Click(object sender, EventArgs e)
     {
@@ -1627,7 +1357,7 @@
       Context.ReorderSheets();
 
       src = 0;
-      foreach (var item in Infos.Where(o => o.IsIncluded))
+      foreach (var item in infos.Where(o => o.IsIncluded))
       {
         this.ProgressDisplayerInstance.DisplayToolStripMessage($"Preload {item.Path}. . .");
         var det = LoadRawDetail(new FileInfo(item.Path));
@@ -1710,14 +1440,12 @@
 
     private void clearToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      if (Infos.Count == 0) { ShowMessage("There are no parts.", MessageBoxIcon.Warning); return; }
+      if (infos.Count == 0) { ShowMessage("There are no parts.", MessageBoxIcon.Warning); return; }
       if (ShowQuestion("Are you to sure to delete all items?") == DialogResult.No) return;
-      Infos.Clear();
-      partsList.SetObjects(Infos);
+      infos.Clear();
+      partsList.SetObjects(infos);
       preview = null;
     }
-
-    List<SheetLoadInfo> sheetsInfos = new List<SheetLoadInfo>();
 
     private void deleteToolStripMenuItem2_Click(object sender, EventArgs e)
     {
@@ -1730,10 +1458,10 @@
           preview = null;
         }
 
-        Infos.Remove(item as DetailLoadInfo);
+        infos.Remove(item as DetailLoadInfo);
       }
 
-      partsList.SetObjects(Infos);
+      partsList.SetObjects(infos);
     }
 
     private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -1769,11 +1497,9 @@
 
       if (raw.Outers.Count > 0)
       {
-        ctx3.FitToPoints(gp.PathPoints, 5);
+        partsPreviewDrawingContext.FitToPoints(gp.PathPoints, 5);
       }
     }
-
-    bool autoFit = true;
 
     private void toolStripButton9_CheckedChanged(object sender, EventArgs e)
     {

@@ -125,7 +125,7 @@
       this.button13 = new System.Windows.Forms.Button();
       this.groupBox4 = new System.Windows.Forms.GroupBox();
       this.button8 = new System.Windows.Forms.Button();
-      this.checkBox1 = new System.Windows.Forms.CheckBox();
+      this.nativeModeCheckBox = new System.Windows.Forms.CheckBox();
       this.button7 = new System.Windows.Forms.Button();
       this.button2 = new System.Windows.Forms.Button();
       this.button5 = new System.Windows.Forms.Button();
@@ -1326,7 +1326,7 @@
       this.groupBox4.AutoSize = true;
       this.groupBox4.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
       this.groupBox4.Controls.Add(this.button8);
-      this.groupBox4.Controls.Add(this.checkBox1);
+      this.groupBox4.Controls.Add(this.nativeModeCheckBox);
       this.groupBox4.Controls.Add(this.button7);
       this.groupBox4.Controls.Add(this.button2);
       this.groupBox4.Controls.Add(this.button5);
@@ -1354,16 +1354,16 @@
       // 
       // checkBox1
       // 
-      this.checkBox1.AutoSize = true;
-      this.checkBox1.Checked = true;
-      this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.checkBox1.Location = new System.Drawing.Point(72, 177);
-      this.checkBox1.Margin = new System.Windows.Forms.Padding(4);
-      this.checkBox1.Name = "checkBox1";
-      this.checkBox1.Size = new System.Drawing.Size(107, 21);
-      this.checkBox1.TabIndex = 4;
-      this.checkBox1.Text = "native mode";
-      this.checkBox1.UseVisualStyleBackColor = true;
+      this.nativeModeCheckBox.AutoSize = true;
+      this.nativeModeCheckBox.Checked = true;
+      this.nativeModeCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+      this.nativeModeCheckBox.Location = new System.Drawing.Point(72, 177);
+      this.nativeModeCheckBox.Margin = new System.Windows.Forms.Padding(4);
+      this.nativeModeCheckBox.Name = "checkBox1";
+      this.nativeModeCheckBox.Size = new System.Drawing.Size(107, 21);
+      this.nativeModeCheckBox.TabIndex = 4;
+      this.nativeModeCheckBox.Text = "native mode";
+      this.nativeModeCheckBox.UseVisualStyleBackColor = true;
       // 
       // button7
       // 
@@ -1939,7 +1939,7 @@
     private System.Windows.Forms.Button button4;
     private System.Windows.Forms.PictureBox debugPreview;
     private System.Windows.Forms.Button button7;
-    private System.Windows.Forms.CheckBox checkBox1;
+    private System.Windows.Forms.CheckBox nativeModeCheckBox;
     private System.Windows.Forms.GroupBox groupBox8;
     private System.Windows.Forms.RadioButton radioButton3;
     private System.Windows.Forms.RadioButton radioButton2;
