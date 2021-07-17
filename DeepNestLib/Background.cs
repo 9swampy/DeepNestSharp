@@ -237,7 +237,7 @@
       return res;
     }
 
-    public static INfp getFrame(INfp A)
+    private static INfp GetFrame(INfp A)
     {
       var bounds = GeometryUtil.getPolygonBounds(A);
 
@@ -364,7 +364,7 @@
       }
 
       var unplacedParts = rotated.ToArray();
-      SheetPlacementCollection allplacements = new SheetPlacementCollection();
+      SheetPlacementCollection allPlacements = new SheetPlacementCollection();
       INfp nfp;
       bool isPriorityPlacement;
       while (unplacedParts.Length > 0 && unusedSheets.Count > 0)
@@ -384,9 +384,9 @@
         while (unusedSheets.Count > 0 && sheet == null)
         {
           sheet = unusedSheets.Pop();
-          if (allplacements.Any(o => o.Sheet == sheet))
+          if (allPlacements.Any(o => o.Sheet == sheet))
           {
-            var sheetPlacement = allplacements.Single(o => o.Sheet == sheet);
+            var sheetPlacement = allPlacements.Single(o => o.Sheet == sheet);
             placements = sheetPlacement.PartPlacements;
             placed = sheetPlacement.PartPlacements.Select(o => o.Part).ToList();
             if (unplacedParts.Any(o => o.IsPriority))
@@ -398,7 +398,7 @@
             else
             {
               // Sheet's already used for priority parts but there's no priority parts left so fill spaces with non-priority
-              allplacements.Remove(sheetPlacement);
+              allPlacements.Remove(sheetPlacement);
             }
           }
           else
@@ -761,14 +761,14 @@
             }
             else if (part.IsPriority)
             {
-              break; // Should go to line 921
+              break;
             }
 
             // send placement progress signal
             var placednum = placed.Count;
-            for (int j = 0; j < allplacements.Count; j++)
+            for (int j = 0; j < allPlacements.Count; j++)
             {
-              placednum += allplacements[j].PartPlacements.Count;
+              placednum += allPlacements[j].PartPlacements.Count;
             }
           }
         }
@@ -794,7 +794,7 @@
 
         if (placements != null && placements.Count > 0)
         {
-          allplacements.Add(new SheetPlacement(config.PlacementType, sheet, placements));
+          allPlacements.Add(new SheetPlacement(config.PlacementType, sheet, placements));
         }
         else
         {
@@ -802,7 +802,7 @@
         }
       }
 
-      return new NestResult(allplacements, unplacedParts, totalMerged, config.PlacementType, sw.ElapsedMilliseconds);
+      return new NestResult(allPlacements, unplacedParts, totalMerged, config.PlacementType, sw.ElapsedMilliseconds);
     }
 
     private bool CanBePlaced(INfp sheet, INfp part, double clipperScale, out INfp[] sheetNfp)
@@ -839,7 +839,7 @@
       {
         var individual = data.Individual;
 
-        var parts = individual.Placements.ToArray();
+        var parts = individual.Parts.ToArray();
         var rotations = individual.Rotation;
         var ids = data.Ids;
         var sources = data.Sources;

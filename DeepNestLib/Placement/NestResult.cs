@@ -10,13 +10,13 @@
     private readonly OriginalFitness fitness;
 
     public NestResult(
-      SheetPlacementCollection allplacements,
+      SheetPlacementCollection allPlacements,
       IList<NFP> unplacedParts,
       double mergedLength,
       PlacementTypeEnum placementType,
       long placePartTime)
     {
-      this.UsedSheets = allplacements;
+      this.UsedSheets = allPlacements;
       this.UnplacedParts = unplacedParts;
       this.MergedLength = mergedLength;
       this.PlacementType = placementType;

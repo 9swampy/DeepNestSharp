@@ -10,7 +10,7 @@
   using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
 
-  public class SvgNest
+  public partial class SvgNest
   {
     private static int generations = 0;
     private static int population = 0;
@@ -50,13 +50,7 @@
 
     public static int Generations => generations;
 
-    public class InrangeItem
-    {
-      public SvgPoint point;
-      public double distance;
-    }
-
-    public static SvgPoint getTarget(SvgPoint o, INfp simple, double tol)
+    private static SvgPoint GetTarget(SvgPoint o, INfp simple, double tol)
     {
       List<InrangeItem> inrange = new List<InrangeItem>();
 
@@ -108,19 +102,6 @@
     }
 
     public static ISvgNestConfig Config { get; } = new SvgNestConfig();
-
-    public static INfp clone(INfp p)
-    {
-      var newp = new NFP();
-      for (var i = 0; i < p.Length; i++)
-      {
-        newp.AddPoint(new SvgPoint(
-             p[i].x,
-             p[i].y));
-      }
-
-      return newp;
-    }
 
     public static bool pointInPolygon(SvgPoint point, INfp polygon)
     {
@@ -318,10 +299,10 @@
           }
 
           var o = offset[i];
-          var target = getTarget(o, simple, 2 * tolerance);
+          var target = GetTarget(o, simple, 2 * tolerance);
 
           // reverse point offset and try to find exterior points
-          var test = clone(offset);
+          var test = offset.CloneTop();
           test.Points[i] = new SvgPoint(target.x, target.y);
 
           if (!exterior(test, polygon, inside, curveTolerance))
@@ -338,8 +319,8 @@
               {
                 var shell = shells[j];
                 var delta = j * (tolerance / numshells);
-                target = getTarget(o, shell, 2 * delta);
-                test = clone(offset);
+                target = GetTarget(o, shell, 2 * delta);
+                test = offset.CloneTop();
                 test.Points[i] = new SvgPoint(target.x, target.y);
                 if (!exterior(test, polygon, inside, curveTolerance))
                 {
@@ -944,39 +925,32 @@
         // only one background window now...
         if (!this.isStopped && this.ga.Population[i].IsPending)
         {
-          this.ga.Population[i].Processing = true;
+          var individual = ga.Population[i];
+          individual.Processing = true;
 
           // hash values on arrays don't make it across ipc, store them in an array and reassemble on the other side....
-          List<int> ids = new List<int>();
-          List<int> sources = new List<int>();
+          int[] ids = new int[this.ga.Population[i].Parts.Count];
+          int[] sources = new int[this.ga.Population[i].Parts.Count];
           List<List<INfp>> children = new List<List<INfp>>();
 
-          for (int j = 0; j < this.ga.Population[i].Placements.Count; j++)
+          for (int j = 0; j < individual.Parts.Count; j++)
           {
-            var id = this.ga.Population[i].Placements[j].Id;
-            var source = this.ga.Population[i].Placements[j].Source;
-            var child = this.ga.Population[i].Placements[j].Children;
-
-            // ids[j] = id;
-            ids.Add(id);
-
-            // sources[j] = source;
-            sources.Add(source);
-
-            // children[j] = child;
-            children.Add(child.ToList());
+            var placement = individual.Parts[j];
+            ids[j] = placement.Id;
+            sources[j] = placement.Source;
+            children.Add(placement.Children.ToList());
           }
 
           var data = new DataInfo()
           {
             Index = i,
-            Sheets = sheets.ToArray(),
+            Sheets = sheets,
             SheetIds = sheetids,
             SheetSources = sheetsources,
             SheetChildren = sheetchildren,
-            Individual = this.ga.Population[i],
-            Ids = ids.ToArray(),
-            Sources = sources.ToArray(),
+            Individual = individual,
+            Ids = ids,
+            Sources = sources,
             Children = children,
           };
 

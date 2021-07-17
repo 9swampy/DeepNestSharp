@@ -1,7 +1,7 @@
-﻿using DeepNestLib;
-
-namespace DeepNestPort
+﻿namespace DeepNestPort
 {
+  using DeepNestLib;
+
   public class DetailLoadInfo
   {
     public string Name { get; set; }

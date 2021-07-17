@@ -45,7 +45,7 @@
     [Fact]
     public void ShouldHaveSameFitnessBoundsAsOriginal()
     {
-      this.nestResult.FitnessBounds.Should().BeApproximately(161, 10);
+      this.nestResult.FitnessBounds.Should().BeApproximately(645, 10);
     }
 
     [Fact]
@@ -63,7 +63,7 @@
     [Fact]
     public void ShouldHaveSameFitnessAsOriginal()
     {
-      this.nestResult.Fitness.Should().BeApproximately(815, 10);
+      this.nestResult.Fitness.Should().BeApproximately(1299, 10);
     }
 
     [Fact]

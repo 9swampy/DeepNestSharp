@@ -56,6 +56,8 @@
 
     NFP CloneTree();
 
+    INfp CloneTop();
+
     NFP GetHull();
 
     SvgPoint[] ReplacePoints(IEnumerable<SvgPoint> points);

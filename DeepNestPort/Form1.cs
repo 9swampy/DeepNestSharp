@@ -126,14 +126,6 @@
 
         return this.context;
       }
-
-      set
-      {
-        lock (contextSyncLock)
-        {
-          this.context = value;
-        }
-      }
     }
 
     private void Form1_Load(object sender, EventArgs e)
@@ -177,14 +169,15 @@
       {
         listView1.Items.Add(new ListViewItem(new string[] { item.Id.ToString(), item.Source.ToString(), item.Name, item.Points.Count().ToString() }) { Tag = item });
       }
+
       listView2.Items.Clear();
-      foreach (var item in sheets)
+      foreach (var item in Sheets)
       {
         listView2.Items.Add(new ListViewItem(new string[] { item.Id.ToString(), item.Source.ToString(), item.Name, item.Points.Count().ToString() }) { Tag = item });
       }
 
       groupBox5.Text = "Parts: " + Polygons.Count();
-      groupBox6.Text = "Sheets: " + sheets.Count;
+      groupBox6.Text = "Sheets: " + Sheets.Count;
     }
 
     private void Redraw()
@@ -202,7 +195,7 @@
         if (this.tabControl1.Visible && this.tabControl1.SelectedIndex == (int)UiTab.Nest)
         {
           var pos = nestPreview.PointToClient(Cursor.Position);
-          nestPreviewDrawingContext.RenderNestResult(Font, isInfoShow, this.Context, sheets, Polygons);
+          nestPreviewDrawingContext.RenderNestResult(Font, isInfoShow, this.Context, Sheets, Polygons);
         }
       }
       catch (Exception ex)
@@ -250,7 +243,7 @@
           }
           else
           {
-            if (this.Context.Nest != null)
+            if (this.Context?.Nest != null)
             {
               listViewTopNests.Invoke((Action)(() =>
               {
@@ -258,20 +251,17 @@
                 int selectedIndex = listViewTopNests.FocusedItem?.Index ?? 0;
                 listViewTopNests.Items.Clear();
                 int i = 0;
-                if (this.Context?.Nest != null)
+                foreach (var item in this.Context.Nest.TopNestResults.ToList())
                 {
-                  foreach (var item in this.Context.Nest.TopNestResults.ToList())
+                  var listItem = new ListViewItem(new string[] { item.Fitness.ToString("N0"), item.CreatedAt.ToString("HH:mm:ss.fff") }) { Tag = item };
+                  listViewTopNests.Items.Add(listItem);
+                  if (i == selectedIndex)
                   {
-                    var listItem = new ListViewItem(new string[] { item.Fitness.ToString("N0"), item.CreatedAt.ToString("HH:mm:ss.fff") }) { Tag = item };
-                    listViewTopNests.Items.Add(listItem);
-                    if (i == selectedIndex)
-                    {
-                      listItem.Selected = true;
-                      listItem.Focused = true;
-                    }
-
-                    i++;
+                    listItem.Selected = true;
+                    listItem.Focused = true;
                   }
+
+                  i++;
                 }
 
                 listViewTopNests.EndUpdate();
@@ -350,7 +340,7 @@
     private Sheet NewSheet(int w = 3000, int h = 1500)
     {
       var tt = new RectangleSheet();
-      tt.Name = "rectSheet" + (sheets.Count + 1);
+      tt.Name = "rectSheet" + (Sheets.Count + 1);
       tt.Height = h;
       tt.Width = w;
       tt.Rebuild();
@@ -361,7 +351,7 @@
     private Sheet NewRhombusSheet(int w = 3000, int h = 1500)
     {
       var tt = new Sheet();
-      tt.Name = "rhombSheet" + (sheets.Count + 1);
+      tt.Name = "rhombSheet" + (Sheets.Count + 1);
 
       tt.Height = h;
       tt.Width = w;
@@ -381,7 +371,7 @@
     private Sheet NewCircleSheet(int w = 3000)
     {
       var tt = new Sheet();
-      tt.Name = "circleSheet" + (sheets.Count + 1);
+      tt.Name = "circleSheet" + (Sheets.Count + 1);
 
       tt.Height = w;
       tt.Width = w;
@@ -493,7 +483,7 @@
         sheet.Height = (float)b.height;
 
         sheet.Source = Context.GetNextSheetSource();
-        sheets.Add(sheet);
+        Sheets.Add(sheet);
         Context.ReorderSheets();
         UpdateList();
       }
@@ -501,7 +491,7 @@
 
     private void clearAllToolStripMenuItem1_Click(object sender, EventArgs e)
     {
-      sheets.Clear();
+      Sheets.Clear();
       UpdateList();
     }
 
@@ -510,7 +500,7 @@
       if (listView2.SelectedItems.Count > 0)
       {
         var pol = listView2.SelectedItems[0].Tag as NFP;
-        sheets.Remove(pol);
+        Sheets.Remove(pol);
         Polygons.Add(pol);
         UpdateList();
       }
@@ -665,7 +655,7 @@
 
     void run()
     {
-      if (sheets.Count == 0 || Polygons.Count == 0)
+      if (Sheets.Count == 0 || Polygons.Count == 0)
       {
         Cursor.Current = Cursors.Default;
         MessageBox.Show("There are no sheets or parts", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -794,13 +784,13 @@
         return;
       }
 
-
       if (comboBox2.SelectedItem == null)
       {
         label11.BackColor = Color.Red;
         label11.ForeColor = Color.White;
         return;
       }
+
       label11.BackColor = label11.Parent.BackColor;
       label11.ForeColor = label11.Parent.ForeColor;
       List<Sheet> sh = new List<Sheet>();
@@ -820,11 +810,13 @@
             break;
         }
       }
+
       foreach (var item in sh)
       {
         item.Source = src;
         Context.Sheets.Add(item);
       }
+
       UpdateList();
       Context.ReorderSheets();
     }
@@ -836,6 +828,7 @@
       {
         return q.Qnt;
       }
+
       return 0;
     }
 
@@ -1089,7 +1082,7 @@
       if (listView2.SelectedItems.Count > 0)
       {
         var f = listView2.SelectedItems[0].Tag as NFP;
-        sheets.Remove(f);
+        Sheets.Remove(f);
         UpdateList();
         Context.ReorderSheets();
       }
@@ -1163,7 +1156,13 @@
       }
     }
 
-    private List<INfp> sheets { get { return Context.Sheets; } }
+    private List<INfp> Sheets
+    {
+      get
+      {
+        return Context.Sheets;
+      }
+    }
 
     private void exportButton_Click_1(object sender, EventArgs e)
     {
@@ -1178,15 +1177,15 @@
         sfd.Filter = exporter.SaveFileDialogFilter;
         if (sfd.ShowDialog() == DialogResult.OK)
         {
-          exporter.Export(sfd.FileName, Polygons.ToArray(), sheets.ToArray());
+          exporter.Export(sfd.FileName, Polygons.ToArray(), Sheets.ToArray());
         }
       }
     }
 
     private void button7_Click(object sender, EventArgs e)
     {
-      var sh = sheets[0] as Sheet;
-      nestPreviewDrawingContext.RenderSheetToClipboard(sh, Polygons, sheets);
+      var sh = Sheets[0] as Sheet;
+      nestPreviewDrawingContext.RenderSheetToClipboard(sh, Polygons, Sheets);
     }
 
     private void button8_Click(object sender, EventArgs e)
@@ -1349,7 +1348,7 @@
         for (int i = 0; i < item.Quantity; i++)
         {
           var ns = NewSheet(item.Width, item.Height);
-          sheets.Add(ns);
+          Sheets.Add(ns);
           ns.Source = src;
         }
       }

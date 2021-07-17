@@ -173,6 +173,7 @@
     <Compile Include="IHiddenNfp.cs" />
     <Compile Include="IMessageService.cs" />
     <Compile Include="INfp.cs" />
+    <Compile Include="InrangeItem.cs" />
     <Compile Include="IntPointArrayExtensions.cs" />
     <Compile Include="IProgressDisplayer.cs" />
     <Compile Include="IStringify.cs" />

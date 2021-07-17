@@ -232,6 +232,24 @@
     }
 
     /// <summary>
+    /// Clones but only the top level points; no children.
+    /// </summary>
+    /// <param name="p"></param>
+    /// <returns></returns>
+    public INfp CloneTop()
+    {
+      var newp = new NFP();
+      for (var i = 0; i < this.Length; i++)
+      {
+        newp.AddPoint(new SvgPoint(
+             this[i].x,
+             this[i].y));
+      }
+
+      return newp;
+    }
+
+    /// <summary>
     /// Clone but only copy exact points.
     /// </summary>
     /// <returns>Clone but only copy exact points.</returns>

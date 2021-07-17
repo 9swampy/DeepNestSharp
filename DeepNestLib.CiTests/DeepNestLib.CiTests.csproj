@@ -160,8 +160,11 @@
     <Compile Include="FitSmallSquarePartInLargerSquareSheetFixture.cs" />
     <Compile Include="FitOnlyOneOfTwoSmallSquaresPartInOneLargerSquareSheetsFixture.cs" />
     <Compile Include="FitTwoSmallSquaresPartInTwoLargerSquareSheetsFixture.cs" />
+    <Compile Include="GeneticAlgorithm\BoundingBoxFitnessFixture.cs" />
     <Compile Include="GeneticAlgorithm\GravityFitnessFixture.cs" />
+    <Compile Include="GeneticAlgorithm\SqueezeFitnessFixture.cs" />
     <Compile Include="NfpFixture.cs" />
+    <Compile Include="PerfectFitnessFixture.cs" />
     <Compile Include="Placement\NfpJsonFixture.cs" />
     <Compile Include="Placement\SheetPlacementJsonFixture.cs" />
     <Compile Include="PmapWorkerFixtureSetup.cs" />
@@ -196,6 +199,12 @@
     <None Include="DeepNestLib.CiTests.ruleset" />
     <EmbeddedResource Include="GeneticAlgorithm\SheetPlacementScenario1.json" />
     <EmbeddedResource Include="GeneticAlgorithm\SheetPlacementScenario2.json" />
+    <EmbeddedResource Include="GeneticAlgorithm\SheetPlacementScenario3-BestBoundingBoxAllDxfSamples.json" />
+    <EmbeddedResource Include="GeneticAlgorithm\SheetPlacementScenario3-BestSqueezeAllDxfSamples.json" />
+    <EmbeddedResource Include="GeneticAlgorithm\SheetPlacementScenario3-MidBoundingBoxAllDxfSamples.json" />
+    <EmbeddedResource Include="GeneticAlgorithm\SheetPlacementScenario3-MidSqueezeAllDxfSamples.json" />
+    <EmbeddedResource Include="GeneticAlgorithm\SheetPlacementScenario3-WorstBoundingBoxAllDxfSamples.json" />
+    <EmbeddedResource Include="GeneticAlgorithm\SheetPlacementScenario3-WorstSqueezeAllDxfSamples.json" />
     <None Include="packages.config" />
     <Content Include="SquareInSquare.dxf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
