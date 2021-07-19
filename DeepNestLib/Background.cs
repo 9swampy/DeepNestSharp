@@ -273,7 +273,7 @@
         return res;
       }
 
-      var frame = getFrame(a);
+      var frame = GetFrame(a);
 
       var nfp = GetOuterNfp(frame, b, type, true);
 
