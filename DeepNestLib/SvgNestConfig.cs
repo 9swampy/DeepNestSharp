@@ -6,6 +6,8 @@
     public const int PopulationMax = 800;
     public const int MutationRateMin = 1;
     public const int MutationRateMax = 5000;
+    public const int MultiplierMin = 1;
+    public const int MultiplierMax = 100;
 
     public double Scale { get; set; } = 25;
 
@@ -223,6 +225,24 @@
       }
     }
 
+    public int Multiplier
+    {
+      get
+      {
+        var result = (int)Properties.Settings.Default["Multiplier"];
+        if (result < MutationRateMin) return MultiplierMin;
+        if (result > MutationRateMax) return MultiplierMax;
+        return result;
+      }
+
+      set
+      {
+        Properties.Settings.Default["Multiplier"] = value;
+        Properties.Settings.Default.Save();
+        Properties.Settings.Default.Upgrade();
+      }
+    }
+
     public bool DrawSimplification
     {
       get
@@ -238,6 +258,28 @@
       }
     }
 
+    public AnglesEnum StrictAngles
+    {
+      get
+      {
+        try
+        {
+          return (AnglesEnum)Properties.Settings.Default["StrictAngles"];
+        }
+        catch (System.Exception)
+        {
+          return AnglesEnum.None;
+        }
+      }
+
+      set
+      {
+        Properties.Settings.Default["StrictAngles"] = (int)value;
+        Properties.Settings.Default.Save();
+        Properties.Settings.Default.Upgrade();
+      }
+    }
+
     public bool UseParallel
     {
       get
@@ -248,6 +290,23 @@
       set
       {
         Properties.Settings.Default["UseParallel"] = value;
+        Properties.Settings.Default.Save();
+        Properties.Settings.Default.Upgrade();
+      }
+    }
+
+    public int ParallelNests { get; } = 10;
+
+    public bool ShowPartPositions
+    {
+      get
+      {
+        return (bool)Properties.Settings.Default["ShowPartPositions"];
+      }
+
+      set
+      {
+        Properties.Settings.Default["ShowPartPositions"] = value;
         Properties.Settings.Default.Save();
         Properties.Settings.Default.Upgrade();
       }

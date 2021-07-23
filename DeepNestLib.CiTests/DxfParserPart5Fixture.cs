@@ -3,13 +3,14 @@
   using System.Diagnostics;
   using System.IO;
   using System.Linq;
+  using System.Reflection;
   using FakeItEasy;
   using FluentAssertions;
   using Xunit;
 
   public partial class DxfParserPart5Fixture
   {
-    private const string DxfTestFilename = "_5.dxf";
+    private const string DxfTestFilename = "Dxfs._5.dxf";
 
     private static volatile object testSyncLock = new object();
 
@@ -25,13 +26,13 @@
       {
         if (!this.hasImportedRawDetail)
         {
-          this.loadedRawDetail = DxfParser.LoadDxf(DxfTestFilename);
+          this.loadedRawDetail = DxfParser.LoadDxfStream(DxfTestFilename);
           this.nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
-          this.hasImportedRawDetail = this.nestingContext.TryImportFromRawDetail(this.loadedRawDetail, A.Dummy<int>(), out this.loadedNfp);
+          this.hasImportedRawDetail = this.loadedRawDetail.TryGetNfp(A.Dummy<int>(), out this.loadedNfp);
           var sw = new Stopwatch();
           sw.Start();
           var config = new DefaultSvgNestConfig() { CurveTolerance = 0.72D };
-          this.simplifiedNfp = SvgNest.simplifyFunction(this.loadedNfp, false, config);
+          this.simplifiedNfp = SvgNest.simplifyFunction(this.loadedNfp, false, config.CurveTolerance, config.Simplify);
           sw.Stop();
           this.simplifiedNfpTime = sw.ElapsedMilliseconds;
         }
@@ -39,23 +40,15 @@
     }
 
     [Fact]
-    public void ShouldFindDxfInBuild()
-    {
-      var fi = new FileInfo(DxfTestFilename);
-      System.Diagnostics.Debug.Print(fi.FullName);
-      fi.Exists.Should().BeTrue();
-    }
-
-    [Fact]
     public void ShouldLoadDxf()
     {
-      DxfParser.LoadDxf(DxfTestFilename);
+      DxfParser.LoadDxfFile(DxfTestFilename);
     }
 
     [Fact]
     public void ShouldLoadDxfToRawDetail()
     {
-      var rawDetail = DxfParser.LoadDxf(DxfTestFilename);
+      var rawDetail = DxfParser.LoadDxfStream(DxfTestFilename);
 
       rawDetail.Should().NotBeNull();
     }

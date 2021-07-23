@@ -1,11 +1,9 @@
 ﻿namespace DeepNestLib.CiTests
 {
   using System;
-  using System.Collections.Generic;
   using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
-  using IxMilia.Dxf.Entities;
   using Xunit;
 
   public class FitOnlyOneOfTwoSmallSquaresPartInOneLargerSquareSheetsFixture
@@ -20,11 +18,11 @@
     {
       var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
       NFP firstSheet;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { DxfGenerator.Rectangle(20D) }), firstSheetIdSrc, out firstSheet).Should().BeTrue();
+      DxfGenerator.GenerateSquare("Sheet", 20D, RectangleType.FileLoad).TryImportFromRawDetail(firstSheetIdSrc, out firstSheet).Should().BeTrue();
       NFP firstPart;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Rectangle(11D) }), firstPartIdSrc, out firstPart).Should().BeTrue();
+      DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryImportFromRawDetail(firstPartIdSrc, out firstPart).Should().BeTrue();
       NFP secondPart;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Rectangle(11D) }), secondPartIdSrc, out secondPart).Should().BeTrue();
+      DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryImportFromRawDetail(secondPartIdSrc, out secondPart).Should().BeTrue();
       this.nestResult = new Background(A.Fake<IProgressDisplayer>()).PlaceParts(new NFP[] { firstSheet }, new NFP[] { firstPart, secondPart }, new SvgNestConfig(), 0);
     }
 
@@ -37,25 +35,19 @@
     [Fact]
     public void GivenOnePartOnlyThenShouldBeNoMergedLines()
     {
-      this.nestResult.mergedLength.Should().Be(0, "there was only one part on each sheet; no lines to merge possible.");
+      this.nestResult.MergedLength.Should().Be(0, "there was only one part on each sheet; no lines to merge possible.");
     }
 
     [Fact]
     public void ShouldHaveExpectedFitness()
     {
-      this.nestResult.fitness.Should().Be(double.NaN);
+      this.nestResult.Fitness.Should().BeApproximately(30251500, 1000);
     }
 
     [Fact]
     public void ShouldHaveExpectedNullRotation()
     {
       this.nestResult.Rotation.Should().BeNull();
-    }
-
-    [Fact]
-    public void ShouldHaveExpectedArea()
-    {
-      this.nestResult.area.Should().Be(400);
     }
 
     [Fact]
@@ -106,10 +98,10 @@
       this.nestResult.UsedSheets[0].PartPlacements[0].rotation.Should().Be(0);
     }
 
-    //[Fact]
-    //public void ShouldHavePartLeftOver()
-    //{ 
-    //this.sheetPlacement
-    //}
+    [Fact]
+    public void ShouldHaveOneUnplacedParts()
+    {
+      this.nestResult.UnplacedParts.Count.Should().Be(1);
+    }
   }
 }

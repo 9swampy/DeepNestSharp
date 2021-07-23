@@ -5,18 +5,29 @@
   using System.Drawing;
   using System.IO;
   using System.Linq;
+  using System.Reflection;
   using System.Threading;
   using IxMilia.Dxf;
   using IxMilia.Dxf.Entities;
 
   public class DxfParser : IExport
   {
-    private const int NumberOfRetries = 3;
+    private const int NumberOfRetries = 5;
     private const int DelayOnRetry = 1000;
 
     private static volatile object loadLock = new object();
 
-    public static RawDetail LoadDxf(string path)
+    public static RawDetail LoadDxfStream(string path)
+    {
+      using (var inputStream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream(path))
+      {
+        DxfFile dxffile = DxfFile.Load(inputStream);
+        IEnumerable<DxfEntity> entities = dxffile.Entities.ToArray();
+        return ConvertDxfToRawDetail(path, entities);
+      }
+    }
+
+    public static RawDetail LoadDxfFile(string path)
     {
       FileInfo fi = new FileInfo(path);
       DxfFile dxffile;
@@ -28,6 +39,7 @@
           {
             dxffile = DxfFile.Load(fi.FullName);
             IEnumerable<DxfEntity> entities = dxffile.Entities.ToArray();
+            Thread.Sleep(DelayOnRetry);
             return ConvertDxfToRawDetail(fi.FullName, entities);
           }
           catch (IOException) when (i <= NumberOfRetries)
@@ -239,7 +251,7 @@
         foreach (var polygon in polygons)
         {
           DxfFile fl;
-          if (polygon.fitted == false || !polygon.Name.ToLower().Contains(".dxf") || polygon.Sheet.Id != sheets.ElementAt(i).Id)
+          if (polygon.Fitted == false || !polygon.Name.ToLower().Contains(".dxf") || polygon.Sheet.Id != sheets.ElementAt(i).Id)
           {
             continue;
           }

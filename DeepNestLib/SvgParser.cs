@@ -106,7 +106,7 @@
       {
         if (!sheets.Contains(item))
         {
-          if (!item.fitted)
+          if (!item.Fitted)
           {
             continue;
           }

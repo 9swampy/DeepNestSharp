@@ -1,0 +1,55 @@
+﻿{
+  "Fitted": false,
+  "Sheet": null,
+  "Name": "firstSheet",
+  "x": 0,
+  "y": 0,
+  "WidthCalculated": 5,
+  "HeightCalculated": 5,
+  "Children": [],
+  "Length": 5,
+  "Id": 0,
+  "Source": 3,
+  "PlacementOrder": -1,
+  "Rotation": 0,
+  "ForceRotations": false,
+  "Rotations": [
+    90,
+    270
+  ],
+  "Points": [
+    {
+      "Exact": true,
+      "Marked": false,
+      "x": 0,
+      "y": 5
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "x": 5,
+      "y": 5
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "x": 5,
+      "y": 0
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "x": 0,
+      "y": 5
+    }
+  ],
+  "Area": 25,
+  "IsPriority": false,
+  "StrictAngle": 0
+}

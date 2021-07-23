@@ -18,7 +18,7 @@
     private bool IsFinished()
     {
       // Place code here to define when your Nest can be considered complete.
-      return this.Context?.Nest.nests.Count() >= 3;
+      return this.Context?.Nest.TopNestResults.Count() >= 3;
 
       // The example above considers the nest completed when the
       // first response has been iteratively improved upon twice.
@@ -40,7 +40,7 @@
         var sw = Stopwatch.StartNew();
         Context.NestIterate(SvgNest.Config);
         sw.Stop();
-        Console.WriteLine("Iteration: " + Context.Iterations + "; fitness: " + Context.Current.fitness + "; nesting time: " + sw.ElapsedMilliseconds + "ms");
+        Console.WriteLine("Iteration: " + Context.Iterations + "; fitness: " + Context.Current.Fitness + "; nesting time: " + sw.ElapsedMilliseconds + "ms");
       }
       while (!IsFinished());
 

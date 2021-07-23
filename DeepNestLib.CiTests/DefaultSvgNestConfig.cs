@@ -49,5 +49,13 @@
     public float Tolerance { get; set; } = 2f;
 
     public float ToleranceSvg { get; set; } = 0.005f;
+
+    public AnglesEnum StrictAngles { get; set; } = AnglesEnum.None;
+
+    public int Multiplier { get; set; } = 1;
+
+    public int ParallelNests => 1;
+
+    public bool ShowPartPositions { get; set; } = false;
   }
 }

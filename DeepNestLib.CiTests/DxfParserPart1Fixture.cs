@@ -11,7 +11,7 @@
 
   public class DxfParserPart1Fixture
   {
-    private const string DxfTestFilename = "_1.dxf";
+    private const string DxfTestFilename = "Dxfs._1.dxf";
 
     private RawDetail loadedRawDetail;
     private NestingContext nestingContext;
@@ -20,29 +20,21 @@
 
     public DxfParserPart1Fixture()
     {
-      this.loadedRawDetail = DxfParser.LoadDxf(DxfTestFilename);
+      this.loadedRawDetail = DxfParser.LoadDxfStream(DxfTestFilename);
       this.nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
-      this.hasImportedRawDetail = this.nestingContext.TryImportFromRawDetail(this.loadedRawDetail, A.Dummy<int>(), out this.loadedNfp);
-    }
-
-    [Fact]
-    public void ShouldFindDxfInBuild()
-    {
-      var fi = new FileInfo(DxfTestFilename);
-      System.Diagnostics.Debug.Print(fi.FullName);
-      fi.Exists.Should().BeTrue();
+      this.hasImportedRawDetail = this.loadedRawDetail.TryImportFromRawDetail(A.Dummy<int>(), out this.loadedNfp);
     }
 
     [Fact]
     public void ShouldLoadDxf()
     {
-      DxfParser.LoadDxf(DxfTestFilename);
+      DxfParser.LoadDxfFile(DxfTestFilename);
     }
 
     [Fact]
     public void ShouldLoadDxfToRawDetail()
     {
-      var rawDetail = DxfParser.LoadDxf(DxfTestFilename);
+      var rawDetail = DxfParser.LoadDxfStream(DxfTestFilename);
 
       rawDetail.Should().NotBeNull();
     }

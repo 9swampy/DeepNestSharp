@@ -6,73 +6,92 @@
 
   public class OriginalFitness
   {
-    public double Evaluate(NestResult nestResult)
+    private readonly NestResult nestResult;
+
+    public OriginalFitness(NestResult nestResult)
+    {
+      this.nestResult = nestResult;
+    }
+
+    public double Evaluate()
     {
       var result = 0D;
-      result += FitnessUnplaced(nestResult);
-      result += FitnessBounds(nestResult);
-      result += FitnessSheets(nestResult);
-      result += FitnessMaterialUtilization(nestResult);
+      result += Unplaced;
+      result += Bounds;
+      result += Sheets;
+      result += MaterialWasted;
+      result += MaterialUtilization;
 
       return result;
     }
 
-    private static float GetTotalSheetArea(NestResult nestResult)
+    private float TotalSheetArea
     {
-      return nestResult.UsedSheets.Sum(o => o.Sheet.Area);
+      get
+      {
+        return nestResult.UsedSheets.Sum(o => o.Sheet.Area);
+      }
     }
 
     /// <summary>
     /// Penalise for each additional sheet needed.
     /// </summary>
-    /// <param name="nestResult"></param>
-    /// <returns></returns>
-    internal static double FitnessSheets(NestResult nestResult)
+    internal double Sheets
     {
-      return nestResult.UsedSheets.Sum(o => o.Sheet.Area);
+      get
+      {
+        return nestResult.UsedSheets.Sum(o => o.Fitness.Sheets);
+      }
     }
 
     /// <summary>
-    /// Penalise low material usage.
+    /// Penalise low material utilization.
     /// </summary>
-    /// <param name="nestResult"></param>
-    /// <returns></returns>
-    internal static double FitnessMaterialUtilization(NestResult nestResult)
+    internal double MaterialUtilization
     {
-      return nestResult.UsedSheets.Sum(s => ((s.Sheet.Area - s.PartPlacements.Sum(p => p.Part.Area)) / s.Sheet.Area));
+      get
+      {
+        return nestResult.UsedSheets.Sum(o => o.Fitness.MaterialUtilization);
+      }
+    }
+
+    /// <summary>
+    /// Penalise high material wastage; weighted to reward compression within the part of the sheet used.
+    /// </summary>
+    internal double MaterialWasted
+    {
+      get
+      {
+        return nestResult.UsedSheets.Sum(o => o.Fitness.MaterialWasted);
+      }
     }
 
     /// <summary>
     /// For Gravity prefer left squeeze; BoundingBox the smaller Bound; Squeeze tbc.
     /// </summary>
-    /// <param name="nestResult"></param>
-    /// <returns></returns>
-    internal static double FitnessBounds(NestResult nestResult)
+    internal double Bounds
     {
-      return nestResult.UsedSheets.Sum(o =>
+      get
       {
-        double area;
-        if (nestResult.PlacementType == PlacementTypeEnum.Gravity)
-        {
-          area = (o.RectBounds.width * 2) * o.RectBounds.height;
-        }
-        else
-        {
-          area = o.RectBounds.width * o.RectBounds.height;
-        }
-
-        return (o.RectBounds.width / o.Sheet.Area) + area;
-      });
+        return nestResult.UsedSheets.Sum(o => o.Fitness.Bounds);
+      }
     }
 
     /// <summary>
     /// Huge penalty for unplaced parts so an additional sheet will always get added if needed.
     /// </summary>
-    /// <param name="nestResult"></param>
-    /// <returns></returns>
-    internal static double FitnessUnplaced(NestResult nestResult)
+    internal double Unplaced
     {
-      return nestResult.UnplacedParts.Sum(o => 100000000 * (Math.Abs(GeometryUtil.polygonArea(o)) / OriginalFitness.GetTotalSheetArea(nestResult)));
+      get
+      {
+        var result = nestResult.UnplacedParts.Sum(o => 100000000 * (Math.Abs(GeometryUtil.polygonArea(o)) / TotalSheetArea));
+        if (nestResult.UnplacedParts.Any(o => o.IsPriority))
+        {
+          result *= 2;
+        }
+
+        return result;
+      }
     }
   }
 }

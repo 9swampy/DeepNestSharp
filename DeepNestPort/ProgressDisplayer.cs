@@ -1,30 +1,37 @@
 ﻿namespace DeepNestPort
 {
-  using System;
+  using System.Windows.Forms;
   using DeepNestLib;
 
-  public partial class Form1
+  public class ProgressDisplayer : IProgressDisplayer
   {
-    public class ProgressDisplayer : IProgressDisplayer
+    private readonly Form1 form;
+
+    public ProgressDisplayer(Form1 form)
     {
-      private readonly Form1 form;
+      this.form = form;
+    }
 
-      public ProgressDisplayer(Form1 form)
-      {
-        this.form = form;
-      }
+    public void DisplayProgress(int placedParts, int currentPopulation)
+    {
+      float progressPopulation = 0.66f * ((float)currentPopulation / (float)SvgNest.Config.PopulationSize);
+      float progressPlacements = 0.34f * ((float)placedParts / (float)this.form.Polygons.Count);
+      this.form.DisplayProgress(progressPopulation + progressPlacements);
+    }
 
-      public void DisplayProgress(int placedParts, int currentPopulation)
-      {
-        float progressPopulation = 0.66f * ((float)currentPopulation / (float)SvgNest.Config.PopulationSize);
-        float progressPlacements = 0.34f * ((float)placedParts / (float)this.form.polygons.Count);
-        this.form.displayProgress(progressPopulation + progressPlacements);
-      }
+    public void DisplayProgress(float percentageComplete)
+    {
+      this.form.DisplayProgress(percentageComplete);
+    }
 
-      public void DisplayProgress(float percentageComplete)
-      {
-        this.form.displayProgress(percentageComplete);
-      }
+    public void DisplayToolStripMessage(string message)
+    {
+      this.form.ToolStripMessage = message;
+    }
+
+    public void UpdateNestsList()
+    {
+      this.form.UpdateNestsList();
     }
   }
 }

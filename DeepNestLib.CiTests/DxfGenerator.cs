@@ -1,6 +1,7 @@
 ﻿namespace DeepNestLib.CiTests
 {
   using System;
+  using System.Collections.Generic;
   using IxMilia.Dxf.Entities;
 
   public enum RectangleType
@@ -12,6 +13,16 @@
 
   public class DxfGenerator
   {
+    public RawDetail GenerateSquare(string name, double size, RectangleType type)
+    {
+      return GenerateRectangle(name, size, size, type);
+    }
+
+    public RawDetail GenerateRectangle(string name, double sideA, double sideB, RectangleType type)
+    {
+      return DxfParser.ConvertDxfToRawDetail(name, new List<DxfEntity>() { Rectangle(sideA, sideB, type) });
+    }
+
     public DxfPolyline Rectangle(double side, RectangleType rectangleType = RectangleType.FileLoad)
     {
       return Rectangle(side, side, rectangleType);

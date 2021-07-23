@@ -1,12 +1,9 @@
 ﻿namespace DeepNestLib.CiTests
 {
   using System;
-  using System.Collections.Generic;
-  using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
-  using IxMilia.Dxf.Entities;
   using Xunit;
 
   public class FitFourSmallSquaresInOneLargerSquareSheetPerfectlyFixture
@@ -23,21 +20,21 @@
     {
       var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
       NFP firstSheet;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { DxfGenerator.Rectangle(23D, RectangleType.FileLoad) }), firstSheetIdSrc, out firstSheet).Should().BeTrue();
+      DxfGenerator.GenerateSquare("Sheet", 23D, RectangleType.FileLoad).TryImportFromRawDetail(firstSheetIdSrc, out firstSheet).Should().BeTrue();
       NFP firstPart;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("firstPart", new List<DxfEntity>() { DxfGenerator.Rectangle(11D, RectangleType.FitFour) }), firstPartIdSrc, out firstPart).Should().BeTrue();
+      DxfGenerator.GenerateSquare("firstPart", 11D, RectangleType.FitFour).TryImportFromRawDetail(firstPartIdSrc, out firstPart).Should().BeTrue();
       // firstPart = firstPart.Rotate(180);
       firstPart.Rotation = 180;
       NFP secondPart;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("secondPart", new List<DxfEntity>() { DxfGenerator.Rectangle(11D, RectangleType.FitFour) }), secondPartIdSrc, out secondPart).Should().BeTrue();
+      DxfGenerator.GenerateSquare("secondPart", 11D, RectangleType.FitFour).TryImportFromRawDetail(secondPartIdSrc, out secondPart).Should().BeTrue();
       // secondPart = secondPart.Rotate(180);
       secondPart.Rotation = 180;
       NFP thirdPart;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("thirdPart", new List<DxfEntity>() { DxfGenerator.Rectangle(11D, RectangleType.FitFour) }), thirdPartIdSrc, out thirdPart).Should().BeTrue();
+      DxfGenerator.GenerateSquare("thirdPart", 11D, RectangleType.FitFour).TryImportFromRawDetail(thirdPartIdSrc, out thirdPart).Should().BeTrue();
       // thirdPart = thirdPart.Rotate(180);
       thirdPart.Rotation = 180;
       NFP fourthPart;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("fourthPart", new List<DxfEntity>() { DxfGenerator.Rectangle(11D, RectangleType.FitFour) }), fourthPartIdSrc, out fourthPart).Should().BeTrue();
+      DxfGenerator.GenerateSquare("fourthPart", 11D, RectangleType.FitFour).TryImportFromRawDetail(fourthPartIdSrc, out fourthPart).Should().BeTrue();
       // fourthPart = fourthPart.Rotate(180);
       fourthPart.Rotation = 180;
       var config = new DefaultSvgNestConfig();
@@ -54,56 +51,44 @@
     [Fact]
     public void GivenOnePartOnlyThenShouldBeNoMergedLines()
     {
-      this.nestResult.mergedLength.Should().Be(0, "there was only one part on each sheet; no lines to merge possible.");
+      this.nestResult.MergedLength.Should().Be(0, "there was only one part on each sheet; no lines to merge possible.");
     }
 
     [Fact]
     [Obsolete]
     public void ShouldHaveExpectedFitness()
     {
-      this.nestResult.fitness.Should().BeApproximately(617.04158790170129, 10);
-    }
-
-    [Fact]
-    public void ShouldHaveSameFitnessAsOriginal()
-    {
-      this.nestResult.Fitness.Should().Be(this.nestResult.FitnessAlt, "fitness local field maintains the difference, not the exposed property.");
+      this.nestResult.Fitness.Should().BeApproximately(976, 10);
     }
 
     [Fact]
     public void ShouldHaveSameFitnessBoundsAsOriginal()
     {
-      this.nestResult.FitnessBounds.Should().BeApproximately(88, 10);
-    }
-
-    [Fact]
-    public void ShouldHaveExpectedFitnessBounds()
-    {
-      OriginalFitness.FitnessBounds(this.nestResult).Should().BeApproximately(968, 10);
+      this.nestResult.FitnessBounds.Should().BeApproximately(322, 10);
     }
 
     [Fact]
     public void ShouldHaveSameFitnessUnplacedAsOriginal()
     {
-      this.nestResult.FitnessUnplaced.Should().BeApproximately(OriginalFitness.FitnessUnplaced(this.nestResult), 10);
+      this.nestResult.FitnessUnplaced.Should().BeApproximately(0, 10);
     }
 
     [Fact]
     public void ShouldHaveSameFitnessSheetsAsOriginal()
     {
-      this.nestResult.FitnessSheets.Should().BeApproximately(OriginalFitness.FitnessSheets(this.nestResult), 10);
+      this.nestResult.FitnessSheets.Should().Be(529);
+    }
+
+    [Fact]
+    public void ShouldHaveExpectedFitnessMaterialWasted()
+    {
+      this.nestResult.MaterialWasted.Should().Be(90);
     }
 
     [Fact]
     public void ShouldHaveExpectedNullRotation()
     {
       this.nestResult.Rotation.Should().BeNull();
-    }
-
-    [Fact]
-    public void ShouldHaveExpectedArea()
-    {
-      this.nestResult.area.Should().Be(529);
     }
 
     [Fact]
@@ -208,10 +193,10 @@
       this.nestResult.UsedSheets[0].PartPlacements[3].rotation.Should().Be(180);
     }
 
-    //[Fact]
-    //public void ShouldHavePartLeftOver()
-    //{ 
-    //this.sheetPlacement
-    //}
+    [Fact]
+    public void ShouldHaveNoUnplacedParts()
+    {
+      this.nestResult.UnplacedParts.Should().BeEmpty();
+    }
   }
 }

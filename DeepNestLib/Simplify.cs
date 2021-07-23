@@ -77,7 +77,7 @@
       return newPoints.Points;
     }
 
-    public static void simplifyDPStep(SvgPoint[] points, int first, int last, double? sqTolerance, NFP simplified)
+    public static void simplifyDPStep(SvgPoint[] points, int first, int last, double? sqTolerance, ref NFP simplified)
     {
       var maxSqDist = sqTolerance;
       var index = -1;
@@ -106,13 +106,13 @@
       {
         if (index - first > 1)
         {
-          simplifyDPStep(points, first, index, sqTolerance, simplified);
+          simplifyDPStep(points, first, index, sqTolerance, ref simplified);
         }
 
-        simplified.Push(points[index]);
+        ((IHiddenNfp)simplified).Push(points[index]);
         if (last - index > 1)
         {
-          simplifyDPStep(points, index, last, sqTolerance, simplified);
+          simplifyDPStep(points, index, last, sqTolerance, ref simplified);
         }
       }
     }
@@ -123,14 +123,14 @@
     /// <param name="points">Original polygon points.</param>
     /// <param name="sqTolerance">Epsilon parmeter; square distance tolerance.</param>
     /// <returns>Simplified clone.</returns>
-    public static SvgPoint[] simplifyDouglasPeucker(SvgPoint[] points, double? sqTolerance)
+    public static SvgPoint[] SimplifyDouglasPeucker(SvgPoint[] points, double? sqTolerance)
     {
       var last = points.Length - 1;
 
       var simplified = new NFP();
       simplified.AddPoint(points[0]);
-      simplifyDPStep(points, 0, last, sqTolerance, simplified);
-      simplified.Push(points[last]);
+      simplifyDPStep(points, 0, last, sqTolerance, ref simplified);
+      ((IHiddenNfp)simplified).Push(points[last]);
 
       return simplified.Points;
     }
@@ -157,7 +157,7 @@
 
         if (doSimplifyDouglasPeucker)
         {
-          resultSource = simplifyDouglasPeucker(resultSource, sqTolerance);
+          resultSource = SimplifyDouglasPeucker(resultSource, sqTolerance);
         }
       }
 

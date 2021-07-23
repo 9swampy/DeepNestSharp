@@ -1,11 +1,10 @@
 ﻿namespace DeepNestLib.CiTests
 {
   using System;
-  using System.Collections.Generic;
+  using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
-  using IxMilia.Dxf.Entities;
   using Xunit;
 
   public class FitSmallSquarePartInLargerSquareSheetFixture
@@ -17,9 +16,9 @@
     {
       var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
       NFP sheet;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { DxfGenerator.Rectangle(22D) }), 0, out sheet).Should().BeTrue();
+      DxfGenerator.GenerateSquare("Sheet", 22D, RectangleType.FileLoad).TryImportFromRawDetail(0, out sheet).Should().BeTrue();
       NFP part;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Rectangle(11D) }), 0, out part).Should().BeTrue();
+      DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryImportFromRawDetail(0, out part).Should().BeTrue();
       this.nestResult = new Background(A.Fake<IProgressDisplayer>()).PlaceParts(new NFP[] { sheet }, new NFP[] { part }, new SvgNestConfig(), 0);
     }
 
@@ -34,9 +33,9 @@
     {
       var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
       NFP sheet;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { DxfGenerator.Rectangle(22D) }), 0, out sheet).Should().BeTrue();
+      DxfGenerator.GenerateSquare("Sheet", 22D, RectangleType.FileLoad).TryImportFromRawDetail(0, out sheet).Should().BeTrue();
       NFP part;
-      nestingContext.TryImportFromRawDetail(DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Rectangle(11D) }), 0, out part).Should().BeTrue();
+      DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryImportFromRawDetail(0, out part).Should().BeTrue();
 
       var frame = Background.getFrame(sheet);
 
@@ -52,13 +51,13 @@
     [Fact]
     public void GivenOnePartOnlyThenShouldBeNoMergedLines()
     {
-      this.nestResult.mergedLength.Should().Be(0, "there was only one part; no lines to merge possible.");
+      this.nestResult.MergedLength.Should().Be(0, "there was only one part; no lines to merge possible.");
     }
 
     [Fact]
     public void ShouldHaveExpectedFitness()
     {
-      this.nestResult.fitness.Should().Be(double.NaN);
+      this.nestResult.Fitness.Should().BeApproximately(1838, 1);
     }
 
     [Fact]
@@ -109,8 +108,69 @@
       this.nestResult.UsedSheets[0].PartPlacements[0].rotation.Should().Be(0);
     }
 
-    //[Fact]
-    //public void Should()
-    //{ }
+    [Fact]
+    public void ShouldHaveNoUnplacedParts()
+    {
+      this.nestResult.UnplacedParts.Should().BeEmpty();
+    }
+  }
+
+  public class PerfectFitnessFixture
+  {
+    float width;
+    float height;
+    float area;
+    INfp sheet;
+    ISheetPlacement sp;
+
+    public PerfectFitnessFixture()
+    {
+      width = new Random().Next(50, 1200);
+      height = new Random().Next(50, 900);
+      area = width * height;
+      sheet = A.Fake<INfp>();
+      A.CallTo(() => sheet.Area).Returns(area);
+      sp = A.Fake<ISheetPlacement>();
+      A.CallTo(() => sp.Sheet).Returns(sheet);
+      A.CallTo(() => sp.MaterialUtilization).Returns(1);
+      A.CallTo(() => sp.RectBounds).Returns(new PolygonBounds(0, 0, width, height));
+      A.CallTo(() => sp.Hull).Returns(sheet);
+      A.CallTo(() => sp.TotalPartsArea).Returns(area);
+    }
+
+    [Fact]
+    public void GivenPerfectFitThenFitnessShouldBeApproximatelyExpected()
+    {
+      var sut = new OriginalFitnessSheet(sp);
+      sut.Evaluate().Should().BeLessThan(area * 2);
+    }
+
+    [Fact]
+    public void GivenPerfectFitThenMaterialUtilizationShouldBeZero()
+    {
+      var sut = new OriginalFitnessSheet(sp);
+      sut.MaterialUtilization.Should().Be(0);
+    }
+
+    [Fact]
+    public void GivenPerfectFitWhenNoPrimaryThenSheetsShouldBeArea()
+    {
+      var sut = new OriginalFitnessSheet(sp);
+      sut.Sheets.Should().Be(area);
+    }
+
+    [Fact]
+    public void GivenPerfectFitThenMaterialWastedShouldBeZero()
+    {
+      var sut = new OriginalFitnessSheet(sp);
+      sut.MaterialWasted.Should().BeApproximately(0, 1);
+    }
+
+    [Fact]
+    public void GivenPerfectFitThenBoundsShouldBeExpected()
+    {
+      var sut = new OriginalFitnessSheet(sp);
+      sut.Bounds.Should().BeApproximately(area / 3, area / 6);
+    }
   }
 }

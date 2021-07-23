@@ -5,32 +5,27 @@
   using System.Linq;
   using System.Text;
   using System.Threading;
-  using System.Threading.Tasks;
   using ClipperLib;
   using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
 
   public class SvgNest
   {
+    private static int generations = 0;
+    private static int population = 0;
+    private static int nestCount = 0;
+    private static long totalNestTime = 0;
+    private static long lastPlacementTime = 0;
+
     private readonly IMessageService messageService;
     private readonly Action setIsErrored;
-    private Background background;
-
-    private PopulationItem individual = null;
-    private NFP[] placelist;
     private GeneticAlgorithm.Procreant ga;
+    private PolygonTreeItem[] tree;
+    private bool useHoles;
+    private bool searchEdges;
 
-    public List<NestResult> nests = new List<NestResult>();
-
-    private static int generations = 0;
-
-    internal static void ResetCounters()
-    {
-      Interlocked.Exchange(ref generations, 0);
-      Interlocked.Exchange(ref population, 0);
-    }
-
-    private static int population = 0;
+    private IProgressDisplayer progressDisplayer;
+    private volatile bool isStopped;
 
     public SvgNest(IMessageService messageService, IProgressDisplayer progressDisplayer, Action setIsErrored)
     {
@@ -39,21 +34,17 @@
       this.setIsErrored = setIsErrored;
     }
 
-    public static int Population
-    {
-      get
-      {
-        return population;
-      }
-    }
+    public TopNestResultsCollection TopNestResults { get; private set; } = new TopNestResultsCollection(Config);
 
-    public static int Generations
-    {
-      get
-      {
-        return generations;
-      }
-    }
+    public long AverageNestTime => nestCount == 0 ? 0 : totalNestTime / nestCount;
+
+    public long LastPlacementTime => lastPlacementTime;
+
+    public static int NestCount => nestCount;
+
+    public static int Population => population;
+
+    public static int Generations => generations;
 
     public class InrangeItem
     {
@@ -112,7 +103,7 @@
       return target;
     }
 
-    public static ISvgNestConfig Config = new SvgNestConfig();
+    public static ISvgNestConfig Config { get; } = new SvgNestConfig();
 
     public static NFP clone(NFP p)
     {
@@ -120,7 +111,6 @@
       for (var i = 0; i < p.Length; i++)
       {
         newp.AddPoint(new SvgPoint(
-
              p[i].x,
              p[i].y));
       }
@@ -138,18 +128,18 @@
     }
 
     // returns true if any complex vertices fall outside the simple polygon
-    private static bool exterior(NFP simple, NFP complex, bool inside, ISvgNestConfig config)
+    private static bool exterior(NFP simple, NFP complex, bool inside, double curveTolerance)
     {
       // find all protruding vertices
       for (var i = 0; i < complex.Length; i++)
       {
         var v = complex[i];
-        if (!inside && !pointInPolygon(v, simple) && find(v, simple, config) == null)
+        if (!inside && !pointInPolygon(v, simple) && find(v, simple, curveTolerance) == null)
         {
           return true;
         }
 
-        if (inside && pointInPolygon(v, simple) && find(v, simple, config) != null)
+        if (inside && pointInPolygon(v, simple) && find(v, simple, curveTolerance) != null)
         {
           return true;
         }
@@ -164,7 +154,7 @@
 
     public static NFP simplifyFunction(NFP polygon, bool inside)
     {
-      return simplifyFunction(polygon, inside, Config);
+      return simplifyFunction(polygon, inside, Config.CurveTolerance, Config.Simplify);
     }
 
     /// <summary>
@@ -174,21 +164,21 @@
     /// <param name="inside"></param>
     /// <param name="curveTolerance"></param>
     /// <returns></returns>
-    internal static NFP simplifyFunction(NFP polygon, bool inside, ISvgNestConfig config)
+    internal static NFP simplifyFunction(NFP polygon, bool inside, double curveTolerance, bool useHull)
     {
       var markExact = true;
       var straighten = true;
       var doSimplify = true;
       var selectiveReversalOfOffset = true;
 
-      var tolerance = 4 * config.CurveTolerance;
+      var tolerance = 4 * curveTolerance;
 
       // give special treatment to line segments above this length (squared)
-      var fixedTolerance = 40 * config.CurveTolerance * 40 * config.CurveTolerance;
+      var fixedTolerance = 40 * curveTolerance * 40 * curveTolerance;
       int i, j, k;
 
-      var hull = Background.GetHull(polygon.Points);
-      if (Config.Simplify)
+      var hull = polygon.GetHull();
+      if (useHull)
       {
         /*
         // use convex hull
@@ -222,7 +212,7 @@
       SvgPoint[] resultSource;
       bool doSimplifyRadialDist = false;
       bool doSimplifyDouglasPeucker = true;
-      if (cache.TryGetValue(new PolygonSimplificationKey(polygon.Points, config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker), out resultSource))
+      if (cache.TryGetValue(new PolygonSimplificationKey(polygon.Points, curveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker), out resultSource))
       {
         return new NFP(resultSource);
       }
@@ -232,7 +222,7 @@
       {
         // polygon to polyline
         var copy = polygon.slice(0);
-        copy.Push(copy[0]);
+        ((IHiddenNfp)copy).Push(copy[0]);
 
         // mark all segments greater than ~0.25 in to be kept
         // the PD simplification algo doesn't care about the accuracy of long lines, only the absolute distance of each point
@@ -287,7 +277,7 @@
 
       if (markExact)
       {
-        MarkExact(polygon, simple, config);
+        MarkExact(polygon, simple, curveTolerance);
       }
 
       var numshells = 4;
@@ -330,7 +320,7 @@
           var test = clone(offset);
           test.Points[i] = new SvgPoint(target.x, target.y);
 
-          if (!exterior(test, polygon, inside, config))
+          if (!exterior(test, polygon, inside, curveTolerance))
           {
             o.x = target.x;
             o.y = target.y;
@@ -347,7 +337,7 @@
                 target = getTarget(o, shell, 2 * delta);
                 test = clone(offset);
                 test.Points[i] = new SvgPoint(target.x, target.y);
-                if (!exterior(test, polygon, inside, config))
+                if (!exterior(test, polygon, inside, curveTolerance))
                 {
                   o.x = target.x;
                   o.y = target.y;
@@ -392,8 +382,8 @@
             if ((GeometryUtil._almostEqual(s1.x, s2.x) || GeometryUtil._almostEqual(s1.y, s2.y)) && // we only really care about vertical and horizontal lines
             GeometryUtil._withinDistance(p1, s1, 2 * tolerance) &&
             GeometryUtil._withinDistance(p2, s2, 2 * tolerance) &&
-            (!GeometryUtil._withinDistance(p1, s1, config.CurveTolerance / 1000) ||
-            !GeometryUtil._withinDistance(p2, s2, config.CurveTolerance / 1000)))
+            (!GeometryUtil._withinDistance(p1, s1, curveTolerance / 1000) ||
+            !GeometryUtil._withinDistance(p2, s2, curveTolerance / 1000)))
             {
               p1.x = s1.x;
               p1.y = s1.y;
@@ -446,7 +436,7 @@
 
       if (markExact)
       {
-        MarkExactSvg(polygon, offset, config);
+        MarkExactSvg(polygon, offset, curveTolerance);
       }
 
       if (!inside && holes != null && holes.Count > 0)
@@ -456,13 +446,27 @@
 
       lock (cacheSyncLock)
       {
-        if (!cache.ContainsKey(new PolygonSimplificationKey(polygon.Points, config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker)))
+        if (!cache.ContainsKey(new PolygonSimplificationKey(polygon.Points, curveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker)))
         {
-          cache.Add(new PolygonSimplificationKey(polygon.Points, config.CurveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker), offset.Points);
+          cache.Add(new PolygonSimplificationKey(polygon.Points, curveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker), offset.Points);
         }
       }
 
       return offset;
+    }
+
+    internal static void Reset()
+    {
+      Interlocked.Exchange(ref nestCount, 0);
+      Interlocked.Exchange(ref totalNestTime, 0);
+      Interlocked.Exchange(ref generations, 0);
+      Interlocked.Exchange(ref population, 0);
+      Interlocked.Exchange(ref lastPlacementTime, 0);
+    }
+
+    internal void Stop()
+    {
+      this.isStopped = true;
     }
 
     /// <summary>
@@ -495,14 +499,14 @@
     /// </summary>
     /// <param name="polygon">This is the one that's checked against.</param>
     /// <param name="offset">This is iterated and elements are marked exact when matched to a point in polygon.</param>
-    private static void MarkExactSvg(NFP polygon, NFP offset, ISvgNestConfig config)
+    private static void MarkExactSvg(NFP polygon, NFP offset, double curveTolerance)
     {
       int i;
       for (i = 0; i < offset.Length; i++)
       {
         var seg = new SvgPoint[] { offset[i], offset[i + 1 == offset.Length ? 0 : i + 1] };
-        var index1 = find(seg[0], polygon, config);
-        var index2 = find(seg[1], polygon, config);
+        var index1 = find(seg[0], polygon, curveTolerance);
+        var index2 = find(seg[1], polygon, curveTolerance);
         if (index1 == null)
         {
           index1 = 0;
@@ -526,7 +530,7 @@
     /// </summary>
     /// <param name="polygon">This is the one that's checked against.</param>
     /// <param name="simple">This is iterated and elements are marked exact when matched to a point in polygon.</param>
-    private static void MarkExact(NFP polygon, NFP simple, ISvgNestConfig config)
+    private static void MarkExact(NFP polygon, NFP simple, double curveTolerance)
     {
       for (int i = 0; i < simple.Length; i++)
       {
@@ -534,8 +538,8 @@
         seg.AddPoint(simple[i]);
         seg.AddPoint(simple[i + 1 == simple.Length ? 0 : i + 1]);
 
-        var index1 = find(seg[0], polygon, config);
-        var index2 = find(seg[1], polygon, config);
+        var index1 = find(seg[0], polygon, curveTolerance);
+        var index2 = find(seg[1], polygon, curveTolerance);
 
         if (IsExactMatch(polygon, index1, index2))
         {
@@ -550,11 +554,11 @@
       return index1 + 1 == index2 || index2 + 1 == index1 || (index1 == 0 && index2 == polygon.Length - 1) || (index2 == 0 && index1 == polygon.Length - 1);
     }
 
-    private static int? find(SvgPoint v, NFP p, ISvgNestConfig config)
+    private static int? find(SvgPoint v, NFP p, double curveTolerance)
     {
       for (var i = 0; i < p.Length; i++)
       {
-        if (GeometryUtil._withinDistance(v, p[i], config.CurveTolerance / 1000))
+        if (GeometryUtil._withinDistance(v, p[i], curveTolerance / 1000))
         {
           return i;
         }
@@ -811,60 +815,39 @@
       return id;
     }
 
-    public static long LastPlacePartTime { get; private set; } = 0;
-
     public void ResponseProcessor(NestResult payload)
     {
-      Interlocked.Increment(ref population);
-      LastPlacePartTime = payload.PlacePartTime;
-
-      // console.log('ipc response', payload);
       if (this.ga == null || payload == null)
       {
         // user might have quit while we're away
         return;
       }
 
-      this.ga.Population[payload.index].processing = false;
-      this.ga.Population[payload.index].fitness = payload.Fitness;
-      this.ga.Population[payload.index].fitnessAlt = new OriginalFitness().Evaluate(payload);
+      Interlocked.Increment(ref population);
+      lastPlacementTime = payload.PlacePartTime;
+      Interlocked.Increment(ref nestCount);
+      totalNestTime += payload.PlacePartTime;
 
-      if (this.nests.Count == 0)
-      {
-        this.nests.Insert(0, payload);
-      }
-      else
-      {
-        int i = 0;
-        while (i < this.nests.Count - 1 && this.nests[i].Fitness > payload.Fitness)
-        {
-          i++;
-        }
-
-        if (i <= Config.PopulationSize / 10 && this.nests[i].Fitness != payload.Fitness)
-        {
-          this.nests.Insert(i, payload);
-        }
-
-        if (this.nests.Count > Config.PopulationSize * 2 / 10)
-        {
-          this.nests.RemoveAt(this.nests.Count - 1);
-        }
-      }
+      this.ga.Population[payload.index].Processing = false;
+      this.ga.Population[payload.index].Fitness = payload.Fitness;
 
       int currentPlacements = 0;
-      if (this.nests.Count > 0 && this.nests[0].UsedSheets.Count > 0 && this.nests[0].UsedSheets.Count > 0)
+      if (this.TopNestResults.Add(payload))
       {
-        currentPlacements = this.nests[0].UsedSheets[0].PartPlacements.Count;
+        currentPlacements = this.TopNestResults.Top.UsedSheets[0].PartPlacements.Count;
+        if (this.TopNestResults.IndexOf(payload) < this.TopNestResults.EliteSurvivors)
+        {
+          this.progressDisplayer.DisplayToolStripMessage($"New top nest found: Nesting time; {payload.PlacePartTime}ms");
+          this.progressDisplayer?.UpdateNestsList();
+        }
       }
 
-      this.progressDisplayer?.DisplayProgress(currentPlacements, this.ga.Population.Count(o => o.fitness != null));
+      this.progressDisplayer?.DisplayProgress(currentPlacements, this.ga.Population.Count(o => o.Fitness != -1));
     }
 
-    private IProgressDisplayer progressDisplayer;
-
     /// <summary>
-    /// Starts next generation if none started or prior finished.
+    /// Starts next generation if none started or prior finished. Will keep rehitting the outstanding population 
+    /// set up for the generation until all have processed.
     /// </summary>
     /// <param name="parts"></param>
     /// <param name="background"></param>
@@ -872,77 +855,72 @@
     {
       try
       {
-        if (this.ga == null)
+        if (!this.isStopped)
         {
-          this.ga = new Procreant(parts, config);
-        }
-
-        this.individual = null;
-
-        if (this.ga.IsCurrentGenerationFinished)
-        {
-          // console.log('new generation!');
-          // all individuals have been evaluated, start next generation
-
-          this.ga.Generate();
-          Interlocked.Increment(ref generations);
-          Interlocked.Exchange(ref population, 0);
-        }
-
-        var running = this.ga.Population.Where((p) =>
-        {
-          return p.processing;
-        }).Count();
-
-        List<NFP> sheets = new List<NFP>();
-        List<int> sheetids = new List<int>();
-        List<int> sheetsources = new List<int>();
-        List<List<NFP>> sheetchildren = new List<List<NFP>>();
-        var sid = 0;
-        for (int i = 0; i < parts.Count(); i++)
-        {
-          if (parts[i].IsSheet)
+          if (this.ga == null)
           {
-            var poly = parts[i].Polygon;
-            for (int j = 0; j < parts[i].Quantity; j++)
-            {
-              var cln = poly.CloneTree();
-              cln.Id = sid; // id is the unique id of all parts that will be nested, including cloned duplicates
-              cln.Source = poly.Source; // source is the id of each unique part from the main part list
+            this.ga = new Procreant(parts, config);
+          }
 
-              sheets.Add(cln);
-              sheetids.Add(sid);
-              sheetsources.Add(i);
-              sheetchildren.Add(poly.Children.ToList());
-              sid++;
+          if (this.ga.IsCurrentGenerationFinished)
+          {
+            // console.log('new generation!');
+            // all individuals have been evaluated, start next generation
+
+            this.ga.Generate();
+            Interlocked.Increment(ref generations);
+            Interlocked.Exchange(ref population, 0);
+          }
+
+          List<NFP> sheets = new List<NFP>();
+          List<int> sheetids = new List<int>();
+          List<int> sheetsources = new List<int>();
+          List<List<NFP>> sheetchildren = new List<List<NFP>>();
+          var sid = 0;
+          for (int i = 0; i < parts.Count(); i++)
+          {
+            if (parts[i].IsSheet)
+            {
+              var poly = parts[i].Polygon;
+              for (int j = 0; j < parts[i].Quantity; j++)
+              {
+                var cln = poly.CloneTree();
+                cln.Id = sid; // id is the unique id of all parts that will be nested, including cloned duplicates
+                cln.Source = poly.Source; // source is the id of each unique part from the main part list
+
+                sheets.Add(cln);
+                sheetids.Add(sid);
+                sheetsources.Add(i);
+                sheetchildren.Add(poly.Children.ToList());
+                sid++;
+              }
             }
           }
-        }
 
-        var threadList = new Queue<Thread>();
-
-        //while (!this.ga.IsCurrentGenerationFinished)
-        {
+          var threadList = new Queue<Thread>();
           for (int i = 0; i < this.ga.Population.Count; i++)
           {
+            if (this.isStopped)
+            {
+              break;
+            }
+
             // if(running < config.threads && !GA.population[i].processing && !GA.population[i].fitness){
             // only one background window now...
-            //if (threadList.Count < 10 && this.ga.Population[i].processing == null && this.ga.Population[i].fitness == null)
-
-            if (running < 1 && !this.ga.Population[i].processing && this.ga.Population[i].fitness == null)
+            if (ThrottleReadyForMore(config, threadList) && this.ga.Population[i].IsPending)
             {
-              this.ga.Population[i].processing = true;
+              this.ga.Population[i].Processing = true;
 
               // hash values on arrays don't make it across ipc, store them in an array and reassemble on the other side....
               List<int> ids = new List<int>();
               List<int> sources = new List<int>();
               List<List<NFP>> children = new List<List<NFP>>();
 
-              for (int j = 0; j < this.ga.Population[i].placements.Count; j++)
+              for (int j = 0; j < this.ga.Population[i].Placements.Count; j++)
               {
-                var id = this.ga.Population[i].placements[j].Id;
-                var source = this.ga.Population[i].placements[j].Source;
-                var child = this.ga.Population[i].placements[j].Children;
+                var id = this.ga.Population[i].Placements[j].Id;
+                var source = this.ga.Population[i].Placements[j].Source;
+                var child = this.ga.Population[i].Placements[j].Children;
 
                 // ids[j] = id;
                 ids.Add(id);
@@ -962,38 +940,34 @@
                 sheetsources = sheetsources.ToArray(),
                 sheetchildren = sheetchildren,
                 individual = this.ga.Population[i],
-                config = Config,
+                config = config,
                 ids = ids.ToArray(),
                 sources = sources.ToArray(),
                 children = children,
               };
 
-              //var t = new Thread(new ThreadStart(() =>
-              //{
-              var background = new Background(this.progressDisplayer);
-              background.ResponseAction = this.ResponseProcessor;
-              background.BackgroundStart(data, data.config);
-              //}));
-              //threadList.Enqueue(t);
-              //t.Start();
-              //t.Join();
+              if (config.UseParallel)
+              {
+                var t = new Thread(new ThreadStart(() =>
+                {
+                  DoWork(data);
+                }));
+                threadList.Enqueue(t);
+                t.Start();
 
-              // ipcRenderer.send('background-start', { index: i, sheets: sheets, sheetids: sheetids, sheetsources: sheetsources, sheetchildren: sheetchildren, individual: GA.population[i], config: config, ids: ids, sources: sources, children: children});
-              running++;
+                if (!ThrottleReadyForMore(config, threadList))
+                {
+                  WaitAll(threadList);
+                }
+              }
+              else
+              {
+                DoWork(data);
+              }
             }
-          }
 
-          //for (int i = 0; i < 10; i++)
-          //{
-          //  if (threadList.Count > 0)
-          //  {
-          //    var thread = threadList.Dequeue();
-          //    if (!thread.Join(1000))
-          //    {
-          //      threadList.Enqueue(thread);
-          //    }
-          //  }
-          //}
+            WaitAll(threadList);
+          }
         }
       }
       catch (Exception ex)
@@ -1003,7 +977,49 @@
       }
     }
 
-    public PolygonTreeItem[] tree;
+    private void DoWork(DataInfo data)
+    {
+      if (this.isStopped)
+      {
+        this.ResponseProcessor(null);
+      }
+      else
+      {
+        Background background = new Background(this.progressDisplayer);
+        background.ResponseAction = this.ResponseProcessor;
+        background.BackgroundStart(data, data.config);
+      }
+    }
+
+    private int PopulationRunning
+    {
+      get
+      {
+        return this.ga.Population.Where((p) => { return p.Processing; }).Count();
+      }
+    }
+
+    private bool ThrottleReadyForMore(ISvgNestConfig config, Queue<Thread> threadList)
+    {
+      if (!this.isStopped && ((config.UseParallel && threadList.Count < config.ParallelNests) || PopulationRunning < 1))
+      {
+        return true;
+      }
+
+      return false;
+    }
+
+    private void WaitAll(Queue<Thread> threadList)
+    {
+      while (!this.isStopped && threadList.Count > 0)
+      {
+        var t = threadList.Dequeue();
+        if (!t.Join(1000))
+        {
+          threadList.Enqueue(t);
+        }
+      }
+    }
 
     public static IntPoint[] toClipperCoordinates(NFP polygon)
     {
@@ -1018,9 +1034,6 @@
 
       return clone.ToArray();
     }
-
-    public bool useHoles;
-    public bool searchEdges;
   }
 
   public interface IDeprecatedClipper

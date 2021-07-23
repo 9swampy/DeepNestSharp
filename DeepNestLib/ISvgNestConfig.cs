@@ -49,5 +49,13 @@
     bool UseHoles { get; set; }
 
     bool UseParallel { get; set; }
+
+    AnglesEnum StrictAngles { get; set; }
+
+    int Multiplier { get; set; }
+
+    int ParallelNests { get; }
+
+    bool ShowPartPositions { get; set; }
   }
 }

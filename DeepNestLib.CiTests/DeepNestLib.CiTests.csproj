@@ -154,19 +154,26 @@
     <Compile Include="DxfParserPart5Fixture.cs" />
     <Compile Include="DxfParserPart1Fixture.cs" />
     <Compile Include="DxfParserFixture.cs" />
+    <Compile Include="EmbededResourcesExtensions.cs" />
     <Compile Include="FitFourSmallSquaresInOneLargerSquareSheetPerfectlyBoundingBoxFitnessFixture.cs" />
     <Compile Include="FitFourSmallSquaresInOneLargerSquareSheetPerfectlyFixture.cs" />
     <Compile Include="FitSmallSquarePartInLargerSquareSheetFixture.cs" />
     <Compile Include="FitOnlyOneOfTwoSmallSquaresPartInOneLargerSquareSheetsFixture.cs" />
     <Compile Include="FitTwoSmallSquaresPartInTwoLargerSquareSheetsFixture.cs" />
     <Compile Include="NfpFixture.cs" />
+    <Compile Include="Placement\NfpJsonFixture.cs" />
+    <Compile Include="Placement\SheetPlacementJsonFixture.cs" />
     <Compile Include="PmapWorkerFixtureSetup.cs" />
     <Compile Include="PmapWorkerPmapDeepNestFixture.cs" />
     <Compile Include="PmapWorkerProcessFixture.cs" />
     <Compile Include="PmapWorkerProcessSecondFixture.cs" />
     <Compile Include="PolygonSimplificationDictionaryFixture.cs" />
+    <Compile Include="ProgressTestResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RunFullNest.cs" />
+    <Compile Include="RunFullNestBoundingBoxFixture.cs" />
+    <Compile Include="RunFullNestGravityFixture.cs" />
+    <Compile Include="RunFullNestSqueezeFixture.cs" />
+    <Compile Include="TopNestResultsCollectionFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -190,13 +197,8 @@
     <Content Include="SquareInSquare.dxf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="_1.dxf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="_5.dxf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="_6.dxf" />
+    <EmbeddedResource Include="Placement\SimpleRectangleNfp.json" />
+    <EmbeddedResource Include="Placement\SimpleRectangleNfpOnSheetPlacement.json" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\clipper_library\clipper_library.csproj">

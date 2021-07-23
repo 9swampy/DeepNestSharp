@@ -1,6 +1,7 @@
 ﻿namespace DeepNestLib.Placement
 {
   using System;
+  using System.Text.Json.Serialization;
 
   public class PartPlacement
   {
@@ -9,6 +10,7 @@
       this.Part = part;
     }
 
+    [JsonIgnore]
     public double? mergedLength
     {
       get
@@ -22,6 +24,7 @@
       }
     }
 
+    [JsonIgnore]
     public object mergedSegments
     {
       get
