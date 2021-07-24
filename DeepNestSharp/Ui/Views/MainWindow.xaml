@@ -21,55 +21,18 @@
       <ColumnDefinition Width="330" />
       <ColumnDefinition Width="1*" />
     </Grid.ColumnDefinitions>
-    <Grid Grid.Column="0">
-      <Grid.RowDefinitions>
-        <RowDefinition Height="auto" />
-        <RowDefinition Height="*" />
-      </Grid.RowDefinitions>
-      <Button Grid.Row="0" Content="Load SheetPlacement" Command="{Binding ExecuteLoadSheetPlacement}" />
-      <userControls:PartPlacementsList 
-        Grid.Row="1"
-        SelectedIndex="{Binding SelectedPartIndex, Mode=TwoWay}" 
-        SelectedItem="{Binding SelectedPartItem, Mode=TwoWay}" 
-        ItemsSource="{Binding SheetPlacement.PartPlacements}" 
-        Grid.Column="1"
-        MinHeight="100"
-        Visibility="{Binding Path=SheetPlacement.IsSet, Converter={StaticResource BoolToVis}}"
-        ScrollViewer.VerticalScrollBarVisibility="Visible"/>
-    </Grid>
-    <ItemsControl ItemsSource="{Binding SheetPlacement.DrawingContext}" 
-                  Visibility="{Binding Path=SheetPlacement.IsSet, Converter={StaticResource BoolToVis}}"
-                  Grid.Column="1">
-      <ItemsControl.ItemsPanel>
-        <ItemsPanelTemplate>
-          <Canvas>
-            <interactivity:Interaction.Behaviors>
-              <behaviors:ZoomOnMouseWheel />
-            </interactivity:Interaction.Behaviors>
-          </Canvas>
-        </ItemsPanelTemplate>
-      </ItemsControl.ItemsPanel>
-      <ItemsControl.ItemContainerStyle>
-        <Style TargetType="ContentPresenter">
-          <Setter Property="Canvas.Left" Value="{Binding X}"/>
-          <Setter Property="Canvas.Top" Value="{Binding Y}"/>
-        </Style>
-      </ItemsControl.ItemContainerStyle>
-      <ItemsControl.Resources>
-        <DataTemplate DataType="{x:Type models:ObservablePartPlacement}">
-          <Polygon Points="{Binding Points}" Stroke="Black">
-            <Polygon.Fill>
-              <MultiBinding Converter="{StaticResource IsSelectedToFillColor}">
-                <Binding />
-                <Binding Path="DataContext.SelectedPartItem" RelativeSource="{RelativeSource AncestorType=Window}" />
-              </MultiBinding>
-            </Polygon.Fill>
-          </Polygon>
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type models:ObservableSheetPlacement}">
-          <Polygon Points="{Binding Points}" Fill="White" Stroke="Black" />
-        </DataTemplate>
-      </ItemsControl.Resources>
-    </ItemsControl>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+    <Menu Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
+      <MenuItem Header="File">
+        <MenuItem Header="Load Project" />
+        <MenuItem Header="Save Project" />
+        <Separator />
+        <MenuItem Header="Exit" />
+      </MenuItem>
+    </Menu>
+    <userControls:SheetPlacementEditor Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" />
   </Grid>
 </Window>
