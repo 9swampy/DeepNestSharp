@@ -117,6 +117,7 @@
       <DependentUpon>QntDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="SheetLoadInfo.cs" />
+    <Compile Include="UiTab.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

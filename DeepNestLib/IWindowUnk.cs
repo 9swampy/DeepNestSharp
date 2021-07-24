@@ -4,6 +4,6 @@
 
   public interface IWindowUnk : IDbCache
   {
-    Dictionary<string, List<NFP>> nfpCache { get; }
+    Dictionary<string, List<INfp>> nfpCache { get; }
   }
 }

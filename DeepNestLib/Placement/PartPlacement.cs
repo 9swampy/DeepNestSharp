@@ -5,7 +5,7 @@
 
   public class PartPlacement
   {
-    public PartPlacement(NFP part)
+    public PartPlacement(INfp part)
     {
       this.Part = part;
     }
@@ -43,12 +43,12 @@
     /// <summary>
     /// A hull of the part captured only when not Gravity or BoundingBox (ie. Squeeze).
     /// </summary>
-    public NFP hull { get; set; }
+    public INfp hull { get; set; }
 
     /// <summary>
     /// A hull of the sheet captured only when not Gravity or BoundingBox (ie. Squeeze).
     /// </summary>
-    public NFP hullsheet { get; set; }
+    public INfp hullsheet { get; set; }
 
     /// <summary>
     /// Rotation of the part (sheets I don't think ever get rotated, so this would be absolute).
@@ -70,6 +70,6 @@
     /// </summary>
     public int source { get; set; }
 
-    public NFP Part { get; }
+    public INfp Part { get; }
   }
 }

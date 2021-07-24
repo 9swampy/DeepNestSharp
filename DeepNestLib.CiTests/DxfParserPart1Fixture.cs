@@ -15,7 +15,7 @@
 
     private RawDetail loadedRawDetail;
     private NestingContext nestingContext;
-    private NFP loadedNfp;
+    private INfp loadedNfp;
     private bool hasImportedRawDetail;
 
     public DxfParserPart1Fixture()

@@ -18,15 +18,15 @@
     public FitTwoSmallSquaresPartInTwoLargerSquareSheetsFixture()
     {
       var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
-      NFP firstSheet;
+      INfp firstSheet;
       DxfGenerator.GenerateSquare("Sheet", 20D, RectangleType.FileLoad).TryImportFromRawDetail(firstSheetIdSrc, out firstSheet).Should().BeTrue();
-      NFP secondSheet;
+      INfp secondSheet;
       DxfGenerator.GenerateSquare("Sheet", 20D, RectangleType.FileLoad).TryImportFromRawDetail(secondSheetIdSrc, out secondSheet).Should().BeTrue();
-      NFP firstPart;
+      INfp firstPart;
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryImportFromRawDetail(firstPartIdSrc, out firstPart).Should().BeTrue();
-      NFP secondPart;
+      INfp secondPart;
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryImportFromRawDetail(secondPartIdSrc, out secondPart).Should().BeTrue();
-      this.nestResult = new Background(A.Fake<IProgressDisplayer>()).PlaceParts(new NFP[] { firstSheet, secondSheet }, new NFP[] { firstPart, secondPart }, new SvgNestConfig(), 0);
+      this.nestResult = new Background(A.Fake<IProgressDisplayer>(), null).PlaceParts(new INfp[] { firstSheet, secondSheet }, new INfp[] { firstPart, secondPart }, new SvgNestConfig());
     }
 
     [Fact]
@@ -44,7 +44,7 @@
     [Fact]
     public void ShouldHaveExpectedFitness()
     {
-      this.nestResult.Fitness.Should().BeApproximately(3340, 1);
+      this.nestResult.Fitness.Should().BeApproximately(3582, 1);
     }
 
     [Fact]

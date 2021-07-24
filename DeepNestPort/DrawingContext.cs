@@ -1,14 +1,30 @@
-﻿using DeepNestLib;
-using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Windows.Forms;
-
-namespace DeepNestPort
+﻿namespace DeepNestPort
 {
+  using System;
+  using System.Collections.Generic;
+  using System.Drawing;
+  using System.Drawing.Drawing2D;
+  using System.Linq;
+  using System.Windows.Forms;
+  using DeepNestLib;
+
   public class DrawingContext
   {
+    private Graphics gr;
+    private float startx;
+    private float starty;
+    private float origsx;
+    private float origsy;
+    private bool isDrag = false;
+    private PictureBox box;
+    private float sx;
+    private float sy;
+    private float zoom = 1;
+    private Bitmap bmp;
+    private bool invertY = true;
+
+    public bool FocusOnMove { get; set; } = true;
+
     public DrawingContext(PictureBox pb)
     {
       box = pb;
@@ -27,7 +43,7 @@ namespace DeepNestPort
       pb.MouseWheel += Pb_MouseWheel;
     }
 
-    GraphicsPath GetGraphicsPath(NFP nfp)
+    private GraphicsPath GetGraphicsPath(INfp nfp)
     {
       GraphicsPath gp = new GraphicsPath();
       gp.AddPolygon(nfp.Points.Select(z => Transform(z.x, z.y)).ToArray());
@@ -42,7 +58,7 @@ namespace DeepNestPort
       return gp;
     }
 
-    GraphicsPath GetGraphicsPath(RawDetail det)
+    private GraphicsPath GetGraphicsPath(RawDetail det)
     {
       GraphicsPath gp = new GraphicsPath();
       foreach (var item in det.Outers)
@@ -66,7 +82,7 @@ namespace DeepNestPort
       return ms;
     }
 
-    public GraphicsPath Draw(NFP nfp, Pen pen = null, Brush brush = null)
+    public GraphicsPath Draw(INfp nfp, Pen pen = null, Brush brush = null)
     {
       var gp = GetGraphicsPath(nfp);
       if (brush != null)
@@ -106,7 +122,6 @@ namespace DeepNestPort
       sy = (pos.Y / zold + sy - pos.Y / zoom);
     }
 
-    public bool FocusOnMove = true;
     private void Pb_MouseMove(object sender, MouseEventArgs e)
     {
       if (!FocusOnMove) return;
@@ -143,31 +158,20 @@ namespace DeepNestPort
       gr.Clear(color);
     }
 
-    float startx, starty;
-
     internal void Reset()
     {
       gr.ResetTransform();
     }
 
-    float origsx, origsy;
-    bool isDrag = false;
-
-    PictureBox box;
-    public float sx, sy;
-    public float zoom = 1;
-    public Graphics gr;
-    public Bitmap bmp;
-    public bool InvertY = true;
     public virtual PointF Transform(PointF p1)
     {
-      return new PointF((p1.X + sx) * zoom, (InvertY ? (-1) : 1) * (p1.Y + sy) * zoom);
-    }
-    public virtual PointF Transform(double x, double y)
-    {
-      return new PointF(((float)(x) + sx) * zoom, (InvertY ? (-1) : 1) * ((float)(y) + sy) * zoom);
+      return new PointF((p1.X + sx) * zoom, (invertY ? (-1) : 1) * (p1.Y + sy) * zoom);
     }
 
+    public virtual PointF Transform(double x, double y)
+    {
+      return new PointF(((float)(x) + sx) * zoom, (invertY ? (-1) : 1) * ((float)(y) + sy) * zoom);
+    }
 
     private void Pb_SizeChanged(object sender, EventArgs e)
     {
@@ -185,6 +189,7 @@ namespace DeepNestPort
 
       return new PointF(posx, posy);
     }
+
     public void Update()
     {
       if (isDrag)
@@ -229,7 +234,273 @@ namespace DeepNestPort
       sy = -((h / 2f) / zoom + y);
 
       var test = Transform(new PointF(x, y));
+    }
 
+    public void RenderSheetToClipboard(Sheet sh, ICollection<INfp> Polygons, ICollection<INfp> sheets)
+    {
+      this.sx = (float)sh.x;
+      this.sy = (float)sh.y;
+      this.invertY = false;
+      var bb = new Bitmap(1 + (int)sh.Width, 1 + (int)sh.Height);
+      var gr = Graphics.FromImage(bb);
+      var tmpbmp = this.bmp;
+      this.gr = gr;
+      this.bmp = bb;
+
+      RenderSheet(Polygons, sheets);
+      this.gr = gr;
+      this.bmp = tmpbmp;
+      this.invertY = true;
+      Clipboard.SetImage(bb);
+    }
+
+    private void RenderSheet(ICollection<INfp> Polygons, ICollection<INfp> sheets)
+    {
+      this.gr.SmoothingMode = SmoothingMode.AntiAlias;
+      this.Clear(Color.White);
+      this.Reset();
+
+      foreach (var item in Polygons.Union(sheets))
+      {
+        if (!(item is Sheet))
+        {
+          if (!item.Fitted) continue;
+        }
+
+        GraphicsPath path = new GraphicsPath();
+        if (item.Points != null && item.Points.Any())
+        {
+          //rotate first;
+          var m = new Matrix();
+          m.Translate((float)item.x, (float)item.y);
+          m.Rotate(item.Rotation);
+
+          var pnts = item.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
+          m.TransformPoints(pnts);
+
+          path.AddPolygon(pnts.Select(z => this.Transform(z)).ToArray());
+
+          if (item.Children != null)
+          {
+            foreach (var citem in item.Children)
+            {
+              var pnts2 = citem.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
+              m.TransformPoints(pnts2);
+              path.AddPolygon(pnts2.Select(z => this.Transform(z)).ToArray());
+            }
+          }
+
+          this.gr.ResetTransform();
+
+          if (!sheets.Contains(item))
+          {
+            this.gr.FillPath(new SolidBrush(Color.FromArgb(128, Color.LightBlue)), path);
+          }
+
+          this.gr.DrawPath(Pens.Black, path);
+        }
+      }
+    }
+
+    public void RenderNestResult(Font font, bool isInfoShow, NestingContext context, ICollection<INfp> sheets, ICollection<INfp> Polygons)
+    {
+      var pos1 = this.GetPos();
+      var posx = pos1.X;
+      var posy = pos1.Y;
+      this.Update();
+
+      this.gr.SmoothingMode = SmoothingMode.AntiAlias;
+      this.Clear(Color.White);
+
+      this.Reset();
+
+      this.gr.DrawLine(Pens.Red, this.Transform(new PointF(0, 0)), this.Transform(new PointF(1000, 0)));
+      this.gr.DrawLine(Pens.Blue, this.Transform(new PointF(0, 0)), this.Transform(new PointF(0, 1000)));
+      int yy = 0;
+      int gap = (int)font.Size;
+      if (isInfoShow)
+      {
+        this.gr.DrawString("X:" + posx.ToString("0.00") + " Y: " + posy.ToString("0.00"), font, Brushes.Blue, 0, yy);
+        yy += (int)font.Size + gap;
+        if (context.Nest != null && context.Nest.TopNestResults != null && context.Nest.TopNestResults.Top != null)
+        {
+          this.gr.DrawString($"Material Utilization: {Math.Round(context.Nest.TopNestResults.Top.MaterialUtilization * 100.0f, 2)}%   Iterations: {context.Iterations}    Parts placed: {context.PlacedPartsCount}/{Polygons.Count} ({100 * context.Nest.TopNestResults.Top.PartsPlacedPercent:N2}%)", font, Brushes.DarkBlue, 0, yy);
+          yy += (int)font.Size + gap;
+          if (SvgNest.Config.UseParallel)
+          {
+            this.gr.DrawString($"Generations: {SvgNest.Generations}    Population: {SvgNest.Population}    Threads: {SvgNest.Threads}", font, Brushes.DarkBlue, 0, yy);
+          }
+          else
+          {
+            this.gr.DrawString($"Generations: {SvgNest.Generations}    Population: {SvgNest.Population}", font, Brushes.DarkBlue, 0, yy);
+          }
+
+          yy += (int)font.Size + gap;
+          this.gr.DrawString($"Sheets: {sheets.Count}   Parts:{Polygons.Count}    parts types: {Polygons.GroupBy(z => z.Source).Count()}", font, Brushes.DarkBlue, 0, yy);
+          yy += (int)font.Size + gap;
+          this.gr.DrawString($"Nests: {context.Nest.TopNestResults.Count} Fitness: {context.Nest.TopNestResults.Top.Fitness}   Area:{context.Nest.TopNestResults.Top.TotalSheetsArea}  ", font, Brushes.DarkBlue, 0, yy);
+          yy += (int)font.Size + gap;
+          this.gr.DrawString($"Minkowski Calls: {Background.CallCounter};  Last placing time: {context.Nest.LastPlacementTime}ms;  Average nest time: {context.Nest.AverageNestTime}ms", font, Brushes.DarkBlue, 0, yy);
+          yy += (int)font.Size + gap;
+        }
+      }
+      else
+      {
+        if (context.Nest != null && context.Nest.TopNestResults != null && context.Nest.TopNestResults.Top != null)
+        {
+          this.gr.DrawString($"Iterations: {context.Iterations}    Parts placed: {context.PlacedPartsCount}/{Polygons.Count} ({100 * context.Nest.TopNestResults.Top.PartsPlacedPercent:N2}%)", font, Brushes.DarkBlue, 0, yy);
+          yy += (int)font.Size + gap;
+        }
+
+        this.gr.DrawString($"Generations: {SvgNest.Generations}    Population: {SvgNest.Population}", font, Brushes.DarkBlue, 0, yy);
+        yy += (int)font.Size + gap;
+        this.gr.DrawString($"Sheets: {sheets.Count}   Parts:{Polygons.Count}    Parts types: {Polygons.GroupBy(z => z.Source).Count()}", font, Brushes.DarkBlue, 0, yy);
+        yy += (int)font.Size + gap;
+      }
+
+      int i = 0;
+      foreach (var item in Polygons.Union(sheets))
+      {
+        if (!(item is Sheet))
+        {
+          if (!item.Fitted) continue;
+        }
+
+        GraphicsPath path = new GraphicsPath();
+        if (item.Points != null && item.Points.Any())
+        {
+          // rotate first;
+          var m = new Matrix();
+          m.Translate((float)item.x, (float)item.y);
+          m.Rotate(item.Rotation);
+
+          var pnts = item.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
+          m.TransformPoints(pnts);
+
+          path.AddPolygon(pnts.Select(z => this.Transform(z)).ToArray());
+
+          if (!(item is Sheet) && isInfoShow && SvgNest.Config.ShowPartPositions)
+          {
+            var label = $"{item.PlacementOrder} ({item.x:N0},{item.y:N0})@{item.Rotation}";
+            var midPnt = new PointF(pnts.Average(o => o.X), pnts.Average(o => o.Y));
+            this.gr.DrawString(label, font, Brushes.Black, this.Transform(midPnt));
+          }
+
+          if (item.Children != null)
+          {
+            foreach (var citem in item.Children)
+            {
+              var pnts2 = citem.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
+              m.TransformPoints(pnts2);
+              path.AddPolygon(pnts2.Select(z => this.Transform(z)).ToArray());
+            }
+          }
+
+          this.gr.ResetTransform();
+
+          /*if (selected == item)
+          {
+              this.gr.FillPath(new SolidBrush(Color.FromArgb(128, Color.Orange)), path);
+              this.gr.DrawPath(Pens.DarkBlue, path);
+
+          }
+          else*/
+          {
+            if (!sheets.Contains(item))
+            {
+              this.gr.FillPath(new SolidBrush(Color.FromArgb(128, Color.LightBlue)), path);
+            }
+
+            this.gr.DrawPath(Pens.Black, path);
+          }
+
+          if (item is Sheet)
+          {
+            if (context.Current != null)
+            {
+              var trans1 = this.Transform(new PointF((float)pnts[0].X, (float)pnts[0].Y - 30));
+              var sheetPlacement = context.Current.UsedSheets.FirstOrDefault(s => s.SheetId == item.Id);
+              if (sheetPlacement != null)
+              {
+                this.gr.DrawString($"util: {100 * sheetPlacement.MaterialUtilization:N2}% {sheetPlacement.ToString()}", font, Brushes.Black, trans1);
+
+                if (isInfoShow)
+                {
+                  var hullPoints = sheetPlacement.Hull.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
+                  m.TransformPoints(hullPoints);
+
+                  path.AddPolygon(hullPoints.Select(z => this.Transform(z)).ToArray());
+                  this.gr.DrawPath(Pens.Red, path);
+
+                  //var simplifyPoints = sheetPlacement.Simplify.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
+                  //m.TransformPoints(simplifyPoints);
+
+                  //path.AddPolygon(simplifyPoints.Select(z => this.Transform(z)).ToArray());
+                  //this.gr.DrawPath(Pens.Green, path);
+                  if (sheetPlacement == context.Current.UsedSheets.First())
+                  {
+                    var trans2 = this.Transform(new PointF((float)pnts[0].X, (float)pnts[0].Y - 30 + (int)font.Size + gap));
+                    this.gr.DrawString($"util: {100 * context.Current.MaterialUtilization:N2}% {context.Current.ToString()}", font, Brushes.Black, trans2);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      this.Setup();
+    }
+
+    public void RenderPreview(object previewObject)
+    {
+      this.Update();
+      this.Clear(Color.White);
+
+      //this.gr.DrawLine(Pens.Blue, this.Transform(new PointF(0, 0)), this.Transform(100, 0));
+      //this.gr.DrawLine(Pens.Red, this.Transform(new PointF(0, 0)), this.Transform(0, 100));
+      this.Reset();
+
+      if (previewObject != null)
+      {
+        RectangleF bnd;
+        if (previewObject is RawDetail || previewObject is NFP)
+        {
+          if (previewObject is RawDetail raw)
+          {
+            this.Draw(raw, Pens.Black, Brushes.LightBlue);
+            if (SvgNest.Config.DrawSimplification)
+            {
+              AddApproximation(raw);
+            }
+
+            bnd = raw.BoundingBox();
+          }
+          else
+          {
+            var g = this.Draw(previewObject as NFP, Pens.Black, Brushes.LightBlue);
+            bnd = g.GetBounds();
+          }
+
+          var cap = $"{bnd.Width:N2} x {bnd.Height:N2}";
+          this.DrawLabel(cap, Brushes.Black, Color.LightGreen, 5, 5);
+        }
+      }
+
+      this.Setup();
+    }
+
+    /// <summary>
+    /// Display the bounds that will be used by the nesting algorithym.
+    /// </summary>
+    /// <param name="raw">The part to approximate.</param>
+    private void AddApproximation(RawDetail raw)
+    {
+      NFP part = raw.ToNfp();
+      var simplification = SvgNest.simplifyFunction(part, false);
+      this.Draw(simplification, Pens.Red);
+      var pointsChange = $"{part.Points.Length} => {simplification.Points.Length} points";
+      this.DrawLabel(pointsChange, Brushes.Black, Color.Orange, 5, (int)(10 + this.GetLabelHeight()));
     }
   }
 }

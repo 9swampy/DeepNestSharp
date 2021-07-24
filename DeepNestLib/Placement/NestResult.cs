@@ -10,16 +10,14 @@
     private readonly OriginalFitness fitness;
 
     public NestResult(
-      int nestIndex,
-      SheetPlacementCollection allplacements,
+      SheetPlacementCollection allPlacements,
       IList<NFP> unplacedParts,
       double mergedLength,
       PlacementTypeEnum placementType,
       long placePartTime)
     {
-      this.UsedSheets = allplacements;
+      this.UsedSheets = allPlacements;
       this.UnplacedParts = unplacedParts;
-      this.NestIndex = nestIndex;
       this.MergedLength = mergedLength;
       this.PlacementType = placementType;
       this.PlacePartTime = placePartTime;
@@ -41,8 +39,6 @@
     public SheetPlacementCollection UsedSheets { get; private set; }
 
     public IList<NFP> UnplacedParts { get; }
-
-    public int NestIndex { get; }
 
     public double MergedLength { get; }
 

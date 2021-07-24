@@ -97,7 +97,7 @@
       return s;
     }
 
-    public void Export(string path, IEnumerable<NFP> polygons, IEnumerable<NFP> sheets)
+    public void Export(string path, IEnumerable<INfp> polygons, IEnumerable<INfp> sheets)
     {
       StringBuilder sb = new StringBuilder();
       sb.AppendLine("	<svg version=\"1.1\" id=\"svg2\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"   xml:space=\"preserve\">");

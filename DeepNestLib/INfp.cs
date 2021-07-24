@@ -8,7 +8,7 @@
 
     float Area { get; }
 
-    IList<NFP> Children { get; }
+    IList<INfp> Children { get; set; }
 
     bool Fitted { get; }
 
@@ -24,17 +24,21 @@
 
     string Name { get; set; }
 
+    double? Offsetx { get; set; }
+
+    double? Offsety { get; set; }
+
     int PlacementOrder { get; set; }
 
     SvgPoint[] Points { get; }
 
-    float Rotation { get; }
+    float Rotation { get; set; }
 
     float[] Rotations { get; }
 
-    NFP Sheet { get; set; }
+    INfp Sheet { get; set; }
 
-    int Source { get; }
+    int Source { get; set; }
 
     AnglesEnum StrictAngle { get; set; }
 
@@ -52,6 +56,8 @@
 
     NFP CloneTree();
 
+    INfp CloneTop();
+
     NFP GetHull();
 
     SvgPoint[] ReplacePoints(IEnumerable<SvgPoint> points);
@@ -60,7 +66,7 @@
 
     NFP Rotate(float degrees);
 
-    NFP slice(int v);
+    INfp slice(int v);
 
     string stringify();
 

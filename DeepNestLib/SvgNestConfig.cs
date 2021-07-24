@@ -8,6 +8,8 @@
     public const int MutationRateMax = 5000;
     public const int MultiplierMin = 1;
     public const int MultiplierMax = 100;
+    public const int ParallelNestsMin = 1;
+    public const int ParallelNestsMax = 30;
 
     public double Scale { get; set; } = 25;
 
@@ -295,7 +297,23 @@
       }
     }
 
-    public int ParallelNests { get; } = 10;
+    public int ParallelNests
+  {
+      get
+      {
+        var result = (int)Properties.Settings.Default["ParallelNests"];
+        if (result < ParallelNestsMin) return ParallelNestsMin;
+        if (result > ParallelNestsMax) return ParallelNestsMax;
+        return result;
+      }
+
+      set
+      {
+        Properties.Settings.Default["ParallelNests"] = value;
+        Properties.Settings.Default.Save();
+        Properties.Settings.Default.Upgrade();
+      }
+    }
 
     public bool ShowPartPositions
     {

@@ -16,8 +16,6 @@
 
     public SheetPlacement(PlacementTypeEnum placementType, INfp sheet, IList<PartPlacement> partPlacements)
     {
-      this.SheetId = sheet.Id;
-      this.SheetSource = sheet.Source;
       this.PlacementType = placementType;
       this.Sheet = sheet;
       this.PartPlacements = partPlacements;
@@ -27,14 +25,12 @@
     /// <summary>
     /// Gets memoised sheet.Id; to maintain legacy - monitor if sheet.Id is ever getting updated (may be Liskov breach in Sheet?).
     /// </summary>
-    [JsonInclude]
-    public int SheetId { get; private set; }
+    public int SheetId => Sheet.Id;
 
     /// <summary>
     /// Gets memoised sheet.Source; to maintain legacy - monitor if sheet.Id is ever getting updated (may be Liskov breach in Sheet?).
     /// </summary>
-    [JsonInclude]
-    public int SheetSource { get; private set; }
+    public int SheetSource => Sheet.Source;
 
     [JsonInclude]
     public PlacementTypeEnum PlacementType { get; private set; }

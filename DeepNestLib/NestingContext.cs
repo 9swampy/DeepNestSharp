@@ -2,7 +2,6 @@
 {
   using System;
   using System.Collections.Generic;
-  using System.IO;
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
@@ -13,8 +12,8 @@
   {
     private readonly IMessageService messageService;
     private readonly IProgressDisplayer progressDisplayer;
+    private readonly Random random = new Random();
     private int iterations = 0;
-    Random random = new Random();
     private volatile bool isStopped;
 
     public NestingContext(IMessageService messageService, IProgressDisplayer progressDisplayer)
@@ -25,14 +24,14 @@
 
     public bool IsErrored { get; private set; }
 
-    public ICollection<NFP> Polygons { get; } = new HashSet<NFP>();
+    public ICollection<INfp> Polygons { get; } = new HashSet<INfp>();
 
-    public List<NFP> Sheets { get; private set; } = new List<NFP>();
+    public List<INfp> Sheets { get; private set; } = new List<INfp>();
 
-    public int PlacedPartsCount { get; private set; } = 0;
+    public int PlacedPartsCount => Current?.TotalPlacedCount ?? 0;
 
     public INestResult Current { get; private set; } = null;
-    
+
     public SvgNest Nest
     {
       get;
@@ -59,17 +58,17 @@
       this.isStopped = false;
     }
 
+    public void ResumeNest()
+    {
+      this.isStopped = false;
+    }
+
     public void NestIterate(ISvgNestConfig config)
     {
       try
       {
         List<NFP> lsheets = new List<NFP>();
         List<NFP> lpoly = new List<NFP>();
-
-        //for (int i = 0; i < Polygons.Count; i++)
-        //{
-        //  Polygons[i].Id = i;
-        //}
 
         int id = 0;
         foreach (var item in Polygons)
@@ -210,8 +209,7 @@
     {
       Current = plcpr;
 
-      PlacedPartsCount = 0;
-      List<NFP> placed = new List<NFP>();
+      List<INfp> placed = new List<INfp>();
       foreach (var item in Polygons)
       {
         item.Sheet = null;
@@ -231,7 +229,6 @@
 
         foreach (var partPlacement in sheetPlacement.PartPlacements)
         {
-          PlacedPartsCount++;
           var poly = Polygons.First(z => z.Id == partPlacement.id);
           placed.Add(poly);
           poly.Sheet = sheet;
@@ -309,6 +306,7 @@
       {
         return Polygons.Max(z => z.Source) + 1;
       }
+
       return 0;
     }
 
@@ -318,6 +316,7 @@
       {
         return Sheets.Max(z => z.Source) + 1;
       }
+
       return 0;
     }
 
@@ -354,6 +353,7 @@
           AddSheet(ww, hh, src);
         }
       }
+
       foreach (var item in d.Descendants("part"))
       {
         var cnt = int.Parse(item.Attribute("count").Value);
@@ -376,7 +376,7 @@
 
         for (int i = 0; i < cnt; i++)
         {
-          NFP loadedNfp;
+          INfp loadedNfp;
           if (r.TryGetNfp(src, out loadedNfp))
           {
             this.Polygons.Add(loadedNfp);
@@ -402,8 +402,6 @@
     private void InternalReset()
     {
       SvgNest.Reset();
-      PlacedPartsCount = 0;
-      Current = null;
       Interlocked.Exchange(ref iterations, 0);
       this.IsErrored = false;
       this.Current = null;

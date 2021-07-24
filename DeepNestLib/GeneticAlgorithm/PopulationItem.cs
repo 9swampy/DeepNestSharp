@@ -10,14 +10,14 @@
 
     public float[] Rotation { get; }
 
-    public List<NFP> Placements { get; }
+    public List<NFP> Parts { get; }
 
     public bool IsPending => !Processing && Fitness == -1;
 
-    public PopulationItem(List<NFP> placements, float[] rotation)
+    public PopulationItem(List<NFP> parts, float[] rotations)
     {
-      this.Placements = placements;
-      this.Rotation = rotation;
+      this.Parts = parts;
+      this.Rotation = rotations;
     }
   }
 }

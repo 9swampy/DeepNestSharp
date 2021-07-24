@@ -97,7 +97,7 @@
     }
 
     // returns the rectangular bounding box of the given polygon
-        public static PolygonBounds getPolygonBounds(NFP _polygon)
+        public static PolygonBounds getPolygonBounds(INfp _polygon)
     {
       return getPolygonBounds(_polygon.Points);
     }
@@ -353,7 +353,7 @@
     }
 
     // project each point of B onto A in the given direction, and return the
-    public static double? polygonProjectionDistance(NFP A, NFP B, SvgPoint direction)
+    public static double? polygonProjectionDistance(INfp A, INfp B, SvgPoint direction)
     {
       var Boffsetx = B.Offsetx ?? 0;
       var Boffsety = B.Offsety ?? 0;
@@ -417,7 +417,7 @@
       return distance;
     }
 
-    public static double polygonArea(NFP polygon)
+    public static double polygonArea(INfp polygon)
     {
       double area = 0;
       int i, j;
@@ -431,7 +431,7 @@
     }
 
     // return true if point is in the polygon, false if outside, and null if exactly on a point or edge
-    public static bool? pointInPolygon(SvgPoint point, NFP polygon)
+    public static bool? pointInPolygon(SvgPoint point, INfp polygon)
     {
       if (polygon == null || polygon.Points.Length < 3)
       {
@@ -480,7 +480,7 @@
 
     // todo: swap this for a more efficient sweep-line implementation
     // returnEdges: if set, return all edges on A that have intersections
-    public static bool intersect(NFP A, NFP B)
+    public static bool intersect(INfp A, INfp B)
     {
       var aOffsetx = A.Offsetx ?? 0;
       var aOffsety = A.Offsety ?? 0;
@@ -673,7 +673,7 @@
 
     // searches for an arrangement of A and B such that they do not overlap
     // if an NFP is given, only search for startpoints that have not already been traversed in the given NFP
-    private static SvgPoint SearchStartPoint(NFP A, NFP B, bool inside, NFP[] NFP = null)
+    private static SvgPoint SearchStartPoint(INfp A, INfp B, bool inside, NFP[] NFP = null)
     {
       // clone arrays
       A = A.slice(0);
@@ -1015,7 +1015,7 @@
       return distances.Min();
     }
 
-    public static double? polygonSlideDistance(NFP A, NFP B, nVector direction, bool ignoreNegative)
+    public static double? polygonSlideDistance(INfp A, INfp B, nVector direction, bool ignoreNegative)
     {
       SvgPoint A1, A2, B1, B2;
       double Aoffsetx, Aoffsety, Boffsetx, Boffsety;

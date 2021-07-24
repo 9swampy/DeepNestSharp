@@ -226,5 +226,17 @@ namespace DeepNestLib.Properties {
                 this["ShowPartPositions"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public int ParallelNests {
+            get {
+                return ((int)(this["ParallelNests"]));
+            }
+            set {
+                this["ParallelNests"] = value;
+            }
+        }
     }
 }

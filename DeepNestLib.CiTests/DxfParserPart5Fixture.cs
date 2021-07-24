@@ -16,10 +16,11 @@
 
     private RawDetail loadedRawDetail;
     private NestingContext nestingContext;
-    private NFP loadedNfp;
-    private NFP simplifiedNfp;
+    private INfp loadedNfp;
+    private INfp simplifiedNfp;
     private long simplifiedNfpTime;
     private bool hasImportedRawDetail;
+
     public DxfParserPart5Fixture()
     {
       lock (testSyncLock)

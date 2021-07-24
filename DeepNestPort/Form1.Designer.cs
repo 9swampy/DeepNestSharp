@@ -65,6 +65,7 @@
       this.runNestingButton = new System.Windows.Forms.ToolStripButton();
       this.tabPage2 = new System.Windows.Forms.TabPage();
       this.groupBox9 = new System.Windows.Forms.GroupBox();
+      this.label12 = new System.Windows.Forms.Label();
       this.strictAnglesCombo = new System.Windows.Forms.ComboBox();
       this.showPartPositions = new System.Windows.Forms.CheckBox();
       this.checkBox6 = new System.Windows.Forms.CheckBox();
@@ -124,7 +125,7 @@
       this.button13 = new System.Windows.Forms.Button();
       this.groupBox4 = new System.Windows.Forms.GroupBox();
       this.button8 = new System.Windows.Forms.Button();
-      this.checkBox1 = new System.Windows.Forms.CheckBox();
+      this.nativeModeCheckBox = new System.Windows.Forms.CheckBox();
       this.button7 = new System.Windows.Forms.Button();
       this.button2 = new System.Windows.Forms.Button();
       this.button5 = new System.Windows.Forms.Button();
@@ -167,7 +168,7 @@
       this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
       this.contextMenuTopNestResults = new System.Windows.Forms.ContextMenuStrip(this.components);
       this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-      this.label12 = new System.Windows.Forms.Label();
+      this.parallelNestsNud = new System.Windows.Forms.NumericUpDown();
       ((System.ComponentModel.ISupportInitialize)(this.nestPreview)).BeginInit();
       this.tabControl1.SuspendLayout();
       this.tabPage3.SuspendLayout();
@@ -209,6 +210,7 @@
       this.tabPage5.SuspendLayout();
       this.statusStrip1.SuspendLayout();
       this.contextMenuTopNestResults.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.parallelNestsNud)).BeginInit();
       this.SuspendLayout();
       // 
       // nestPreview
@@ -564,6 +566,7 @@
       // 
       // tabPage2
       // 
+      this.tabPage2.Controls.Add(this.parallelNestsNud);
       this.tabPage2.Controls.Add(this.groupBox9);
       this.tabPage2.Controls.Add(this.label2);
       this.tabPage2.Controls.Add(this.textBox6);
@@ -607,6 +610,15 @@
       this.groupBox9.TabIndex = 32;
       this.groupBox9.TabStop = false;
       this.groupBox9.Text = "Port features";
+      // 
+      // label12
+      // 
+      this.label12.AutoSize = true;
+      this.label12.Location = new System.Drawing.Point(2, 154);
+      this.label12.Name = "label12";
+      this.label12.Size = new System.Drawing.Size(244, 17);
+      this.label12.TabIndex = 37;
+      this.label12.Text = "Strict Angles (if set on part, part wins)";
       // 
       // strictAnglesCombo
       // 
@@ -1314,7 +1326,7 @@
       this.groupBox4.AutoSize = true;
       this.groupBox4.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
       this.groupBox4.Controls.Add(this.button8);
-      this.groupBox4.Controls.Add(this.checkBox1);
+      this.groupBox4.Controls.Add(this.nativeModeCheckBox);
       this.groupBox4.Controls.Add(this.button7);
       this.groupBox4.Controls.Add(this.button2);
       this.groupBox4.Controls.Add(this.button5);
@@ -1342,16 +1354,16 @@
       // 
       // checkBox1
       // 
-      this.checkBox1.AutoSize = true;
-      this.checkBox1.Checked = true;
-      this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.checkBox1.Location = new System.Drawing.Point(72, 177);
-      this.checkBox1.Margin = new System.Windows.Forms.Padding(4);
-      this.checkBox1.Name = "checkBox1";
-      this.checkBox1.Size = new System.Drawing.Size(107, 21);
-      this.checkBox1.TabIndex = 4;
-      this.checkBox1.Text = "native mode";
-      this.checkBox1.UseVisualStyleBackColor = true;
+      this.nativeModeCheckBox.AutoSize = true;
+      this.nativeModeCheckBox.Checked = true;
+      this.nativeModeCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+      this.nativeModeCheckBox.Location = new System.Drawing.Point(72, 177);
+      this.nativeModeCheckBox.Margin = new System.Windows.Forms.Padding(4);
+      this.nativeModeCheckBox.Name = "checkBox1";
+      this.nativeModeCheckBox.Size = new System.Drawing.Size(107, 21);
+      this.nativeModeCheckBox.TabIndex = 4;
+      this.nativeModeCheckBox.Text = "native mode";
+      this.nativeModeCheckBox.UseVisualStyleBackColor = true;
       // 
       // button7
       // 
@@ -1750,14 +1762,24 @@
       this.toolStripMenuItem1.Size = new System.Drawing.Size(121, 24);
       this.toolStripMenuItem1.Text = "Export";
       // 
-      // label12
+      // nudParallelNests
       // 
-      this.label12.AutoSize = true;
-      this.label12.Location = new System.Drawing.Point(2, 154);
-      this.label12.Name = "label12";
-      this.label12.Size = new System.Drawing.Size(244, 17);
-      this.label12.TabIndex = 37;
-      this.label12.Text = "Strict Angles (if set on part, part wins)";
+      this.parallelNestsNud.Location = new System.Drawing.Point(168, 218);
+      this.parallelNestsNud.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+      this.parallelNestsNud.Minimum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+      this.parallelNestsNud.Name = "nudParallelNests";
+      this.parallelNestsNud.Size = new System.Drawing.Size(75, 22);
+      this.parallelNestsNud.TabIndex = 33;
+      this.parallelNestsNud.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+      this.parallelNestsNud.ValueChanged += new System.EventHandler(this.parallelNestsNud_ValueChanged);
       // 
       // Form1
       // 
@@ -1826,6 +1848,7 @@
       this.statusStrip1.ResumeLayout(false);
       this.statusStrip1.PerformLayout();
       this.contextMenuTopNestResults.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)(this.parallelNestsNud)).EndInit();
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -1916,7 +1939,7 @@
     private System.Windows.Forms.Button button4;
     private System.Windows.Forms.PictureBox debugPreview;
     private System.Windows.Forms.Button button7;
-    private System.Windows.Forms.CheckBox checkBox1;
+    private System.Windows.Forms.CheckBox nativeModeCheckBox;
     private System.Windows.Forms.GroupBox groupBox8;
     private System.Windows.Forms.RadioButton radioButton3;
     private System.Windows.Forms.RadioButton radioButton2;
@@ -1970,6 +1993,7 @@
     private System.Windows.Forms.ComboBox strictAnglesCombo;
     private BrightIdeasSoftware.OLVColumn olvStrictAngle;
     private System.Windows.Forms.Label label12;
+    private System.Windows.Forms.NumericUpDown parallelNestsNud;
   }
 }
 

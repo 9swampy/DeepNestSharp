@@ -16,17 +16,17 @@
 
     private int firstPartIdSrc = new Random().Next();
     private int secondPartIdSrc = new Random().Next();
-    private NFP clipperResult;
-    private NFP dllImportResult;
+    private INfp clipperResult;
+    private INfp dllImportResult;
     private long clipperResultTime;
     private long dllImportExecuteTime;
 
     public CompareMinkowskiImplementationsFixture()
     {
       var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
-      NFP firstPart;
+      INfp firstPart;
       DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Rectangle(11D) }).TryGetNfp(firstPartIdSrc, out firstPart).Should().BeTrue();
-      NFP secondPart;
+      INfp secondPart;
       DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Rectangle(11D) }).TryGetNfp(secondPartIdSrc, out secondPart).Should().BeTrue();
       var sw = new Stopwatch();
       sw.Start();

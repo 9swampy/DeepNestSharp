@@ -132,6 +132,12 @@
             }
 
             bounds = (((rectBounds.width * 2) / sheetPlacement.Sheet.Area) + area + sheetPlacement.Hull.Area) / 6;
+
+            if (this.sheetPlacement.PlacementType == PlacementTypeEnum.BoundingBox ||
+                this.sheetPlacement.PlacementType == PlacementTypeEnum.Squeeze)
+            {
+              bounds *= 4;
+            }
           }
         }
 
