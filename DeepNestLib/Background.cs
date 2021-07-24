@@ -12,31 +12,26 @@
 
   public class Background
   {
-    public static bool EnableCaches = true;
-
-    public Dictionary<string, INfp[]> cacheProcess = new Dictionary<string, INfp[]>();
-
-    // jsClipper uses X/Y instead of x/y...
-    public DataInfo data;
-
-    private int index;
+    private const bool EnableCaches = true;
+    private readonly Dictionary<string, INfp[]> cacheProcess = new Dictionary<string, INfp[]>();
 
     // run the placement synchronously
-    private IWindowUnk window = new windowUnk();
+    private IWindowUnk window = new WindowUnk();
 
-    public Action<NestResult> ResponseAction;
+    private Action<NestResult> responseAction;
 
-    private static object lockobj = new object();
+    private static volatile object lockobj = new object();
     private readonly IProgressDisplayer progressDisplayer;
 
-    public Background(IProgressDisplayer progressDisplayer)
+    public Background(IProgressDisplayer progressDisplayer, Action<NestResult> responseAction)
     {
       this.cacheProcess = new Dictionary<string, INfp[]>();
-      this.window = new windowUnk();
+      this.window = new WindowUnk();
       this.progressDisplayer = progressDisplayer;
+      this.responseAction = responseAction;
     }
 
-    public static INfp shiftPolygon(INfp p, PartPlacement shift)
+    private static INfp ShiftPolygon(INfp p, PartPlacement shift)
     {
       NFP shifted = new NFP();
       for (var i = 0; i < p.Length; i++)
@@ -48,7 +43,7 @@
       {
         for (int i = 0; i < p.Children.Count(); i++)
         {
-          shifted.Children.Add(shiftPolygon(p.Children[i], shift));
+          shifted.Children.Add(ShiftPolygon(p.Children[i], shift));
         }
       }
 
@@ -57,7 +52,7 @@
 
     // returns the square of the length of any merged lines
     // filter out any lines less than minlength long
-    public static MergedResult mergedLength(INfp[] parts, INfp p, double minlength, double tolerance)
+    private static MergedResult MergedLength(INfp[] parts, INfp p, double minlength, double tolerance)
     {
       // var min2 = minlength * minlength;
       //            var totalLength = 0;
@@ -213,25 +208,6 @@
       public object segments;
     }
 
-    public static INfp[] cloneNfp(INfp[] nfp, bool inner = false)
-    {
-      if (!inner)
-      {
-        return new[] { nfp.First().Clone() };
-      }
-
-      System.Diagnostics.Debug.Print("Original source had marked this 'Background.cloneNfp' as not implemented; not sure why. . .");
-
-      // inner nfp is actually an array of nfps
-      List<INfp> result = new List<INfp>();
-      for (var i = 0; i < nfp.Count(); i++)
-      {
-        result.Add(nfp[i].Clone());
-      }
-
-      return result.ToArray();
-    }
-
     public static int CallCounter
     {
       get
@@ -240,7 +216,7 @@
       }
     }
 
-    internal INfp[] Process2(INfp A, INfp B, MinkowskiCache minkowskiCache)
+    internal INfp[] ExecuteDllImportMinkowski(INfp A, INfp B, MinkowskiCache minkowskiCache)
     {
       var key = new StringBuilder(12).Append(A.Source).Append(";").Append(B.Source).Append(";").Append(A.Rotation).Append(";").Append(B.Rotation).ToString();
       bool cacheAllow = minkowskiCache == MinkowskiCache.Cache;
@@ -359,7 +335,7 @@
       return f.ToArray();
     }
 
-    internal NestResult PlaceParts(IEnumerable<INfp> sheets, INfp[] parts, ISvgNestConfig config, int nestIndex)
+    internal NestResult PlaceParts(IEnumerable<INfp> sheets, INfp[] parts, ISvgNestConfig config)
     {
       if (sheets == null || sheets.Count() == 0)
       {
@@ -725,17 +701,17 @@
                   throw new NotImplementedException();
 
                   // if lines can be merged, subtract savings from area calculation
-                  var shiftedpart = shiftPolygon(part, shiftvector);
+                  var shiftedpart = ShiftPolygon(part, shiftvector);
                   List<INfp> shiftedplaced = new List<INfp>();
 
                   for (int m = 0; m < placed.Count; m++)
                   {
-                    shiftedplaced.Add(shiftPolygon(placed[m], placements[m]));
+                    shiftedplaced.Add(ShiftPolygon(placed[m], placements[m]));
                   }
 
                   // don't check small lines, cut off at about 1/2 in
                   double minlength = 0.5 * config.Scale;
-                  merged = mergedLength(shiftedplaced.ToArray(), shiftedpart, minlength, 0.1 * config.CurveTolerance);
+                  merged = MergedLength(shiftedplaced.ToArray(), shiftedpart, minlength, 0.1 * config.CurveTolerance);
                   area -= merged.totalLength * config.TimeRatio;
                 }
 
@@ -820,7 +796,7 @@
         }
       }
 
-      return new NestResult(nestIndex, allplacements, unplacedParts, totalMerged, config.PlacementType, sw.ElapsedMilliseconds);
+      return new NestResult(allplacements, unplacedParts, totalMerged, config.PlacementType, sw.ElapsedMilliseconds);
     }
 
     private bool CanBePlaced(INfp sheet, INfp part, double clipperScale, out INfp[] sheetNfp)
@@ -841,50 +817,50 @@
       return false;
     }
 
-    private void SyncPlaceParts(NFP[] parts)
+    private void SyncPlaceParts(NFP[] parts, INfp[] sheets, ISvgNestConfig config, int index)
     {
-      var nestResult = PlaceParts(this.data.sheets.ToArray(), parts, this.data.config, this.index);
+      var nestResult = PlaceParts(sheets, parts, config);
       if (nestResult != null)
       {
-        nestResult.index = this.data.index;
-        this.ResponseAction(nestResult);
+        nestResult.index = index;
+        this.responseAction(nestResult);
       }
     }
 
-    internal void BackgroundStart(DataInfo data, ISvgNestConfig config)
+    internal void BackgroundStart(IDataInfo data, ISvgNestConfig config)
     {
       try
       {
-        this.data = data;
-        var index = data.index;
-        var individual = data.individual;
+        var individual = data.Individual;
 
-        var parts = individual.Placements;
+        var parts = individual.Placements.ToArray();
         var rotations = individual.Rotation;
-        var ids = data.ids;
-        var sources = data.sources;
-        var children = data.children;
+        var ids = data.Ids;
+        var sources = data.Sources;
+        var children = data.Children;
 
-        for (var i = 0; i < parts.Count; i++)
+        for (var i = 0; i < parts.Length; i++)
         {
           parts[i].Rotation = rotations[i];
           parts[i].Id = ids[i];
           parts[i].Source = sources[i];
-          if (!data.config.Simplify)
+          if (!config.Simplify)
           {
             parts[i].Children = children[i];
           }
         }
 
-        for (int i = 0; i < data.sheets.Count; i++)
+        var sheets = data.Sheets;
+        for (int i = 0; i < sheets.Length; i++)
         {
-          data.sheets[i].Id = data.sheetids[i];
-          data.sheets[i].Source = data.sheetsources[i];
-          data.sheets[i].Children = data.sheetchildren[i];
+          var sheet = sheets[i];
+          sheet.Id = data.SheetIds[i];
+          sheet.Source = data.SheetSources[i];
+          sheet.Children = data.SheetChildren[i];
         }
 
         // preprocess
-        List<NfpPair> pairs = new NfpPairsFactory(window).Generate(config.UseParallel, parts);
+        List<NfpPair> pairs = new NfpPairsFactory(window).Generate(config.UseParallel, parts.ToArray());
 
         // console.log('pairs: ', pairs.length);
         // console.time('Total');
@@ -892,11 +868,11 @@
         {
           var pmapWorker = new PmapWorker(pairs, progressDisplayer, config.UseParallel);
           var pmapResult = pmapWorker.PmapDeepNest();
-          this.ThenDeepNest(config.UseParallel, pmapResult, parts.ToList());
+          this.ThenDeepNest(pmapResult, parts, data.Sheets, config, data.Index);
         }
         else
         {
-          this.SyncPlaceParts(parts.ToArray());
+          this.SyncPlaceParts(parts, data.Sheets, config, data.Index);
         }
       }
       catch (DllNotFoundException)
@@ -913,9 +889,9 @@
       }
     }
 
-    public NFP GetPart(int source, List<NFP> parts)
+    public NFP GetPart(int source, NFP[] parts)
     {
-      for (var k = 0; k < parts.Count; k++)
+      for (var k = 0; k < parts.Length; k++)
       {
         if (parts[k].Source == source)
         {
@@ -926,7 +902,7 @@
       return null;
     }
 
-    public void ThenIterate(NfpPair processed, List<NFP> parts)
+    private void ThenIterate(NfpPair processed, NFP[] parts, double clipperScale)
     {
       // returned data only contains outer nfp, we have to account for any holes separately in the synchronous portion
       // this is because the c++ addon which can process interior nfps cannot run in the worker thread
@@ -954,7 +930,7 @@
           var cbounds = GeometryUtil.getPolygonBounds(Achildren[j]);
           if (cbounds.width > bbounds.width && cbounds.height > bbounds.height)
           {
-            var n = getInnerNfp(Achildren[j], Brotated, MinkowskiCache.NoCache, this.data.config.ClipperScale);
+            var n = getInnerNfp(Achildren[j], Brotated, MinkowskiCache.NoCache, clipperScale);
             if (n != null && n.Count() > 0)
             {
               cnfp.AddRange(n);
@@ -978,27 +954,27 @@
       window.Insert(doc);
     }
 
-    private void ThenDeepNest(bool useParallel, NfpPair[] nfpPairs, List<NFP> parts)
+    private void ThenDeepNest(NfpPair[] nfpPairs, NFP[] parts, INfp[] sheets, ISvgNestConfig config, int index)
     {
       int cnt = 0;
-      if (useParallel)
+      if (config.UseParallel)
       {
         Parallel.For(0, nfpPairs.Count(), (i) =>
         {
-          this.ThenIterate(nfpPairs[i], parts);
+          this.ThenIterate(nfpPairs[i], parts, config.ClipperScale);
         });
       }
       else
       {
         for (var i = 0; i < nfpPairs.Count(); i++)
         {
-          this.ThenIterate(nfpPairs[i], parts);
+          this.ThenIterate(nfpPairs[i], parts, config.ClipperScale);
         }
       }
 
       // console.timeEnd('Total');
       // console.log('before sync');
-      this.SyncPlaceParts(parts.ToArray());
+      this.SyncPlaceParts(parts, sheets, config, index);
     }
 
     // returns clipper nfp. Remember that clipper nfp are a list of polygons, not a tree!
@@ -1060,6 +1036,8 @@
 
       var key = new DbCacheKey(A.Source, B.Source, A.Rotation, B.Rotation);
 
+      lock (lockobj)
+      {
       var doc = window.Find(key);
       if (doc != null)
       {
@@ -1069,11 +1047,8 @@
       // not found in cache
       if (inside || (A.Children != null && A.Children.Count > 0))
       {
-        lock (lockobj)
-        {
-          nfp = Process2(A, B, type);
+          nfp = ExecuteDllImportMinkowski(A, B, type);
         }
-      }
       else
       {
         NFP clipperNfp = MinkowskiSum.ClipperExecute(A, B, MinkowskiSumPick.Smallest);
@@ -1086,22 +1061,13 @@
         return null;
       }
 
-      INfp nfps = nfp.First();
-      /*
-      nfp = nfp.pop();
-      */
+        INfp nfps = nfp.FirstOrDefault();
       if (nfps == null || nfps.Length == 0)
       {
         return null;
       }
 
-      /*
-      if (!nfp || nfp.length == 0)
-      {
-          return null;
-      }
-      */
-      if (!inside && A.Source != null && B.Source != null)
+        if (!inside)
       {
         var doc2 = new DbCacheKey(A.Source, B.Source, A.Rotation, B.Rotation, nfp);
         window.Insert(doc2);
@@ -1125,99 +1091,5 @@
       return nfps;
     }
   }
-
-  public class ClipCacheItem
-  {
-    public int index;
-    public IntPoint[][] nfpp;
-  }
-
-  public class dbCache : IDbCache
-  {
-    public dbCache(IWindowUnk w)
-    {
-      window = w;
-    }
-
-    public bool Has(DbCacheKey dbCacheKey)
-    {
-      lock (lockobj)
-      {
-        if (window.nfpCache.ContainsKey(dbCacheKey.Key))
-        {
-          return true;
-        }
-
-        return false;
-      }
-    }
-
-    public IWindowUnk window;
-
-    public static volatile object lockobj = new object();
-
-    public void Insert(DbCacheKey obj, bool inner = false)
-    {
-      //if (window.performance.memory.totalJSHeapSize < 0.8 * window.performance.memory.jsHeapSizeLimit)
-      {
-        lock (lockobj)
-        {
-          if (!window.nfpCache.ContainsKey(obj.Key))
-          {
-            window.nfpCache.Add(obj.Key, Background.cloneNfp(obj.nfp, inner).ToList());
-          }
-          else
-          {
-            throw new Exception("trouble .cache already has such key");
-            //   window.nfpCache[key] = Background.cloneNfp(new[] { obj.nfp }, inner).ToList();
-          }
-        }
-        //console.log('cached: ',window.cache[key].poly);
-        //console.log('using', window.performance.memory.totalJSHeapSize/window.performance.memory.jsHeapSizeLimit);
-      }
-    }
-
-    public INfp[] Find(DbCacheKey obj, bool inner = false)
-    {
-      lock (lockobj)
-      {
-        //var key = "A" + obj.A + "B" + obj.B + "Arot" + (int)Math.Round(obj.ARotation) + "Brot" + (int)Math.Round((obj.BRotation));
-
-        //console.log('key: ', key);
-        if (window.nfpCache.ContainsKey(obj.Key))
-        {
-          return Background.cloneNfp(window.nfpCache[obj.Key].ToArray(), inner);
-        }
-
-        return null;
-      }
-    }
-  }
-
-  public class windowUnk : IWindowUnk
-  {
-    public windowUnk()
-    {
-      db = new dbCache(this);
-    }
-
-    public Dictionary<string, List<INfp>> nfpCache { get; } = new Dictionary<string, List<INfp>>();
-
-    private IDbCache db { get; }
-
-    public INfp[] Find(DbCacheKey obj, bool inner = false)
-    {
-      return this.db.Find(obj, inner);
-    }
-
-    public bool Has(DbCacheKey dbCacheKey)
-    {
-      return this.db.Has(dbCacheKey);
-    }
-
-    public void Insert(DbCacheKey obj, bool inner = false)
-    {
-      this.db.Insert(obj, inner);
-    }
   }
 }

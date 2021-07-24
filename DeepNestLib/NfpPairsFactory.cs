@@ -14,12 +14,12 @@
       this.window = window;
     }
 
-    public List<NfpPair> Generate(bool useParallel, List<NFP> parts)
+    public List<NfpPair> Generate(bool useParallel, NFP[] parts)
     {
       List<NfpPair> pairs = new List<NfpPair>();
       if (useParallel)
       {
-        Parallel.For(0, parts.Count, i =>
+        Parallel.For(0, parts.Length, i =>
         {
           {
             foreach (var pair in CreatePairs(i, parts))
@@ -32,7 +32,7 @@
       }
       else
       {
-        for (var i = 0; i < parts.Count; i++)
+        for (var i = 0; i < parts.Length; i++)
         {
           foreach (var pair in CreatePairs(i, parts))
           {
@@ -45,7 +45,7 @@
       return pairs;
     }
 
-    private IEnumerable<NfpPair> CreatePairs(int i, List<NFP> parts)
+    private IEnumerable<NfpPair> CreatePairs(int i, NFP[] parts)
     {
       var b = parts[i];
       for (var j = 0; j < i; j++)

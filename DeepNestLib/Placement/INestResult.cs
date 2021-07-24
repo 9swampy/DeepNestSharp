@@ -15,8 +15,6 @@
 
     double MergedLength { get; }
 
-    int NestIndex { get; }
-
     PlacementTypeEnum PlacementType { get; }
 
     long PlacePartTime { get; }

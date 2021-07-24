@@ -497,7 +497,7 @@
                 int i = 0;
                 if (this.Context?.Nest != null)
                 {
-                  foreach (var item in this.Context.Nest.TopNestResults)
+                  foreach (var item in this.Context.Nest.TopNestResults.ToList())
                   {
                     var listItem = new ListViewItem(new string[] { item.Fitness.ToString("N0"), item.CreatedAt.ToString("HH:mm:ss.fff") }) { Tag = item };
                     listViewTopNests.Items.Add(listItem);
@@ -1546,10 +1546,14 @@
               StrictAngle = AnglesEnum.None,
             };
 
-            if (new FileInfo(ofd.FileNames[i]).Name.Contains("FrontLowerSectionL") ||
-                new FileInfo(ofd.FileNames[i]).Name.Contains("SideConnection"))
+            if (new FileInfo(ofd.FileNames[i]).Name.Contains("SideConnection"))
             {
               det.Quantity = 2;
+            }
+            else if (new FileInfo(ofd.FileNames[i]).Name.Contains("FrontLowerSectionL"))
+            {
+              det.Quantity = 22;
+              det.IsMultiplied = false;
             }
             else if (new FileInfo(ofd.FileNames[i]).Name.Contains("SwitchBack"))
             {

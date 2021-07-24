@@ -19,13 +19,13 @@
       DxfGenerator.GenerateSquare("Sheet", 22D, RectangleType.FileLoad).TryImportFromRawDetail(0, out sheet).Should().BeTrue();
       INfp part;
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryImportFromRawDetail(0, out part).Should().BeTrue();
-      this.nestResult = new Background(A.Fake<IProgressDisplayer>()).PlaceParts(new INfp[] { sheet }, new INfp[] { part }, new SvgNestConfig(), 0);
+      this.nestResult = new Background(A.Fake<IProgressDisplayer>(), null).PlaceParts(new INfp[] { sheet }, new INfp[] { part }, new SvgNestConfig());
     }
 
     [Fact]
     public void GivenNullSheetsPassedInThenNullReturned()
     {
-      new Background(A.Fake<IProgressDisplayer>()).PlaceParts(null, new NFP[] { new NFP() }, new SvgNestConfig(), 0).Should().BeNull();
+      new Background(A.Fake<IProgressDisplayer>(), null).PlaceParts(null, new NFP[] { new NFP() }, new SvgNestConfig()).Should().BeNull();
     }
 
     [Fact]
@@ -39,7 +39,7 @@
 
       var frame = Background.getFrame(sheet);
 
-      new Background(A.Fake<IProgressDisplayer>()).Process2(frame, part, MinkowskiCache.Cache).Should().NotBeNull();
+      new Background(A.Fake<IProgressDisplayer>(), null).ExecuteDllImportMinkowski(frame, part, MinkowskiCache.Cache).Should().NotBeNull();
     }
 
     [Fact]

@@ -145,7 +145,12 @@
   <ItemGroup>
     <Compile Include="AnglesEnum.cs" />
     <Compile Include="Background.cs" />
+    <Compile Include="CacheHelper.cs" />
+    <Compile Include="ClipCacheItem.cs" />
     <Compile Include="D3.cs" />
+    <Compile Include="DataInfo.cs" />
+    <Compile Include="DbCache.cs" />
+    <Compile Include="DbCacheKey.cs" />
     <Compile Include="DeepNestClipper.cs" />
     <Compile Include="DxfParser.cs" />
     <Compile Include="EmbededResourcesExtensions.cs" />
@@ -158,13 +163,16 @@
     <Compile Include="GeneticAlgorithm\OriginalFitness.cs" />
     <Compile Include="GeneticAlgorithm\Procreant.cs" />
     <Compile Include="GeometryUtil.cs" />
+    <Compile Include="IDataInfo.cs" />
     <Compile Include="IDbCache.cs" />
+    <Compile Include="IDeprecatedClipper.cs" />
     <Compile Include="IExport.cs" />
     <Compile Include="IHiddenNfp.cs" />
     <Compile Include="IMessageService.cs" />
     <Compile Include="INfp.cs" />
     <Compile Include="IntPointArrayExtensions.cs" />
     <Compile Include="IProgressDisplayer.cs" />
+    <Compile Include="IStringify.cs" />
     <Compile Include="ISvgNestConfig.cs" />
     <Compile Include="IWindowUnk.cs" />
     <Compile Include="LineElement.cs" />
@@ -176,6 +184,7 @@
     <Compile Include="MinkowskiSumCleaning.cs" />
     <Compile Include="MinkowskiSumPick.cs" />
     <Compile Include="NestingContext.cs" />
+    <Compile Include="NestItem.cs" />
     <Compile Include="NFP.cs" />
     <Compile Include="NfpExtensions.cs" />
     <Compile Include="NfpJsonConverter.cs" />
@@ -184,6 +193,7 @@
     <Compile Include="NfpPairEqualityComparer.cs" />
     <Compile Include="NfpPairEqualityComparerKey.cs" />
     <Compile Include="NfpPairsFactory.cs" />
+    <Compile Include="PlacementTypeEnum.cs" />
     <Compile Include="Placement\INestResult.cs" />
     <Compile Include="Placement\ISheetPlacement.cs" />
     <Compile Include="Placement\PartPlacement.cs" />
@@ -193,6 +203,7 @@
     <Compile Include="PolygonBase.cs" />
     <Compile Include="PolygonSimplificationDictionary.cs" />
     <Compile Include="PolygonSimplificationKey.cs" />
+    <Compile Include="PolygonTreeItem.cs" />
     <Compile Include="PolygonWithBounds.cs" />
     <Compile Include="GeneticAlgorithm\PopulationItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -203,6 +214,8 @@
     </Compile>
     <Compile Include="RawDetail.cs" />
     <Compile Include="Placement\NestResult.cs" />
+    <Compile Include="RectangleSheet.cs" />
+    <Compile Include="Sheet.cs" />
     <Compile Include="Simplify.cs" />
     <Compile Include="SvgNest.cs" />
     <Compile Include="SvgNestConfig.cs" />
@@ -211,6 +224,7 @@
     <Compile Include="SvgPoint.cs" />
     <Compile Include="SvgPointArrayExtensions.cs" />
     <Compile Include="TopNestResultsCollection.cs" />
+    <Compile Include="WindowUnk.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\clipper_library\clipper_library.csproj">

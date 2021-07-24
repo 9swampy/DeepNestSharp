@@ -60,9 +60,9 @@
 
       var key = new MinkowskiKey(aa.Count, aa.ToArray(), a.Children.Count, arr1, hdat.ToArray(), bb.Count, bb.ToArray());
       INfp ret;
-      if (!minkowskiCache.TryGetValue(key, out ret))
+      lock (minkowskiSyncLock)
       {
-        lock (minkowskiSyncLock)
+        if (!minkowskiCache.TryGetValue(key, out ret))
         {
 #if x64
           // System.Diagnostics.Debug.Print($"{callCounter}.Minkowski_x64");
@@ -147,9 +147,9 @@
               ret.Children.Last().AddPoint(new SvgPoint(hitem.X, hitem.Y));
             }
           }
-        }
 
-        minkowskiCache.Add(key, ret);
+          minkowskiCache.Add(key, ret);
+        }
       }
 
       if (minkowskiSumCleaning == MinkowskiSumCleaning.Cleaned)

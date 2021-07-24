@@ -2,16 +2,14 @@
 {
   using System;
   using System.Collections.Generic;
-  using System.Drawing;
   using System.Linq;
-  using System.Text;
 
   public class Procreant
   {
     private readonly Random r = new Random();
 
     private readonly ISvgNestConfig Config;
-    public List<PopulationItem> Population;
+    public PopulationItem[] Population;
 
     private float[] strictVerticalAngles = new float[]
     {
@@ -47,12 +45,12 @@
         }
       }
 
-      Population = new List<PopulationItem>();
-      Population.Add(new PopulationItem(adam.ToList(), angles.ToArray()));
-      while (Population.Count() < config.PopulationSize)
+      Population = new PopulationItem[config.PopulationSize];
+      Population[0] = new PopulationItem(adam.ToList(), angles.ToArray());
+      for (int i = 1; i < config.PopulationSize; i++)
       {
         var mutant = this.mutate(Population[0]);
-        Population.Add(mutant);
+        Population[i] = mutant;
       }
     }
 
@@ -107,7 +105,7 @@
     {
       get
       {
-        for (int i = 0; i < this.Population.Count; i++)
+        for (int i = 0; i < this.Population.Length; i++)
         {
           if (this.Population[i].Fitness == -1)
           {
@@ -243,13 +241,13 @@
     public void Generate()
     {
       // Individuals with higher fitness are more likely to be selected for mating
-      Population = Population.OrderBy(z => z.Fitness).ToList();
+      Array.Sort(Population, (x, y) => x.Fitness.CompareTo(y.Fitness)); // = Population.OrderBy(z => z.Fitness).ToList();
 
       // fittest individuals are preserved in the new generation (elitism)
       var newpopulation = new List<PopulationItem>();
       var fittestSurvivors = Config.PopulationSize / 10;
       newpopulation.AddRange(this.Population.Take(this.Population.Count() < fittestSurvivors ? this.Population.Count() : fittestSurvivors));
-      while (newpopulation.Count() < this.Population.Count)
+      while (newpopulation.Count() < this.Population.Length)
       {
         var male = randomWeightedIndividual();
         var female = randomWeightedIndividual(male);
@@ -260,13 +258,13 @@
         // slightly mutate children
         newpopulation.Add(this.mutate(children[0]));
 
-        if (newpopulation.Count < this.Population.Count)
+        if (newpopulation.Count < this.Population.Length)
         {
           newpopulation.Add(this.mutate(children[1]));
         }
       }
 
-      this.Population = newpopulation;
+      this.Population = newpopulation.ToArray();
     }
   }
 

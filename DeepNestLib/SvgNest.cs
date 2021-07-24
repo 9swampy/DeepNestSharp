@@ -5,6 +5,7 @@
   using System.Linq;
   using System.Text;
   using System.Threading;
+  using System.Threading.Tasks;
   using ClipperLib;
   using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
@@ -845,7 +846,7 @@
         }
       }
 
-      this.progressDisplayer?.DisplayProgress(currentPlacements, this.ga.Population.Count(o => o.Fitness != -1));
+      this.progressDisplayer?.DisplayProgress(currentPlacements, population);
     }
 
     /// <summary>
@@ -901,76 +902,24 @@
             }
           }
 
-          var threadList = new Queue<Thread>();
-          for (int i = 0; i < this.ga.Population.Count; i++)
+          if (config.UseParallel)
           {
-            if (this.isStopped)
-            {
-              break;
-            }
-
-            // if(running < config.threads && !GA.population[i].processing && !GA.population[i].fitness){
-            // only one background window now...
-            if (ThrottleReadyForMore(config, threadList.Count) && this.ga.Population[i].IsPending)
-            {
-              this.ga.Population[i].Processing = true;
-
-              // hash values on arrays don't make it across ipc, store them in an array and reassemble on the other side....
-              List<int> ids = new List<int>();
-              List<int> sources = new List<int>();
-              List<List<INfp>> children = new List<List<INfp>>();
-
-              for (int j = 0; j < this.ga.Population[i].Placements.Count; j++)
-              {
-                var id = this.ga.Population[i].Placements[j].Id;
-                var source = this.ga.Population[i].Placements[j].Source;
-                var child = this.ga.Population[i].Placements[j].Children;
-
-                // ids[j] = id;
-                ids.Add(id);
-
-                // sources[j] = source;
-                sources.Add(source);
-
-                // children[j] = child;
-                children.Add(child.ToList());
-              }
-
-              DataInfo data = new DataInfo()
-              {
-                index = i,
-                sheets = sheets,
-                sheetids = sheetids.ToArray(),
-                sheetsources = sheetsources.ToArray(),
-                sheetchildren = sheetchildren,
-                individual = this.ga.Population[i],
-                config = config,
-                ids = ids.ToArray(),
-                sources = sources.ToArray(),
-                children = children,
-              };
-
-              if (config.UseParallel)
-              {
-                var t = new Thread(new ThreadStart(() =>
-                {
-                  DoWork(data);
-                }));
-                threadList.Enqueue(t);
-                t.Start();
-
-                if (!ThrottleReadyForMore(config, threadList.Count))
-                {
-                  WaitAll(threadList);
-                }
-              }
-              else
-              {
-                DoWork(data);
-              }
-            }
-
-            WaitAll(threadList);
+            var end1 = this.ga.Population.Length / 3;
+            var end2 = this.ga.Population.Length * 2 / 3;
+            var end3 = this.ga.Population.Length;
+            var t1 = new Thread(() => ProcessPopulation(0, end1, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren));
+            var t2 = new Thread(() => ProcessPopulation(end1, end2, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren));
+            var t3 = new Thread(() => ProcessPopulation(end2, this.ga.Population.Length, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren));
+            t1.Start();
+            t2.Start();
+            t3.Start();
+            t1.Join();
+            t2.Join();
+            t3.Join();
+          }
+          else
+          {
+            ProcessPopulation(0, this.ga.Population.Length, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren);
           }
         }
       }
@@ -981,17 +930,66 @@
       }
     }
 
-    private void DoWork(DataInfo data)
+    private void ProcessPopulation(int start, int end, ISvgNestConfig config, INfp[] sheets, int[] sheetids, int[] sheetsources, List<List<INfp>> sheetchildren)
     {
-      if (this.isStopped)
+      Interlocked.Increment(ref threads);
+      for (int i = start; i < end; i++)
       {
-        this.ResponseProcessor(null);
-      }
-      else
-      {
-        Background background = new Background(this.progressDisplayer);
-        background.ResponseAction = this.ResponseProcessor;
-        background.BackgroundStart(data, data.config);
+        if (this.isStopped)
+        {
+          break;
+        }
+
+        // if(running < config.threads && !GA.population[i].processing && !GA.population[i].fitness){
+        // only one background window now...
+        if (!this.isStopped && this.ga.Population[i].IsPending)
+        {
+          this.ga.Population[i].Processing = true;
+
+          // hash values on arrays don't make it across ipc, store them in an array and reassemble on the other side....
+          List<int> ids = new List<int>();
+          List<int> sources = new List<int>();
+          List<List<INfp>> children = new List<List<INfp>>();
+
+          for (int j = 0; j < this.ga.Population[i].Placements.Count; j++)
+          {
+            var id = this.ga.Population[i].Placements[j].Id;
+            var source = this.ga.Population[i].Placements[j].Source;
+            var child = this.ga.Population[i].Placements[j].Children;
+
+            // ids[j] = id;
+            ids.Add(id);
+
+            // sources[j] = source;
+            sources.Add(source);
+
+            // children[j] = child;
+            children.Add(child.ToList());
+          }
+
+          var data = new DataInfo()
+          {
+            Index = i,
+            Sheets = sheets.ToArray(),
+            SheetIds = sheetids,
+            SheetSources = sheetsources,
+            SheetChildren = sheetchildren,
+            Individual = this.ga.Population[i],
+            Ids = ids.ToArray(),
+            Sources = sources.ToArray(),
+            Children = children,
+          };
+
+          if (this.isStopped)
+          {
+            this.ResponseProcessor(null);
+          }
+          else
+          {
+            Background background = new Background(this.progressDisplayer, this.ResponseProcessor);
+            background.BackgroundStart(data, config);
+          }
+        }
       }
 
       Interlocked.Decrement(ref threads);
@@ -1002,28 +1000,6 @@
       get
       {
         return this.ga.Population.Where((p) => { return p.Processing; }).Count();
-      }
-    }
-
-    private bool ThrottleReadyForMore(ISvgNestConfig config, int taskCount)
-    {
-      if (!this.isStopped && ((config.UseParallel && taskCount < config.ParallelNests) || threads < 1))
-      {
-        return true;
-      }
-
-      return false;
-    }
-
-    private void WaitAll(Queue<Thread> threadList)
-    {
-      while (!this.isStopped && threadList.Count > 0)
-      {
-        var t = threadList.Dequeue();
-        if (!t.Join(1000))
-        {
-          threadList.Enqueue(t);
-        }
       }
     }
 
@@ -1040,127 +1016,5 @@
 
       return clone.ToArray();
     }
-  }
-
-  public interface IDeprecatedClipper
-  {
-    ClipperLib.IntPoint[] ScaleUpPathsOriginal(NFP p, double scale);
-
-    ClipperLib.IntPoint[] ScaleUpPathsSlowerParallel(SvgPoint[] points, double scale = 1);
-  }
-
-  public class DataInfo
-  {
-    public int index;
-    public List<INfp> sheets;
-    public int[] sheetids;
-    public int[] sheetsources;
-    public List<List<INfp>> sheetchildren;
-    public PopulationItem individual;
-    public ISvgNestConfig config;
-    public int[] ids;
-    public int[] sources;
-    public List<List<INfp>> children;
-    //ipcRenderer.send('background-start', { index: i, sheets: sheets, sheetids: sheetids, sheetsources: sheetsources, sheetchildren: sheetchildren, 
-    //individual: GA.population[i], config: config, ids: ids, sources: sources, children: children});
-  }
-
-  public class PolygonTreeItem
-  {
-    public INfp Polygon;
-    public PolygonTreeItem Parent;
-    public List<PolygonTreeItem> Childs = new List<PolygonTreeItem>();
-  }
-
-  public enum PlacementTypeEnum
-  {
-    BoundingBox,
-    Gravity,
-    Squeeze
-  }
-
-  public class DbCacheKey
-  {
-    public DbCacheKey(int? a, int? b, float aRotation, float bRotation, IEnumerable<INfp> nfps)
-    {
-      A = a;
-      B = b;
-      ARotation = aRotation;
-      BRotation = bRotation;
-      nfp = nfps.ToArray();
-    }
-
-    public DbCacheKey(int? a, int? b, float aRotation, float bRotation)
-    // : this(a, b, aRotation, bRotation, null)
-    {
-      A = a;
-      B = b;
-      ARotation = aRotation;
-      BRotation = bRotation;
-    }
-
-    public int? A { get; }
-
-    public int? B { get; }
-
-    public float ARotation { get; }
-
-    public float BRotation { get; }
-
-    public INfp[] nfp { get; }
-
-    public int Type { get; }
-
-    public string Key
-    {
-      get
-      {
-        var key = new StringBuilder(30).Append("A")
-                                      .Append(this.A)
-                                      .Append("B")
-                                      .Append(this.B)
-                                      .Append("Arot")
-                                      .Append((int)Math.Round(this.ARotation * 10000))
-                                      .Append("Brot")
-                                      .Append((int)Math
-                                      .Round(this.BRotation * 10000))
-                                      .Append(";")
-                                      .Append(this.Type)
-                                      .ToString();
-        return key;
-      }
-    }
-  }
-
-  public interface IStringify
-  {
-    string stringify();
-  }
-
-  public class Sheet : NFP
-  {
-    public double Width;
-    public double Height;
-  }
-
-  public class RectangleSheet : Sheet
-  {
-    public void Rebuild()
-    {
-      this.ReplacePoints(new SvgPoint[4]
-      {
-        new SvgPoint(x, y),
-        new SvgPoint(x + Width, y),
-        new SvgPoint(x + Width, y + Height),
-        new SvgPoint(x, y + Height),
-      });
-    }
-  }
-
-  public class NestItem
-  {
-    public NFP Polygon;
-    public int Quantity;
-    public bool IsSheet;
   }
 }

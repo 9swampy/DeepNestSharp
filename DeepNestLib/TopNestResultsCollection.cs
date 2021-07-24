@@ -1,5 +1,6 @@
 ﻿namespace DeepNestLib
 {
+  using System;
   using System.Collections;
   using System.Collections.Generic;
   using System.Linq;
@@ -9,6 +10,7 @@
   {
     private readonly ISvgNestConfig config;
     private List<INestResult> items = new List<INestResult>();
+    private static volatile object addToTopNestsLock = new object();
 
     public TopNestResultsCollection(ISvgNestConfig config)
     {
@@ -21,38 +23,41 @@
 
     public bool Add(INestResult payload)
     {
-      var isAdded = true;
-      if (items.Count == 0)
+      lock (addToTopNestsLock)
       {
-        items.Insert(0, payload);
-        isAdded = true;
-      }
-      else
-      {
-        int i = 0;
-        while (i < items.Count && items[i].Fitness < payload.Fitness)
+        var isAdded = true;
+        if (items.Count == 0)
         {
-          i++;
-        }
-
-        if (i == items.Count)
-        {
-          items.Add(payload);
+          items.Insert(0, payload);
           isAdded = true;
         }
-        else if (items[i].Fitness != payload.Fitness)
+        else
         {
-          items.Insert(i, payload);
-          isAdded = true;
+          int i = 0;
+          while (i < items.Count && items[i].Fitness < payload.Fitness)
+          {
+            i++;
+          }
+
+          if (i == items.Count)
+          {
+            items.Add(payload);
+            isAdded = true;
+          }
+          else if (Math.Round(items[i].Fitness, 3) != Math.Round(payload.Fitness, 3))
+          {
+            items.Insert(i, payload);
+            isAdded = true;
+          }
         }
-      }
 
-      if (items.Count > MaxCapacity)
-      {
-        items.RemoveAt(items.Count - 1);
-      }
+        if (items.Count > MaxCapacity)
+        {
+          items.RemoveAt(items.Count - 1);
+        }
 
-      return isAdded;
+        return isAdded;
+      }
     }
 
     public int EliteSurvivors
