@@ -16,7 +16,7 @@
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
     public SvgNestConfigViewModel(MainViewModel mainViewModel)
-      : base(nameof(SvgNestConfigViewModel))
+      : base("Settings")
     {
       this.mainViewModel = mainViewModel;
     }

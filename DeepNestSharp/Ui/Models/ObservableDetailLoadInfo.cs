@@ -59,5 +59,11 @@
     }
 
     public IList<AnglesEnum> AnglesList => Enum.GetValues(typeof(AnglesEnum)).OfType<AnglesEnum>().ToList();
+
+    internal INfp Load()
+    {
+      var raw = DxfParser.LoadDxfFile(detailLoadInfo.Path);
+      return raw.ToNfp();
+    }
   }
 }

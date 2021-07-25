@@ -285,9 +285,9 @@
       // 
       this.partsPreview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
       this.partsPreview.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.partsPreview.Location = new System.Drawing.Point(0, 27);
+      this.partsPreview.Location = new System.Drawing.Point(0, 31);
       this.partsPreview.Name = "partsPreview";
-      this.partsPreview.Size = new System.Drawing.Size(476, 475);
+      this.partsPreview.Size = new System.Drawing.Size(476, 471);
       this.partsPreview.TabIndex = 1;
       this.partsPreview.TabStop = false;
       // 
@@ -299,7 +299,7 @@
             this.toolStripButton9});
       this.toolStrip3.Location = new System.Drawing.Point(0, 0);
       this.toolStrip3.Name = "toolStrip3";
-      this.toolStrip3.Size = new System.Drawing.Size(476, 27);
+      this.toolStrip3.Size = new System.Drawing.Size(476, 31);
       this.toolStrip3.TabIndex = 2;
       this.toolStrip3.Text = "toolStrip3";
       // 
@@ -309,7 +309,7 @@
       this.toolStripButton8.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton8.Image")));
       this.toolStripButton8.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButton8.Name = "toolStripButton8";
-      this.toolStripButton8.Size = new System.Drawing.Size(47, 24);
+      this.toolStripButton8.Size = new System.Drawing.Size(47, 28);
       this.toolStripButton8.Text = "fit all";
       this.toolStripButton8.Click += new System.EventHandler(this.toolStripButton8_Click);
       // 
@@ -323,7 +323,7 @@
       this.toolStripButton9.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton9.Image")));
       this.toolStripButton9.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButton9.Name = "toolStripButton9";
-      this.toolStripButton9.Size = new System.Drawing.Size(121, 24);
+      this.toolStripButton9.Size = new System.Drawing.Size(121, 28);
       this.toolStripButton9.Text = "fit automatically";
       this.toolStripButton9.CheckedChanged += new System.EventHandler(this.toolStripButton9_CheckedChanged);
       // 
@@ -431,10 +431,10 @@
       this.partsList.FullRowSelect = true;
       this.partsList.GridLines = true;
       this.partsList.HideSelection = false;
-      this.partsList.Location = new System.Drawing.Point(0, 27);
+      this.partsList.Location = new System.Drawing.Point(0, 31);
       this.partsList.Name = "partsList";
       this.partsList.ShowGroups = false;
-      this.partsList.Size = new System.Drawing.Size(475, 221);
+      this.partsList.Size = new System.Drawing.Size(475, 217);
       this.partsList.TabIndex = 2;
       this.partsList.UseCompatibleStateImageBehavior = false;
       this.partsList.View = System.Windows.Forms.View.Details;
@@ -541,7 +541,7 @@
             this.runNestingButton});
       this.toolStrip2.Location = new System.Drawing.Point(0, 0);
       this.toolStrip2.Name = "toolStrip2";
-      this.toolStrip2.Size = new System.Drawing.Size(475, 27);
+      this.toolStrip2.Size = new System.Drawing.Size(475, 31);
       this.toolStrip2.TabIndex = 0;
       this.toolStrip2.Text = "toolStrip2";
       // 
@@ -551,7 +551,7 @@
       this.toolStripButtonOpenNestProject.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonOpenNestProject.Image")));
       this.toolStripButtonOpenNestProject.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonOpenNestProject.Name = "toolStripButtonOpenNestProject";
-      this.toolStripButtonOpenNestProject.Size = new System.Drawing.Size(29, 24);
+      this.toolStripButtonOpenNestProject.Size = new System.Drawing.Size(29, 28);
       this.toolStripButtonOpenNestProject.Text = "Open NestProject";
       this.toolStripButtonOpenNestProject.Click += new System.EventHandler(this.toolStripButtonOpenNestProject_Click);
       // 
@@ -561,14 +561,14 @@
       this.toolStripButtonSaveNestProject.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonSaveNestProject.Image")));
       this.toolStripButtonSaveNestProject.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripButtonSaveNestProject.Name = "toolStripButtonSaveNestProject";
-      this.toolStripButtonSaveNestProject.Size = new System.Drawing.Size(29, 24);
+      this.toolStripButtonSaveNestProject.Size = new System.Drawing.Size(29, 28);
       this.toolStripButtonSaveNestProject.Text = "Save NestProject";
       this.toolStripButtonSaveNestProject.Click += new System.EventHandler(this.toolStripButtonSaveNestProject_Click);
       // 
       // toolStripSeparator1
       // 
       this.toolStripSeparator1.Name = "toolStripSeparator1";
-      this.toolStripSeparator1.Size = new System.Drawing.Size(6, 27);
+      this.toolStripSeparator1.Size = new System.Drawing.Size(6, 31);
       // 
       // loadDetailButton
       // 
@@ -576,7 +576,7 @@
       this.loadDetailButton.Image = ((System.Drawing.Image)(resources.GetObject("loadDetailButton.Image")));
       this.loadDetailButton.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.loadDetailButton.Name = "loadDetailButton";
-      this.loadDetailButton.Size = new System.Drawing.Size(73, 24);
+      this.loadDetailButton.Size = new System.Drawing.Size(73, 28);
       this.loadDetailButton.Text = "Load File";
       this.loadDetailButton.Click += new System.EventHandler(this.loadDetailButton_Click);
       // 
@@ -586,7 +586,7 @@
       this.runNestingButton.Image = ((System.Drawing.Image)(resources.GetObject("runNestingButton.Image")));
       this.runNestingButton.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.runNestingButton.Name = "runNestingButton";
-      this.runNestingButton.Size = new System.Drawing.Size(93, 24);
+      this.runNestingButton.Size = new System.Drawing.Size(93, 28);
       this.runNestingButton.Text = "Run Nesting";
       this.runNestingButton.Click += new System.EventHandler(this.runNestingButton_Click);
       // 

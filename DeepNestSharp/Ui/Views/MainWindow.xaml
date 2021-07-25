@@ -73,11 +73,11 @@
               <userControls:SheetPlacementEditor />
             </DataTemplate>
           </docking:PanesTemplateSelector.SheetPlacementEditorTemplate>
-          <docking:PanesTemplateSelector.SheetPlacementPreviewEditorTemplate>
+          <!--<docking:PanesTemplateSelector.SheetPlacementPreviewEditorTemplate>
             <DataTemplate>
               <userControls:SheetPlacementPreviewEditor />
             </DataTemplate>
-          </docking:PanesTemplateSelector.SheetPlacementPreviewEditorTemplate>
+          </docking:PanesTemplateSelector.SheetPlacementPreviewEditorTemplate>-->
           <docking:PanesTemplateSelector.PreviewTemplate>
             <DataTemplate>
               <userControls:Preview />
@@ -124,8 +124,8 @@
       </DockingManager.LayoutUpdateStrategy>
       <LayoutRoot>
         <LayoutPanel Orientation="Horizontal">
-          <LayoutDocumentPane DockWidth="150" />
-          <LayoutAnchorablePane Name="ToolsPane" DockWidth="150" />
+          <LayoutDocumentPane />
+          <LayoutAnchorablePane Name="ToolsPane" DockWidth="1550" />
         </LayoutPanel>
       </LayoutRoot>
     </DockingManager>

@@ -51,6 +51,8 @@
 
     private void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
+      return;
+
       var serializer = new AvalonDock.Layout.Serialization.XmlLayoutSerializer(dockManager);
       serializer.LayoutSerializationCallback += (s, args) =>
       {

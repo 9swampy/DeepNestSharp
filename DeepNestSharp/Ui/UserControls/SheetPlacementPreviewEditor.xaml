@@ -41,7 +41,7 @@
         <ItemsPanelTemplate>
           <Canvas>
             <interactivity:Interaction.Behaviors>
-              <behaviors:ZoomOnMouseWheel />
+              <behaviors:PanZoomOnMouseWheel />
             </interactivity:Interaction.Behaviors>
           </Canvas>
         </ItemsPanelTemplate>

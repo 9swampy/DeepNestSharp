@@ -16,12 +16,15 @@
   </UserControl.Resources>
   <Grid>
     <ItemsControl ItemsSource="{Binding DrawingContext}" 
-                  Grid.Column="0" Grid.Row="0">
+                  Grid.Column="0" Grid.Row="0"
+                  ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                  ScrollViewer.VerticalScrollBarVisibility="Visible"
+                  >
       <ItemsControl.ItemsPanel>
         <ItemsPanelTemplate>
           <Canvas>
             <interactivity:Interaction.Behaviors>
-              <behaviors:ZoomOnMouseWheel />
+              <behaviors:PanZoomOnMouseWheel />
             </interactivity:Interaction.Behaviors>
           </Canvas>
         </ItemsPanelTemplate>
@@ -46,7 +49,35 @@
         <DataTemplate DataType="{x:Type models:ObservableSheetPlacement}">
           <Polygon Points="{Binding Points}" Fill="White" Stroke="Black" />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type models:ObservableNfp}">
+          <Polygon Points="{Binding Points}" Fill="Aquamarine" Stroke="Black" />
+        </DataTemplate>
       </ItemsControl.Resources>
+      <ItemsControl.Template>
+        <ControlTemplate TargetType="{x:Type ItemsControl}">
+          <Border x:Name="Border"
+                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+            <ScrollViewer Margin="0"
+                                      Focusable="False"
+                                      Padding="{TemplateBinding Padding}"
+                                      SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                      HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
+                                      VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
+                                      CanContentScroll="{TemplateBinding ScrollViewer.CanContentScroll}">
+              <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+            </ScrollViewer>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="Border" Property="Background" Value="Gray" />
+              <Setter TargetName="Border" Property="BorderBrush" Value="Silver" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </ItemsControl.Template>
     </ItemsControl>
   </Grid>
 </UserControl>

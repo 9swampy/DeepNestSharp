@@ -34,7 +34,7 @@
     public IDetailLoadInfo SelectedDetailLoadInfo
     {
       get => selectedDetailLoadInfo;
-      set => SetProperty(ref selectedDetailLoadInfo, value);
+      set => SetProperty(ref selectedDetailLoadInfo, value, nameof(SelectedDetailLoadInfo));
     }
 
     public int SelectedDetailLoadInfoIndex
