@@ -1,11 +1,9 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using DeepNestLib.NestProject;
-    using DeepNestSharp.Ui.Docking;
-    using DeepNestSharp.Ui.Models;
+  using DeepNestLib;
+  using DeepNestLib.NestProject;
+  using DeepNestSharp.Ui.Docking;
+  using DeepNestSharp.Ui.Models;
 
   public class NestProjectViewModel : FileViewModel, INestProjectViewModel
   {

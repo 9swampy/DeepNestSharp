@@ -3,9 +3,10 @@
   using System;
   using System.Collections.Generic;
   using System.Linq;
+  using DeepNestLib;
   using DeepNestLib.NestProject;
 
-  public class ObservableDetailLoadInfo : ObservablePropertyObject, IDetailLoadInfo
+    public class ObservableDetailLoadInfo : ObservablePropertyObject, IDetailLoadInfo
   {
     private readonly IDetailLoadInfo detailLoadInfo;
 

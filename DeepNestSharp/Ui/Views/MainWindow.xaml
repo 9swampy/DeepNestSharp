@@ -88,6 +88,11 @@
               <userControls:NestProjectEditor />
             </DataTemplate>
           </docking:PanesTemplateSelector.NestProjectEditorTemplate>
+          <docking:PanesTemplateSelector.SettingsEditorTemplate>
+            <DataTemplate>
+              <userControls:SvgNestConfigEditor />
+            </DataTemplate>
+          </docking:PanesTemplateSelector.SettingsEditorTemplate>
         </docking:PanesTemplateSelector>
       </DockingManager.LayoutItemTemplateSelector>
       <DockingManager.LayoutItemContainerStyleSelector>

@@ -82,7 +82,7 @@
 
     private bool CanSaveLayout()
     {
-      return false;
+      return true;
     }
 
     private void OnSaveLayout()

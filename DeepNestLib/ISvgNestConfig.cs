@@ -1,7 +1,7 @@
-﻿using DeepNestLib.NestProject;
-
-namespace DeepNestLib
+﻿namespace DeepNestLib
 {
+  using DeepNestLib.NestProject;
+
   public interface ISvgNestConfig
   {
     double ClipperScale { get; set; }

@@ -62,9 +62,9 @@ namespace DeepNestLib.Core {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("10")]
-        public float Spacing {
+        public double Spacing {
             get {
-                return ((float)(this["Spacing"]));
+                return ((double)(this["Spacing"]));
             }
             set {
                 this["Spacing"] = value;
@@ -134,9 +134,9 @@ namespace DeepNestLib.Core {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0.72")]
-        public float CurveTolerance {
+        public double CurveTolerance {
             get {
-                return ((float)(this["CurveTolerance"]));
+                return ((double)(this["CurveTolerance"]));
             }
             set {
                 this["CurveTolerance"] = value;

@@ -11,7 +11,7 @@
     <Setting Name="Simplify" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="Spacing" Type="System.Single" Scope="User">
+    <Setting Name="Spacing" Type="System.Double" Scope="User">
       <Value Profile="(Default)">10</Value>
     </Setting>
     <Setting Name="PlacementType" Type="System.Int32" Scope="User">
@@ -29,7 +29,7 @@
     <Setting Name="SheetQuantity" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">10</Value>
     </Setting>
-    <Setting Name="CurveTolerance" Type="System.Single" Scope="User">
+    <Setting Name="CurveTolerance" Type="System.Double" Scope="User">
       <Value Profile="(Default)">0.72</Value>
     </Setting>
     <Setting Name="OffsetTreePhase" Type="System.Boolean" Scope="User">

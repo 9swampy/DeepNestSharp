@@ -56,8 +56,7 @@
       this.ContextualiseRunStopButtons(false);
 
       LoadSettings();
-      projectInfo.SheetLoadInfos.Add(new SheetLoadInfo() { Width = SvgNest.Config.SheetWidth, Height = SvgNest.Config.SheetHeight, Quantity = SvgNest.Config.SheetQuantity });
-
+      
       //hack
       toolStripButton9.BackgroundImageLayout = ImageLayout.None;
       toolStripButton9.BackgroundImage = new Bitmap(1, 1);

@@ -11,10 +11,11 @@
   using DeepNestLib.NestProject;
   using DeepNestSharp.Ui.Docking;
   using DeepNestSharp.Ui.Models;
+  using Microsoft.Toolkit.Mvvm.ComponentModel;
   using Microsoft.Toolkit.Mvvm.Input;
   using Microsoft.Win32;
 
-  public class MainViewModel : ToolViewModel
+  public class MainViewModel : ObservableRecipient
   {
     private int selectedPartIndex;
     private ObservablePartPlacement selectedPartItem;
@@ -25,14 +26,17 @@
 
     private MainViewModel mainViewModel;
     private PreviewViewModel previewViewModel;
+    private SvgNestConfigViewModel svgNestConfigViewModel;
     private Tuple<string, Theme> selectedTheme;
     private FileViewModel activeDocument;
 
     public MainViewModel()
-      : base(nameof(MainViewModel))
     {
       ExecuteLoadSheetPlacement = new RelayCommand(LoadSheetPlacement);
       ExecuteLoadNestProject = new RelayCommand(LoadNestProject);
+
+      ExecuteSaveSheetPlacement = new RelayCommand(SaveSheetPlacement);
+      ExecuteSaveNestProject = new RelayCommand(SaveNestProject);
 
       this.Themes = new List<Tuple<string, Theme>>
       {
@@ -48,6 +52,16 @@
       };
 
       this.SelectedTheme = Themes.First();
+    }
+
+    private void SaveNestProject()
+    {
+      throw new NotImplementedException();
+    }
+
+    private void SaveSheetPlacement()
+    {
+      throw new NotImplementedException();
     }
 
     public event EventHandler ActiveDocumentChanged;
@@ -71,7 +85,7 @@
       {
         if (tools == null)
         {
-          tools = new ToolViewModel[] { PreviewViewModel };
+          tools = new ToolViewModel[] { PreviewViewModel, SvgNestConfigViewModel };
         }
 
         return tools;
@@ -104,6 +118,19 @@
       }
     }
 
+    public SvgNestConfigViewModel SvgNestConfigViewModel
+    {
+      get
+      {
+        if (svgNestConfigViewModel == null)
+        {
+          svgNestConfigViewModel = new SvgNestConfigViewModel(this);
+        }
+
+        return svgNestConfigViewModel;
+      }
+    }
+
     public int SelectedPartIndex
     {
       get => selectedPartIndex;
@@ -128,6 +155,10 @@
     public ICommand ExecuteLoadSheetPlacement { get; }
 
     public ICommand ExecuteLoadNestProject { get; }
+
+    public ICommand ExecuteSaveSheetPlacement { get; }
+
+    public ICommand ExecuteSaveNestProject { get; }
 
     public ObservableSheetPlacement SheetPlacement { get; } = new ObservableSheetPlacement();
 

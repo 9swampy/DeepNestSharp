@@ -35,6 +35,12 @@
       set;
     }
 
+    public DataTemplate SettingsEditorTemplate
+    {
+      get;
+      set;
+    }
+
     public override DataTemplate SelectTemplate(object item, DependencyObject container)
     {
       var itemAsLayoutContent = item as LayoutContent;
@@ -54,6 +60,10 @@
       else if (item is PreviewViewModel)
       {
         return PreviewTemplate;
+      }
+      else if (item is SvgNestConfigViewModel)
+      {
+        return SettingsEditorTemplate;
       }
 
       return base.SelectTemplate(item, container);
