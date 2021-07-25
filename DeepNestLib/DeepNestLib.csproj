@@ -172,7 +172,7 @@
     <Compile Include="DbCacheKey.cs" />
     <Compile Include="DeepNestClipper.cs" />
     <Compile Include="DxfParser.cs" />
-    <Compile Include="EmbededResourcesExtensions.cs" />
+    <Compile Include="EmbeddedResourcesExtensions.cs" />
     <Compile Include="ExporterFactory.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GeneticAlgorithm\IOriginalFitnessSheet.cs" />

@@ -376,9 +376,11 @@
           var p2 = Points[i % Points.Count];
           len += Math.Sqrt(Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Y - p2.Y, 2));
         }
+
         return len;
       }
     }
+
     public List<PointF> Points = new List<PointF>();
     public bool Enable = true;
   }

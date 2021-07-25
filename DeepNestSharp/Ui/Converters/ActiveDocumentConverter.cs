@@ -2,7 +2,7 @@
 {
   using System;
   using System.Windows.Data;
-  using DeepNestSharp.Ui.ViewModels;
+  using DeepNestSharp.Ui.Docking;
 
   public class ActiveDocumentConverter : IValueConverter
   {

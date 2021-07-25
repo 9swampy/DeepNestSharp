@@ -148,7 +148,7 @@
   <ItemGroup>
     <Compile Include="ClipperFixture.cs" />
     <Compile Include="ClipperIntersectFixture.cs" />
-    <Compile Include="CompareMinkowskiImplementations.cs" />
+    <Compile Include="CompareMinkowskiImplementationsFixture.cs" />
     <Compile Include="DefaultSvgNestConfig.cs" />
     <Compile Include="DxfGenerator.cs" />
     <Compile Include="DxfParserPart5Fixture.cs" />

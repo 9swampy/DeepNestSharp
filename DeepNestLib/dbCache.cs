@@ -43,6 +43,7 @@
             //   window.nfpCache[key] = Background.cloneNfp(new[] { obj.nfp }, inner).ToList();
           }
         }
+
         //console.log('cached: ',window.cache[key].poly);
         //console.log('using', window.performance.memory.totalJSHeapSize/window.performance.memory.jsHeapSizeLimit);
       }

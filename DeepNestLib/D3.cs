@@ -14,8 +14,9 @@
     // negative if clockwise, and zero if the points are collinear.
     public static double cross(double[] a, double[] b, double[] c)
     {
-      return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
+      return ((b[0] - a[0]) * (c[1] - a[1])) - ((b[1] - a[1]) * (c[0] - a[0]));
     }
+
     // Computes the upper convex hull per the monotone chain algorithm.
     // Assumes points.length >= 3, is sorted by x, unique in y.
     // Returns an array of indices into points in left-to-right order.

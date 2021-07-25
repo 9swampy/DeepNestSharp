@@ -361,13 +361,13 @@
       tt.Width = w;
       int x = 0;
       int y = 0;
-      int _width = w;
-      int _height = h;
+      int width = w;
+      int height = h;
 
-      tt.AddPoint(new SvgPoint(x + _width / 2, y));
-      tt.AddPoint(new SvgPoint(x, y + _height / 2));
-      tt.AddPoint(new SvgPoint(x + _width / 2, y + _height));
-      tt.AddPoint(new SvgPoint(x + _width, y + _height / 2));
+      tt.AddPoint(new SvgPoint(x + (width / 2), y));
+      tt.AddPoint(new SvgPoint(x, y + (height / 2)));
+      tt.AddPoint(new SvgPoint(x + (width / 2), y + height));
+      tt.AddPoint(new SvgPoint(x + width, y + (height / 2)));
 
       return tt;
     }
@@ -406,6 +406,7 @@
         {
           Polygons.Remove(listView1.SelectedItems[i].Tag as NFP);
         }
+
         UpdateList();
       }
     }
@@ -468,6 +469,7 @@
         {
           sheet.AddPoint(new SvgPoint(item.X - b.X, item.Y - b.Y));
         }
+
         /*if (pol.children != null)
         {
             sheet.children = new List<NFP>();
@@ -529,6 +531,7 @@
         UpdateFilesList((si as DirectoryInfo).FullName);
 
       }
+
       if (si is FileInfo)
       {
         var f = (si as FileInfo);
@@ -556,6 +559,7 @@
       {
         det = SvgParser.LoadSvg(f.FullName);
       }
+
       if (f.Extension == ".dxf")
       {
         det = DxfParser.LoadDxfFile(f.FullName);
@@ -862,6 +866,7 @@
         {
           src = Polygons.Max(z => z.Source) + 1;
         }
+
         Polygons.Add(pl);
         pl.Source = src;
         pl.X = xx;
@@ -871,6 +876,7 @@
         pl.AddPoint(new SvgPoint(ww, hh));
         pl.AddPoint(new SvgPoint(0, hh));
       }
+
       UpdateList();
     }
 
@@ -921,6 +927,7 @@
         {
           src = Polygons.Max(z => z.Source) + 1;
         }
+
         pl.Source = src;
         Polygons.Add(pl);
         pl.X = xx;
@@ -930,6 +937,7 @@
         pl.AddPoint(new SvgPoint(0, +hh));
 
       }
+
       UpdateList();
     }
 
@@ -971,6 +979,7 @@
       {
         src = Polygons.Max(z => z.Source) + 1;
       }
+
       if (q.ShowDialog() == DialogResult.OK)
       {
         for (int i = 0; i < q.Qnt; i++)
@@ -1117,6 +1126,7 @@
       {
         src = Polygons.Max(z => z.Source) + 1;
       }
+
       Polygons.Add(pl);
       pl.Source = src;
       pl.X = xx;
@@ -1156,6 +1166,7 @@
         {
           det = SvgParser.LoadSvg(path.FullName);
         }
+
         if (path.Extension == ".dxf")
         {
           det = DxfParser.LoadDxfFile(path.FullName);
@@ -1213,6 +1224,7 @@
       {
         src = Polygons.Max(z => z.Source) + 1;
       }
+
       Polygons.Add(pl);
       pl.Source = src;
       pl.AddPoint(new SvgPoint(0, 0));
@@ -1233,8 +1245,8 @@
 
           pl.Children.Add(hole);
 
-          int hx = (i * ww / 4) + gap * (i + 1);
-          int hy = (j * hh / 3) + gap * (j + 1);
+          int hx = (i * ww / 4) + (gap * (i + 1));
+          int hy = (j * hh / 3) + (gap * (j + 1));
 
           hole.AddPoint(new SvgPoint(hx + szx, hy + szy));
           hole.AddPoint(new SvgPoint(hx, hy + szy));
@@ -1560,6 +1572,7 @@
       {
         (item as DetailLoadInfo).Quantity *= q.Qnt;
       }
+
       partsList.RefreshObjects(partsList.SelectedObjects);
     }
 

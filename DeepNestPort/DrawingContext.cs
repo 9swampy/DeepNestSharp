@@ -118,8 +118,8 @@
 
       var pos = box.PointToClient(Cursor.Position);
 
-      sx = -(pos.X / zold - sx - pos.X / zoom);
-      sy = (pos.Y / zold + sy - pos.Y / zoom);
+      sx = -((pos.X / zold) - sx - (pos.X / zoom));
+      sy = ((pos.Y / zold) + sy - (pos.Y / zoom));
     }
 
     private void Pb_MouseMove(object sender, MouseEventArgs e)
@@ -134,8 +134,8 @@
 
       var p = box.PointToClient(Cursor.Position);
       var pos = box.PointToClient(Cursor.Position);
-      var posx = (pos.X / zoom - sx);
-      var posy = (-pos.Y / zoom - sy);
+      var posx = ((pos.X / zoom) - sx);
+      var posy = ((-pos.Y / zoom) - sy);
     }
 
     private void PictureBox1_MouseDown(object sender, MouseEventArgs e)
@@ -189,8 +189,8 @@
     public PointF GetPos()
     {
       var pos = box.PointToClient(Cursor.Position);
-      var posx = (float)(pos.X / zoom - sx);
-      var posy = (float)(-pos.Y / zoom - sy);
+      var posx = (float)((pos.X / zoom) - sx);
+      var posy = (float)((-pos.Y / zoom) - sy);
 
       return new PointF(posx, posy);
     }
@@ -232,16 +232,16 @@
       zoom = kx;
       if (sz1.Width > w || sz1.Height > h) zoom = ky;
 
-      var x = dx / 2 + minx;
-      var y = dy / 2 + miny;
+      var x = (dx / 2) + minx;
+      var y = (dy / 2) + miny;
 
-      sx = ((w / 2f) / zoom - x);
-      sy = -((h / 2f) / zoom + y);
+      sx = (((w / 2f) / zoom) - x);
+      sy = -(((h / 2f) / zoom) + y);
 
       var test = Transform(new PointF(x, y));
     }
 
-    public void RenderSheetToClipboard(Sheet sh, ICollection<INfp> Polygons, ICollection<INfp> sheets)
+    public void RenderSheetToClipboard(Sheet sh, ICollection<INfp> polygons, ICollection<INfp> sheets)
     {
       this.sx = (double)sh.X;
       this.sy = (double)sh.Y;
@@ -251,21 +251,19 @@
       var tmpbmp = this.bmp;
       this.gr = gr;
       this.bmp = bb;
-
-      RenderSheet(Polygons, sheets);
+      RenderSheet(polygons, sheets);
       this.gr = gr;
       this.bmp = tmpbmp;
       this.invertY = true;
       Clipboard.SetImage(bb);
     }
 
-    private void RenderSheet(ICollection<INfp> Polygons, ICollection<INfp> sheets)
+    private void RenderSheet(ICollection<INfp> polygons, ICollection<INfp> sheets)
     {
       this.gr.SmoothingMode = SmoothingMode.AntiAlias;
       this.Clear(Color.White);
       this.Reset();
-
-      foreach (var item in Polygons.Union(sheets))
+      foreach (var item in polygons.Union(sheets))
       {
         if (!(item is Sheet))
         {
@@ -307,7 +305,7 @@
       }
     }
 
-    public void RenderNestResult(Font font, bool isInfoShow, NestingContext context, ICollection<INfp> sheets, ICollection<INfp> Polygons)
+    public void RenderNestResult(Font font, bool isInfoShow, NestingContext context, ICollection<INfp> sheets, ICollection<INfp> polygons)
     {
       var pos1 = this.GetPos();
       var posx = pos1.X;
@@ -329,7 +327,7 @@
         yy += (int)font.Size + gap;
         if (context.Nest != null && context.Nest.TopNestResults != null && context.Nest.TopNestResults.Top != null)
         {
-          this.gr.DrawString($"Material Utilization: {Math.Round(context.Nest.TopNestResults.Top.MaterialUtilization * 100.0f, 2)}%   Iterations: {context.Iterations}    Parts placed: {context.PlacedPartsCount}/{Polygons.Count} ({100 * context.Nest.TopNestResults.Top.PartsPlacedPercent:N2}%)", font, Brushes.DarkBlue, 0, yy);
+          this.gr.DrawString($"Material Utilization: {Math.Round(context.Nest.TopNestResults.Top.MaterialUtilization * 100.0f, 2)}%   Iterations: {context.Iterations}    Parts placed: {context.PlacedPartsCount}/{polygons.Count} ({100 * context.Nest.TopNestResults.Top.PartsPlacedPercent:N2}%)", font, Brushes.DarkBlue, 0, yy);
           yy += (int)font.Size + gap;
           if (SvgNest.Config.UseParallel)
           {
@@ -341,7 +339,7 @@
           }
 
           yy += (int)font.Size + gap;
-          this.gr.DrawString($"Sheets: {sheets.Count}   Parts:{Polygons.Count}    parts types: {Polygons.GroupBy(z => z.Source).Count()}", font, Brushes.DarkBlue, 0, yy);
+          this.gr.DrawString($"Sheets: {sheets.Count}   Parts:{polygons.Count}    parts types: {polygons.GroupBy(z => z.Source).Count()}", font, Brushes.DarkBlue, 0, yy);
           yy += (int)font.Size + gap;
           this.gr.DrawString($"Nests: {context.Nest.TopNestResults.Count} Fitness: {context.Nest.TopNestResults.Top.Fitness}   Area:{context.Nest.TopNestResults.Top.TotalSheetsArea}  ", font, Brushes.DarkBlue, 0, yy);
           yy += (int)font.Size + gap;
@@ -353,18 +351,18 @@
       {
         if (context.Nest != null && context.Nest.TopNestResults != null && context.Nest.TopNestResults.Top != null)
         {
-          this.gr.DrawString($"Iterations: {context.Iterations}    Parts placed: {context.PlacedPartsCount}/{Polygons.Count} ({100 * context.Nest.TopNestResults.Top.PartsPlacedPercent:N2}%)", font, Brushes.DarkBlue, 0, yy);
+          this.gr.DrawString($"Iterations: {context.Iterations}    Parts placed: {context.PlacedPartsCount}/{polygons.Count} ({100 * context.Nest.TopNestResults.Top.PartsPlacedPercent:N2}%)", font, Brushes.DarkBlue, 0, yy);
           yy += (int)font.Size + gap;
         }
 
         this.gr.DrawString($"Generations: {SvgNest.Generations}    Population: {SvgNest.Population}", font, Brushes.DarkBlue, 0, yy);
         yy += (int)font.Size + gap;
-        this.gr.DrawString($"Sheets: {sheets.Count}   Parts:{Polygons.Count}    Parts types: {Polygons.GroupBy(z => z.Source).Count()}", font, Brushes.DarkBlue, 0, yy);
+        this.gr.DrawString($"Sheets: {sheets.Count}   Parts:{polygons.Count}    Parts types: {polygons.GroupBy(z => z.Source).Count()}", font, Brushes.DarkBlue, 0, yy);
         yy += (int)font.Size + gap;
       }
 
       int i = 0;
-      foreach (var item in Polygons.Union(sheets))
+      foreach (var item in polygons.Union(sheets))
       {
         if (!(item is Sheet))
         {

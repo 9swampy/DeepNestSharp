@@ -15,7 +15,7 @@
     <Compile Include="..\DeepNestLib\DeepNestClipper.cs" Link="DeepNestClipper.cs" />
     <Compile Include="..\DeepNestLib\DoublePrecisionConverter.cs" Link="DoublePrecisionConverter.cs" />
     <Compile Include="..\DeepNestLib\DxfParser.cs" Link="DxfParser.cs" />
-    <Compile Include="..\DeepNestLib\EmbededResourcesExtensions.cs" Link="EmbededResourcesExtensions.cs" />
+    <Compile Include="..\DeepNestLib\EmbeddedResourcesExtensions.cs" Link="EmbeddedResourcesExtensions.cs" />
     <Compile Include="..\DeepNestLib\ExporterFactory.cs" Link="ExporterFactory.cs" />
     <Compile Include="..\DeepNestLib\Extensions.cs" Link="Extensions.cs" />
     <Compile Include="..\DeepNestLib\GeneticAlgorithm\IOriginalFitnessSheet.cs" Link="GeneticAlgorithm\IOriginalFitnessSheet.cs" />

@@ -1,6 +1,7 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
   using DeepNestLib.Placement;
+  using DeepNestSharp.Ui.Docking;
   using DeepNestSharp.Ui.Models;
 
   public class SheetPlacementViewModel : FileViewModel, ISheetPlacementViewModel

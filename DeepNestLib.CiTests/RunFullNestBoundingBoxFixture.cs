@@ -18,7 +18,7 @@
     private NestingContext nestingContext;
     private INfp loadedNfp;
     private bool hasImportedRawDetail;
-    private int terminateNestResultCount = 2;
+    private int terminateNestResultCount = 4;
     private int firstSheetIdSrc = new Random().Next();
 
     /// <summary>
@@ -85,7 +85,7 @@
     [Fact]
     public void FitnessShouldBeExpected()
     {
-      this.nestingContext.Nest.TopNestResults.Top.Fitness.Should().BeApproximately(584889, 1000);
+      this.nestingContext.Nest.TopNestResults.Top.Fitness.Should().BeLessThan(600000);
     }
 
     [Fact]

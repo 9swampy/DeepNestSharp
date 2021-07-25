@@ -1,9 +1,9 @@
-﻿namespace DeepNestSharp.Ui.ViewModels
+﻿namespace DeepNestSharp.Ui.Docking
 {
   using System.IO;
   using System.Windows.Input;
   using System.Windows.Media;
-  using DeepNestSharp.Ui.Docking;
+  using DeepNestSharp.Ui.ViewModels;
   using Microsoft.Toolkit.Mvvm.Input;
 
   public abstract class FileViewModel : PaneViewModel
