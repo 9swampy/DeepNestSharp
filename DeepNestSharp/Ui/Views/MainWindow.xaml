@@ -9,11 +9,16 @@
         xmlns:models="clr-namespace:DeepNestSharp.Ui.Models"
         xmlns:converters="clr-namespace:DeepNestSharp.Ui.Converters" 
         xmlns:behaviors="clr-namespace:DeepNestSharp.Ui.Behaviors"
+        xmlns:sys="clr-namespace:System;assembly=System.Runtime" 
+        xmlns:docking="clr-namespace:DeepNestSharp.Ui.Docking"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
   <Window.Resources>
     <BooleanToVisibilityConverter x:Key="BoolToVis" />
     <converters:IsSelectedToFillColorConverter x:Key="IsSelectedToFillColor" />
+    <converters:ActiveDocumentConverter x:Key="ActiveDocumentConverter" />
+    <sys:Boolean x:Key="TRUE">True</sys:Boolean>
+    <sys:Boolean x:Key="FALSE">False</sys:Boolean>
   </Window.Resources>
 
   <Grid>
@@ -25,14 +30,99 @@
       <RowDefinition Height="auto" />
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
-    <Menu Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
+    <Menu Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+      <Menu.ItemsPanel>
+        <ItemsPanelTemplate>
+          <DockPanel HorizontalAlignment="Stretch"></DockPanel>
+        </ItemsPanelTemplate>
+      </Menu.ItemsPanel>
       <MenuItem Header="File">
-        <MenuItem Header="Load Project" />
-        <MenuItem Header="Save Project" />
+        <MenuItem Header="Load Project" Command="{Binding ExecuteLoadNestProject}" />
+        <MenuItem Header="Save Project" Command="{Binding ExecuteSaveNestProject}" />
+        <Separator />
+        <MenuItem Header="Load SheetPlacement" Command="{Binding ExecuteLoadSheetPlacement}" />
+        <MenuItem Header="Save SheetPlacement" Command="{Binding ExecuteSaveSheetPlacement}" />
         <Separator />
         <MenuItem Header="Exit" />
       </MenuItem>
+
+      <MenuItem Header="Help" HorizontalAlignment="Right">
+        <MenuItem Header="Theme">
+          <ComboBox HorizontalAlignment="Right" HorizontalContentAlignment="Right"
+				DisplayMemberPath="Item1"
+				ItemsSource="{Binding Themes}"
+				SelectedItem="{Binding SelectedTheme}" />
+        </MenuItem>
+        <MenuItem Header="About" />
+      </MenuItem>
     </Menu>
-    <userControls:SheetPlacementEditor Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" />
+    <!--  AnchorablesSource="{Binding Tools}" DocumentsSource="{Binding Files}"  -->
+    <DockingManager
+			x:Name="dockManager"
+			Grid.Row="1"
+      Grid.Column="0"
+      Grid.ColumnSpan="2"
+			ActiveContent="{Binding ActiveDocument, Mode=TwoWay, Converter={StaticResource ActiveDocumentConverter}}"
+			AnchorablesSource="{Binding Tools}"
+			DocumentsSource="{Binding Files}"
+			Theme="{Binding SelectedTheme.Item2}">
+      <DockingManager.LayoutItemTemplateSelector>
+        <docking:PanesTemplateSelector>
+          <docking:PanesTemplateSelector.SheetPlacementEditorTemplate>
+            <DataTemplate>
+              <userControls:SheetPlacementEditor />
+            </DataTemplate>
+          </docking:PanesTemplateSelector.SheetPlacementEditorTemplate>
+          <docking:PanesTemplateSelector.SheetPlacementPreviewEditorTemplate>
+            <DataTemplate>
+              <userControls:SheetPlacementPreviewEditor />
+            </DataTemplate>
+          </docking:PanesTemplateSelector.SheetPlacementPreviewEditorTemplate>
+          <docking:PanesTemplateSelector.PreviewTemplate>
+            <DataTemplate>
+              <userControls:Preview />
+            </DataTemplate>
+          </docking:PanesTemplateSelector.PreviewTemplate>
+          <docking:PanesTemplateSelector.NestProjectEditorTemplate>
+            <DataTemplate>
+              <userControls:NestProjectEditor />
+            </DataTemplate>
+          </docking:PanesTemplateSelector.NestProjectEditorTemplate>
+        </docking:PanesTemplateSelector>
+      </DockingManager.LayoutItemTemplateSelector>
+      <DockingManager.LayoutItemContainerStyleSelector>
+        <docking:PanesStyleSelector>
+          <docking:PanesStyleSelector.ToolStyle>
+            <Style TargetType="{x:Type LayoutAnchorableItem}">
+              <Setter Property="Title" Value="{Binding Model.Title}" />
+              <Setter Property="CanClose" Value="True" />
+              <Setter Property="IconSource" Value="{Binding Model.IconSource}" />
+              <Setter Property="Visibility" Value="{Binding Model.IsVisible, Mode=TwoWay, Converter={StaticResource BoolToVis}, ConverterParameter={StaticResource FALSE}}" />
+              <Setter Property="ContentId" Value="{Binding Model.ContentId}" />
+              <Setter Property="IsSelected" Value="{Binding Model.IsSelected, Mode=TwoWay}" />
+              <Setter Property="IsActive" Value="{Binding Model.IsActive, Mode=TwoWay}" />
+            </Style>
+          </docking:PanesStyleSelector.ToolStyle>
+          <docking:PanesStyleSelector.FileStyle>
+            <Style TargetType="{x:Type LayoutItem}">
+              <Setter Property="Title" Value="{Binding Model.Title}" />
+              <Setter Property="ToolTip" Value="{Binding Model.FilePath}" />
+              <Setter Property="CloseCommand" Value="{Binding Model.CloseCommand}" />
+              <Setter Property="IconSource" Value="{Binding Model.IconSource}" />
+              <Setter Property="ContentId" Value="{Binding Model.ContentId}" />
+            </Style>
+          </docking:PanesStyleSelector.FileStyle>
+        </docking:PanesStyleSelector>
+      </DockingManager.LayoutItemContainerStyleSelector>
+      <DockingManager.LayoutUpdateStrategy>
+        <docking:LayoutInitializer />
+      </DockingManager.LayoutUpdateStrategy>
+      <LayoutRoot>
+        <LayoutPanel Orientation="Horizontal">
+          <LayoutDocumentPane DockWidth="150" />
+          <LayoutAnchorablePane Name="ToolsPane" DockWidth="150" />
+        </LayoutPanel>
+      </LayoutRoot>
+    </DockingManager>
   </Grid>
 </Window>

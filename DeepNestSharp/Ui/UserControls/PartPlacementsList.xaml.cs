@@ -30,18 +30,11 @@
                                                         typeof(PartPlacementsList),
                                                         new FrameworkPropertyMetadata() { BindsTwoWayByDefault = true });
 
-    public PartPlacementsList()
-    {
-      InitializeComponent();
-    }
+    public PartPlacementsList() => InitializeComponent();
 
     public int SelectedIndex
     {
-      get
-      {
-        return (int)GetValue(SelectedIndexProperty);
-      }
-
+      get => (int)GetValue(SelectedIndexProperty);
       set
       {
         SetValue(SelectedIndexProperty, value);
@@ -51,28 +44,14 @@
 
     public IPartPlacement SelectedItem
     {
-      get
-      {
-        return (IPartPlacement)GetValue(SelectedItemProperty);
-      }
-
-      set
-      {
-        SetValue(SelectedItemProperty, value);
-      }
+      get => (IPartPlacement)GetValue(SelectedItemProperty);
+      set => SetValue(SelectedItemProperty, value);
     }
 
     public IReadOnlyList<IPartPlacement> ItemsSource
     {
-      get
-      {
-        return (ObservableCollection<ObservablePartPlacement>)GetValue(ItemsSourceProperty);
-      }
-
-      set
-      {
-        SetValue(ItemsSourceProperty, value);
-      }
+      get => (ObservableCollection<ObservablePartPlacement>)GetValue(ItemsSourceProperty);
+      set => SetValue(ItemsSourceProperty, value);
     }
   }
 }

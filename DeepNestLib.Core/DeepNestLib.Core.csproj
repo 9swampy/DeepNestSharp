@@ -53,9 +53,13 @@
     <Compile Include="..\DeepNestLib\NestItem.cs" Link="NestItem.cs" />
     <Compile Include="..\DeepNestLib\NestProject\AnglesEnum.cs" Link="NestProject\AnglesEnum.cs" />
     <Compile Include="..\DeepNestLib\NestProject\DetailLoadInfo.cs" Link="NestProject\DetailLoadInfo.cs" />
+    <Compile Include="..\DeepNestLib\NestProject\DetailLoadInfoJsonConverter.cs" Link="NestProject\DetailLoadInfoJsonConverter.cs" />
     <Compile Include="..\DeepNestLib\NestProject\IDetailLoadInfo.cs" Link="NestProject\IDetailLoadInfo.cs" />
+    <Compile Include="..\DeepNestLib\NestProject\IProjectInfo.cs" Link="NestProject\IProjectInfo.cs" />
     <Compile Include="..\DeepNestLib\NestProject\ISheetLoadInfo.cs" Link="NestProject\ISheetLoadInfo.cs" />
+    <Compile Include="..\DeepNestLib\NestProject\ProjectInfo.cs" Link="NestProject\ProjectInfo.cs" />
     <Compile Include="..\DeepNestLib\NestProject\SheetLoadInfo.cs" Link="NestProject\SheetLoadInfo.cs" />
+    <Compile Include="..\DeepNestLib\NestProject\SheetLoadInfoJsonConverter.cs" Link="NestProject\SheetLoadInfoJsonConverter.cs" />
     <Compile Include="..\DeepNestLib\NFP.cs" Link="NFP.cs" />
     <Compile Include="..\DeepNestLib\NfpExtensions.cs" Link="NfpExtensions.cs" />
     <Compile Include="..\DeepNestLib\NfpJsonConverter.cs" Link="NfpJsonConverter.cs" />
@@ -95,7 +99,6 @@
 
   <ItemGroup>
     <Folder Include="GeneticAlgorithm\" />
-    <Folder Include="NestProject\" />
     <Folder Include="Placement\" />
   </ItemGroup>
 

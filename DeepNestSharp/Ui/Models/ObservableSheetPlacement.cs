@@ -10,21 +10,17 @@
   public class ObservableSheetPlacement : ObservableObject, ISheetPlacement
   {
     private readonly ObservableCollection<ObservablePartPlacement> observablePartPlacements;
-    private readonly ObservableCollection<object> drawingContext;
     private System.Windows.Media.PointCollection points;
     private ISheetPlacement? item;
 
     public ObservableSheetPlacement()
     {
       this.observablePartPlacements = new ObservableCollection<ObservablePartPlacement>();
-      this.drawingContext = new ObservableCollection<object>();
+      this.DrawingContext = new ObservableCollection<object>();
     }
 
     public ObservableSheetPlacement(ISheetPlacement item)
-      : this()
-    {
-      this.Set(item);
-    }
+      : this() => this.Set(item);
 
     public bool IsSet => this.item != null;
 
@@ -33,13 +29,13 @@
       this.item = item;
       this.observablePartPlacements.Clear();
       this.points?.Clear();
-      this.drawingContext.Clear();
-      this.drawingContext.Add(this);
+      this.DrawingContext.Clear();
+      this.DrawingContext.Add(this);
       foreach (var partPlacement in item.PartPlacements)
       {
         var obsPart = new ObservablePartPlacement(partPlacement);
         this.observablePartPlacements.Add(obsPart);
-        this.drawingContext.Add(obsPart);
+        this.DrawingContext.Add(obsPart);
       }
 
       OnPropertyChanged(nameof(PartPlacements));
@@ -55,7 +51,7 @@
 
     public IReadOnlyList<IPartPlacement> PartPlacements => this.observablePartPlacements;
 
-    public ObservableCollection<object> DrawingContext => this.drawingContext;
+    public ObservableCollection<object> DrawingContext { get; }
 
     public PlacementTypeEnum PlacementType => item.PlacementType;
 

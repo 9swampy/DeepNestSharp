@@ -1,21 +1,107 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
+  using System;
+  using System.Collections.Generic;
+  using System.Collections.ObjectModel;
   using System.IO;
+  using System.Linq;
+  using System.Windows;
   using System.Windows.Input;
+  using AvalonDock.Themes;
+  using DeepNestLib.NestProject;
+  using DeepNestSharp.Ui.Docking;
   using DeepNestSharp.Ui.Models;
-  using Microsoft.Toolkit.Mvvm.ComponentModel;
   using Microsoft.Toolkit.Mvvm.Input;
   using Microsoft.Win32;
 
-  public class MainViewModel : ObservableRecipient
+  public class MainViewModel : ToolViewModel
   {
     private int selectedPartIndex;
     private ObservablePartPlacement selectedPartItem;
-    private ObservableSheetPlacement sheetPlacement = new ObservableSheetPlacement();
+    private ToolViewModel[] tools;
+
+    private ObservableCollection<FileViewModel> files = new ObservableCollection<FileViewModel>();
+    private ReadOnlyObservableCollection<FileViewModel> readonlyFiles;
+
+    private MainViewModel mainViewModel;
+    private PreviewViewModel previewViewModel;
+    private Tuple<string, Theme> selectedTheme;
+    private FileViewModel activeDocument;
 
     public MainViewModel()
+      : base(nameof(MainViewModel))
     {
       ExecuteLoadSheetPlacement = new RelayCommand(LoadSheetPlacement);
+      ExecuteLoadNestProject = new RelayCommand(LoadNestProject);
+
+      this.Themes = new List<Tuple<string, Theme>>
+      {
+        new Tuple<string, Theme>(nameof(GenericTheme), new GenericTheme()),
+        //new Tuple<string, Theme>(nameof(AeroTheme),new AeroTheme()),
+        //new Tuple<string, Theme>(nameof(ExpressionDarkTheme),new ExpressionDarkTheme()),
+        //new Tuple<string, Theme>(nameof(ExpressionLightTheme),new ExpressionLightTheme()),
+        //new Tuple<string, Theme>(nameof(MetroTheme),new MetroTheme()),
+        //new Tuple<string, Theme>(nameof(VS2010Theme),new VS2010Theme()),
+        //new Tuple<string, Theme>(nameof(Vs2013BlueTheme),new Vs2013BlueTheme()),
+        //new Tuple<string, Theme>(nameof(Vs2013DarkTheme),new Vs2013DarkTheme()),
+        //new Tuple<string, Theme>(nameof(Vs2013LightTheme),new Vs2013LightTheme()),
+      };
+
+      this.SelectedTheme = Themes.First();
+    }
+
+    public event EventHandler ActiveDocumentChanged;
+
+    public List<Tuple<string, Theme>> Themes { get; set; }
+
+    public Tuple<string, Theme> SelectedTheme
+    {
+      get => selectedTheme;
+
+      set
+      {
+        selectedTheme = value;
+        OnPropertyChanged(nameof(SelectedTheme));
+      }
+    }
+
+    public IEnumerable<ToolViewModel> Tools
+    {
+      get
+      {
+        if (tools == null)
+        {
+          tools = new ToolViewModel[] { PreviewViewModel };
+        }
+
+        return tools;
+      }
+    }
+
+    public ReadOnlyObservableCollection<FileViewModel> Files
+    {
+      get
+      {
+        if (readonlyFiles == null)
+        {
+          readonlyFiles = new ReadOnlyObservableCollection<FileViewModel>(files);
+        }
+
+        return readonlyFiles;
+      }
+    }
+
+    public PreviewViewModel PreviewViewModel
+    {
+      get
+      {
+        if (previewViewModel == null)
+        {
+          previewViewModel = new PreviewViewModel(this);
+        }
+
+        return previewViewModel;
+      }
     }
 
     public int SelectedPartIndex
@@ -41,23 +127,92 @@
 
     public ICommand ExecuteLoadSheetPlacement { get; }
 
-    /// <summary>
-    /// Gets or sets the currently selected SheetPlacement.
-    /// </summary>
-    public ObservableSheetPlacement SheetPlacement
+    public ICommand ExecuteLoadNestProject { get; }
+
+    public ObservableSheetPlacement SheetPlacement { get; } = new ObservableSheetPlacement();
+
+    public FileViewModel ActiveDocument
     {
-      get => sheetPlacement;
+      get => activeDocument;
+      set
+      {
+        if (activeDocument != value)
+        {
+          activeDocument = value;
+          OnPropertyChanged(nameof(ActiveDocument));
+          ActiveDocumentChanged?.Invoke(this, EventArgs.Empty);
+        }
+      }
     }
 
     public void LoadSheetPlacement()
     {
-      OpenFileDialog openFileDialog = new OpenFileDialog();
+      var openFileDialog = new OpenFileDialog()
+      {
+        Filter = DeepNestLib.Placement.SheetPlacement.FileDialogFilter,
+      };
+
       if (openFileDialog.ShowDialog() == true)
       {
-        var json = File.ReadAllText(openFileDialog.FileName);
-        var sheetPlacement = DeepNestLib.Placement.SheetPlacement.FromJson(json);
-        this.sheetPlacement.Set(sheetPlacement);
+        var loaded = new SheetPlacementViewModel(this, openFileDialog.FileName);
+        this.SheetPlacement.Set(loaded.SheetPlacement);
+        this.files.Add(loaded);
+        this.ActiveDocument = loaded;
       }
+    }
+
+    public void LoadNestProject()
+    {
+      var openFileDialog = new OpenFileDialog
+      {
+        Filter = ProjectInfo.FileDialogFilter,
+      };
+
+      if (openFileDialog.ShowDialog() == true)
+      {
+        var loaded = new NestProjectViewModel(this, openFileDialog.FileName);
+        this.files.Add(loaded);
+        this.ActiveDocument = loaded;
+      }
+    }
+
+    internal void Close(FileViewModel fileToClose)
+    {
+      if (fileToClose.IsDirty)
+      {
+        var res = MessageBox.Show(string.Format("Save changes for file '{0}'?", fileToClose.FileName), "AvalonDock Test App", MessageBoxButton.YesNoCancel);
+        if (res == MessageBoxResult.Cancel)
+        {
+          return;
+        }
+
+        if (res == MessageBoxResult.Yes)
+        {
+          Save(fileToClose);
+        }
+      }
+
+      files.Remove(fileToClose);
+    }
+
+    internal void Save(FileViewModel fileToSave, bool saveAsFlag = false)
+    {
+      if (fileToSave.FilePath == null || saveAsFlag)
+      {
+        var dlg = new SaveFileDialog();
+        if (dlg.ShowDialog().GetValueOrDefault())
+        {
+          fileToSave.FilePath = dlg.SafeFileName;
+        }
+      }
+
+      if (fileToSave.FilePath == null)
+      {
+        return;
+      }
+
+      File.WriteAllText(fileToSave.FilePath, fileToSave.TextContent);
+      ActiveDocument.IsDirty = false;
     }
   }
 }

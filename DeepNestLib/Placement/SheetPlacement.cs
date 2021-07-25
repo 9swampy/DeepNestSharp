@@ -2,6 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
+  using System.IO;
   using System.Linq;
   using System.Text.Json;
   using System.Text.Json.Serialization;
@@ -12,6 +13,8 @@
   /// </summary>
   public class SheetPlacement : ISheetPlacement
   {
+    public const string FileDialogFilter = "DeepNest SheetPlacement (*.dnsp)|*.dnsp|Json (*.json)|*.json|All files (*.*)|*.*";
+
     private NFP hull;
 
     public SheetPlacement(PlacementTypeEnum placementType, INfp sheet, IReadOnlyList<IPartPlacement> partPlacements)
@@ -42,13 +45,7 @@
     public IReadOnlyList<IPartPlacement> PartPlacements { get; private set; } = new List<IPartPlacement>();
 
     [JsonIgnore]
-    public PolygonBounds RectBounds
-    {
-      get
-      {
-        return CombinedRectBounds(this.PartPlacements);
-      }
-    }
+    public PolygonBounds RectBounds => CombinedRectBounds(this.PartPlacements);
 
     [JsonIgnore]
     public INfp Hull
@@ -75,8 +72,8 @@
 
         var combinedNfp = new List<List<ClipperLib.IntPoint>>();
         var clipper = new ClipperLib.Clipper();
-        clipper.AddPaths(clipperNfp.Select(z => z.ToList()).ToList(), ClipperLib.PolyType.ptSubject, true);
-        clipper.Execute(ClipperLib.ClipType.ctUnion, combinedNfp, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero);
+        _ = clipper.AddPaths(clipperNfp.Select(z => z.ToList()).ToList(), ClipperLib.PolyType.ptSubject, true);
+        _ = clipper.Execute(ClipperLib.ClipType.ctUnion, combinedNfp, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero);
 
         return SvgNest.simplifyFunction(combinedNfp[0].ToArray().ToNestCoordinates(clipperScale), false, 1, false);
       }
@@ -86,12 +83,38 @@
     public double TotalPartsArea => this.PartPlacements.Sum(p => p.Part.Area);
 
     [JsonIgnore]
-    public double MaterialUtilization
+    public double MaterialUtilization => Math.Abs(TotalPartsArea / this.Sheet.Area);
+
+    [JsonIgnore]
+    public OriginalFitnessSheet Fitness { get; }
+
+    public static SheetPlacement LoadFromFile(string fileName)
     {
-      get
+      using (StreamReader inputFile = new StreamReader(fileName))
       {
-        return Math.Abs(TotalPartsArea / this.Sheet.Area);
+        return FromJson(inputFile.ReadToEnd());
       }
+    }
+
+    public static SheetPlacement FromJson(string json)
+    {
+      var options = new JsonSerializerOptions();
+      options.Converters.Add(new NfpJsonConverter());
+      options.Converters.Add(new PartPlacementJsonConverter());
+      return JsonSerializer.Deserialize<SheetPlacement>(json, options);
+    }
+
+    public string ToJson()
+    {
+      var options = new JsonSerializerOptions();
+      options.Converters.Add(new NfpJsonConverter());
+      options.Converters.Add(new PartPlacementJsonConverter());
+      return JsonSerializer.Serialize(this, options);
+    }
+
+    public override string ToString()
+    {
+      return this.Fitness.ToString();
     }
 
     internal static PolygonBounds CombinedRectBounds(IReadOnlyList<IPartPlacement> partPlacements)
@@ -103,10 +126,10 @@
     internal static NFP CombinedPoints(IReadOnlyList<IPartPlacement> partPlacements)
     {
       NFP allpoints = new NFP();
-      for (int partIndex = 0; partIndex < partPlacements.Count; partIndex++)
+      for (var partIndex = 0; partIndex < partPlacements.Count; partIndex++)
       {
         var length = partPlacements[partIndex].Part.Points.Length;
-        for (int pointIndex = 0; pointIndex < length; pointIndex++)
+        for (var pointIndex = 0; pointIndex < length; pointIndex++)
         {
           var part = partPlacements[partIndex].Part.Points[pointIndex];
           var placement = partPlacements[partIndex];
@@ -118,30 +141,6 @@
       }
 
       return allpoints;
-    }
-
-    [JsonIgnore]
-    public OriginalFitnessSheet Fitness { get; }
-
-    public string ToJson()
-    {
-      var options = new JsonSerializerOptions();
-      options.Converters.Add(new NfpJsonConverter());
-      options.Converters.Add(new PartPlacementJsonConverter());
-      return JsonSerializer.Serialize(this, options);
-    }
-
-    public static SheetPlacement FromJson(string json)
-    {
-      var options = new JsonSerializerOptions();
-      options.Converters.Add(new NfpJsonConverter());
-      options.Converters.Add(new PartPlacementJsonConverter());
-      return JsonSerializer.Deserialize<SheetPlacement>(json, options);
-    }
-
-    public override string ToString()
-    {
-      return this.Fitness.ToString();
     }
   }
 }

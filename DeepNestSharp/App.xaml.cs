@@ -20,6 +20,7 @@
            .ConfigureServices((hostContext, services) =>
            {
              services.AddScoped<ISettingsService, SettingsService>();
+             services.AddTransient<INestProjectViewModel, NestProjectViewModel>();
              services.AddSingleton<MainViewModel>();
              services.AddSingleton<MainWindow>();
            }).Build();

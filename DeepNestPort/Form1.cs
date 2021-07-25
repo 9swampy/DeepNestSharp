@@ -1642,29 +1642,12 @@
       try
       {
         var dialog = new OpenFileDialog();
-        dialog.Filter = "DeepNest Projects (*.nest)|*.nest";
+        dialog.Filter = ProjectInfo.FileDialogFilter;
         if (dialog.ShowDialog() == DialogResult.OK)
         {
-          using (StreamReader inputFile = new StreamReader(dialog.FileName))
-          {
-            var info = ProjectInfo.FromJson(inputFile.ReadToEnd());
-            this.projectInfo.DetailLoadInfos.Clear();
-            foreach (var p in info.DetailLoadInfos)
-            {
-              this.projectInfo.DetailLoadInfos.Add(p);
-            }
-
-            var sheetInfoIn = info.SheetLoadInfos.SingleOrDefault();
-            if (sheetInfoIn != null)
-            {
-              var sheetInfoSet = this.projectInfo.SheetLoadInfos.Single();
-              sheetInfoSet.Width = sheetInfoIn.Width;
-              sheetInfoSet.Height = sheetInfoIn.Height;
-              sheetInfoSet.Quantity = sheetInfoIn.Quantity;
-            }
-
-            UpdateInfos();
-          }
+          var info = ProjectInfo.LoadFromFile(dialog.FileName);
+          this.projectInfo.Load(info);
+          UpdateInfos();
         }
       }
       catch (Exception ex)
