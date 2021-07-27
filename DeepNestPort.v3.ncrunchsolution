@@ -4,6 +4,10 @@
       <Value>MinkowskiDlls\**.*</Value>
     </AdditionalFilesForGridProcessing>
     <AllowParallelTestExecution>True</AllowParallelTestExecution>
+    <MetricsExclusionList>
+      <Value>DeepNestLib.CiTests\DeepNestLib.CiTests.csproj</Value>
+      <Value>MinkowskiWapper.CiTests\MinkowskiWrapper.CiTests.csproj</Value>
+    </MetricsExclusionList>
     <MSpecEnabled>False</MSpecEnabled>
     <NUnit3Enabled>False</NUnit3Enabled>
     <PreloadReferencedAssemblies>True</PreloadReferencedAssemblies>

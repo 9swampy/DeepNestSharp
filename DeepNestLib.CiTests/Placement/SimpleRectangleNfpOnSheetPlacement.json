@@ -1,57 +1,110 @@
 ﻿{
-  "Fitted": false,
-  "Sheet": null,
-  "Name": "firstSheet",
-  "x": 0,
-  "y": 0,
-  "WidthCalculated": 5,
-  "HeightCalculated": 5,
-  "Children": [],
-  "Length": 5,
-  "Id": 0,
-  "Offsetx": null,
-  "Offsety": null,
-  "Source": 3,
-  "PlacementOrder": -1,
-  "Rotation": 0,
-  "ForceRotations": false,
-  "Rotations": [
-    90,
-    270
-  ],
-  "Points": [
+  "SheetId": 0,
+  "SheetSource": 3,
+  "PlacementType": 0,
+  "Sheet": {
+    "Fitted": false,
+    "Sheet": null,
+    "Name": "firstSheet",
+    "X": 0,
+    "Y": 0,
+    "Children": [],
+    "Id": 0,
+    "Offsetx": null,
+    "Offsety": null,
+    "Source": 3,
+    "PlacementOrder": -1,
+    "Rotation": 0,
+    "Points": [
+      {
+        "Exact": true,
+        "Marked": false,
+        "X": 0,
+        "Y": 5
+      },
+      {
+        "Exact": true,
+        "Marked": false,
+        "X": 5,
+        "Y": 5
+      },
+      {
+        "Exact": true,
+        "Marked": false,
+        "X": 5,
+        "Y": 0
+      },
+      {
+        "Exact": true,
+        "Marked": false,
+        "X": 0,
+        "Y": 0
+      },
+      {
+        "Exact": true,
+        "Marked": false,
+        "X": 0,
+        "Y": 5
+      }
+    ],
+    "IsPriority": false,
+    "StrictAngle": 0
+  },
+  "PartPlacements": [
     {
-      "Exact": true,
-      "Marked": false,
-      "x": 0,
-      "y": 5
-    },
-    {
-      "Exact": true,
-      "Marked": false,
-      "x": 5,
-      "y": 5
-    },
-    {
-      "Exact": true,
-      "Marked": false,
-      "x": 5,
-      "y": 0
-    },
-    {
-      "Exact": true,
-      "Marked": false,
-      "x": 0,
-      "y": 0
-    },
-    {
-      "Exact": true,
-      "Marked": false,
-      "x": 0,
-      "y": 5
+      "Id": 10,
+      "Rotation": 90,
+      "X": 1,
+      "Y": 2,
+      "Source": 0,
+      "Part": {
+        "Fitted": false,
+        "Sheet": null,
+        "Name": "firstPart",
+        "X": 3,
+        "Y": 4,
+        "Children": [],
+        "Id": 0,
+        "Offsetx": null,
+        "Offsety": null,
+        "Source": 3,
+        "PlacementOrder": -1,
+        "Rotation": 0,
+        "Points": [
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 0,
+            "Y": 2
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 1,
+            "Y": 2
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 1,
+            "Y": 0
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 0,
+            "Y": 0
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 0,
+            "Y": 2
+          }
+        ],
+        "IsPriority": false,
+        "StrictAngle": 0
+      }
     }
-  ],
-  "Area": 25,
-  "IsPriority": false,
-  "StrictAngle": 0
+  ]
 }

@@ -11,7 +11,7 @@
     public PmapWorkerProcessFixture()
       : base()
     {
-      processed = new PmapWorker(null, A.Fake<IProgressDisplayer>(), false).Process(pair1);
+      processed = new PmapWorker(null, A.Fake<IProgressDisplayer>(), false, MinkowskiSum.CreateInstance()).Process(pair1);
     }
 
     [Fact]

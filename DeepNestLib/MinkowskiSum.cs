@@ -8,14 +8,34 @@
   using ClipperLib;
   using Minkowski;
 
-  public static class MinkowskiSum
+  internal class MinkowskiSum : IMinkowskiSumService
   {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MinkowskiSum"/> class.
+    /// Private because sharing/reusing the cache is dangerous. 
+    /// Replacing static global dependencies with factories to facilitate Unit Tests.
+    /// </summary>
+    private MinkowskiSum()
+    {
+    }
+
+    /// <summary>
+    /// Gets default instance to use if you're happy to be reusing the same cache.
+    /// </summary>
+    public static IMinkowskiSumService Default { get; } = new MinkowskiSum();
+
+    /// <summary>
+    /// Create a new instance with a self contained cache.
+    /// </summary>
+    /// <returns></returns>
+    public static IMinkowskiSumService CreateInstance() => new MinkowskiSum();
+
     private static volatile object minkowskiSyncLock = new object();
-    private static MinkowskiDictionary minkowskiCache = new MinkowskiDictionary();
+    private MinkowskiDictionary minkowskiCache = new MinkowskiDictionary();
 
-    private static int callCounter = 0;
+    private int callCounter = 0;
 
-    internal static int CallCounter
+    int IMinkowskiSumService.CallCounter
     {
       get
       {
@@ -23,7 +43,7 @@
       }
     }
 
-    internal static INfp DllImportExecute(INfp a, INfp b, MinkowskiSumCleaning minkowskiSumCleaning = MinkowskiSumCleaning.None)
+    INfp IMinkowskiSumService.DllImportExecute(INfp a, INfp b, MinkowskiSumCleaning minkowskiSumCleaning = MinkowskiSumCleaning.None)
     {
       Dictionary<string, List<PointF>> dic1 = new Dictionary<string, List<PointF>>();
       Dictionary<string, List<double>> dic2 = new Dictionary<string, List<double>>();
@@ -31,16 +51,16 @@
       foreach (var item in a.Points)
       {
         var target = dic2["A"];
-        target.Add(item.x);
-        target.Add(item.y);
+        target.Add(item.X);
+        target.Add(item.Y);
       }
 
       dic2.Add("B", new List<double>());
       foreach (var item in b.Points)
       {
         var target = dic2["B"];
-        target.Add(item.x);
-        target.Add(item.y);
+        target.Add(item.X);
+        target.Add(item.Y);
       }
 
       List<double> hdat = new List<double>();
@@ -49,8 +69,8 @@
       {
         foreach (var pitem in item.Points)
         {
-          hdat.Add(pitem.x);
-          hdat.Add(pitem.y);
+          hdat.Add(pitem.X);
+          hdat.Add(pitem.Y);
         }
       }
 
@@ -160,12 +180,12 @@
       return ret;
     }
 
-    public static NFP ClipperExecute(INfp a, INfp b, MinkowskiSumPick minkowskiSumPick)
+    NFP IMinkowskiSumService.ClipperExecute(INfp a, INfp b, MinkowskiSumPick minkowskiSumPick)
     {
-      return ClipperExecute(a.Points, b.Points, minkowskiSumPick);
+      return ((IMinkowskiSumService)this).ClipperExecute(a.Points, b.Points, minkowskiSumPick);
     }
 
-    public static NFP ClipperExecute(SvgPoint[] a, SvgPoint[] b, MinkowskiSumPick minkowskiSumPick)
+    NFP IMinkowskiSumService.ClipperExecute(SvgPoint[] a, SvgPoint[] b, MinkowskiSumPick minkowskiSumPick)
     {
       var ac = DeepNestClipper.ScaleUpPaths(a, 10000000);
       var bc = DeepNestClipper.ScaleUpPaths(b, 10000000);
@@ -194,8 +214,8 @@
 
       for (var i = 0; i < clipperNfp.Length; i++)
       {
-        clipperNfp[i].x += b[0].x;
-        clipperNfp[i].y += b[0].y;
+        clipperNfp[i].X += b[0].X;
+        clipperNfp[i].Y += b[0].Y;
       }
 
       return clipperNfp;

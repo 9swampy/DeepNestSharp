@@ -21,6 +21,7 @@
 
     private readonly IMessageService messageService;
     private readonly Action setIsErrored;
+    private readonly IMinkowskiSumService minkowskiSumService;
     private GeneticAlgorithm.Procreant ga;
     private PolygonTreeItem[] tree;
     private bool useHoles;
@@ -29,11 +30,20 @@
     private IProgressDisplayer progressDisplayer;
     private volatile bool isStopped;
 
-    public SvgNest(IMessageService messageService, IProgressDisplayer progressDisplayer, Action setIsErrored)
+    public int CallCounter
+    {
+      get
+      {
+        return minkowskiSumService.CallCounter;
+      }
+    }
+
+    public SvgNest(IMessageService messageService, IProgressDisplayer progressDisplayer, Action setIsErrored, IMinkowskiSumService minkowskiSumService)
     {
       this.messageService = messageService;
       this.progressDisplayer = progressDisplayer;
       this.setIsErrored = setIsErrored;
+      this.minkowskiSumService = minkowskiSumService;
     }
 
     public TopNestResultsCollection TopNestResults { get; private set; } = new TopNestResultsCollection(Config);
@@ -58,7 +68,7 @@
       for (var j = 0; j < simple.Length; j++)
       {
         var s = simple[j];
-        var d2 = ((o.x - s.x) * (o.x - s.x)) + ((o.y - s.y) * (o.y - s.y));
+        var d2 = ((o.X - s.X) * (o.X - s.X)) + ((o.Y - s.Y) * (o.Y - s.Y));
         if (d2 < tol * tol)
         {
           inrange.Add(new InrangeItem() { point = s, distance = d2 });
@@ -89,7 +99,7 @@
         for (int j = 0; j < simple.Length; j++)
         {
           var s = simple[j];
-          var d2 = ((o.x - s.x) * (o.x - s.x)) + ((o.y - s.y) * (o.y - s.y));
+          var d2 = ((o.X - s.X) * (o.X - s.X)) + ((o.Y - s.Y) * (o.Y - s.Y));
           if (mind == null || d2 < mind)
           {
             target = s;
@@ -107,7 +117,7 @@
     {
       // scaling is deliberately coarse to filter out points that lie *on* the polygon
       var p = svgToClipper2(polygon, 1000);
-      var pt = new ClipperLib.IntPoint(1000 * point.x, 1000 * point.y);
+      var pt = new ClipperLib.IntPoint(1000 * point.X, 1000 * point.Y);
 
       return ClipperLib.Clipper.PointInPolygon(pt, p.ToList()) > 0;
     }
@@ -206,7 +216,7 @@
       if (doSimplify)
       {
         // polygon to polyline
-        var copy = polygon.slice(0);
+        var copy = polygon.Slice(0);
         ((IHiddenNfp)copy).Push(copy[0]);
 
         // mark all segments greater than ~0.25 in to be kept
@@ -216,7 +226,7 @@
         {
           var p1 = copy[i];
           var p2 = copy[i + 1];
-          var sqd = ((p2.x - p1.x) * (p2.x - p1.x)) + ((p2.y - p1.y) * (p2.y - p1.y));
+          var sqd = ((p2.X - p1.X) * (p2.X - p1.X)) + ((p2.Y - p1.Y) * (p2.Y - p1.Y));
           if (sqd > fixedTolerance)
           {
             p1.Marked = true;
@@ -303,12 +313,12 @@
 
           // reverse point offset and try to find exterior points
           var test = offset.CloneTop();
-          test.Points[i] = new SvgPoint(target.x, target.y);
+          test.Points[i] = new SvgPoint(target.X, target.Y);
 
           if (!exterior(test, polygon, inside, curveTolerance))
           {
-            o.x = target.x;
-            o.y = target.y;
+            o.X = target.X;
+            o.Y = target.Y;
           }
           else
           {
@@ -321,11 +331,11 @@
                 var delta = j * (tolerance / numshells);
                 target = GetTarget(o, shell, 2 * delta);
                 test = offset.CloneTop();
-                test.Points[i] = new SvgPoint(target.x, target.y);
+                test.Points[i] = new SvgPoint(target.X, target.Y);
                 if (!exterior(test, polygon, inside, curveTolerance))
                 {
-                  o.x = target.x;
-                  o.y = target.y;
+                  o.X = target.X;
+                  o.Y = target.Y;
                   break;
                 }
               }
@@ -345,7 +355,7 @@
           var p1 = offset[i];
           var p2 = offset[i + 1 == offset.Length ? 0 : i + 1];
 
-          var sqd = ((p2.x - p1.x) * (p2.x - p1.x)) + ((p2.y - p1.y) * (p2.y - p1.y));
+          var sqd = ((p2.X - p1.X) * (p2.X - p1.X)) + ((p2.Y - p1.Y) * (p2.Y - p1.Y));
 
           if (sqd < fixedTolerance)
           {
@@ -357,23 +367,23 @@
             var s1 = simple[j];
             var s2 = simple[j + 1 == simple.Length ? 0 : j + 1];
 
-            var sqds = ((p2.x - p1.x) * (p2.x - p1.x)) + ((p2.y - p1.y) * (p2.y - p1.y));
+            var sqds = ((p2.X - p1.X) * (p2.X - p1.X)) + ((p2.Y - p1.Y) * (p2.Y - p1.Y));
 
             if (sqds < fixedTolerance)
             {
               continue;
             }
 
-            if ((GeometryUtil._almostEqual(s1.x, s2.x) || GeometryUtil._almostEqual(s1.y, s2.y)) && // we only really care about vertical and horizontal lines
+            if ((GeometryUtil._almostEqual(s1.X, s2.X) || GeometryUtil._almostEqual(s1.Y, s2.Y)) && // we only really care about vertical and horizontal lines
             GeometryUtil._withinDistance(p1, s1, 2 * tolerance) &&
             GeometryUtil._withinDistance(p2, s2, 2 * tolerance) &&
             (!GeometryUtil._withinDistance(p1, s1, curveTolerance / 1000) ||
             !GeometryUtil._withinDistance(p2, s2, curveTolerance / 1000)))
             {
-              p1.x = s1.x;
-              p1.y = s1.y;
-              p2.x = s2.x;
-              p2.y = s2.y;
+              p1.X = s1.X;
+              p1.Y = s1.Y;
+              p2.X = s2.X;
+              p2.Y = s2.Y;
               straightened = true;
             }
           }
@@ -623,20 +633,20 @@
       return result.ToArray();
     }
 
-    // converts a polygon from normal float coordinates to integer coordinates used by clipper, as well as x/y -> X/Y
+    // converts a polygon from normal double coordinates to integer coordinates used by clipper, as well as x/y -> X/Y
     public static IntPoint[] svgToClipper2(INfp polygon, double? scale = null)
     {
       var d = DeepNestClipper.ScaleUpPaths(polygon.Points, scale == null ? Config.ClipperScale : scale.Value);
       return d.ToArray();
     }
 
-    // converts a polygon from normal float coordinates to integer coordinates used by clipper, as well as x/y -> X/Y
+    // converts a polygon from normal double coordinates to integer coordinates used by clipper, as well as x/y -> X/Y
     public static ClipperLib.IntPoint[] svgToClipper(INfp polygon)
     {
       var d = DeepNestClipper.ScaleUpPaths(polygon.Points, Config.ClipperScale);
       return d.ToArray();
 
-      return polygon.Points.Select(z => new IntPoint((long)z.x, (long)z.y)).ToArray();
+      return polygon.Points.Select(z => new IntPoint((long)z.X, (long)z.Y)).ToArray();
     }
 
     // returns a less complex polygon that satisfies the curve tolerance
@@ -712,8 +722,8 @@
       // remove duplicate endpoints
       var start = cleaned[0];
       var end = cleaned[cleaned.Length - 1];
-      if (start == end || (GeometryUtil._almostEqual(start.x, end.x)
-          && GeometryUtil._almostEqual(start.y, end.y)))
+      if (start == end || (GeometryUtil._almostEqual(start.X, end.X)
+          && GeometryUtil._almostEqual(start.Y, end.Y)))
       {
         cleaned.ReplacePoints(cleaned.Points.Take(cleaned.Points.Count() - 1));
       }
@@ -960,7 +970,7 @@
           }
           else
           {
-            Background background = new Background(this.progressDisplayer, this.ResponseProcessor);
+            Background background = new Background(this.progressDisplayer, this, minkowskiSumService);
             background.BackgroundStart(data, config);
           }
         }
@@ -984,8 +994,8 @@
       {
         clone.Add(
             new IntPoint(
-             polygon[i].x,
-             polygon[i].y));
+             polygon[i].X,
+             polygon[i].Y));
       }
 
       return clone.ToArray();

@@ -72,7 +72,13 @@
     {
       get
       {
-        return config.PopulationSize * 2 / 10;
+        var result = config.PopulationSize * 2 / 10;
+        if (result <= 0)
+        {
+          throw new InvalidOperationException("MaxCapacity is zero so no results will ever be captured. Fix the configuration (or feed in DefaultSvgNestConfig if it's a test).");
+        }
+
+        return result;
       }
     }
 
@@ -89,6 +95,11 @@
     public int IndexOf(INestResult nestResult)
     {
       return this.items.IndexOf(nestResult);
+    }
+
+    internal void Clear()
+    {
+      this.items.Clear();
     }
   }
 }

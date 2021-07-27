@@ -10,66 +10,66 @@
     // returns true if points are within the given distance
     public static bool _withinDistance(SvgPoint p1, SvgPoint p2, double distance)
     {
-      var dx = p1.x - p2.x;
-      var dy = p1.y - p2.y;
+      var dx = p1.X - p2.X;
+      var dy = p1.Y - p2.Y;
       return ((dx * dx) + (dy * dy)) < distance * distance;
     }
 
     // returns an interior NFP for the special case where A is a rectangle
     public static NFP[] noFitPolygonRectangle(NFP A, NFP B)
     {
-      var minAx = A[0].x;
-      var minAy = A[0].y;
-      var maxAx = A[0].x;
-      var maxAy = A[0].y;
+      var minAx = A[0].X;
+      var minAy = A[0].Y;
+      var maxAx = A[0].X;
+      var maxAy = A[0].Y;
 
       for (var i = 1; i < A.Length; i++)
       {
-        if (A[i].x < minAx)
+        if (A[i].X < minAx)
         {
-          minAx = A[i].x;
+          minAx = A[i].X;
         }
 
-        if (A[i].y < minAy)
+        if (A[i].Y < minAy)
         {
-          minAy = A[i].y;
+          minAy = A[i].Y;
         }
 
-        if (A[i].x > maxAx)
+        if (A[i].X > maxAx)
         {
-          maxAx = A[i].x;
+          maxAx = A[i].X;
         }
 
-        if (A[i].y > maxAy)
+        if (A[i].Y > maxAy)
         {
-          maxAy = A[i].y;
+          maxAy = A[i].Y;
         }
       }
 
-      var minBx = B[0].x;
-      var minBy = B[0].y;
-      var maxBx = B[0].x;
-      var maxBy = B[0].y;
+      var minBx = B[0].X;
+      var minBy = B[0].Y;
+      var maxBx = B[0].X;
+      var maxBy = B[0].Y;
       for (int i = 1; i < B.Length; i++)
       {
-        if (B[i].x < minBx)
+        if (B[i].X < minBx)
         {
-          minBx = B[i].x;
+          minBx = B[i].X;
         }
 
-        if (B[i].y < minBy)
+        if (B[i].Y < minBy)
         {
-          minBy = B[i].y;
+          minBy = B[i].Y;
         }
 
-        if (B[i].x > maxBx)
+        if (B[i].X > maxBx)
         {
-          maxBx = B[i].x;
+          maxBx = B[i].X;
         }
 
-        if (B[i].y > maxBy)
+        if (B[i].Y > maxBy)
         {
-          maxBy = B[i].y;
+          maxBy = B[i].Y;
         }
       }
 
@@ -87,17 +87,17 @@
       {
                 new NFP(new SvgPoint[]
                 {
-                    new SvgPoint(minAx - minBx + B[0].x, minAy - minBy + B[0].y),
-                    new SvgPoint(maxAx - maxBx + B[0].x, minAy - minBy + B[0].y),
-                    new SvgPoint(maxAx - maxBx + B[0].x, maxAy - maxBy + B[0].y),
-                    new SvgPoint(minAx - minBx + B[0].x, maxAy - maxBy + B[0].y),
+                    new SvgPoint(minAx - minBx + B[0].X, minAy - minBy + B[0].Y),
+                    new SvgPoint(maxAx - maxBx + B[0].X, minAy - minBy + B[0].Y),
+                    new SvgPoint(maxAx - maxBx + B[0].X, maxAy - maxBy + B[0].Y),
+                    new SvgPoint(minAx - minBx + B[0].X, maxAy - maxBy + B[0].Y),
                 }),
       };
       return pnts;
     }
 
     // returns the rectangular bounding box of the given polygon
-        public static PolygonBounds getPolygonBounds(INfp _polygon)
+    public static PolygonBounds getPolygonBounds(INfp _polygon)
     {
       return getPolygonBounds(_polygon.Points);
     }
@@ -115,29 +115,29 @@
         throw new ArgumentException("null");
       }
 
-      var xmin = polygon[0].x;
-      var xmax = polygon[0].x;
-      var ymin = polygon[0].y;
-      var ymax = polygon[0].y;
+      var xmin = polygon[0].X;
+      var xmax = polygon[0].X;
+      var ymin = polygon[0].Y;
+      var ymax = polygon[0].Y;
 
       for (var i = 1; i < polygon.Length; i++)
       {
-        if (polygon[i].x > xmax)
+        if (polygon[i].X > xmax)
         {
-          xmax = polygon[i].x;
+          xmax = polygon[i].X;
         }
-        else if (polygon[i].x < xmin)
+        else if (polygon[i].X < xmin)
         {
-          xmin = polygon[i].x;
+          xmin = polygon[i].X;
         }
 
-        if (polygon[i].y > ymax)
+        if (polygon[i].Y > ymax)
         {
-          ymax = polygon[i].y;
+          ymax = polygon[i].Y;
         }
-        else if (polygon[i].y < ymin)
+        else if (polygon[i].Y < ymin)
         {
-          ymin = polygon[i].y;
+          ymin = polygon[i].Y;
         }
       }
 
@@ -158,12 +158,12 @@
 
       for (var i = 0; i < poly.Points.Length; i++)
       {
-        if (!_almostEqual(poly.Points[i].x, bb.x) && !_almostEqual(poly.Points[i].x, bb.x + bb.width))
+        if (!_almostEqual(poly.Points[i].X, bb.X) && !_almostEqual(poly.Points[i].X, bb.X + bb.Width))
         {
           return false;
         }
 
-        if (!_almostEqual(poly.Points[i].y, bb.y) && !_almostEqual(poly.Points[i].y, bb.y + bb.height))
+        if (!_almostEqual(poly.Points[i].Y, bb.Y) && !_almostEqual(poly.Points[i].Y, bb.Y + bb.Height))
         {
           return false;
         }
@@ -172,16 +172,16 @@
       return true;
     }
 
-    public static PolygonWithBounds rotatePolygon(NFP polygon, float angle)
+    public static PolygonWithBounds rotatePolygon(NFP polygon, double angle)
     {
       List<SvgPoint> rotated = new List<SvgPoint>();
-      angle = (float)(angle * Math.PI / 180.0f);
+      angle = (double)(angle * Math.PI / 180.0);
       for (var i = 0; i < polygon.Points.Length; i++)
       {
-        var x = polygon.Points[i].x;
-        var y = polygon.Points[i].y;
-        var x1 = (float)((x * Math.Cos(angle)) - (y * Math.Sin(angle)));
-        var y1 = (float)((x * Math.Sin(angle)) + (y * Math.Cos(angle)));
+        var x = polygon.Points[i].X;
+        var y = polygon.Points[i].Y;
+        var x1 = (double)((x * Math.Cos(angle)) - (y * Math.Sin(angle)));
+        var y1 = (double)((x * Math.Sin(angle)) + (y * Math.Cos(angle)));
 
         rotated.Add(new SvgPoint(x1, y1));
       }
@@ -191,10 +191,10 @@
 
       var ret = new PolygonWithBounds(rotated);
       var bounds = GeometryUtil.getPolygonBounds(ret);
-      ret.x = bounds.x;
-      ret.y = bounds.y;
-      ret.Width = bounds.width;
-      ret.Height = bounds.height;
+      ret.X = bounds.X;
+      ret.Y = bounds.Y;
+      ret.Width = bounds.Width;
+      ret.Height = bounds.Height;
       return ret;
     }
 
@@ -225,7 +225,7 @@
       {
         for (var j = 0; j < nfp[i].Length; j++)
         {
-          if (_almostEqual(p.x, nfp[i][j].x) && _almostEqual(p.y, nfp[i][j].y))
+          if (_almostEqual(p.X, nfp[i][j].X) && _almostEqual(p.Y, nfp[i][j].Y))
           {
             return true;
           }
@@ -238,30 +238,30 @@
     // normalize vector into a unit vector
     public static SvgPoint _normalizeVector(SvgPoint v)
     {
-      if (_almostEqual((v.x * v.x) + (v.y * v.y), 1))
+      if (_almostEqual((v.X * v.X) + (v.Y * v.Y), 1))
       {
         return v; // given vector was already a unit vector
       }
 
-      var len = Math.Sqrt((v.x * v.x) + (v.y * v.y));
+      var len = Math.Sqrt((v.X * v.X) + (v.Y * v.Y));
       var inverse = (float)(1 / len);
 
-      return new SvgPoint(v.x * inverse, v.y * inverse);
+      return new SvgPoint(v.X * inverse, v.Y * inverse);
     }
 
     public static double? pointDistance(SvgPoint p, SvgPoint s1, SvgPoint s2, SvgPoint normal, bool infinite = false)
     {
       normal = _normalizeVector(normal);
 
-      var dir = new SvgPoint(normal.y, -normal.x);
+      var dir = new SvgPoint(normal.Y, -normal.X);
 
-      var pdot = (p.x * dir.x) + (p.y * dir.y);
-      var s1dot = (s1.x * dir.x) + (s1.y * dir.y);
-      var s2dot = (s2.x * dir.x) + (s2.y * dir.y);
+      var pdot = (p.X * dir.X) + (p.Y * dir.Y);
+      var s1dot = (s1.X * dir.X) + (s1.Y * dir.Y);
+      var s2dot = (s2.X * dir.X) + (s2.Y * dir.Y);
 
-      var pdotnorm = (p.x * normal.x) + (p.y * normal.y);
-      var s1dotnorm = (s1.x * normal.x) + (s1.y * normal.y);
-      var s2dotnorm = (s2.x * normal.x) + (s2.y * normal.y);
+      var pdotnorm = (p.X * normal.X) + (p.Y * normal.Y);
+      var s1dotnorm = (s1.X * normal.X) + (s1.Y * normal.Y);
+      var s2dotnorm = (s2.X * normal.X) + (s2.Y * normal.Y);
 
       if (!infinite)
       {
@@ -284,16 +284,16 @@
       return -(pdotnorm - s1dotnorm + ((s1dotnorm - s2dotnorm) * (s1dot - pdot) / (s1dot - s2dot)));
     }
 
-    private static double TOL = (float)Math.Pow(10, -9); // Floating point error is likely to be above 1 epsilon
+    private static double TOL = (double)Math.Pow(10, -9); // floating point error is likely to be above 1 epsilon
 
     // returns true if p lies on the line segment defined by AB, but not at any endpoints
     // may need work!
     public static bool _onSegment(SvgPoint A, SvgPoint B, SvgPoint p)
     {
       // vertical line
-      if (_almostEqual(A.x, B.x) && _almostEqual(p.x, A.x))
+      if (_almostEqual(A.X, B.X) && _almostEqual(p.X, A.X))
       {
-        if (!_almostEqual(p.y, B.y) && !_almostEqual(p.y, A.y) && p.y < Math.Max(B.y, A.y) && p.y > Math.Min(B.y, A.y))
+        if (!_almostEqual(p.Y, B.Y) && !_almostEqual(p.Y, A.Y) && p.Y < Math.Max(B.Y, A.Y) && p.Y > Math.Min(B.Y, A.Y))
         {
           return true;
         }
@@ -304,9 +304,9 @@
       }
 
       // horizontal line
-      if (_almostEqual(A.y, B.y) && _almostEqual(p.y, A.y))
+      if (_almostEqual(A.Y, B.Y) && _almostEqual(p.Y, A.Y))
       {
-        if (!_almostEqual(p.x, B.x) && !_almostEqual(p.x, A.x) && p.x < Math.Max(B.x, A.x) && p.x > Math.Min(B.x, A.x))
+        if (!_almostEqual(p.X, B.X) && !_almostEqual(p.X, A.X) && p.X < Math.Max(B.X, A.X) && p.X > Math.Min(B.X, A.X))
         {
           return true;
         }
@@ -317,32 +317,32 @@
       }
 
       // range check
-      if ((p.x < A.x && p.x < B.x) || (p.x > A.x && p.x > B.x) || (p.y < A.y && p.y < B.y) || (p.y > A.y && p.y > B.y))
+      if ((p.X < A.X && p.X < B.X) || (p.X > A.X && p.X > B.X) || (p.Y < A.Y && p.Y < B.Y) || (p.Y > A.Y && p.Y > B.Y))
       {
         return false;
       }
 
       // exclude end points
-      if ((_almostEqual(p.x, A.x) && _almostEqual(p.y, A.y)) || (_almostEqual(p.x, B.x) && _almostEqual(p.y, B.y)))
+      if ((_almostEqual(p.X, A.X) && _almostEqual(p.Y, A.Y)) || (_almostEqual(p.X, B.X) && _almostEqual(p.Y, B.Y)))
       {
         return false;
       }
 
-      var cross = ((p.y - A.y) * (B.x - A.x)) - ((p.x - A.x) * (B.y - A.y));
+      var cross = ((p.Y - A.Y) * (B.X - A.X)) - ((p.X - A.X) * (B.Y - A.Y));
 
       if (Math.Abs(cross) > TOL)
       {
         return false;
       }
 
-      var dot = ((p.x - A.x) * (B.x - A.x)) + ((p.y - A.y) * (B.y - A.y));
+      var dot = ((p.X - A.X) * (B.X - A.X)) + ((p.Y - A.Y) * (B.Y - A.Y));
 
       if (dot < 0 || _almostEqual(dot, 0))
       {
         return false;
       }
 
-      var len2 = ((B.x - A.x) * (B.x - A.x)) + ((B.y - A.y) * (B.y - A.y));
+      var len2 = ((B.X - A.X) * (B.X - A.X)) + ((B.Y - A.Y) * (B.Y - A.Y));
 
       if (dot > len2 || _almostEqual(dot, len2))
       {
@@ -361,8 +361,8 @@
       var Aoffsetx = A.Offsetx ?? 0;
       var Aoffsety = A.Offsety ?? 0;
 
-      A = A.slice(0);
-      B = B.slice(0);
+      A = A.Slice(0);
+      B = B.Slice(0);
 
       // close the loop for polygons
       if (A[0] != A[A.Length - 1])
@@ -389,11 +389,11 @@
         SvgPoint minp = null;
         for (var j = 0; j < edgeA.Length - 1; j++)
         {
-          p = new SvgPoint(edgeB[i].x + Boffsetx, edgeB[i].y + Boffsety);
-          s1 = new SvgPoint(edgeA[j].x + Aoffsetx, edgeA[j].y + Aoffsety);
-          s2 = new SvgPoint(edgeA[j + 1].x + Aoffsetx, edgeA[j + 1].y + Aoffsety);
+          p = new SvgPoint(edgeB[i].X + Boffsetx, edgeB[i].Y + Boffsety);
+          s1 = new SvgPoint(edgeA[j].X + Aoffsetx, edgeA[j].Y + Aoffsety);
+          s2 = new SvgPoint(edgeA[j + 1].X + Aoffsetx, edgeA[j + 1].Y + Aoffsety);
 
-          if (Math.Abs(((s2.y - s1.y) * direction.x) - ((s2.x - s1.x) * direction.y)) < TOL)
+          if (Math.Abs(((s2.Y - s1.Y) * direction.X) - ((s2.X - s1.X) * direction.Y)) < TOL)
           {
             continue;
           }
@@ -423,8 +423,8 @@
       int i, j;
       for (i = 0, j = polygon.Points.Length - 1; i < polygon.Points.Length; j = i++)
       {
-        area += (polygon.Points[j].x + polygon.Points[i].x) * (polygon.Points[j].y
-            - polygon.Points[i].y);
+        area += (polygon.Points[j].X + polygon.Points[i].X) * (polygon.Points[j].Y
+            - polygon.Points[i].Y);
       }
 
       return 0.5f * area;
@@ -442,18 +442,18 @@
 
       // var offsetx = polygon.Offsetx || 0;
       // var offsety = polygon.Offsety || 0;
-      double offsetx = polygon.Offsetx == null ? 0 : polygon.Offsetx.Value;
-      double offsety = polygon.Offsety == null ? 0 : polygon.Offsety.Value;
+      var offsetx = polygon.Offsetx == null ? 0 : polygon.Offsetx.Value;
+      var offsety = polygon.Offsety == null ? 0 : polygon.Offsety.Value;
 
       int i, j;
       for (i = 0, j = polygon.Points.Count() - 1; i < polygon.Points.Length; j = i++)
       {
-        var xi = polygon.Points[i].x + offsetx;
-        var yi = polygon.Points[i].y + offsety;
-        var xj = polygon.Points[j].x + offsetx;
-        var yj = polygon.Points[j].y + offsety;
+        var xi = polygon.Points[i].X + offsetx;
+        var yi = polygon.Points[i].Y + offsety;
+        var xj = polygon.Points[j].X + offsetx;
+        var yj = polygon.Points[j].Y + offsety;
 
-        if (_almostEqual(xi, point.x) && _almostEqual(yi, point.y))
+        if (_almostEqual(xi, point.X) && _almostEqual(yi, point.Y))
         {
           return null; // no result
         }
@@ -468,7 +468,7 @@
           continue;
         }
 
-        var intersect = ((yi > point.y) != (yj > point.y)) && (point.x < ((xj - xi) * (point.y - yi) / (yj - yi)) + xi);
+        var intersect = ((yi > point.Y) != (yj > point.Y)) && (point.X < ((xj - xi) * (point.Y - yi) / (yj - yi)) + xi);
         if (intersect)
         {
           inside = !inside;
@@ -488,17 +488,17 @@
       var bOffsetx = B.Offsetx ?? 0;
       var bOffsety = B.Offsety ?? 0;
 
-      A = A.slice(0);
-      B = B.slice(0);
+      A = A.Slice(0);
+      B = B.Slice(0);
 
       for (var i = 0; i < A.Length - 1; i++)
       {
         for (var j = 0; j < B.Length - 1; j++)
         {
-          var a1 = new SvgPoint(A[i].x + aOffsetx, A[i].y + aOffsety);
-          var a2 = new SvgPoint(A[i + 1].x + aOffsetx, A[i + 1].y + aOffsety);
-          var b1 = new SvgPoint(B[j].x + bOffsetx, B[j].y + bOffsety);
-          var b2 = new SvgPoint(B[j + 1].x + bOffsetx, B[j + 1].y + bOffsety);
+          var a1 = new SvgPoint(A[i].X + aOffsetx, A[i].Y + aOffsety);
+          var a2 = new SvgPoint(A[i + 1].X + aOffsetx, A[i + 1].Y + aOffsety);
+          var b1 = new SvgPoint(B[j].X + bOffsetx, B[j].Y + bOffsety);
+          var b2 = new SvgPoint(B[j + 1].X + bOffsetx, B[j + 1].Y + bOffsety);
 
           var prevbindex = (j == 0) ? B.Length - 1 : j - 1;
           var prevaindex = (i == 0) ? A.Length - 1 : i - 1;
@@ -506,34 +506,34 @@
           var nextaindex = (i + 1 == A.Length - 1) ? 0 : i + 2;
 
           // go even further back if we happen to hit on a loop end point
-          if (B[prevbindex] == B[j] || (_almostEqual(B[prevbindex].x, B[j].x) && _almostEqual(B[prevbindex].y, B[j].y)))
+          if (B[prevbindex] == B[j] || (_almostEqual(B[prevbindex].X, B[j].X) && _almostEqual(B[prevbindex].Y, B[j].Y)))
           {
             prevbindex = (prevbindex == 0) ? B.Length - 1 : prevbindex - 1;
           }
 
-          if (A[prevaindex] == A[i] || (_almostEqual(A[prevaindex].x, A[i].x) && _almostEqual(A[prevaindex].y, A[i].y)))
+          if (A[prevaindex] == A[i] || (_almostEqual(A[prevaindex].X, A[i].X) && _almostEqual(A[prevaindex].Y, A[i].Y)))
           {
             prevaindex = (prevaindex == 0) ? A.Length - 1 : prevaindex - 1;
           }
 
           // go even further forward if we happen to hit on a loop end point
-          if (B[nextbindex] == B[j + 1] || (_almostEqual(B[nextbindex].x, B[j + 1].x) && _almostEqual(B[nextbindex].y, B[j + 1].y)))
+          if (B[nextbindex] == B[j + 1] || (_almostEqual(B[nextbindex].X, B[j + 1].X) && _almostEqual(B[nextbindex].Y, B[j + 1].Y)))
           {
             nextbindex = (nextbindex == B.Length - 1) ? 0 : nextbindex + 1;
           }
 
-          if (A[nextaindex] == A[i + 1] || (_almostEqual(A[nextaindex].x, A[i + 1].x) && _almostEqual(A[nextaindex].y, A[i + 1].y)))
+          if (A[nextaindex] == A[i + 1] || (_almostEqual(A[nextaindex].X, A[i + 1].X) && _almostEqual(A[nextaindex].Y, A[i + 1].Y)))
           {
             nextaindex = (nextaindex == A.Length - 1) ? 0 : nextaindex + 1;
           }
 
-          var a0 = new SvgPoint(A[prevaindex].x + aOffsetx, A[prevaindex].y + aOffsety);
-          var b0 = new SvgPoint(B[prevbindex].x + bOffsetx, B[prevbindex].y + bOffsety);
+          var a0 = new SvgPoint(A[prevaindex].X + aOffsetx, A[prevaindex].Y + aOffsety);
+          var b0 = new SvgPoint(B[prevbindex].X + bOffsetx, B[prevbindex].Y + bOffsety);
 
-          var a3 = new SvgPoint(A[nextaindex].x + aOffsetx, A[nextaindex].y + aOffsety);
-          var b3 = new SvgPoint(B[nextbindex].x + bOffsetx, B[nextbindex].y + bOffsety);
+          var a3 = new SvgPoint(A[nextaindex].X + aOffsetx, A[nextaindex].Y + aOffsety);
+          var b3 = new SvgPoint(B[nextbindex].X + bOffsetx, B[nextbindex].Y + bOffsety);
 
-          if (_onSegment(a1, a2, b1) || (_almostEqual(a1.x, b1.x) && _almostEqual(a1.y, b1.y)))
+          if (_onSegment(a1, a2, b1) || (_almostEqual(a1.X, b1.X) && _almostEqual(a1.Y, b1.Y)))
           {
             // if a point is on a segment, it could intersect or it could not. Check via the neighboring points
             var b0in = pointInPolygon(b0, A);
@@ -548,7 +548,7 @@
             }
           }
 
-          if (_onSegment(a1, a2, b2) || (_almostEqual(a2.x, b2.x) && _almostEqual(a2.y, b2.y)))
+          if (_onSegment(a1, a2, b2) || (_almostEqual(a2.X, b2.X) && _almostEqual(a2.Y, b2.Y)))
           {
             // if a point is on a segment, it could intersect or it could not. Check via the neighboring points
             var b1in = pointInPolygon(b1, A);
@@ -564,7 +564,7 @@
             }
           }
 
-          if (_onSegment(b1, b2, a1) || (_almostEqual(a1.x, b2.x) && _almostEqual(a1.y, b2.y)))
+          if (_onSegment(b1, b2, a1) || (_almostEqual(a1.X, b2.X) && _almostEqual(a1.Y, b2.Y)))
           {
             // if a point is on a segment, it could intersect or it could not. Check via the neighboring points
             var a0in = pointInPolygon(a0, B);
@@ -580,7 +580,7 @@
             }
           }
 
-          if (_onSegment(b1, b2, a2) || (_almostEqual(a2.x, b1.x) && _almostEqual(a2.y, b1.y)))
+          if (_onSegment(b1, b2, a2) || (_almostEqual(a2.X, b1.X) && _almostEqual(a2.Y, b1.Y)))
           {
             // if a point is on a segment, it could intersect or it could not. Check via the neighboring points
             var a1in = pointInPolygon(a1, B);
@@ -620,12 +620,12 @@
     {
       double a1, a2, b1, b2, c1, c2, x, y;
 
-      a1 = B.y - A.y;
-      b1 = A.x - B.x;
-      c1 = (B.x * A.y) - (A.x * B.y);
-      a2 = F.y - E.y;
-      b2 = E.x - F.x;
-      c2 = (F.x * E.y) - (E.x * F.y);
+      a1 = B.Y - A.Y;
+      b1 = A.X - B.X;
+      c1 = (B.X * A.Y) - (A.X * B.Y);
+      a2 = F.Y - E.Y;
+      b2 = E.X - F.X;
+      c2 = (F.X * E.Y) - (E.X * F.Y);
 
       var denom = (a1 * b2) - (a2 * b1);
 
@@ -647,22 +647,22 @@
       if (!infinite)
       {
         // coincident points do not count as intersecting
-        if (Math.Abs(A.x - B.x) > TOL && ((A.x < B.x) ? x < A.x || x > B.x : x > A.x || x < B.x))
+        if (Math.Abs(A.X - B.X) > TOL && ((A.X < B.X) ? x < A.X || x > B.X : x > A.X || x < B.X))
         {
           return null;
         }
 
-        if (Math.Abs(A.y - B.y) > TOL && ((A.y < B.y) ? y < A.y || y > B.y : y > A.y || y < B.y))
+        if (Math.Abs(A.Y - B.Y) > TOL && ((A.Y < B.Y) ? y < A.Y || y > B.Y : y > A.Y || y < B.Y))
         {
           return null;
         }
 
-        if (Math.Abs(E.x - F.x) > TOL && ((E.x < F.x) ? x < E.x || x > F.x : x > E.x || x < F.x))
+        if (Math.Abs(E.X - F.X) > TOL && ((E.X < F.X) ? x < E.X || x > F.X : x > E.X || x < F.X))
         {
           return null;
         }
 
-        if (Math.Abs(E.y - F.y) > TOL && ((E.y < F.y) ? y < E.y || y > F.y : y > E.y || y < F.y))
+        if (Math.Abs(E.Y - F.Y) > TOL && ((E.Y < F.Y) ? y < E.Y || y > F.Y : y > E.Y || y < F.Y))
         {
           return null;
         }
@@ -676,8 +676,8 @@
     private static SvgPoint SearchStartPoint(INfp A, INfp B, bool inside, NFP[] NFP = null)
     {
       // clone arrays
-      A = A.slice(0);
-      B = B.slice(0);
+      A = A.Slice(0);
+      B = B.Slice(0);
 
       // close the loop for polygons
       if (A[0] != A[A.Length - 1])
@@ -697,16 +697,16 @@
           A[i].Marked = true;
           for (var j = 0; j < B.Length; j++)
           {
-            B.Offsetx = A[i].x - B[j].x;
-            B.Offsety = A[i].y - B[j].y;
+            B.Offsetx = A[i].X - B[j].X;
+            B.Offsety = A[i].Y - B[j].Y;
 
             bool? bInside = null;
             for (var k = 0; k < B.Length; k++)
             {
               var inpoly = pointInPolygon(
                   new SvgPoint(
-                  B[k].x + B.Offsetx.Value,
-                  B[k].y + B.Offsety.Value), A);
+                  B[k].X + B.Offsetx.Value,
+                  B[k].Y + B.Offsety.Value), A);
               if (inpoly != null)
               {
                 bInside = inpoly;
@@ -727,8 +727,8 @@
             }
 
             // slide B along vector
-            var vx = A[i + 1].x - A[i].x;
-            var vy = A[i + 1].y - A[i].y;
+            var vx = A[i + 1].X - A[i].X;
+            var vy = A[i + 1].Y - A[i].Y;
 
             var d1 = polygonProjectionDistance(A, B, new SvgPoint(vx, vy));
             var d2 = polygonProjectionDistance(B, A, new SvgPoint(-vx, -vy));
@@ -767,7 +767,7 @@
 
             if (d * d < vd2 && !_almostEqual(d * d, vd2))
             {
-              var vd = (float)Math.Sqrt((vx * vx) + (vy * vy));
+              var vd = Math.Sqrt((vx * vx) + (vy * vy));
               vx *= d.Value / vd;
               vy *= d.Value / vd;
             }
@@ -779,7 +779,7 @@
             {
               var inpoly = pointInPolygon(
                   new SvgPoint(
-                   B[k].x + B.Offsetx.Value, B[k].y + B.Offsety.Value), A);
+                   B[k].X + B.Offsetx.Value, B[k].Y + B.Offsety.Value), A);
               if (inpoly != null)
               {
                 bInside = inpoly;
@@ -818,22 +818,22 @@
     public static double? segmentDistance(SvgPoint A, SvgPoint B, SvgPoint E, SvgPoint F, SvgPoint direction)
     {
       var normal = new SvgPoint(
-          direction.y,
-          -direction.x);
+          direction.Y,
+          -direction.X);
 
       var reverse = new SvgPoint(
-              -direction.x,
-              -direction.y);
+              -direction.X,
+              -direction.Y);
 
-      var dotA = (A.x * normal.x) + (A.y * normal.y);
-      var dotB = (B.x * normal.x) + (B.y * normal.y);
-      var dotE = (E.x * normal.x) + (E.y * normal.y);
-      var dotF = (F.x * normal.x) + (F.y * normal.y);
+      var dotA = (A.X * normal.X) + (A.Y * normal.Y);
+      var dotB = (B.X * normal.X) + (B.Y * normal.Y);
+      var dotE = (E.X * normal.X) + (E.Y * normal.Y);
+      var dotF = (F.X * normal.X) + (F.Y * normal.Y);
 
-      var crossA = (A.x * direction.x) + (A.y * direction.y);
-      var crossB = (B.x * direction.x) + (B.y * direction.y);
-      var crossE = (E.x * direction.x) + (E.y * direction.y);
-      var crossF = (F.x * direction.x) + (F.y * direction.y);
+      var crossA = (A.X * direction.X) + (A.Y * direction.Y);
+      var crossB = (B.X * direction.X) + (B.Y * direction.Y);
+      var crossE = (E.X * direction.X) + (E.Y * direction.Y);
+      var crossF = (F.X * direction.X) + (F.Y * direction.Y);
 
       var crossABmin = Math.Min(crossA, crossB);
       var crossABmax = Math.Max(crossA, crossB);
@@ -876,28 +876,28 @@
         overlap = (minMax - maxMin) / (maxMax - minMin);
       }
 
-      var crossABE = ((E.y - A.y) * (B.x - A.x)) - ((E.x - A.x) * (B.y - A.y));
-      var crossABF = ((F.y - A.y) * (B.x - A.x)) - ((F.x - A.x) * (B.y - A.y));
+      var crossABE = ((E.Y - A.Y) * (B.X - A.X)) - ((E.X - A.X) * (B.Y - A.Y));
+      var crossABF = ((F.Y - A.Y) * (B.X - A.X)) - ((F.X - A.X) * (B.Y - A.Y));
 
       // lines are colinear
       if (_almostEqual(crossABE, 0) && _almostEqual(crossABF, 0))
       {
-        var ABnorm = new SvgPoint(B.y - A.y, A.x - B.x);
-        var EFnorm = new SvgPoint(F.y - E.y, E.x - F.x);
+        var ABnorm = new SvgPoint(B.Y - A.Y, A.X - B.X);
+        var EFnorm = new SvgPoint(F.Y - E.Y, E.X - F.X);
 
-        var ABnormlength = (float)Math.Sqrt((ABnorm.x * ABnorm.x) + (ABnorm.y * ABnorm.y));
-        ABnorm.x /= ABnormlength;
-        ABnorm.y /= ABnormlength;
+        var ABnormlength = Math.Sqrt((ABnorm.X * ABnorm.X) + (ABnorm.Y * ABnorm.Y));
+        ABnorm.X /= ABnormlength;
+        ABnorm.Y /= ABnormlength;
 
-        var EFnormlength = (float)Math.Sqrt((EFnorm.x * EFnorm.x) + (EFnorm.y * EFnorm.y));
-        EFnorm.x /= EFnormlength;
-        EFnorm.y /= EFnormlength;
+        var EFnormlength = Math.Sqrt((EFnorm.X * EFnorm.X) + (EFnorm.Y * EFnorm.Y));
+        EFnorm.X /= EFnormlength;
+        EFnorm.Y /= EFnormlength;
 
         // segment normals must point in opposite directions
-        if (Math.Abs((ABnorm.y * EFnorm.x) - (ABnorm.x * EFnorm.y)) < TOL && (ABnorm.y * EFnorm.y) + (ABnorm.x * EFnorm.x) < 0)
+        if (Math.Abs((ABnorm.Y * EFnorm.X) - (ABnorm.X * EFnorm.Y)) < TOL && (ABnorm.Y * EFnorm.Y) + (ABnorm.X * EFnorm.X) < 0)
         {
           // normal of AB segment must point in same direction as given direction vector
-          var normdot = (ABnorm.y * direction.y) + (ABnorm.x * direction.x);
+          var normdot = (ABnorm.Y * direction.Y) + (ABnorm.X * direction.X);
 
           // the segments merely slide along eachother
           if (_almostEqual(normdot, 0, TOL))
@@ -1026,8 +1026,8 @@
       Boffsetx = B.Offsetx ?? 0;
       Boffsety = B.Offsety ?? 0;
 
-      A = A.slice(0);
-      B = B.slice(0);
+      A = A.Slice(0);
+      B = B.Slice(0);
 
       // close the loop for polygons
       if (A[0] != A[A.Length - 1])
@@ -1051,10 +1051,10 @@
       var dir = _normalizeVector(new SvgPoint(direction.x, direction.y));
 
       var normal = new SvgPoint(
-          dir.y,
-          -dir.x);
+          dir.Y,
+          -dir.X);
 
-      var reverse = new SvgPoint(-dir.x, -dir.y);
+      var reverse = new SvgPoint(-dir.X, -dir.Y);
 
       for (var i = 0; i < edgeB.Length - 1; i++)
       {
@@ -1062,13 +1062,13 @@
         for (var j = 0; j < edgeA.Length - 1; j++)
         {
           A1 = new SvgPoint(
-               edgeA[j].x + Aoffsetx, edgeA[j].y + Aoffsety);
+               edgeA[j].X + Aoffsetx, edgeA[j].Y + Aoffsety);
           A2 = new SvgPoint(
-              edgeA[j + 1].x + Aoffsetx, edgeA[j + 1].y + Aoffsety);
-          B1 = new SvgPoint(edgeB[i].x + Boffsetx, edgeB[i].y + Boffsety);
-          B2 = new SvgPoint(edgeB[i + 1].x + Boffsetx, edgeB[i + 1].y + Boffsety);
+              edgeA[j + 1].X + Aoffsetx, edgeA[j + 1].Y + Aoffsety);
+          B1 = new SvgPoint(edgeB[i].X + Boffsetx, edgeB[i].Y + Boffsety);
+          B2 = new SvgPoint(edgeB[i + 1].X + Boffsetx, edgeB[i + 1].Y + Boffsety);
 
-          if ((_almostEqual(A1.x, A2.x) && _almostEqual(A1.y, A2.y)) || (_almostEqual(B1.x, B2.x) && _almostEqual(B1.y, B2.y)))
+          if ((_almostEqual(A1.X, A2.X) && _almostEqual(A1.Y, A2.Y)) || (_almostEqual(B1.X, B2.X) && _almostEqual(B1.Y, B2.Y)))
           {
             continue; // ignore extremely small lines
           }
@@ -1104,67 +1104,6 @@
       }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // given a static polygon A and a movable polygon B, compute a no fit polygon by orbiting B about A
     // if the inside flag is set, B is orbited inside of A rather than outside
     // if the searchEdges flag is set, all edges of A are explored for NFPs - multiple
@@ -1180,18 +1119,18 @@
 
       int i = 0, j = 0;
 
-      var minA = A[0].y;
+      var minA = A[0].Y;
       var minAindex = 0;
 
-      var maxB = B[0].y;
+      var maxB = B[0].Y;
       var maxBindex = 0;
 
       for (i = 1; i < A.Length; i++)
       {
         A[i].Marked = false;
-        if (A[i].y < minA)
+        if (A[i].Y < minA)
         {
-          minA = A[i].y;
+          minA = A[i].Y;
           minAindex = i;
         }
       }
@@ -1199,9 +1138,9 @@
       for (i = 1; i < B.Length; i++)
       {
         B[i].Marked = false;
-        if (B[i].y > maxB)
+        if (B[i].Y > maxB)
         {
-          maxB = B[i].y;
+          maxB = B[i].Y;
           maxBindex = i;
         }
       }
@@ -1211,8 +1150,8 @@
       {
         // shift B such that the bottom-most point of B is at the top-most point of A. This guarantees an initial placement with no intersections
         startpoint = new SvgPoint(
-             A[minAindex].x - B[maxBindex].x,
-             A[minAindex].y - B[maxBindex].y);
+             A[minAindex].X - B[maxBindex].X,
+             A[minAindex].Y - B[maxBindex].Y);
       }
       else
       {
@@ -1224,8 +1163,8 @@
 
       while (startpoint != null)
       {
-        B.Offsetx = startpoint.x;
-        B.Offsety = startpoint.y;
+        B.Offsetx = startpoint.X;
+        B.Offsety = startpoint.Y;
 
         // maintain a list of touching points/edges
         List<TouchingItem> touching = null;
@@ -1237,10 +1176,10 @@
             y: B[0].y + B.Offsety
         }];*/
 
-        ((IHiddenNfp)nfp).Push(new SvgPoint(B[0].x + B.Offsetx.Value, B[0].y + B.Offsety.Value));
+        ((IHiddenNfp)nfp).Push(new SvgPoint(B[0].X + B.Offsetx.Value, B[0].Y + B.Offsety.Value));
 
-        double referencex = B[0].x + B.Offsetx.Value;
-        double referencey = B[0].y + B.Offsety.Value;
+        double referencex = B[0].X + B.Offsetx.Value;
+        double referencey = B[0].Y + B.Offsety.Value;
         var startx = referencex;
         var starty = referencey;
         var counter = 0;
@@ -1256,20 +1195,20 @@
             for (j = 0; j < B.Length; j++)
             {
               var nextj = (j == B.Length - 1) ? 0 : j + 1;
-              if (_almostEqual(A[i].x, B[j].x + B.Offsetx) && _almostEqual(A[i].y, B[j].y + B.Offsety))
+              if (_almostEqual(A[i].X, B[j].X + B.Offsetx) && _almostEqual(A[i].Y, B[j].Y + B.Offsety))
               {
                 touching.Add(new TouchingItem(0, i, j));
               }
               else if (_onSegment(A[i], A[nexti],
-                  new SvgPoint(B[j].x + B.Offsetx.Value, B[j].y + B.Offsety.Value)))
+                  new SvgPoint(B[j].X + B.Offsetx.Value, B[j].Y + B.Offsety.Value)))
               {
                 touching.Add(new TouchingItem(1, nexti, j));
               }
               else if (_onSegment(
                   new SvgPoint(
-                   B[j].x + B.Offsetx.Value, B[j].y + B.Offsety.Value),
+                   B[j].X + B.Offsetx.Value, B[j].Y + B.Offsety.Value),
                   new SvgPoint(
-                   B[nextj].x + B.Offsetx.Value, B[nextj].y + B.Offsety.Value), A[i]))
+                   B[nextj].X + B.Offsetx.Value, B[nextj].Y + B.Offsety.Value), A[i]))
               {
                 touching.Add(new TouchingItem(2, i, nextj));
               }
@@ -1308,27 +1247,27 @@
             if (touching[i].type == 0)
             {
               var vA1 = new nVector(
-                   prevA.x - vertexA.x,
-                   prevA.y - vertexA.y,
+                   prevA.X - vertexA.X,
+                   prevA.Y - vertexA.Y,
                    vertexA,
                    prevA);
 
               var vA2 = new nVector(
-                       nextA.x - vertexA.x,
-                       nextA.y - vertexA.y,
+                       nextA.X - vertexA.X,
+                       nextA.Y - vertexA.Y,
                        vertexA,
                        nextA);
 
               // B vectors need to be inverted
               var vB1 = new nVector(
-                           vertexB.x - prevB.x,
-                           vertexB.y - prevB.y,
+                           vertexB.X - prevB.X,
+                           vertexB.Y - prevB.Y,
                            prevB,
                            vertexB);
 
               var vB2 = new nVector(
-                               vertexB.x - nextB.x,
-                               vertexB.y - nextB.y,
+                               vertexB.X - nextB.X,
+                               vertexB.Y - nextB.Y,
                                nextB,
                                vertexB);
 
@@ -1340,28 +1279,28 @@
             else if (touching[i].type == 1)
             {
               vectors.Add(new nVector(
-                   vertexA.x - (vertexB.x + B.Offsetx.Value),
-                   vertexA.y - (vertexB.y + B.Offsety.Value),
+                   vertexA.X - (vertexB.X + B.Offsetx.Value),
+                   vertexA.Y - (vertexB.Y + B.Offsety.Value),
                    prevA,
                    vertexA));
 
               vectors.Add(new nVector(
-                   prevA.x - (vertexB.x + B.Offsetx.Value),
-                   prevA.y - (vertexB.y + B.Offsety.Value),
+                   prevA.X - (vertexB.X + B.Offsetx.Value),
+                   prevA.Y - (vertexB.Y + B.Offsety.Value),
                    vertexA,
                    prevA));
             }
             else if (touching[i].type == 2)
             {
               vectors.Add(new nVector(
-                   vertexA.x - (vertexB.x + B.Offsetx.Value),
-                   vertexA.y - (vertexB.y + B.Offsety.Value),
+                   vertexA.X - (vertexB.X + B.Offsetx.Value),
+                   vertexA.Y - (vertexB.Y + B.Offsety.Value),
                    prevB,
                    vertexB));
 
               vectors.Add(new nVector(
-                   vertexA.x - (prevB.x + B.Offsetx.Value),
-                   vertexA.y - (prevB.y + B.Offsety.Value),
+                   vertexA.X - (prevB.X + B.Offsetx.Value),
+                   vertexA.Y - (prevB.Y + B.Offsety.Value),
                    vertexB,
                    prevB));
             }
@@ -1384,14 +1323,14 @@
                 (vectors[i].y * prevvector.y) + (vectors[i].x * prevvector.x) < 0)
             {
               // compare magnitude with unit vectors
-              var vectorlength = (float)Math.Sqrt((vectors[i].x * vectors[i].x) + (vectors[i].y * vectors[i].y));
+              var vectorlength = (double)Math.Sqrt((vectors[i].x * vectors[i].x) + (vectors[i].y * vectors[i].y));
               var unitv = new SvgPoint(vectors[i].x / vectorlength, vectors[i].y / vectorlength);
 
-              var prevlength = (float)Math.Sqrt((prevvector.x * prevvector.x) + (prevvector.y * prevvector.y));
+              var prevlength = (double)Math.Sqrt((prevvector.x * prevvector.x) + (prevvector.y * prevvector.y));
               var prevunit = new SvgPoint(prevvector.x / prevlength, prevvector.y / prevlength);
 
               // we need to scale down to unit vectors to normalize vector length. Could also just do a tan here
-              if (Math.Abs((unitv.y * prevunit.x) - (unitv.x * prevunit.y)) < 0.0001)
+              if (Math.Abs((unitv.Y * prevunit.X) - (unitv.X * prevunit.Y)) < 0.0001)
               {
                 continue;
               }
@@ -1402,7 +1341,7 @@
 
             if (d == null || d * d > vecd2)
             {
-              var vecd = (float)Math.Sqrt((vectors[i].x * vectors[i].x) + (vectors[i].y * vectors[i].y));
+              var vecd = (double)Math.Sqrt((vectors[i].x * vectors[i].x) + (vectors[i].y * vectors[i].y));
               d = vecd;
             }
 
@@ -1414,67 +1353,66 @@
           }
 
           if (translate == null || _almostEqual(maxd, 0))
-                    {
-                        // didn't close the loop, something went wrong here
-                        nfp = null;
-                        break;
-                    }
+          {
+            // didn't close the loop, something went wrong here
+            nfp = null;
+            break;
+          }
 
-                    translate.start.Marked = true;
-                    translate.end.Marked = true;
+          translate.start.Marked = true;
+          translate.end.Marked = true;
 
-                    prevvector = translate;
+          prevvector = translate;
 
-                    // trim
-                    var vlength2 = (translate.x * translate.x) + (translate.y * translate.y);
-                    if (maxd * maxd < vlength2 && !_almostEqual(maxd * maxd, vlength2))
-                    {
-                        var scale = (float)Math.Sqrt((maxd * maxd) / vlength2);
-                        translate.x *= scale;
-                        translate.y *= scale;
-                    }
+          // trim
+          var vlength2 = (translate.x * translate.x) + (translate.y * translate.y);
+          if (maxd * maxd < vlength2 && !_almostEqual(maxd * maxd, vlength2))
+          {
+            var scale = (double)Math.Sqrt((maxd * maxd) / vlength2);
+            translate.x *= scale;
+            translate.y *= scale;
+          }
 
-                    referencex += translate.x;
-                    referencey += translate.y;
+          referencex += translate.x;
+          referencey += translate.y;
 
-                    if (_almostEqual(referencex, startx) && _almostEqual(referencey, starty))
-                    {
-                        // we've made a full loop
-                        break;
-                    }
+          if (_almostEqual(referencex, startx) && _almostEqual(referencey, starty))
+          {
+            // we've made a full loop
+            break;
+          }
 
-                    // if A and B start on a touching horizontal line, the end point may not be the start point
-                    var looped = false;
-                    if (nfp.Length > 0)
-                    {
-                        for (i = 0; i < nfp.Length - 1; i++)
-                        {
-                            if (_almostEqual(referencex, nfp[i].x) && _almostEqual(referencey, nfp[i].y))
-                            {
-                                looped = true;
-                            }
-                        }
-                    }
+          // if A and B start on a touching horizontal line, the end point may not be the start point
+          var looped = false;
+          if (nfp.Length > 0)
+          {
+            for (i = 0; i < nfp.Length - 1; i++)
+            {
+              if (_almostEqual(referencex, nfp[i].X) && _almostEqual(referencey, nfp[i].Y))
+              {
+                looped = true;
+              }
+            }
+          }
 
-                    if (looped)
-                    {
-                        // we've made a full loop
-                        break;
-                    }
+          if (looped)
+          {
+            // we've made a full loop
+            break;
+          }
 
-                    ((IHiddenNfp)nfp).Push(new SvgPoint(
-                         referencex, referencey));
+          ((IHiddenNfp)nfp).Push(new SvgPoint(referencex, referencey));
 
-                    B.Offsetx += translate.x;
-                    B.Offsety += translate.y;
+          B.Offsetx += translate.x;
+          B.Offsety += translate.y;
 
-                    counter++;
-                }
+          counter++;
+        }
 
-                if (nfp != null && nfp.Length > 0)
-                {
-                    nfpList.Add(nfp);
-                }
+        if (nfp != null && nfp.Length > 0)
+        {
+          nfpList.Add(nfp);
+        }
 
         if (!searchEdges)
         {
@@ -1491,16 +1429,20 @@
 
   public class PolygonBounds
   {
-    public double x;
-    public double y;
-    public double width;
-    public double height;
-    public PolygonBounds(double _x, double _y, double _w, double _h)
+    public double X { get; set; }
+
+    public double Y { get; set; }
+
+    public double Width { get; set; }
+
+    public double Height { get; set; }
+
+    public PolygonBounds(double x, double y, double w, double h)
     {
-      x = _x;
-      y = _y;
-      width = _w;
-      height = _h;
+      X = x;
+      Y = y;
+      Width = w;
+      Height = h;
     }
   }
 }

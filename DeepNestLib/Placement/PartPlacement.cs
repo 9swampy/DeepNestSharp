@@ -1,9 +1,10 @@
 ﻿namespace DeepNestLib.Placement
 {
   using System;
+  using System.Text.Json;
   using System.Text.Json.Serialization;
 
-  public class PartPlacement
+  public class PartPlacement : IPartPlacement
   {
     public PartPlacement(INfp part)
     {
@@ -11,7 +12,7 @@
     }
 
     [JsonIgnore]
-    public double? mergedLength
+    public double? MergedLength
     {
       get
       {
@@ -25,7 +26,7 @@
     }
 
     [JsonIgnore]
-    public object mergedSegments
+    public object MergedSegments
     {
       get
       {
@@ -38,37 +39,42 @@
       }
     }
 
-    public int id { get; set; }
+    public int Id { get; set; }
 
     /// <summary>
     /// A hull of the part captured only when not Gravity or BoundingBox (ie. Squeeze).
     /// </summary>
-    public INfp hull { get; set; }
+    [JsonIgnore]
+    public INfp Hull { get; set; }
 
     /// <summary>
     /// A hull of the sheet captured only when not Gravity or BoundingBox (ie. Squeeze).
     /// </summary>
-    public INfp hullsheet { get; set; }
+    [JsonIgnore]
+    public INfp HullSheet { get; set; }
 
     /// <summary>
     /// Rotation of the part (sheets I don't think ever get rotated, so this would be absolute).
     /// </summary>
-    public float rotation { get; set; }
+    [JsonConverter(typeof(DoublePrecisionConverter))]
+    public double Rotation { get; set; }
 
     /// <summary>
     /// Offset of the part relative to the sheet.
     /// </summary>
-    public double x { get; set; }
+    [JsonConverter(typeof(DoublePrecisionConverter))]
+    public double X { get; set; }
 
     /// <summary>
     /// Offset of the part relative to the sheet.
     /// </summary>
-    public double y { get; set; }
+    [JsonConverter(typeof(DoublePrecisionConverter))]
+    public double Y { get; set; }
 
     /// <summary>
     /// Source of the part placed.
     /// </summary>
-    public int source { get; set; }
+    public int Source { get; set; }
 
     public INfp Part { get; }
   }

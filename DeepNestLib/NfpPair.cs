@@ -17,9 +17,9 @@
 
     public INfp nfp { get; internal set; }
 
-    public float ARotation { get; internal set; }
+    public double ARotation { get; internal set; }
 
-    public float BRotation { get; internal set; }
+    public double BRotation { get; internal set; }
 
     public int Asource { get; internal set; }
 

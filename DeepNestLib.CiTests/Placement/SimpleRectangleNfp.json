@@ -2,56 +2,47 @@
   "Fitted": false,
   "Sheet": null,
   "Name": "Sheet",
-  "x": 0,
-  "y": 0,
-  "WidthCalculated": 1,
-  "HeightCalculated": 2,
+  "X": 0,
+  "Y": 0,
   "Children": [],
-  "Length": 5,
   "Id": 0,
   "Offsetx": null,
   "Offsety": null,
   "Source": 3,
   "PlacementOrder": -1,
   "Rotation": 0,
-  "ForceRotations": false,
-  "Rotations": [
-    90,
-    270
-  ],
   "Points": [
     {
       "Exact": true,
       "Marked": false,
-      "x": 0,
-      "y": 2
+      "X": 0,
+      "Y": 2
     },
     {
       "Exact": true,
       "Marked": false,
-      "x": 1,
-      "y": 2
+      "X": 1,
+      "Y": 2
     },
     {
       "Exact": true,
       "Marked": false,
-      "x": 1,
-      "y": 0
+      "X": 1,
+      "Y": 0
     },
     {
       "Exact": true,
       "Marked": false,
-      "x": 0,
-      "y": 0
+      "X": 0,
+      "Y": 0
     },
     {
       "Exact": true,
       "Marked": false,
-      "x": 0,
-      "y": 2
+      "X": 0,
+      "Y": 2
     }
   ],
-  "Area": 2,
   "IsPriority": false,
   "StrictAngle": 0
 }

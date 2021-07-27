@@ -60,22 +60,22 @@
 
       foreach (var item in doc.Descendants("rect"))
       {
-        float xx = 0;
-        float yy = 0;
+        double xx = 0;
+        double yy = 0;
         if (item.Attribute("x") != null)
         {
-          xx = float.Parse(item.Attribute("x").Value);
+          xx = double.Parse(item.Attribute("x").Value);
         }
 
         if (item.Attribute("y") != null)
         {
-          yy = float.Parse(item.Attribute("y").Value);
+          yy = double.Parse(item.Attribute("y").Value);
         }
 
-        var ww = float.Parse(item.Attribute("width").Value);
-        var hh = float.Parse(item.Attribute("height").Value);
+        var ww = double.Parse(item.Attribute("width").Value);
+        var hh = double.Parse(item.Attribute("height").Value);
         GraphicsPath p = new GraphicsPath();
-        p.AddRectangle(new RectangleF(xx, yy, ww, hh));
+        p.AddRectangle(new RectangleF((float)xx, (float)yy, (float)ww, (float)hh));
         s.Outers.Add(new LocalContour() { Points = p.PathPoints.ToList() });
       }
 
@@ -113,10 +113,10 @@
         }
 
         var m = new Matrix();
-        m.Translate((float)item.x, (float)item.y);
-        m.Rotate(item.Rotation);
+        m.Translate((float)item.X, (float)item.Y);
+        m.Rotate((float)item.Rotation);
 
-        PointF[] pp = item.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
+        PointF[] pp = item.Points.Select(z => new PointF((float)z.X, (float)z.Y)).ToArray();
         m.TransformPoints(pp);
         var points = pp.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
 
@@ -130,7 +130,7 @@
         for (int i = 0; i < points.Count(); i++)
         {
           var p = points[i];
-          string coord = p.x.ToString().Replace(",", ".") + " " + p.y.ToString().Replace(",", ".");
+          string coord = p.X.ToString().Replace(",", ".") + " " + p.Y.ToString().Replace(",", ".");
           if (i == 0)
           {
             sb.Append("M" + coord + " ");
@@ -145,14 +145,14 @@
         {
           foreach (var citem in item.Children)
           {
-            pp = citem.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
+            pp = citem.Points.Select(z => new PointF((float)z.X, (float)z.Y)).ToArray();
             m.TransformPoints(pp);
             points = pp.Select(z => new SvgPoint(z.X, z.Y)).Reverse().ToArray();
 
             for (int i = 0; i < points.Count(); i++)
             {
               var p = points[i];
-              string coord = p.x.ToString().Replace(",", ".") + " " + p.y.ToString().Replace(",", ".");
+              string coord = p.X.ToString().Replace(",", ".") + " " + p.Y.ToString().Replace(",", ".");
               if (i == 0)
               {
                 sb.Append("M" + coord + " ");
@@ -172,7 +172,6 @@
       sb.AppendLine("</svg>");
       File.WriteAllText(path, sb.ToString());
     }
-
 
     public ISvgNestConfig Config { get; }
 
@@ -194,8 +193,8 @@
             foreach (var item in spl)
             {
               var spl2 = item.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
-              var x = float.Parse(spl2[0], CultureInfo.InvariantCulture);
-              var y = float.Parse(spl2[1], CultureInfo.InvariantCulture);
+              var x = double.Parse(spl2[0], CultureInfo.InvariantCulture);
+              var y = double.Parse(spl2[1], CultureInfo.InvariantCulture);
               poly.Add(new SvgPoint(x, y));
             }
           }
@@ -203,8 +202,8 @@
           break;
         case "rect":
           {
-            float x = 0;
-            float y = 0;
+            var x = 0d;
+            var y = 0d;
             if (element.Attribute("x") != null)
             {
               x = float.Parse(element.Attribute("x").Value, CultureInfo.InvariantCulture);
@@ -215,8 +214,8 @@
               y = float.Parse(element.Attribute("y").Value, CultureInfo.InvariantCulture);
             }
 
-            var w = float.Parse(element.Attribute("width").Value, CultureInfo.InvariantCulture);
-            var h = float.Parse(element.Attribute("height").Value, CultureInfo.InvariantCulture);
+            var w = double.Parse(element.Attribute("width").Value, CultureInfo.InvariantCulture);
+            var h = double.Parse(element.Attribute("height").Value, CultureInfo.InvariantCulture);
             poly.Add(new SvgPoint(x, y));
             poly.Add(new SvgPoint(x + w, y));
             poly.Add(new SvgPoint(x + w, y + h));
@@ -354,8 +353,8 @@
       }
 
       // do not include last point if coincident with starting point
-      while (poly.Count > 0 && GeometryUtil._almostEqual(poly[0].x, poly[poly.Count - 1].x, this.Config.ToleranceSvg)
-          && GeometryUtil._almostEqual(poly[0].y, poly[poly.Count - 1].y, this.Config.ToleranceSvg))
+      while (poly.Count > 0 && GeometryUtil._almostEqual(poly[0].X, poly[poly.Count - 1].X, this.Config.ToleranceSvg)
+          && GeometryUtil._almostEqual(poly[0].Y, poly[poly.Count - 1].Y, this.Config.ToleranceSvg))
       {
         poly.RemoveAt(0);
       }
@@ -366,16 +365,16 @@
 
   public class LocalContour
   {
-    public float Len
+    public double Len
     {
       get
       {
-        float len = 0;
+        double len = 0;
         for (int i = 1; i <= Points.Count; i++)
         {
           var p1 = Points[i - 1];
           var p2 = Points[i % Points.Count];
-          len += (float)Math.Sqrt(Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Y - p2.Y, 2));
+          len += Math.Sqrt(Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Y - p2.Y, 2));
         }
         return len;
       }

@@ -34,7 +34,7 @@
       }
     }
 
-    public float[] Rotation { get; set; }
+    public double[] Rotation { get; set; }
 
     public SheetPlacementCollection UsedSheets { get; private set; }
 
@@ -84,13 +84,13 @@
 
     public int TotalPartsCount => this.TotalPlacedCount + this.UnplacedParts.Count;
 
-    public float PartsPlacedPercent => (float)this.TotalPlacedCount / this.TotalPartsCount;
+    public double PartsPlacedPercent => (double)this.TotalPlacedCount / this.TotalPartsCount;
 
-    public float TotalPartsArea => this.UsedSheets.Sum(s => s.PartPlacements.Sum(p => p.Part.Area));
+    public double TotalPartsArea => this.UsedSheets.Sum(s => s.PartPlacements.Sum(p => p.Part.Area));
 
-    public float TotalSheetsArea => this.UsedSheets.Sum(s => s.Sheet.Area);
+    public double TotalSheetsArea => this.UsedSheets.Sum(s => s.Sheet.Area);
 
-    public float MaterialUtilization => Math.Abs(TotalPartsArea / TotalSheetsArea);
+    public double MaterialUtilization => Math.Abs(TotalPartsArea / TotalSheetsArea);
 
     public override string ToString()
     {

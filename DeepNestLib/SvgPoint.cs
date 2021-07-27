@@ -1,6 +1,7 @@
 ﻿namespace DeepNestLib
 {
   using System;
+  using System.Text.Json.Serialization;
 
   public class SvgPoint : IEquatable<SvgPoint>
   {
@@ -13,28 +14,30 @@
 
     public override string ToString()
     {
-      return "x: " + x + "; y: " + y;
+      return "x: " + X + "; y: " + Y;
     }
 
     public SvgPoint(double x, double y)
     {
-      this.x = x;
-      this.y = y;
+      this.X = x;
+      this.Y = y;
     }
 
     internal SvgPoint(SvgPoint point)
     {
       this.Exact = point.Exact;
       this.Marked = point.Marked;
-      this.x = point.x;
-      this.y = point.y;
+      this.X = point.X;
+      this.Y = point.Y;
     }
 
     public bool Marked { get; set; }
 
-    public double x { get; internal set; }
+    [JsonConverter(typeof(DoublePrecisionConverter))]
+    public double X { get; internal set; }
 
-    public double y { get; internal set; }
+    [JsonConverter(typeof(DoublePrecisionConverter))]
+    public double Y { get; internal set; }
 
     public SvgPoint Clone()
     {
@@ -43,7 +46,7 @@
 
     public override int GetHashCode()
     {
-      return HashCode.Combine(Exact, Marked, x, y);
+      return HashCode.Combine(Exact, Marked, X, Y);
     }
 
     public bool Equals(SvgPoint other)

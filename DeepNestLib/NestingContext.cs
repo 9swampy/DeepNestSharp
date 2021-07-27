@@ -15,6 +15,7 @@
     private readonly Random random = new Random();
     private int iterations = 0;
     private volatile bool isStopped;
+    private volatile SvgNest nest;
 
     public NestingContext(IMessageService messageService, IProgressDisplayer progressDisplayer)
     {
@@ -34,8 +35,8 @@
 
     public SvgNest Nest
     {
-      get;
-      private set;
+      get => nest;
+      private set => nest = value;
     }
 
     public int Iterations
@@ -46,16 +47,23 @@
       }
     }
 
-    public void StartNest()
+    public void StartNest(IMinkowskiSumService minkowskiSumService)
     {
+      this.ReorderSheets();
       this.InternalReset();
       this.Current = null;
       this.Nest = new SvgNest(
         this.messageService,
         this.progressDisplayer,
-        () => this.IsErrored = true);
+        () => this.IsErrored = true,
+        minkowskiSumService);
       this.progressDisplayer.DisplayToolStripMessage($"Pre-processing. . .");
       this.isStopped = false;
+    }
+
+    public void StartNest()
+    {
+      this.StartNest(MinkowskiSum.Default);
     }
 
     public void ResumeNest()
@@ -93,7 +101,7 @@
           NFP clone = new NFP();
           clone.Id = item.Id;
           clone.Source = item.Source;
-          clone.ReplacePoints(item.Points.Select(z => new SvgPoint(z.x, z.y) { Exact = z.Exact }));
+          clone.ReplacePoints(item.Points.Select(z => new SvgPoint(z.X, z.Y) { Exact = z.Exact }));
           if (item.Children != null)
           {
             foreach (var citem in item.Children)
@@ -102,7 +110,7 @@
               var l = clone.Children.Last();
               l.Id = citem.Id;
               l.Source = citem.Source;
-              l.ReplacePoints(citem.Points.Select(z => new SvgPoint(z.x, z.y) { Exact = z.Exact }));
+              l.ReplacePoints(citem.Points.Select(z => new SvgPoint(z.X, z.Y) { Exact = z.Exact }));
             }
           }
 
@@ -229,12 +237,12 @@
 
         foreach (var partPlacement in sheetPlacement.PartPlacements)
         {
-          var poly = Polygons.First(z => z.Id == partPlacement.id);
+          var poly = Polygons.First(z => z.Id == partPlacement.Id);
           placed.Add(poly);
           poly.Sheet = sheet;
-          poly.x = partPlacement.x + sheet.x;
-          poly.y = partPlacement.y + sheet.y;
-          poly.Rotation = partPlacement.rotation;
+          poly.X = partPlacement.X + sheet.X;
+          poly.Y = partPlacement.Y + sheet.Y;
+          poly.Rotation = partPlacement.Rotation;
           poly.PlacementOrder = sheetPlacement.PartPlacements.IndexOf(partPlacement);
         }
       }
@@ -242,8 +250,8 @@
       var ppps = Polygons.Where(z => !placed.Contains(z));
       foreach (var item in ppps)
       {
-        item.x = -1000;
-        item.y = 0;
+        item.X = -1000;
+        item.Y = 0;
       }
     }
 
@@ -254,8 +262,8 @@
       int gap = 10;
       for (int i = 0; i < Sheets.Count; i++)
       {
-        Sheets[i].x = x;
-        Sheets[i].y = y;
+        Sheets[i].X = x;
+        Sheets[i].Y = y;
         if (Sheets[i] is Sheet)
         {
           var r = Sheets[i] as Sheet;
@@ -263,8 +271,8 @@
         }
         else
         {
-          var maxx = Sheets[i].Points.Max(z => z.x);
-          var minx = Sheets[i].Points.Min(z => z.x);
+          var maxx = Sheets[i].Points.Max(z => z.X);
+          var minx = Sheets[i].Points.Min(z => z.X);
           var w = maxx - minx;
           x += w + gap;
         }
@@ -394,6 +402,7 @@
       this.Polygons.Clear();
       this.Sheets.Clear();
       InternalReset();
+      progressDisplayer.UpdateNestsList();
     }
 
     /// <summary>
@@ -402,10 +411,12 @@
     private void InternalReset()
     {
       SvgNest.Reset();
+      this.nest?.TopNestResults.Clear();
+      this.nest?.TopNestResults.Clear();
+      Current = null;
       Interlocked.Exchange(ref iterations, 0);
       this.IsErrored = false;
       this.Current = null;
-      this.Nest = null;
     }
 
     public void StopNest()

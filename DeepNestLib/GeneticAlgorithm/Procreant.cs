@@ -3,6 +3,7 @@
   using System;
   using System.Collections.Generic;
   using System.Linq;
+  using DeepNestLib.NestProject;
 
   public class Procreant
   {
@@ -11,13 +12,13 @@
     private readonly ISvgNestConfig Config;
     public PopulationItem[] Population;
 
-    private float[] strictVerticalAngles = new float[]
+    private double[] strictVerticalAngles = new double[]
     {
       0,
       180,
     };
 
-    private float[] strictHorizontalAngles = new float[]
+    private double[] strictHorizontalAngles = new double[]
     {
       90,
       270,
@@ -27,7 +28,7 @@
     {
       Config = config;
 
-      var angles = new List<float>();
+      var angles = new List<double>();
       for (var i = 0; i < adam.Length; i++)
       {
         if (config.StrictAngles == AnglesEnum.Vertical)
@@ -40,7 +41,7 @@
         }
         else
         {
-          var angle = (float)Math.Floor(r.NextDouble() * Config.Rotations) * (360f / Config.Rotations);
+          var angle = Math.Floor(r.NextDouble() * Config.Rotations) * (360f / Config.Rotations);
           angles.Add(angle);
         }
       }
@@ -120,7 +121,7 @@
 
     private PopulationItem Mutate(PopulationItem p)
     {
-      var clone = new PopulationItem(p.Parts.ToList(), p.Rotation.Clone() as float[]);
+      var clone = new PopulationItem(p.Parts.ToList(), p.Rotation.Clone() as double[]);
       for (var i = 0; i < clone.Parts.Count(); i++)
       {
         var rand = r.NextDouble();
@@ -148,7 +149,7 @@
           }
           else
           {
-            clone.Rotation[i] = (float)Math.Floor(r.NextDouble() * Config.Rotations) * (360f / Config.Rotations);
+            clone.Rotation[i] = Math.Floor(r.NextDouble() * Config.Rotations) * (360f / Config.Rotations);
           }
         }
       }
@@ -156,7 +157,7 @@
       return clone;
     }
 
-    private float[] shuffleArray(float[] array)
+    private double[] shuffleArray(double[] array)
     {
       for (var i = array.Length - 1; i > 0; i--)
       {
@@ -182,8 +183,8 @@
 
       var rand = r.NextDouble();
 
-      float lower = 0;
-      var weight = 1 / (float)pop.Length;
+      double lower = 0;
+      var weight = 1 / (double)pop.Length;
       var upper = weight;
 
       for (var i = 0; i < pop.Length; i++)
@@ -195,7 +196,7 @@
         }
 
         lower = upper;
-        upper += 2 * weight * ((pop.Length - i) / (float)pop.Length);
+        upper += 2 * weight * ((pop.Length - i) / (double)pop.Length);
       }
 
       return pop[0];
@@ -207,10 +208,10 @@
       var cutpoint = (int)Math.Round(Math.Min(Math.Max(r.NextDouble(), 0.1), 0.9) * (male.Parts.Count - 1));
 
       var gene1 = new List<NFP>(male.Parts.Take(cutpoint).ToArray());
-      var rot1 = new List<float>(male.Rotation.Take(cutpoint).ToArray());
+      var rot1 = new List<double>(male.Rotation.Take(cutpoint).ToArray());
 
       var gene2 = new List<NFP>(female.Parts.Take(cutpoint).ToArray());
-      var rot2 = new List<float>(female.Rotation.Take(cutpoint).ToArray());
+      var rot2 = new List<double>(female.Rotation.Take(cutpoint).ToArray());
 
       var i = 0;
 
@@ -268,6 +269,5 @@
       this.Population = newpopulation.ToArray();
     }
   }
-
 
 }

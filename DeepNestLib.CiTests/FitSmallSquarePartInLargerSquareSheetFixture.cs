@@ -19,13 +19,13 @@
       DxfGenerator.GenerateSquare("Sheet", 22D, RectangleType.FileLoad).TryImportFromRawDetail(0, out sheet).Should().BeTrue();
       INfp part;
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryImportFromRawDetail(0, out part).Should().BeTrue();
-      this.nestResult = new Background(A.Fake<IProgressDisplayer>(), null).PlaceParts(new INfp[] { sheet }, new INfp[] { part }, new SvgNestConfig());
+      this.nestResult = new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), MinkowskiSum.CreateInstance()).PlaceParts(new INfp[] { sheet }, new INfp[] { part }, new SvgNestConfig());
     }
 
     [Fact]
     public void GivenNullSheetsPassedInThenNullReturned()
     {
-      new Background(A.Fake<IProgressDisplayer>(), null).PlaceParts(null, new NFP[] { new NFP() }, new SvgNestConfig()).Should().BeNull();
+      new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), MinkowskiSum.CreateInstance()).PlaceParts(null, new NFP[] { new NFP() }, new SvgNestConfig()).Should().BeNull();
     }
 
     [Fact]
@@ -37,7 +37,7 @@
       INfp part;
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryImportFromRawDetail(0, out part).Should().BeTrue();
 
-      new Background(A.Fake<IProgressDisplayer>(), null).ExecuteDllImportMinkowski(sheet, part, MinkowskiCache.Cache).Should().NotBeNull();
+      new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), MinkowskiSum.CreateInstance()).ExecuteDllImportMinkowski(sheet, part, MinkowskiCache.Cache).Should().NotBeNull();
     }
 
     [Fact]
@@ -91,19 +91,19 @@
     [Fact]
     public void ShouldHaveOnePartOnOnePlacementWithExpectedX()
     {
-      this.nestResult.UsedSheets[0].PartPlacements[0].x.Should().Be(0);
+      this.nestResult.UsedSheets[0].PartPlacements[0].X.Should().Be(0);
     }
 
     [Fact]
     public void ShouldHaveOnePartOnOnePlacementWithExpectedY()
     {
-      this.nestResult.UsedSheets[0].PartPlacements[0].y.Should().Be(0);
+      this.nestResult.UsedSheets[0].PartPlacements[0].Y.Should().Be(0);
     }
 
     [Fact]
     public void ShouldHaveOnePartOnOnePlacementWithExpectedRotation()
     {
-      this.nestResult.UsedSheets[0].PartPlacements[0].rotation.Should().Be(0);
+      this.nestResult.UsedSheets[0].PartPlacements[0].Rotation.Should().Be(0);
     }
 
     [Fact]

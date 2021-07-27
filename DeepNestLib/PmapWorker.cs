@@ -11,15 +11,17 @@
     private readonly IList<NfpPair> pairs;
     private readonly IProgressDisplayer progressDisplayer;
     private readonly bool useParallel;
+    private readonly IMinkowskiSumService minkoskiSumService;
     private int processed = 0;
     private static readonly NfpPairDictionary NfpPairCache = new NfpPairDictionary();
     private static volatile object nfpPairCacheSyncLock = new object();
 
-    public PmapWorker(IList<NfpPair> pairs, IProgressDisplayer progressDisplayer, bool useParallel)
+    public PmapWorker(IList<NfpPair> pairs, IProgressDisplayer progressDisplayer, bool useParallel, IMinkowskiSumService minkoskiSumService)
     {
       this.pairs = pairs;
       this.progressDisplayer = progressDisplayer;
       this.useParallel = useParallel;
+      this.minkoskiSumService = minkoskiSumService;
     }
 
     private void DisplayProgress()
@@ -27,7 +29,7 @@
       Interlocked.Increment(ref this.processed);
       if (this.pairs != null)
       {
-        this.progressDisplayer.DisplayProgress(Math.Min(1F, (float)this.processed / (float)this.pairs.Count));
+        this.progressDisplayer.DisplayProgress(Math.Min(1F, (double)this.processed / (double)this.pairs.Count));
       }
     }
 
@@ -64,7 +66,7 @@
         if (!NfpPairCache.TryGetValue(a.Points, b.Points, pair.ARotation, pair.BRotation, pair.Asource, pair.Bsource, MinkowskiSumPick.Largest, out clipperNfp))
         {
           DisplayProgress();
-          clipperNfp = MinkowskiSum.ClipperExecute(a.Points, b.Points, MinkowskiSumPick.Largest);
+          clipperNfp = minkoskiSumService.ClipperExecute(a.Points, b.Points, MinkowskiSumPick.Largest);
           NfpPairCache.Add(a.Points, b.Points, pair.ARotation, pair.BRotation, pair.Asource, pair.Bsource, MinkowskiSumPick.Largest, clipperNfp);
         }
       }

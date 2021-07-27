@@ -69,7 +69,7 @@
     [Fact]
     public void ShouldHaveExpectedArea()
     {
-      this.loadedNfp.Area.Should().Be(2109.70581F);
+      this.loadedNfp.Area.Should().BeApproximately(2109, 1d);
     }
 
     [Fact]

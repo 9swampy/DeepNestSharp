@@ -1,0 +1,131 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\DeepNestLib\Background.cs" Link="Background.cs" />
+    <Compile Include="..\DeepNestLib\CacheHelper.cs" Link="CacheHelper.cs" />
+    <Compile Include="..\DeepNestLib\ClipCacheItem.cs" Link="ClipCacheItem.cs" />
+    <Compile Include="..\DeepNestLib\D3.cs" Link="D3.cs" />
+    <Compile Include="..\DeepNestLib\DataInfo.cs" Link="DataInfo.cs" />
+    <Compile Include="..\DeepNestLib\DbCache.cs" Link="DbCache.cs" />
+    <Compile Include="..\DeepNestLib\DbCacheKey.cs" Link="DbCacheKey.cs" />
+    <Compile Include="..\DeepNestLib\DeepNestClipper.cs" Link="DeepNestClipper.cs" />
+    <Compile Include="..\DeepNestLib\DoublePrecisionConverter.cs" Link="DoublePrecisionConverter.cs" />
+    <Compile Include="..\DeepNestLib\DxfParser.cs" Link="DxfParser.cs" />
+    <Compile Include="..\DeepNestLib\EmbededResourcesExtensions.cs" Link="EmbededResourcesExtensions.cs" />
+    <Compile Include="..\DeepNestLib\ExporterFactory.cs" Link="ExporterFactory.cs" />
+    <Compile Include="..\DeepNestLib\Extensions.cs" Link="Extensions.cs" />
+    <Compile Include="..\DeepNestLib\GeneticAlgorithm\IOriginalFitnessSheet.cs" Link="GeneticAlgorithm\IOriginalFitnessSheet.cs" />
+    <Compile Include="..\DeepNestLib\GeneticAlgorithm\NestChromosome.cs" Link="GeneticAlgorithm\NestChromosome.cs" />
+    <Compile Include="..\DeepNestLib\GeneticAlgorithm\NestFitness.cs" Link="GeneticAlgorithm\NestFitness.cs" />
+    <Compile Include="..\DeepNestLib\GeneticAlgorithm\OriginalFitness.cs" Link="GeneticAlgorithm\OriginalFitness.cs" />
+    <Compile Include="..\DeepNestLib\GeneticAlgorithm\OriginalFitnessSheet.cs" Link="GeneticAlgorithm\OriginalFitnessSheet.cs" />
+    <Compile Include="..\DeepNestLib\GeneticAlgorithm\PopulationItem.cs" Link="GeneticAlgorithm\PopulationItem.cs" />
+    <Compile Include="..\DeepNestLib\GeneticAlgorithm\Procreant.cs" Link="GeneticAlgorithm\Procreant.cs" />
+    <Compile Include="..\DeepNestLib\GeometryUtil.cs" Link="GeometryUtil.cs" />
+    <Compile Include="..\DeepNestLib\IDataInfo.cs" Link="IDataInfo.cs" />
+    <Compile Include="..\DeepNestLib\IDbCache.cs" Link="IDbCache.cs" />
+    <Compile Include="..\DeepNestLib\IDeprecatedClipper.cs" Link="IDeprecatedClipper.cs" />
+    <Compile Include="..\DeepNestLib\IExport.cs" Link="IExport.cs" />
+    <Compile Include="..\DeepNestLib\IHiddenNfp.cs" Link="IHiddenNfp.cs" />
+    <Compile Include="..\DeepNestLib\IMessageService.cs" Link="IMessageService.cs" />
+    <Compile Include="..\DeepNestLib\IMinkowskiSumService.cs" Link="IMinkowskiSumService.cs" />
+    <Compile Include="..\DeepNestLib\INfp.cs" Link="INfp.cs" />
+    <Compile Include="..\DeepNestLib\InrangeItem.cs" Link="InrangeItem.cs" />
+    <Compile Include="..\DeepNestLib\IntPointArrayExtensions.cs" Link="IntPointArrayExtensions.cs" />
+    <Compile Include="..\DeepNestLib\IProgressDisplayer.cs" Link="IProgressDisplayer.cs" />
+    <Compile Include="..\DeepNestLib\IStringify.cs" Link="IStringify.cs" />
+    <Compile Include="..\DeepNestLib\ISvgNestConfig.cs" Link="ISvgNestConfig.cs" />
+    <Compile Include="..\DeepNestLib\IWindowUnk.cs" Link="IWindowUnk.cs" />
+    <Compile Include="..\DeepNestLib\LineElement.cs" Link="LineElement.cs" />
+    <Compile Include="..\DeepNestLib\MessageBoxIcon.cs" Link="MessageBoxIcon.cs" />
+    <Compile Include="..\DeepNestLib\MinkowskiCache.cs" Link="MinkowskiCache.cs" />
+    <Compile Include="..\DeepNestLib\MinkowskiDictionary.cs" Link="MinkowskiDictionary.cs" />
+    <Compile Include="..\DeepNestLib\MinkowskiEqualityComparer.cs" Link="MinkowskiEqualityComparer.cs" />
+    <Compile Include="..\DeepNestLib\MinkowskiKey.cs" Link="MinkowskiKey.cs" />
+    <Compile Include="..\DeepNestLib\MinkowskiSum.cs" Link="MinkowskiSum.cs" />
+    <Compile Include="..\DeepNestLib\MinkowskiSumCleaning.cs" Link="MinkowskiSumCleaning.cs" />
+    <Compile Include="..\DeepNestLib\MinkowskiSumPick.cs" Link="MinkowskiSumPick.cs" />
+    <Compile Include="..\DeepNestLib\NestingContext.cs" Link="NestingContext.cs" />
+    <Compile Include="..\DeepNestLib\NestItem.cs" Link="NestItem.cs" />
+    <Compile Include="..\DeepNestLib\NestProject\AnglesEnum.cs" Link="NestProject\AnglesEnum.cs" />
+    <Compile Include="..\DeepNestLib\NestProject\DetailLoadInfo.cs" Link="NestProject\DetailLoadInfo.cs" />
+    <Compile Include="..\DeepNestLib\NestProject\IDetailLoadInfo.cs" Link="NestProject\IDetailLoadInfo.cs" />
+    <Compile Include="..\DeepNestLib\NestProject\ISheetLoadInfo.cs" Link="NestProject\ISheetLoadInfo.cs" />
+    <Compile Include="..\DeepNestLib\NestProject\SheetLoadInfo.cs" Link="NestProject\SheetLoadInfo.cs" />
+    <Compile Include="..\DeepNestLib\NFP.cs" Link="NFP.cs" />
+    <Compile Include="..\DeepNestLib\NfpExtensions.cs" Link="NfpExtensions.cs" />
+    <Compile Include="..\DeepNestLib\NfpJsonConverter.cs" Link="NfpJsonConverter.cs" />
+    <Compile Include="..\DeepNestLib\NfpPair.cs" Link="NfpPair.cs" />
+    <Compile Include="..\DeepNestLib\NfpPairDictionary.cs" Link="NfpPairDictionary.cs" />
+    <Compile Include="..\DeepNestLib\NfpPairEqualityComparer.cs" Link="NfpPairEqualityComparer.cs" />
+    <Compile Include="..\DeepNestLib\NfpPairEqualityComparerKey.cs" Link="NfpPairEqualityComparerKey.cs" />
+    <Compile Include="..\DeepNestLib\NfpPairsFactory.cs" Link="NfpPairsFactory.cs" />
+    <Compile Include="..\DeepNestLib\PartPlacementJsonConverter.cs" Link="PartPlacementJsonConverter.cs" />
+    <Compile Include="..\DeepNestLib\PlacementTypeEnum.cs" Link="PlacementTypeEnum.cs" />
+    <Compile Include="..\DeepNestLib\Placement\INestResult.cs" Link="Placement\INestResult.cs" />
+    <Compile Include="..\DeepNestLib\Placement\IPartPlacement.cs" Link="Placement\IPartPlacement.cs" />
+    <Compile Include="..\DeepNestLib\Placement\ISheetPlacement.cs" Link="Placement\ISheetPlacement.cs" />
+    <Compile Include="..\DeepNestLib\Placement\NestResult.cs" Link="Placement\NestResult.cs" />
+    <Compile Include="..\DeepNestLib\Placement\PartPlacement.cs" Link="Placement\PartPlacement.cs" />
+    <Compile Include="..\DeepNestLib\Placement\SheetPlacement.cs" Link="Placement\SheetPlacement.cs" />
+    <Compile Include="..\DeepNestLib\Placement\SheetPlacementCollection.cs" Link="Placement\SheetPlacementCollection.cs" />
+    <Compile Include="..\DeepNestLib\PmapWorker.cs" Link="PmapWorker.cs" />
+    <Compile Include="..\DeepNestLib\PolygonBase.cs" Link="PolygonBase.cs" />
+    <Compile Include="..\DeepNestLib\PolygonSimplificationDictionary.cs" Link="PolygonSimplificationDictionary.cs" />
+    <Compile Include="..\DeepNestLib\PolygonSimplificationEqualityComparer.cs" Link="PolygonSimplificationEqualityComparer.cs" />
+    <Compile Include="..\DeepNestLib\PolygonSimplificationKey.cs" Link="PolygonSimplificationKey.cs" />
+    <Compile Include="..\DeepNestLib\PolygonTreeItem.cs" Link="PolygonTreeItem.cs" />
+    <Compile Include="..\DeepNestLib\PolygonWithBounds.cs" Link="PolygonWithBounds.cs" />
+    <Compile Include="..\DeepNestLib\RawDetail.cs" Link="RawDetail.cs" />
+    <Compile Include="..\DeepNestLib\ReadOnlyListExtensions.cs" Link="ReadOnlyListExtensions.cs" />
+    <Compile Include="..\DeepNestLib\RectangleSheet.cs" Link="RectangleSheet.cs" />
+    <Compile Include="..\DeepNestLib\Sheet.cs" Link="Sheet.cs" />
+    <Compile Include="..\DeepNestLib\Simplify.cs" Link="Simplify.cs" />
+    <Compile Include="..\DeepNestLib\SvgNest.cs" Link="SvgNest.cs" />
+    <Compile Include="..\DeepNestLib\SvgParser.cs" Link="SvgParser.cs" />
+    <Compile Include="..\DeepNestLib\SvgPoint.cs" Link="SvgPoint.cs" />
+    <Compile Include="..\DeepNestLib\SvgPointArrayExtensions.cs" Link="SvgPointArrayExtensions.cs" />
+    <Compile Include="..\DeepNestLib\TopNestResultsCollection.cs" Link="TopNestResultsCollection.cs" />
+    <Compile Include="..\DeepNestLib\WindowUnk.cs" Link="WindowUnk.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="GeneticAlgorithm\" />
+    <Folder Include="NestProject\" />
+    <Folder Include="Placement\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GeneticSharp" Version="2.6.0" />
+    <PackageReference Include="GeneticSharp.Extensions" Version="2.6.0" />
+    <PackageReference Include="IxMilia.Dxf" Version="0.8.1" />
+    <PackageReference Include="Light.GuardClauses" Version="9.0.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
+    <PackageReference Include="System.Text.Json" Version="5.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Clipper.Core\Clipper.Core.csproj" />
+    <ProjectReference Include="..\MinkowskiWrapper.Core\MinkowskiWrapper.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+</Project>

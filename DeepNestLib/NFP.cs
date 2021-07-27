@@ -4,9 +4,13 @@
   using System.Collections.Generic;
   using System.Linq;
   using System.Text.Json;
+  using System.Text.Json.Serialization;
+  using DeepNestLib.NestProject;
 
   public class NFP : PolygonBase, INfp, IHiddenNfp, IStringify
   {
+    private double rotation;
+
     public bool Fitted
     {
       get { return this.Sheet != null; }
@@ -46,17 +50,21 @@
       this.points[i] = point;
     }
 
-    public bool isBin;
-
-    public void reverse()
+    /// <summary>
+    /// Reverses the sequence of points.
+    /// </summary>
+    public void Reverse()
     {
       this.points.Reverse();
     }
 
-    public double x { get; set; }
+    [JsonConverter(typeof(DoublePrecisionConverter))]
+    public double X { get; set; }
 
-    public double y { get; set; }
+    [JsonConverter(typeof(DoublePrecisionConverter))]
+    public double Y { get; set; }
 
+    [JsonIgnore]
     public double WidthCalculated
     {
       get
@@ -66,13 +74,14 @@
           return 0;
         }
 
-        var maxx = this.points.Max(z => z.x);
-        var minx = this.points.Min(z => z.x);
+        var maxx = this.points.Max(z => z.X);
+        var minx = this.points.Min(z => z.X);
 
         return maxx - minx;
       }
     }
 
+    [JsonIgnore]
     public double HeightCalculated
     {
       get
@@ -82,8 +91,8 @@
           return 0;
         }
 
-        var maxy = this.points.Max(z => z.y);
-        var miny = this.points.Min(z => z.y);
+        var maxy = this.points.Max(z => z.Y);
+        var miny = this.points.Min(z => z.Y);
         return maxy - miny;
       }
     }
@@ -98,6 +107,7 @@
 
     public IList<INfp> Children { get; set; } = new List<INfp>();
 
+    [JsonIgnore]
     public int Length
     {
       get
@@ -108,17 +118,18 @@
 
     public int Id { get; set; }
 
+    [JsonConverter(typeof(DoublePrecisionConverter))]
     public double? Offsetx { get; set; }
 
+    [JsonConverter(typeof(DoublePrecisionConverter))]
     public double? Offsety { get; set; }
 
     public int Source { get; set; } = -1;
 
     public int PlacementOrder { get; set; } = -1;
 
-    private float rotation;
-
-    public float Rotation
+    [JsonConverter(typeof(DoublePrecisionConverter))]
+    public double Rotation
     {
       get
       {
@@ -130,10 +141,6 @@
         this.rotation = value;
       }
     }
-
-    public bool ForceRotations { get; set; }
-
-    public float[] Rotations { get; } = new float[] { 90, 270 };
 
     public SvgPoint[] Points
     {
@@ -154,11 +161,12 @@
       return this.Points;
     }
 
-    public float Area
+    [JsonIgnore]
+    public double Area
     {
       get
       {
-        float ret = 0;
+        var ret = 0d;
         if (this.points.Length < 3)
         {
           return 0;
@@ -171,10 +179,10 @@
         {
           var s0 = pp[i - 1];
           var s1 = pp[i];
-          ret += (float)((s0.x * s1.y) - (s0.y * s1.x));
+          ret += (s0.X * s1.Y) - (s0.Y * s1.X);
         }
 
-        return (float)Math.Abs(ret / 2);
+        return (double)Math.Abs(ret / 2);
       }
     }
 
@@ -187,20 +195,20 @@
       this.points = this.points.Append(svgPoint).ToArray();
     }
 
-    public INfp slice(int v)
+    public INfp Slice(int v)
     {
       var ret = new NFP();
       List<SvgPoint> pp = new List<SvgPoint>();
       for (int i = v; i < this.Length; i++)
       {
-        pp.Add(new SvgPoint(this[i].x, this[i].y));
+        pp.Add(new SvgPoint(this[i].X, this[i].Y));
       }
 
       ret.ReplacePoints(pp.ToArray());
       return ret;
     }
 
-    public string stringify()
+    public string Stringify()
     {
       throw new NotImplementedException();
     }
@@ -217,7 +225,7 @@
 
       for (var i = 0; i < this.Length; i++)
       {
-        result.AddPoint(new SvgPoint(this[i].x, this[i].y));
+        result.AddPoint(new SvgPoint(this[i].X, this[i].Y));
       }
 
       if (this.Children != null && this.Children.Count > 0)
@@ -242,8 +250,8 @@
       for (var i = 0; i < this.Length; i++)
       {
         newp.AddPoint(new SvgPoint(
-             this[i].x,
-             this[i].y));
+             this[i].X,
+             this[i].Y));
       }
 
       return newp;
@@ -261,7 +269,7 @@
       clone.IsPriority = this.IsPriority;
       clone.StrictAngle = this.StrictAngle;
       clone.Name = this.Name;
-      clone.ReplacePoints(this.Points.Select(z => new SvgPoint(z.x, z.y) { Exact = z.Exact }));
+      clone.ReplacePoints(this.Points.Select(z => new SvgPoint(z.X, z.Y) { Exact = z.Exact }));
       if (this.Children != null)
       {
         foreach (var citem in this.Children)
@@ -270,21 +278,21 @@
           var l = clone.Children.Last();
           l.Id = citem.Id;
           l.Source = citem.Source;
-          l.ReplacePoints(citem.Points.Select(z => new SvgPoint(z.x, z.y) { Exact = z.Exact }));
+          l.ReplacePoints(citem.Points.Select(z => new SvgPoint(z.X, z.Y) { Exact = z.Exact }));
         }
       }
 
       return clone;
     }
 
-    public NFP Rotate(float degrees)
+    public NFP Rotate(double degrees)
     {
       var angle = degrees * Math.PI / 180;
       List<SvgPoint> pp = new List<SvgPoint>();
       for (var i = 0; i < this.Length; i++)
       {
-        var x = this[i].x;
-        var y = this[i].y;
+        var x = this[i].X;
+        var y = this[i].Y;
         var x1 = (x * Math.Cos(angle)) - (y * Math.Sin(angle));
         var y1 = (x * Math.Sin(angle)) + (y * Math.Cos(angle));
 
@@ -313,7 +321,7 @@
       NFP newtree = new NFP();
       foreach (var t in this.Points)
       {
-        newtree.AddPoint(new SvgPoint(t.x, t.y) { Exact = t.Exact });
+        newtree.AddPoint(new SvgPoint(t.X, t.Y) { Exact = t.Exact });
       }
 
       // jwb added the properties
@@ -346,7 +354,7 @@
       double[][] points = new double[this.Length][];
       for (var i = 0; i < this.Length; i++)
       {
-        points[i] = new double[] { this[i].x, this[i].y };
+        points[i] = new double[] { this[i].X, this[i].Y };
       }
 
       var hullpoints = D3.polygonHull(points);

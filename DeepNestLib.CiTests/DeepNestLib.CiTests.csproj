@@ -162,6 +162,7 @@
     <Compile Include="FitTwoSmallSquaresPartInTwoLargerSquareSheetsFixture.cs" />
     <Compile Include="GeneticAlgorithm\BoundingBoxFitnessFixture.cs" />
     <Compile Include="GeneticAlgorithm\GravityFitnessFixture.cs" />
+    <Compile Include="GeneticAlgorithm\SheetPlacementJsonHelper.cs" />
     <Compile Include="GeneticAlgorithm\SqueezeFitnessFixture.cs" />
     <Compile Include="NfpFixture.cs" />
     <Compile Include="PerfectFitnessFixture.cs" />

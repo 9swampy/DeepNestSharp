@@ -54,7 +54,7 @@
     [Fact]
     public void ShouldHaveExpectedArea()
     {
-      this.loadedNfp.Area.Should().Be(2500F);
+      this.loadedNfp.Area.Should().BeApproximately(2500, 1);
     }
 
     [Fact]

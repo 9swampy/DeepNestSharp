@@ -25,7 +25,7 @@
       return result;
     }
 
-    private float TotalSheetArea
+    private double TotalSheetArea
     {
       get
       {

@@ -14,6 +14,7 @@
   using System.Windows.Forms;
   using System.Xml.Linq;
   using DeepNestLib;
+  using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
 
   public partial class Form1 : Form
@@ -32,12 +33,11 @@
     private DrawingContext debugPreviewDrawingContext;
     private DrawingContext partsPreviewDrawingContext;
     private Thread th;
-    private float progressVal = 0;
+    private double progressVal = 0;
     private bool stop = false;
     private Random r = new Random();
     private int lastOpenFilterIndex = 1;
-    private List<DetailLoadInfo> infos = new List<DetailLoadInfo>();
-    private List<SheetLoadInfo> sheetsInfos = new List<SheetLoadInfo>();
+    private readonly ProjectInfo projectInfo = new ProjectInfo();
     private bool autoFit = true;
 
     internal ICollection<INfp> Polygons
@@ -52,18 +52,18 @@
     {
       InitializeComponent();
 
-      this.ProgressDisplayerInstance = new ProgressDisplayer(this);
+      this.ProgressDisplayerInstance = new ProgressDisplayer(this, InitialiseUiForStartNest);
       this.ContextualiseRunStopButtons(false);
 
       LoadSettings();
-      sheetsInfos.Add(new SheetLoadInfo() { Width = SvgNest.Config.SheetWidth, Height = SvgNest.Config.SheetHeight, Quantity = SvgNest.Config.SheetQuantity });
+      projectInfo.SheetLoadInfos.Add(new SheetLoadInfo() { Width = SvgNest.Config.SheetWidth, Height = SvgNest.Config.SheetHeight, Quantity = SvgNest.Config.SheetQuantity });
 
       //hack
       toolStripButton9.BackgroundImageLayout = ImageLayout.None;
       toolStripButton9.BackgroundImage = new Bitmap(1, 1);
       toolStripButton9.BackColor = Color.LightGreen;
 
-      sheetsList.SetObjects(sheetsInfos);
+      sheetsList.SetObjects(projectInfo.SheetLoadInfos);
 
       nestPreviewDrawingContext = new DrawingContext(nestPreview);
       debugPreviewDrawingContext = new DrawingContext(debugPreview);
@@ -120,7 +120,7 @@
         {
           if (this.context == null)
           {
-            this.context = new NestingContext(new MessageBoxService(), new ProgressDisplayer(this));
+            this.context = new NestingContext(new MessageBoxService(), new ProgressDisplayer(this, InitialiseUiForStartNest));
           }
         }
 
@@ -282,9 +282,13 @@
       {
         this.ShowMessage(ex);
       }
+      finally
+      {
+        Application.DoEvents();
+      }
     }
 
-    internal void DisplayProgress(float progressVal)
+    internal void DisplayProgress(double progressVal)
     {
       this.progressVal = progressVal;
     }
@@ -380,9 +384,9 @@
 
       for (int i = 0; i < 360; i += 5)
       {
-        var xx = w / 2 * Math.Cos(i * Math.PI / 180.0f);
-        var yy = w / 2 * Math.Sin(i * Math.PI / 180.0f);
-        tt.AddPoint(new SvgPoint(xx + w / 2, yy + w / 2));
+        var xx = w / 2f * (double)Math.Cos(i * Math.PI / 180.0f);
+        var yy = w / 2f * (double)Math.Sin(i * Math.PI / 180.0f);
+        tt.AddPoint(new SvgPoint(xx + (w / 2f), yy + (w / 2f)));
       }
 
       return tt;
@@ -410,7 +414,7 @@
     {
       try
       {
-        SvgNest.Config.Spacing = float.Parse(textBox1.Text, CultureInfo.InvariantCulture);
+        SvgNest.Config.Spacing = double.Parse(textBox1.Text, CultureInfo.InvariantCulture);
         textBox1.BackColor = Color.White;
         textBox1.ForeColor = Color.Black;
       }
@@ -425,7 +429,7 @@
     {
       try
       {
-        SvgNest.Config.SheetSpacing = float.Parse(textBox2.Text, CultureInfo.InvariantCulture);
+        SvgNest.Config.SheetSpacing = double.Parse(textBox2.Text, CultureInfo.InvariantCulture);
         textBox2.BackColor = Color.White;
         textBox2.ForeColor = Color.Black;
       }
@@ -462,7 +466,7 @@
         Sheet sheet = new Sheet();
         foreach (var item in pol.Points)
         {
-          sheet.AddPoint(new SvgPoint(item.x - b.x, item.y - b.y));
+          sheet.AddPoint(new SvgPoint(item.X - b.X, item.Y - b.Y));
         }
         /*if (pol.children != null)
         {
@@ -479,8 +483,8 @@
             }
         }*/
 
-        sheet.Width = (float)b.width;
-        sheet.Height = (float)b.height;
+        sheet.Width = (double)b.Width;
+        sheet.Height = (double)b.Height;
 
         sheet.Source = Context.GetNextSheetSource();
         Sheets.Add(sheet);
@@ -653,23 +657,33 @@
       }
     }
 
-    void run()
+    void RunNest()
     {
-      if (Sheets.Count == 0 || Polygons.Count == 0)
-      {
-        Cursor.Current = Cursors.Default;
-        MessageBox.Show("There are no sheets or parts", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-        return;
-      }
+      InitialiseUiForStartNest();
 
+      RunDeepnest();
+    }
+
+    private void InitialiseUiForStartNest()
+    {
       ContextualiseRunStopButtons(true);
-
       Cursor.Current = Cursors.WaitCursor;
       stop = false;
       progressBar1.Value = 0;
       tabControl1.SelectedTab = tabPage4;
-      Context.ReorderSheets();
-      RunDeepnest();
+    }
+
+    private void RunNestIfPossible()
+    {
+      if (Sheets.Count == 0 || Polygons.Count == 0)
+      {
+        Cursor.Current = Cursors.Default;
+        ProgressDisplayerInstance.DisplayMessageBox("There are no sheets or parts", Text, DeepNestLib.MessageBoxIcon.Error);
+      }
+      else
+      {
+        RunNest();
+      }
     }
 
     private void ContextualiseRunStopButtons(bool isRunning)
@@ -692,7 +706,7 @@
 
     private void button10_Click(object sender, EventArgs e)
     {
-      run();
+      RunNestIfPossible();
     }
 
     private void checkBox2_CheckedChanged(object sender, EventArgs e)
@@ -780,7 +794,7 @@
 
       if (ww == null || hh == null)
       {
-        MessageBox.Show("Wrong sizes", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+        ProgressDisplayerInstance.DisplayMessageBox("Wrong sizes", Text, DeepNestLib.MessageBoxIcon.Error);
         return;
       }
 
@@ -850,8 +864,8 @@
         }
         Polygons.Add(pl);
         pl.Source = src;
-        pl.x = xx;
-        pl.y = yy;
+        pl.X = xx;
+        pl.Y = yy;
         pl.AddPoint(new SvgPoint(0, 0));
         pl.AddPoint(new SvgPoint(ww, 0));
         pl.AddPoint(new SvgPoint(ww, hh));
@@ -878,12 +892,12 @@
 
         pl.Source = src;
         Polygons.Add(pl);
-        pl.x = xx;
-        pl.y = yy;
+        pl.X = xx;
+        pl.Y = yy;
         for (int ang = 0; ang < 360; ang += 15)
         {
-          var xx1 = (float)(rad * Math.Cos(ang * Math.PI / 180.0f));
-          var yy1 = (float)(rad * Math.Sin(ang * Math.PI / 180.0f));
+          var xx1 = (double)(rad * Math.Cos(ang * Math.PI / 180.0f));
+          var yy1 = (double)(rad * Math.Sin(ang * Math.PI / 180.0f));
           pl.AddPoint(new SvgPoint(xx1, yy1));
         }
       }
@@ -909,8 +923,8 @@
         }
         pl.Source = src;
         Polygons.Add(pl);
-        pl.x = xx;
-        pl.y = yy;
+        pl.X = xx;
+        pl.Y = yy;
         pl.AddPoint(new SvgPoint(-ww, 0));
         pl.AddPoint(new SvgPoint(+ww, 0));
         pl.AddPoint(new SvgPoint(0, +hh));
@@ -968,8 +982,8 @@
 
           pl.Source = src;
           Polygons.Add(pl);
-          pl.x = xx;
-          pl.y = yy;
+          pl.X = xx;
+          pl.Y = yy;
           pl.AddPoint(new SvgPoint(0, 0));
           pl.AddPoint(new SvgPoint(0 + ww, 0));
           pl.AddPoint(new SvgPoint(0 + ww, 0 + hh));
@@ -1020,8 +1034,8 @@
         pl.AddPoint(new SvgPoint(0 + ww, 0));
         pl.AddPoint(new SvgPoint(0 + ww, 0 + hh));
         pl.AddPoint(new SvgPoint(0, 0 + hh));
-        pl.x = xx;
-        pl.y = yy;
+        pl.X = xx;
+        pl.Y = yy;
         var hole = new NFP();
 
         pl.Children = new List<INfp>();
@@ -1031,8 +1045,8 @@
         hole.AddPoint(new SvgPoint(0 + ww - gap, 0 + gap));
         hole.AddPoint(new SvgPoint(0 + ww - gap, 0 + hh - gap));
         hole.AddPoint(new SvgPoint(0 + gap, 0 + hh - gap));
-        hole.x = xx;
-        hole.y = yy;
+        hole.X = xx;
+        hole.Y = yy;
       }
 
       UpdateList();
@@ -1060,18 +1074,18 @@
         NFP hole = new NFP();
         for (int ang = 0; ang < 360; ang += 15)
         {
-          var xx1 = (float)(rad * Math.Cos(ang * Math.PI / 180.0f));
-          var yy1 = (float)(rad * Math.Sin(ang * Math.PI / 180.0f));
+          var xx1 = (double)(rad * Math.Cos(ang * Math.PI / 180.0f));
+          var yy1 = (double)(rad * Math.Sin(ang * Math.PI / 180.0f));
           pl.AddPoint(new SvgPoint(xx1, yy1));
-          var xx2 = (float)(rad2 * Math.Cos(ang * Math.PI / 180.0f));
-          var yy2 = (float)(rad2 * Math.Sin(ang * Math.PI / 180.0f));
+          var xx2 = (double)(rad2 * Math.Cos(ang * Math.PI / 180.0f));
+          var yy2 = (double)(rad2 * Math.Sin(ang * Math.PI / 180.0f));
           hole.AddPoint(new SvgPoint(xx2, yy2));
         }
 
         pl.Children = new List<INfp>();
         pl.Children.Add(hole);
-        pl.x = xx;
-        pl.y = yy;
+        pl.X = xx;
+        pl.Y = yy;
       }
 
       UpdateList();
@@ -1093,7 +1107,6 @@
 
       Random r = new Random();
 
-
       var xx = r.Next(2000) + 100;
       var yy = r.Next(2000);
       var ww = 20;
@@ -1106,8 +1119,8 @@
       }
       Polygons.Add(pl);
       pl.Source = src;
-      pl.x = xx;
-      pl.y = yy;
+      pl.X = xx;
+      pl.Y = yy;
       pl.AddPoint(new SvgPoint(0, 0));
       pl.AddPoint(new SvgPoint(ww, 0));
       pl.AddPoint(new SvgPoint(ww, hh));
@@ -1169,7 +1182,7 @@
       SaveFileDialog sfd = new SaveFileDialog();
       if (Polygons.ContainsDxfs() && Polygons.ContainsSvgs())
       {
-        MessageBox.Show("It's not possible to export when your parts were a mix of Svg's and Dxf's.", "DeepNestPort: Not Implemented", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        MessageBox.Show("It's not possible to export when your parts were a mix of Svg's and Dxf's.", "DeepNestPort: Not Implemented", MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
       }
       else
       {
@@ -1206,8 +1219,8 @@
       pl.AddPoint(new SvgPoint(0 + ww, 0));
       pl.AddPoint(new SvgPoint(0 + ww, 0 + hh));
       pl.AddPoint(new SvgPoint(0, 0 + hh));
-      pl.x = xx;
-      pl.y = yy;
+      pl.X = xx;
+      pl.Y = yy;
       pl.Children = new List<INfp>();
       int gap = 10;
       int szx = ww / 4;
@@ -1227,8 +1240,8 @@
           hole.AddPoint(new SvgPoint(hx, hy + szy));
           hole.AddPoint(new SvgPoint(hx, hy));
           hole.AddPoint(new SvgPoint(hx + szx, hy));
-          hole.x = xx;
-          hole.y = yy;
+          hole.X = xx;
+          hole.Y = yy;
         }
       }
 
@@ -1249,17 +1262,17 @@
         this.ProgressDisplayerInstance.DisplayToolStripMessage($"Load {ofd.FileNames[i]}");
         try
         {
-          if (ofd.FileNames[i].ToLower().EndsWith("dxf"))
-          {
-            DxfParser.LoadDxfFile(ofd.FileNames[i]);
-          }
+          //if (ofd.FileNames[i].ToLower().EndsWith("dxf"))
+          //{
+          //  DxfParser.LoadDxfFile(ofd.FileNames[i]);
+          //}
 
-          if (ofd.FileNames[i].ToLower().EndsWith("svg"))
-          {
-            SvgParser.LoadSvg(ofd.FileNames[i]);
-          }
+          //if (ofd.FileNames[i].ToLower().EndsWith("svg"))
+          //{
+          //  SvgParser.LoadSvg(ofd.FileNames[i]);
+          //}
 
-          var fr = infos.FirstOrDefault(z => z.Path == ofd.FileNames[i]);
+          var fr = projectInfo.DetailLoadInfos.FirstOrDefault(z => z.Path == ofd.FileNames[i]);
           if (fr != null)
           {
             fr.Quantity++;
@@ -1308,12 +1321,12 @@
               det.IsMultiplied = false;
             }
 
-            infos.Add(det);
+            projectInfo.DetailLoadInfos.Add(det);
           }
         }
         catch (Exception ex)
         {
-          MessageBox.Show($"{ofd.FileNames[i]}: {ex.Message}", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+          MessageBox.Show($"{ofd.FileNames[i]}: {ex.Message}", Text, MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
         }
       }
 
@@ -1326,7 +1339,7 @@
     {
       try
       {
-        partsList.SetObjects(infos);
+        partsList.SetObjects(projectInfo.DetailLoadInfos);
       }
       catch (Exception ex)
       {
@@ -1337,12 +1350,15 @@
     private void runNestingButton_Click(object sender, EventArgs e)
     {
       Cursor.Current = Cursors.WaitCursor;
-      Context.Reset();
-      UpdateNestsList();
-      Application.DoEvents();
+      RebuildNest();
+      RunNestIfPossible();
+    }
 
+    private void RebuildNest()
+    {
+      Context.Reset();
       int src = 0;
-      foreach (var item in sheetsInfos)
+      foreach (var item in projectInfo.SheetLoadInfos)
       {
         src = Context.GetNextSheetSource();
         for (int i = 0; i < item.Quantity; i++)
@@ -1354,9 +1370,8 @@
       }
 
       Context.ReorderSheets();
-
       src = 0;
-      foreach (var item in infos.Where(o => o.IsIncluded))
+      foreach (var item in projectInfo.DetailLoadInfos.Where(o => o.IsIncluded))
       {
         this.ProgressDisplayerInstance.DisplayToolStripMessage($"Preload {item.Path}. . .");
         var det = LoadRawDetail(new FileInfo(item.Path));
@@ -1367,14 +1382,6 @@
       }
 
       this.ProgressDisplayerInstance.DisplayToolStripMessage(string.Empty);
-      if (src == 0)
-      {
-        MessageBox.Show("No parts to nest.", "DeepNest", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-      }
-      else
-      {
-        run();
-      }
     }
 
     private void AddToPolygons(int src, RawDetail det, int quantity, bool isIncluded = true, bool isPriority = false, bool isMultiplied = false, AnglesEnum strictAngles = AnglesEnum.Vertical)
@@ -1418,31 +1425,31 @@
 
       if (errorMessageCount <= 3)
       {
-        this.ShowMessage(message, MessageBoxIcon.Error);
+        this.ShowMessage(message, System.Windows.Forms.MessageBoxIcon.Error);
       }
       else if (errorMessageCount > 10)
       {
-        this.ShowMessage(message, MessageBoxIcon.Stop);
+        this.ShowMessage(message, System.Windows.Forms.MessageBoxIcon.Stop);
         Application.Exit();
       }
     }
 
-    private void ShowMessage(string text, MessageBoxIcon type)
+    private void ShowMessage(string text, System.Windows.Forms.MessageBoxIcon type)
     {
       MessageBox.Show(text, Text, MessageBoxButtons.OK, type);
     }
 
     private DialogResult ShowQuestion(string text)
     {
-      return MessageBox.Show(text, Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+      return MessageBox.Show(text, Text, MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question);
     }
 
     private void clearToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      if (infos.Count == 0) { ShowMessage("There are no parts.", MessageBoxIcon.Warning); return; }
+      if (projectInfo.DetailLoadInfos.Count == 0) { ShowMessage("There are no parts.", System.Windows.Forms.MessageBoxIcon.Warning); return; }
       if (ShowQuestion("Are you to sure to delete all items?") == DialogResult.No) return;
-      infos.Clear();
-      partsList.SetObjects(infos);
+      projectInfo.DetailLoadInfos.Clear();
+      partsList.SetObjects(projectInfo.DetailLoadInfos);
       preview = null;
     }
 
@@ -1457,10 +1464,10 @@
           preview = null;
         }
 
-        infos.Remove(item as DetailLoadInfo);
+        projectInfo.DetailLoadInfos.Remove(item as DetailLoadInfo);
       }
 
-      partsList.SetObjects(infos);
+      partsList.SetObjects(projectInfo.DetailLoadInfos);
     }
 
     private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -1621,13 +1628,69 @@
       else
       {
         SvgNest.Config.StrictAngles = AnglesEnum.None;
-        ShowMessage("Defaulted to AnglesEnum.None", MessageBoxIcon.Information);
+        ShowMessage("Defaulted to AnglesEnum.None", System.Windows.Forms.MessageBoxIcon.Information);
       }
     }
 
     private void parallelNestsNud_ValueChanged(object sender, EventArgs e)
     {
       SvgNest.Config.ParallelNests = (int)parallelNestsNud.Value;
+    }
+
+    private void toolStripButtonOpenNestProject_Click(object sender, EventArgs e)
+    {
+      try
+      {
+        var dialog = new OpenFileDialog();
+        dialog.Filter = "DeepNest Projects (*.nest)|*.nest";
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+          using (StreamReader inputFile = new StreamReader(dialog.FileName))
+          {
+            var info = ProjectInfo.FromJson(inputFile.ReadToEnd());
+            this.projectInfo.DetailLoadInfos.Clear();
+            foreach (var p in info.DetailLoadInfos)
+            {
+              this.projectInfo.DetailLoadInfos.Add(p);
+            }
+
+            var sheetInfoIn = info.SheetLoadInfos.SingleOrDefault();
+            if (sheetInfoIn != null)
+            {
+              var sheetInfoSet = this.projectInfo.SheetLoadInfos.Single();
+              sheetInfoSet.Width = sheetInfoIn.Width;
+              sheetInfoSet.Height = sheetInfoIn.Height;
+              sheetInfoSet.Quantity = sheetInfoIn.Quantity;
+            }
+
+            UpdateInfos();
+          }
+        }
+      }
+      catch (Exception ex)
+      {
+        ShowMessage(ex);
+      }
+    }
+
+    private void toolStripButtonSaveNestProject_Click(object sender, EventArgs e)
+    {
+      try
+      {
+        SaveFileDialog sfd = new SaveFileDialog();
+        sfd.Filter = "DeepNest Projects (*.nest)|*.nest";
+        if (sfd.ShowDialog() == DialogResult.OK)
+        {
+          using (StreamWriter outputFile = new StreamWriter(sfd.FileName))
+          {
+            outputFile.WriteLine(this.projectInfo.ToJson());
+          }
+        }
+      }
+      catch (Exception ex)
+      {
+        ShowMessage(ex);
+      }
     }
   }
 }

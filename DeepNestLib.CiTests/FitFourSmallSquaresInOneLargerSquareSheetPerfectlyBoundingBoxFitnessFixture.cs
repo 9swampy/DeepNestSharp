@@ -39,7 +39,7 @@
       fourthPart.Rotation = 180;
       var config = new DefaultSvgNestConfig();
       config.PlacementType = PlacementTypeEnum.BoundingBox;
-      this.nestResult = new Background(A.Fake<IProgressDisplayer>(), null).PlaceParts(new INfp[] { firstSheet }, new INfp[] { firstPart, secondPart, thirdPart, fourthPart }, config);
+      this.nestResult = new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), MinkowskiSum.CreateInstance()).PlaceParts(new INfp[] { firstSheet }, new INfp[] { firstPart, secondPart, thirdPart, fourthPart }, config);
     }
 
     [Fact]

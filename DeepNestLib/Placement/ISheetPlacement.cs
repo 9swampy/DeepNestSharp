@@ -9,9 +9,9 @@
 
     INfp Hull { get; }
 
-    float MaterialUtilization { get; }
+    double MaterialUtilization { get; }
 
-    IList<PartPlacement> PartPlacements { get; }
+    IReadOnlyList<IPartPlacement> PartPlacements { get; }
 
     PlacementTypeEnum PlacementType { get; }
 
@@ -25,7 +25,7 @@
 
     INfp Simplify { get; }
 
-    float TotalPartsArea { get; }
+    double TotalPartsArea { get; }
 
     string ToJson();
 

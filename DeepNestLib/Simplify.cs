@@ -11,8 +11,8 @@
     // square distance between 2 points
     public static double getSqDist(SvgPoint p1, SvgPoint p2)
     {
-      var dx = p1.x - p2.x;
-      var dy = p1.y - p2.y;
+      var dx = p1.X - p2.X;
+      var dy = p1.Y - p2.Y;
 
       return (dx * dx) + (dy * dy);
     }
@@ -20,19 +20,19 @@
     // square distance from a point to a segment
     public static double getSqSegDist(SvgPoint p, SvgPoint p1, SvgPoint p2)
     {
-      var x = p1.x;
-      var y = p1.y;
-      var dx = p2.x - x;
-      var dy = p2.y - y;
+      var x = p1.X;
+      var y = p1.Y;
+      var dx = p2.X - x;
+      var dy = p2.Y - y;
 
       if (dx != 0 || dy != 0)
       {
-        var t = (((p.x - x) * dx) + ((p.y - y) * dy)) / ((dx * dx) + (dy * dy));
+        var t = (((p.X - x) * dx) + ((p.Y - y) * dy)) / ((dx * dx) + (dy * dy));
 
         if (t > 1)
         {
-          x = p2.x;
-          y = p2.y;
+          x = p2.X;
+          y = p2.Y;
         }
         else if (t > 0)
         {
@@ -41,8 +41,8 @@
         }
       }
 
-      dx = p.x - x;
-      dy = p.y - y;
+      dx = p.X - x;
+      dy = p.Y - y;
 
       return (dx * dx) + (dy * dy);
     }

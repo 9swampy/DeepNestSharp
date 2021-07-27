@@ -1,18 +1,15 @@
 ﻿namespace DeepNestLib
 {
   using System.Collections.Generic;
+  using DeepNestLib.NestProject;
 
   public interface INfp
   {
-    SvgPoint this[int ind] { get; }
-
-    float Area { get; }
+    double Area { get; }
 
     IList<INfp> Children { get; set; }
 
     bool Fitted { get; }
-
-    bool ForceRotations { get; set; }
 
     double HeightCalculated { get; }
 
@@ -32,9 +29,7 @@
 
     SvgPoint[] Points { get; }
 
-    float Rotation { get; set; }
-
-    float[] Rotations { get; }
+    double Rotation { get; set; }
 
     INfp Sheet { get; set; }
 
@@ -44,9 +39,11 @@
 
     double WidthCalculated { get; }
 
-    double x { get; set; }
+    double X { get; set; }
 
-    double y { get; set; }
+    double Y { get; set; }
+
+    SvgPoint this[int ind] { get; }
 
     void AddPoint(SvgPoint point);
 
@@ -62,13 +59,13 @@
 
     SvgPoint[] ReplacePoints(IEnumerable<SvgPoint> points);
 
-    void reverse();
+    void Reverse();
 
-    NFP Rotate(float degrees);
+    NFP Rotate(double degrees);
 
-    INfp slice(int v);
+    INfp Slice(int v);
 
-    string stringify();
+    string Stringify();
 
     string ToJson();
 

@@ -39,7 +39,7 @@
       fourthPart.Rotation = 180;
       var config = new DefaultSvgNestConfig();
       config.PlacementType = PlacementTypeEnum.Gravity;
-      this.nestResult = new Background(A.Fake<IProgressDisplayer>(), null).PlaceParts(new INfp[] { firstSheet }, new INfp[] { firstPart, secondPart, thirdPart, fourthPart }, config);
+      this.nestResult = new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), MinkowskiSum.CreateInstance()).PlaceParts(new INfp[] { firstSheet }, new INfp[] { firstPart, secondPart, thirdPart, fourthPart }, config);
     }
 
     [Fact]
@@ -82,7 +82,7 @@
     [Fact]
     public void ShouldHaveExpectedFitnessMaterialWasted()
     {
-      this.nestResult.MaterialWasted.Should().Be(90);
+      this.nestResult.MaterialWasted.Should().BeApproximately(90, 1D);
     }
 
     [Fact]
@@ -124,73 +124,73 @@
     [Fact]
     public void ShouldHaveFirstPartOnPlacementWithExpectedX()
     {
-      this.nestResult.UsedSheets[0].PartPlacements[0].x.Should().Be(10.999999933643268, "bottom left");
+      this.nestResult.UsedSheets[0].PartPlacements[0].X.Should().BeApproximately(11d, 0.01d, "bottom left");
     }
 
     [Fact]
     public void ShouldHaveFirstPartOnPlacementWithExpectedY()
     {
-      this.nestResult.UsedSheets[0].PartPlacements[0].y.Should().Be(10.999999933643265, "bottom left");
+      this.nestResult.UsedSheets[0].PartPlacements[0].Y.Should().BeApproximately(11d, 0.01d, "bottom left");
     }
 
     [Fact]
     public void ShouldHaveFirstPartOnPlacementWithExpectedRotation()
     {
-      this.nestResult.UsedSheets[0].PartPlacements[0].rotation.Should().Be(180);
+      this.nestResult.UsedSheets[0].PartPlacements[0].Rotation.Should().Be(180);
     }
 
     [Fact]
     public void ShouldHaveSecondPartOnPlacementWithExpectedX()
     {
-      this.nestResult.UsedSheets[0].PartPlacements[1].x.Should().BeApproximately(10.999999933643268, 0.001, "bottom right");
+      this.nestResult.UsedSheets[0].PartPlacements[1].X.Should().BeApproximately(10.999999933643268f, 0.001f, "bottom right");
     }
 
     [Fact]
     public void ShouldHaveSecondPartOnPlacementWithExpectedY()
     {
-      this.nestResult.UsedSheets[0].PartPlacements[1].y.Should().BeApproximately(21.9999999, 0.001, "bottom right");
+      this.nestResult.UsedSheets[0].PartPlacements[1].Y.Should().BeApproximately(21.9999999f, 0.001f, "bottom right");
     }
 
     [Fact]
     public void ShouldHaveSecondPartOnPlacementWithExpectedRotation()
     {
-      this.nestResult.UsedSheets[0].PartPlacements[1].rotation.Should().Be(180);
+      this.nestResult.UsedSheets[0].PartPlacements[1].Rotation.Should().Be(180);
     }
 
     [Fact]
     public void ShouldHaveThirdPartOnPlacementWithExpectedX()
     {
-      this.nestResult.UsedSheets[0].PartPlacements[2].x.Should().BeApproximately(21.999999900000002, 0.001, "bottom left");
+      this.nestResult.UsedSheets[0].PartPlacements[2].X.Should().BeApproximately(21.999999900000002f, 0.001f, "bottom left");
     }
 
     [Fact]
     public void ShouldHaveThirdPartOnPlacementWithExpectedY()
     {
-      this.nestResult.UsedSheets[0].PartPlacements[2].y.Should().BeApproximately(10.999999933643265, 0.001, "bottom left");
+      this.nestResult.UsedSheets[0].PartPlacements[2].Y.Should().BeApproximately(10.999999933643265f, 0.001f, "bottom left");
     }
 
     [Fact]
     public void ShouldHaveThirdPartOnPlacementWithExpectedRotation()
     {
-      this.nestResult.UsedSheets[0].PartPlacements[2].rotation.Should().Be(180);
+      this.nestResult.UsedSheets[0].PartPlacements[2].Rotation.Should().Be(180);
     }
 
     [Fact]
     public void ShouldHaveFourthPartOnPlacementWithExpectedX()
     {
-      this.nestResult.UsedSheets[0].PartPlacements[3].x.Should().BeApproximately(21.999999900000002, 0.001, "top right");
+      this.nestResult.UsedSheets[0].PartPlacements[3].X.Should().BeApproximately(21.999999900000002f, 0.001f, "top right");
     }
 
     [Fact]
     public void ShouldHaveFourthPartOnPlacementWithExpectedY()
     {
-      this.nestResult.UsedSheets[0].PartPlacements[3].y.Should().BeApproximately(21.9999999, 0.001, "top right");
+      this.nestResult.UsedSheets[0].PartPlacements[3].Y.Should().BeApproximately(21.9999999f, 0.001f, "top right");
     }
 
     [Fact]
     public void ShouldHaveFourthPartOnPlacementWithExpectedRotation()
     {
-      this.nestResult.UsedSheets[0].PartPlacements[3].rotation.Should().Be(180);
+      this.nestResult.UsedSheets[0].PartPlacements[3].Rotation.Should().Be(180);
     }
 
     [Fact]

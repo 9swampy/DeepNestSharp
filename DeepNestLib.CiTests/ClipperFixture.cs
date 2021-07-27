@@ -56,9 +56,9 @@
       }
 
       deprecatedOriginal.Should().BeGreaterThan(current);
-      Debug.Print($"      DeprecatedOriginal: {deprecatedOriginal}>{current} {((float)deprecatedOriginal - current) / current * 100:N0}%");
+      Debug.Print($"      DeprecatedOriginal: {deprecatedOriginal}>{current} {((double)deprecatedOriginal - current) / current * 100:N0}%");
       deprecatedSlowerParallel.Should().BeGreaterThan(current);
-      Debug.Print($"DeprecatedSlowerParallel: {deprecatedSlowerParallel}>{current} {(float)(deprecatedSlowerParallel - current) / current * 100:N0}%");
+      Debug.Print($"DeprecatedSlowerParallel: {deprecatedSlowerParallel}>{current} {(double)(deprecatedSlowerParallel - current) / current * 100:N0}%");
     }
   }
 }

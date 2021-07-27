@@ -23,7 +23,7 @@
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryImportFromRawDetail(firstPartIdSrc, out firstPart).Should().BeTrue();
       INfp secondPart;
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryImportFromRawDetail(secondPartIdSrc, out secondPart).Should().BeTrue();
-      this.nestResult = new Background(A.Fake<IProgressDisplayer>(), null).PlaceParts(new INfp[] { firstSheet }, new INfp[] { firstPart, secondPart }, new SvgNestConfig());
+      this.nestResult = new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), MinkowskiSum.CreateInstance()).PlaceParts(new INfp[] { firstSheet }, new INfp[] { firstPart, secondPart }, new SvgNestConfig());
     }
 
     [Fact]
@@ -83,19 +83,19 @@
     [Fact]
     public void ShouldHaveOnePartOnFirstPlacementWithExpectedX()
     {
-      this.nestResult.UsedSheets[0].PartPlacements[0].x.Should().Be(0, "bottom left");
+      this.nestResult.UsedSheets[0].PartPlacements[0].X.Should().Be(0, "bottom left");
     }
 
     [Fact]
     public void ShouldHaveOnePartOnFirstPlacementWithExpectedY()
     {
-      this.nestResult.UsedSheets[0].PartPlacements[0].y.Should().Be(0, "bottom left");
+      this.nestResult.UsedSheets[0].PartPlacements[0].Y.Should().Be(0, "bottom left");
     }
 
     [Fact]
     public void ShouldHaveOnePartOnFirstPlacementWithExpectedRotation()
     {
-      this.nestResult.UsedSheets[0].PartPlacements[0].rotation.Should().Be(0);
+      this.nestResult.UsedSheets[0].PartPlacements[0].Rotation.Should().Be(0);
     }
 
     [Fact]

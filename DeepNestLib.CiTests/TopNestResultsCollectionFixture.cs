@@ -31,7 +31,7 @@
     [Fact]
     public void MaxCapacityShouldBeGreaterThanOrEqualToEliteSurvivors()
     {
-      var sut = new TopNestResultsCollection(A.Fake<ISvgNestConfig>());
+      var sut = new TopNestResultsCollection(new DefaultSvgNestConfig());
       sut.MaxCapacity.Should().BeGreaterOrEqualTo(sut.EliteSurvivors);
     }
 
@@ -76,7 +76,7 @@
       for (int i = 0; i < sut.MaxCapacity; i++)
       {
         var item = A.Fake<INestResult>();
-        A.CallTo(() => item.Fitness).Returns(i+1);
+        A.CallTo(() => item.Fitness).Returns(i + 1);
         sut.Add(item);
         sut.Should().Contain(item);
       }

@@ -13,17 +13,8 @@
 
     public GravityFitnessFixture()
     {
-      scenario1 = LoadSheetPlacement("GeneticAlgorithm.SheetPlacementScenario1.json");
-      scenario2 = LoadSheetPlacement("GeneticAlgorithm.SheetPlacementScenario2.json");
-    }
-
-    private ISheetPlacement LoadSheetPlacement(string relativeResourcePath)
-    {
-      using (Stream stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream(relativeResourcePath))
-      using (StreamReader reader = new StreamReader(stream))
-      {
-        return SheetPlacement.FromJson(reader.ReadToEnd());
-      }
+      scenario1 = SheetPlacementJsonHelper.LoadSheetPlacement("GeneticAlgorithm.SheetPlacementScenario1.json");
+      scenario2 = SheetPlacementJsonHelper.LoadSheetPlacement("GeneticAlgorithm.SheetPlacementScenario2.json");
     }
 
     [Fact]

@@ -1,5 +1,7 @@
 ﻿namespace DeepNestLib
 {
+  using DeepNestLib.NestProject;
+
   public class SvgNestConfig : ISvgNestConfig
   {
     public const int PopulationMin = 50;
@@ -26,12 +28,12 @@
     /// <summary>
     /// Max bound for bezier->line segment conversion, in native SVG units.
     /// </summary>
-    public float Tolerance { get; set; } = 2f;
+    public double Tolerance { get; set; } = 2;
 
     /// <summary>
     /// Fudge factor for browser inaccuracy in SVG unit handling.
     /// </summary>
-    public float ToleranceSvg { get; set; } = 0.005f;
+    public double ToleranceSvg { get; set; } = 0.005;
 
     public double TimeRatio { get; set; } = 0.5;
 
@@ -298,7 +300,7 @@
     }
 
     public int ParallelNests
-  {
+    {
       get
       {
         var result = (int)Properties.Settings.Default["ParallelNests"];

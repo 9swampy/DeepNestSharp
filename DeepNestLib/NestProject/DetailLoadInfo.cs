@@ -1,8 +1,6 @@
-﻿namespace DeepNestPort
+﻿namespace DeepNestLib.NestProject
 {
-  using DeepNestLib;
-
-  public class DetailLoadInfo
+  public class DetailLoadInfo : IDetailLoadInfo
   {
     public string Name { get; set; }
 

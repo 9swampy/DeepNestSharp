@@ -11,15 +11,15 @@
   public class DrawingContext
   {
     private Graphics gr;
-    private float startx;
-    private float starty;
-    private float origsx;
-    private float origsy;
+    private double startx;
+    private double starty;
+    private double origsx;
+    private double origsy;
     private bool isDrag = false;
     private PictureBox box;
-    private float sx;
-    private float sy;
-    private float zoom = 1;
+    private double sx;
+    private double sy;
+    private double zoom = 1;
     private Bitmap bmp;
     private bool invertY = true;
 
@@ -46,12 +46,12 @@
     private GraphicsPath GetGraphicsPath(INfp nfp)
     {
       GraphicsPath gp = new GraphicsPath();
-      gp.AddPolygon(nfp.Points.Select(z => Transform(z.x, z.y)).ToArray());
+      gp.AddPolygon(nfp.Points.Select(z => Transform(z.X, z.Y)).ToArray());
       if (nfp.Children != null)
       {
         foreach (var item in nfp.Children)
         {
-          gp.AddPolygon(item.Points.Select(z => Transform(z.x, z.y)).ToArray());
+          gp.AddPolygon(item.Points.Select(z => Transform(z.X, z.Y)).ToArray());
         }
       }
 
@@ -69,7 +69,7 @@
       return gp;
     }
 
-    public float GetLabelHeight()
+    public double GetLabelHeight()
     {
       return SystemFonts.DefaultFont.GetHeight();
     }
@@ -110,7 +110,7 @@
 
     private void Pb_MouseWheel(object sender, MouseEventArgs e)
     {
-      float zold = zoom;
+      double zold = zoom;
       if (e.Delta > 0) { zoom *= 1.5f; ; }
       else { zoom *= 0.5f; }
       if (zoom < 0.08) { zoom = 0.08f; }
@@ -165,12 +165,17 @@
 
     public virtual PointF Transform(PointF p1)
     {
-      return new PointF((p1.X + sx) * zoom, (invertY ? (-1) : 1) * (p1.Y + sy) * zoom);
+      return Transform(p1.X, p1.Y);
     }
 
     public virtual PointF Transform(double x, double y)
     {
-      return new PointF(((float)(x) + sx) * zoom, (invertY ? (-1) : 1) * ((float)(y) + sy) * zoom);
+      return Transform((float)x, (float)y);
+    }
+
+    public virtual PointF Transform(float x, float y)
+    {
+      return new PointF((float)((x + sx) * zoom), (float)((invertY ? (-1) : 1) * (y + sy) * zoom));
     }
 
     private void Pb_SizeChanged(object sender, EventArgs e)
@@ -184,8 +189,8 @@
     public PointF GetPos()
     {
       var pos = box.PointToClient(Cursor.Position);
-      var posx = (pos.X / zoom - sx);
-      var posy = (-pos.Y / zoom - sy);
+      var posx = (float)(pos.X / zoom - sx);
+      var posy = (float)(-pos.Y / zoom - sy);
 
       return new PointF(posx, posy);
     }
@@ -238,8 +243,8 @@
 
     public void RenderSheetToClipboard(Sheet sh, ICollection<INfp> Polygons, ICollection<INfp> sheets)
     {
-      this.sx = (float)sh.x;
-      this.sy = (float)sh.y;
+      this.sx = (double)sh.X;
+      this.sy = (double)sh.Y;
       this.invertY = false;
       var bb = new Bitmap(1 + (int)sh.Width, 1 + (int)sh.Height);
       var gr = Graphics.FromImage(bb);
@@ -272,10 +277,10 @@
         {
           //rotate first;
           var m = new Matrix();
-          m.Translate((float)item.x, (float)item.y);
-          m.Rotate(item.Rotation);
+          m.Translate((float)item.X, (float)item.Y);
+          m.Rotate((float)item.Rotation);
 
-          var pnts = item.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
+          var pnts = item.Points.Select(z => new PointF((float)z.X, (float)z.Y)).ToArray();
           m.TransformPoints(pnts);
 
           path.AddPolygon(pnts.Select(z => this.Transform(z)).ToArray());
@@ -284,7 +289,7 @@
           {
             foreach (var citem in item.Children)
             {
-              var pnts2 = citem.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
+              var pnts2 = citem.Points.Select(z => new PointF((float)z.X, (float)z.Y)).ToArray();
               m.TransformPoints(pnts2);
               path.AddPolygon(pnts2.Select(z => this.Transform(z)).ToArray());
             }
@@ -340,7 +345,7 @@
           yy += (int)font.Size + gap;
           this.gr.DrawString($"Nests: {context.Nest.TopNestResults.Count} Fitness: {context.Nest.TopNestResults.Top.Fitness}   Area:{context.Nest.TopNestResults.Top.TotalSheetsArea}  ", font, Brushes.DarkBlue, 0, yy);
           yy += (int)font.Size + gap;
-          this.gr.DrawString($"Minkowski Calls: {Background.CallCounter};  Last placing time: {context.Nest.LastPlacementTime}ms;  Average nest time: {context.Nest.AverageNestTime}ms", font, Brushes.DarkBlue, 0, yy);
+          this.gr.DrawString($"Minkowski Calls: {context.Nest.CallCounter};  Last placing time: {context.Nest.LastPlacementTime}ms;  Average nest time: {context.Nest.AverageNestTime}ms", font, Brushes.DarkBlue, 0, yy);
           yy += (int)font.Size + gap;
         }
       }
@@ -371,17 +376,17 @@
         {
           // rotate first;
           var m = new Matrix();
-          m.Translate((float)item.x, (float)item.y);
-          m.Rotate(item.Rotation);
+          m.Translate((float)item.X, (float)item.Y);
+          m.Rotate((float)item.Rotation);
 
-          var pnts = item.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
+          var pnts = item.Points.Select(z => new PointF((float)z.X, (float)z.Y)).ToArray();
           m.TransformPoints(pnts);
 
           path.AddPolygon(pnts.Select(z => this.Transform(z)).ToArray());
 
           if (!(item is Sheet) && isInfoShow && SvgNest.Config.ShowPartPositions)
           {
-            var label = $"{item.PlacementOrder} ({item.x:N0},{item.y:N0})@{item.Rotation}";
+            var label = $"{item.PlacementOrder} ({item.X:N0},{item.Y:N0})@{item.Rotation}";
             var midPnt = new PointF(pnts.Average(o => o.X), pnts.Average(o => o.Y));
             this.gr.DrawString(label, font, Brushes.Black, this.Transform(midPnt));
           }
@@ -390,7 +395,7 @@
           {
             foreach (var citem in item.Children)
             {
-              var pnts2 = citem.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
+              var pnts2 = citem.Points.Select(z => new PointF((float)z.X, (float)z.Y)).ToArray();
               m.TransformPoints(pnts2);
               path.AddPolygon(pnts2.Select(z => this.Transform(z)).ToArray());
             }
@@ -418,7 +423,7 @@
           {
             if (context.Current != null)
             {
-              var trans1 = this.Transform(new PointF((float)pnts[0].X, (float)pnts[0].Y - 30));
+              var trans1 = this.Transform(new PointF(pnts[0].X, pnts[0].Y - 30));
               var sheetPlacement = context.Current.UsedSheets.FirstOrDefault(s => s.SheetId == item.Id);
               if (sheetPlacement != null)
               {
@@ -426,20 +431,20 @@
 
                 if (isInfoShow)
                 {
-                  var hullPoints = sheetPlacement.Hull.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
+                  var hullPoints = sheetPlacement.Hull.Points.Select(z => new PointF((float)z.X, (float)z.Y)).ToArray();
                   m.TransformPoints(hullPoints);
 
                   path.AddPolygon(hullPoints.Select(z => this.Transform(z)).ToArray());
                   this.gr.DrawPath(Pens.Red, path);
 
-                  //var simplifyPoints = sheetPlacement.Simplify.Points.Select(z => new PointF((float)z.x, (float)z.y)).ToArray();
+                  //var simplifyPoints = sheetPlacement.Simplify.Points.Select(z => new PointF((double)z.x, (double)z.y)).ToArray();
                   //m.TransformPoints(simplifyPoints);
 
                   //path.AddPolygon(simplifyPoints.Select(z => this.Transform(z)).ToArray());
                   //this.gr.DrawPath(Pens.Green, path);
                   if (sheetPlacement == context.Current.UsedSheets.First())
                   {
-                    var trans2 = this.Transform(new PointF((float)pnts[0].X, (float)pnts[0].Y - 30 + (int)font.Size + gap));
+                    var trans2 = this.Transform(new PointF(pnts[0].X, pnts[0].Y - 30 + (int)font.Size + gap));
                     this.gr.DrawString($"util: {100 * context.Current.MaterialUtilization:N2}% {context.Current.ToString()}", font, Brushes.Black, trans2);
                   }
                 }

@@ -1,0 +1,25 @@
+﻿[*.cs]
+
+# SA1101: Prefix local calls with this
+dotnet_diagnostic.SA1101.severity = suggestion
+
+# SA1600: Elements should be documented
+dotnet_diagnostic.SA1600.severity =suggestion
+
+# IDE0065: Misplaced using directive
+csharp_using_directive_placement = inside_namespace
+
+# SA1633: File should have header
+dotnet_diagnostic.SA1633.severity = none
+
+# IDE0003: Remove qualification
+dotnet_diagnostic.IDE0003.severity = none
+
+# IDE0008: Use explicit type
+csharp_style_var_when_type_is_apparent = false
+
+# IDE0008: Use explicit type
+csharp_style_var_for_built_in_types = true
+
+# IDE0008: Use explicit type
+dotnet_diagnostic.IDE0008.severity = suggestion

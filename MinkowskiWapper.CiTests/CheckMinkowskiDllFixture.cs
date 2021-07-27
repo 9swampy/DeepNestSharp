@@ -22,7 +22,7 @@
     [Fact]
     public void PreAnyCpuDllShouldExist()
     {
-        new FileInfo("minkowski.dll").Exists.Should().BeTrue($"{new FileInfo("minkowski.dll").FullName} is needed");
+      new FileInfo("minkowski.dll").Exists.Should().BeTrue($"{new FileInfo("minkowski.dll").FullName} is needed");
     }
 #endif
   }

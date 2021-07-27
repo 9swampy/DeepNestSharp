@@ -1,4 +1,6 @@
-﻿namespace DeepNestLib
+﻿using DeepNestLib.NestProject;
+
+namespace DeepNestLib
 {
   public interface ISvgNestConfig
   {
@@ -42,9 +44,9 @@
 
     double TimeRatio { get; set; }
 
-    float Tolerance { get; set; }
+    double Tolerance { get; set; }
 
-    float ToleranceSvg { get; set; }
+    double ToleranceSvg { get; set; }
 
     bool UseHoles { get; set; }
 

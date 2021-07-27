@@ -14,18 +14,9 @@
 
     public BoundingBoxFitnessFixture()
     {
-      scenarioBest = LoadSheetPlacement("GeneticAlgorithm.SheetPlacementScenario3-BestBoundingBoxAllDxfSamples.json");
-      scenarioMid = LoadSheetPlacement("GeneticAlgorithm.SheetPlacementScenario3-MidBoundingBoxAllDxfSamples.json");
-      scenarioWorst = LoadSheetPlacement("GeneticAlgorithm.SheetPlacementScenario3-WorstBoundingBoxAllDxfSamples.json");
-    }
-
-    private ISheetPlacement LoadSheetPlacement(string relativeResourcePath)
-    {
-      using (Stream stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream(relativeResourcePath))
-      using (StreamReader reader = new StreamReader(stream))
-      {
-        return SheetPlacement.FromJson(reader.ReadToEnd());
-      }
+      scenarioBest = SheetPlacementJsonHelper.LoadSheetPlacement("GeneticAlgorithm.SheetPlacementScenario3-BestBoundingBoxAllDxfSamples.json");
+      scenarioMid = SheetPlacementJsonHelper.LoadSheetPlacement("GeneticAlgorithm.SheetPlacementScenario3-MidBoundingBoxAllDxfSamples.json");
+      scenarioWorst = SheetPlacementJsonHelper.LoadSheetPlacement("GeneticAlgorithm.SheetPlacementScenario3-WorstBoundingBoxAllDxfSamples.json");
     }
 
     [Fact]

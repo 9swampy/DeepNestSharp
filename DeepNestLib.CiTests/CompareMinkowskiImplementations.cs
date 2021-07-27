@@ -30,9 +30,10 @@
       DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Rectangle(11D) }).TryGetNfp(secondPartIdSrc, out secondPart).Should().BeTrue();
       var sw = new Stopwatch();
       sw.Start();
+      var minkowskiSumService = MinkowskiSum.CreateInstance();
       for (int i = 0; i < iterations; i++)
       {
-        clipperResult = MinkowskiSum.ClipperExecute(firstPart, secondPart, MinkowskiSumPick.Largest);
+        clipperResult = minkowskiSumService.ClipperExecute(firstPart, secondPart, MinkowskiSumPick.Largest);
       }
 
       sw.Stop();
@@ -40,7 +41,7 @@
       sw.Restart();
       for (int i = 0; i < iterations; i++)
       {
-        dllImportResult = MinkowskiSum.DllImportExecute(firstPart, secondPart, MinkowskiSumCleaning.Cleaned);
+        dllImportResult = minkowskiSumService.DllImportExecute(firstPart, secondPart, MinkowskiSumCleaning.Cleaned);
       }
 
       sw.Stop();
@@ -57,7 +58,7 @@
     [Fact]
     public void AreasShouldBeSame()
     {
-      dllImportResult.Area.Should().Be(clipperResult.Area);
+      dllImportResult.Area.Should().BeApproximately(clipperResult.Area, 1D);
     }
 
     [Fact]

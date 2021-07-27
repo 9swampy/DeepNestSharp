@@ -5,7 +5,7 @@
   using System.Reflection;
   using System.Text.RegularExpressions;
 
-  public static class EmbededResourcesExtensions
+  public static class EmbeddedResourcesExtensions
   {
     public static Stream GetEmbeddedResourceStream(this Assembly assembly, string relativeResourcePath)
     {

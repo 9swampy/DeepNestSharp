@@ -1,5 +1,7 @@
 ﻿namespace DeepNestLib.CiTests
 {
+  using DeepNestLib.NestProject;
+
   public class DefaultSvgNestConfig : ISvgNestConfig
   {
     public double ClipperScale { get; set; } = 10000000;
@@ -46,9 +48,9 @@
 
     public bool UseParallel { get; set; } = false;
 
-    public float Tolerance { get; set; } = 2f;
+    public double Tolerance { get; set; } = 2;
 
-    public float ToleranceSvg { get; set; } = 0.005f;
+    public double ToleranceSvg { get; set; } = 0.005;
 
     public AnglesEnum StrictAngles { get; set; } = AnglesEnum.None;
 

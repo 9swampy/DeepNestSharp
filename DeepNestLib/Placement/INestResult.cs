@@ -19,7 +19,7 @@
 
     long PlacePartTime { get; }
 
-    float[] Rotation { get; set; }
+    double[] Rotation { get; set; }
 
     IList<NFP> UnplacedParts { get; }
 
@@ -29,13 +29,13 @@
 
     int TotalPartsCount { get; }
 
-    float PartsPlacedPercent { get; }
+    double PartsPlacedPercent { get; }
 
-    float MaterialUtilization { get; }
+    double MaterialUtilization { get; }
 
-    float TotalSheetsArea { get; }
+    double TotalSheetsArea { get; }
 
-    float TotalPartsArea { get; }
+    double TotalPartsArea { get; }
 
     DateTime CreatedAt { get; }
   }

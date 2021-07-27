@@ -1,4 +1,4 @@
-﻿namespace DeepNestLib
+﻿namespace DeepNestLib.NestProject
 {
   public enum AnglesEnum
   {

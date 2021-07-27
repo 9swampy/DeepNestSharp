@@ -14,7 +14,7 @@
   {
     private NFP hull;
 
-    public SheetPlacement(PlacementTypeEnum placementType, INfp sheet, IList<PartPlacement> partPlacements)
+    public SheetPlacement(PlacementTypeEnum placementType, INfp sheet, IReadOnlyList<IPartPlacement> partPlacements)
     {
       this.PlacementType = placementType;
       this.Sheet = sheet;
@@ -39,7 +39,7 @@
     public INfp Sheet { get; private set; }
 
     [JsonInclude]
-    public IList<PartPlacement> PartPlacements { get; private set; } = new List<PartPlacement>();
+    public IReadOnlyList<IPartPlacement> PartPlacements { get; private set; } = new List<IPartPlacement>();
 
     [JsonIgnore]
     public PolygonBounds RectBounds
@@ -83,10 +83,10 @@
     }
 
     [JsonIgnore]
-    public float TotalPartsArea => this.PartPlacements.Sum(p => p.Part.Area);
+    public double TotalPartsArea => this.PartPlacements.Sum(p => p.Part.Area);
 
     [JsonIgnore]
-    public float MaterialUtilization
+    public double MaterialUtilization
     {
       get
       {
@@ -94,13 +94,13 @@
       }
     }
 
-    internal static PolygonBounds CombinedRectBounds(IList<PartPlacement> partPlacements)
+    internal static PolygonBounds CombinedRectBounds(IReadOnlyList<IPartPlacement> partPlacements)
     {
       NFP allpoints = CombinedPoints(partPlacements);
       return GeometryUtil.getPolygonBounds(allpoints);
     }
 
-    internal static NFP CombinedPoints(IList<PartPlacement> partPlacements)
+    internal static NFP CombinedPoints(IReadOnlyList<IPartPlacement> partPlacements)
     {
       NFP allpoints = new NFP();
       for (int partIndex = 0; partIndex < partPlacements.Count; partIndex++)
@@ -112,8 +112,8 @@
           var placement = partPlacements[partIndex];
           allpoints.AddPoint(
               new SvgPoint(
-               part.x + placement.x,
-               part.y + placement.y));
+               part.X + placement.X,
+               part.Y + placement.Y));
         }
       }
 
@@ -127,6 +127,7 @@
     {
       var options = new JsonSerializerOptions();
       options.Converters.Add(new NfpJsonConverter());
+      options.Converters.Add(new PartPlacementJsonConverter());
       return JsonSerializer.Serialize(this, options);
     }
 
@@ -134,6 +135,7 @@
     {
       var options = new JsonSerializerOptions();
       options.Converters.Add(new NfpJsonConverter());
+      options.Converters.Add(new PartPlacementJsonConverter());
       return JsonSerializer.Deserialize<SheetPlacement>(json, options);
     }
 

@@ -95,7 +95,7 @@
                 arc.StartAngle -= 360;
               }
 
-              for (double i = arc.StartAngle; i < arc.EndAngle; i += 15)
+              for (var i = arc.StartAngle; i < arc.EndAngle; i += 15)
               {
                 var tt = arc.GetPointFromAngle(i);
                 pp.Add(new PointF((float)tt.X, (float)tt.Y));
@@ -262,7 +262,7 @@
 
           double sheetXoffset = -sheetwidth * i;
           //double sheetyoffset = -sheetheight * i;
-          DxfPoint offsetdistance = new DxfPoint(polygon.x + sheetXoffset, polygon.y, 0D);
+          DxfPoint offsetdistance = new DxfPoint(polygon.X + sheetXoffset, polygon.Y, 0D);
           List<DxfEntity> newlist = OffsetToNest(fl.Entities, offsetdistance, polygon.Rotation);
 
           foreach (DxfEntity ent in newlist)
@@ -496,11 +496,11 @@
 
     public static DxfPoint RotateLocation(double rotationAngle, DxfPoint pt)
     {
-      var angle = (float)(rotationAngle * Math.PI / 180.0f);
+      var angle = (double)(rotationAngle * Math.PI / 180.0f);
       var x = pt.X;
       var y = pt.Y;
-      var x1 = (float)((x * Math.Cos(angle)) - (y * Math.Sin(angle)));
-      var y1 = (float)((x * Math.Sin(angle)) + (y * Math.Cos(angle)));
+      var x1 = (double)((x * Math.Cos(angle)) - (y * Math.Sin(angle)));
+      var y1 = (double)((x * Math.Sin(angle)) + (y * Math.Cos(angle)));
       return new DxfPoint(x1, y1, pt.Z);
     }
   }

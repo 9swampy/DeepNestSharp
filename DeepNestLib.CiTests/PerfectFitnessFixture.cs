@@ -9,9 +9,9 @@
 
   public class PerfectFitnessFixture
   {
-    float width;
-    float height;
-    float area;
+    double width;
+    double height;
+    double area;
     INfp sheet;
     ISheetPlacement sp;
 
@@ -62,7 +62,7 @@
     public void GivenPerfectFitThenBoundsShouldBeExpected()
     {
       var sut = new OriginalFitnessSheet(sp);
-      sut.Bounds.Should().BeApproximately(area * 4/3, area / 6);
+      sut.Bounds.Should().BeApproximately(area * 4 / 3, area / 6);
     }
   }
 }

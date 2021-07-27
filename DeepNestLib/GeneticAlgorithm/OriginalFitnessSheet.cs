@@ -21,7 +21,7 @@
 
     public double Evaluate()
     {
-      var result = 0D;
+      var result = 0d;
       result += Bounds;
       result += Sheets;
       result += MaterialWasted;
@@ -30,7 +30,7 @@
       return result;
     }
 
-    private float TotalSheetArea
+    private double TotalSheetArea
     {
       get
       {
@@ -73,8 +73,8 @@
           if (!materialWasted.HasValue)
           {
             var rectBounds = sheetPlacement.RectBounds;
-            materialWasted = sheetPlacement.MaterialUtilization < 0.6 ? rectBounds.width * rectBounds.height * 2 : sheetPlacement.Sheet.Area;
-            materialWasted += sheetPlacement.Hull.Area + (rectBounds.width * rectBounds.height);
+            materialWasted = sheetPlacement.MaterialUtilization < 0.6 ? rectBounds.Width * rectBounds.Height * 2 : sheetPlacement.Sheet.Area;
+            materialWasted += sheetPlacement.Hull.Area + (rectBounds.Width * rectBounds.Height);
             materialWasted *= 2;
             materialWasted -= sheetPlacement.MaterialUtilization < 0.6 ? 7 : 6 * sheetPlacement.TotalPartsArea;
             if (sheetPlacement.MaterialUtilization < 0.2)
@@ -101,7 +101,7 @@
         {
           if (!materialUtilization.HasValue)
           {
-            materialUtilization = Math.Pow((double)(1 - this.sheetPlacement.MaterialUtilization), 1.1D) * sheetPlacement.Sheet.Area;
+            materialUtilization = (double)Math.Pow(1 - this.sheetPlacement.MaterialUtilization, 1.1) * sheetPlacement.Sheet.Area;
           }
         }
 
@@ -124,14 +124,14 @@
             var rectBounds = sheetPlacement.RectBounds;
             if (sheetPlacement.PlacementType == PlacementTypeEnum.Gravity)
             {
-              area = (rectBounds.width * 3) * rectBounds.height;
+              area = (rectBounds.Width * 3) * rectBounds.Height;
             }
             else
             {
-              area = rectBounds.width * rectBounds.height;
+              area = rectBounds.Width * rectBounds.Height;
             }
 
-            bounds = (((rectBounds.width * 2) / sheetPlacement.Sheet.Area) + area + sheetPlacement.Hull.Area) / 6;
+            bounds = (((rectBounds.Width * 2) / sheetPlacement.Sheet.Area) + area + sheetPlacement.Hull.Area) / 6;
 
             if (this.sheetPlacement.PlacementType == PlacementTypeEnum.BoundingBox ||
                 this.sheetPlacement.PlacementType == PlacementTypeEnum.Squeeze)

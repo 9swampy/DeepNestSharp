@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\PrimS.Build.CodeAnalysis.0.2.0-alpha0004\build\net\PrimS.Build.CodeAnalysis.props" Condition="Exists('..\packages\PrimS.Build.CodeAnalysis.0.2.0-alpha0004\build\net\PrimS.Build.CodeAnalysis.props')" />
+  <Import Project="..\packages\Microsoft.CodeAnalysis.NetAnalyzers.5.0.3\build\Microsoft.CodeAnalysis.NetAnalyzers.props" Condition="Exists('..\packages\Microsoft.CodeAnalysis.NetAnalyzers.5.0.3\build\Microsoft.CodeAnalysis.NetAnalyzers.props')" />
   <Import Project="..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\build\Microsoft.CodeAnalysis.Analyzers.props" Condition="Exists('..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\build\Microsoft.CodeAnalysis.Analyzers.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -24,7 +26,8 @@
     <DefineConstants>TRACE;DEBUG;AnyCPU</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>DeepNestLib.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>
+    </CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -34,7 +37,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>DeepNestLib.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>
+    </CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
@@ -44,7 +48,8 @@
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>DeepNestLib.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>
+    </CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
@@ -54,7 +59,8 @@
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>DeepNestLib.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>
+    </CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
@@ -64,7 +70,8 @@
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>DeepNestLib.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>
+    </CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
@@ -74,7 +81,8 @@
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>DeepNestLib.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>
+    </CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
@@ -90,8 +98,8 @@
     <Reference Include="GeneticSharp.Infrastructure.Framework, Version=2.6.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\GeneticSharp.2.6.0\lib\net462\GeneticSharp.Infrastructure.Framework.dll</HintPath>
     </Reference>
-    <Reference Include="IxMilia.Dxf, Version=0.8.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\IxMilia.Dxf.0.8.0\lib\netstandard2.0\IxMilia.Dxf.dll</HintPath>
+    <Reference Include="IxMilia.Dxf, Version=0.8.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\IxMilia.Dxf.0.8.1\lib\netstandard2.0\IxMilia.Dxf.dll</HintPath>
     </Reference>
     <Reference Include="Light.GuardClauses, Version=9.0.0.0, Culture=neutral, PublicKeyToken=573727035c45e5b3, processorArchitecture=MSIL">
       <HintPath>..\packages\Light.GuardClauses.9.0.0\lib\netstandard2.0\Light.GuardClauses.dll</HintPath>
@@ -111,8 +119,8 @@
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Drawing.Common, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Drawing.Common.4.5.0\lib\net461\System.Drawing.Common.dll</HintPath>
+    <Reference Include="System.Drawing.Common, Version=4.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Drawing.Common.5.0.2\lib\net461\System.Drawing.Common.dll</HintPath>
     </Reference>
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
@@ -146,10 +154,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnglesEnum.cs" />
+    <Compile Include="MessageBoxIcon.cs" />
+    <Compile Include="NestProject\AnglesEnum.cs" />
     <Compile Include="Background.cs" />
     <Compile Include="CacheHelper.cs" />
     <Compile Include="ClipCacheItem.cs" />
+    <Compile Include="NestProject\DetailLoadInfo.cs" />
+    <Compile Include="NestProject\DetailLoadInfoJsonConverter.cs" />
+    <Compile Include="NestProject\IDetailLoadInfo.cs" />
+    <Compile Include="NestProject\ISheetLoadInfo.cs" />
+    <Compile Include="NestProject\ProjectInfo.cs" />
+    <Compile Include="NestProject\SheetLoadInfo.cs" />
     <Compile Include="D3.cs" />
     <Compile Include="DataInfo.cs" />
     <Compile Include="DbCache.cs" />
@@ -172,6 +187,7 @@
     <Compile Include="IExport.cs" />
     <Compile Include="IHiddenNfp.cs" />
     <Compile Include="IMessageService.cs" />
+    <Compile Include="IMinkowskiSumService.cs" />
     <Compile Include="INfp.cs" />
     <Compile Include="InrangeItem.cs" />
     <Compile Include="IntPointArrayExtensions.cs" />
@@ -189,6 +205,7 @@
     <Compile Include="MinkowskiSumPick.cs" />
     <Compile Include="NestingContext.cs" />
     <Compile Include="NestItem.cs" />
+    <Compile Include="NestProject\SheetLoadInfoJsonConverter.cs" />
     <Compile Include="NFP.cs" />
     <Compile Include="NfpExtensions.cs" />
     <Compile Include="NfpJsonConverter.cs" />
@@ -197,8 +214,11 @@
     <Compile Include="NfpPairEqualityComparer.cs" />
     <Compile Include="NfpPairEqualityComparerKey.cs" />
     <Compile Include="NfpPairsFactory.cs" />
+    <Compile Include="PartPlacementJsonConverter.cs" />
     <Compile Include="PlacementTypeEnum.cs" />
+    <Compile Include="DoublePrecisionConverter.cs" />
     <Compile Include="Placement\INestResult.cs" />
+    <Compile Include="Placement\IPartPlacement.cs" />
     <Compile Include="Placement\ISheetPlacement.cs" />
     <Compile Include="Placement\PartPlacement.cs" />
     <Compile Include="Placement\SheetPlacement.cs" />
@@ -218,6 +238,7 @@
     </Compile>
     <Compile Include="RawDetail.cs" />
     <Compile Include="Placement\NestResult.cs" />
+    <Compile Include="ReadOnlyListExtensions.cs" />
     <Compile Include="RectangleSheet.cs" />
     <Compile Include="Sheet.cs" />
     <Compile Include="Simplify.cs" />
@@ -284,7 +305,6 @@
       <Link>Dxfs\SquareInSquare.dxf</Link>
     </EmbeddedResource>
     <None Include="app.config" />
-    <None Include="DeepNestLib.ruleset" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -294,6 +314,8 @@
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.NetAnalyzers.5.0.3\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.NetAnalyzers.dll" />
+    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.NetAnalyzers.5.0.3\analyzers\dotnet\cs\Microsoft.CodeAnalysis.NetAnalyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.VisualStudio.Threading.Analyzers.16.10.56\analyzers\cs\Microsoft.VisualStudio.Threading.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\packages\Microsoft.VisualStudio.Threading.Analyzers.16.10.56\analyzers\cs\Microsoft.VisualStudio.Threading.Analyzers.CSharp.dll" />
     <Analyzer Include="..\packages\Microsoft.VisualStudio.Threading.Analyzers.16.10.56\analyzers\cs\Microsoft.VisualStudio.Threading.Analyzers.dll" />
@@ -317,8 +339,12 @@
     <Error Condition="!Exists('..\packages\Microsoft.VisualStudio.Threading.Analyzers.16.10.56\build\Microsoft.VisualStudio.Threading.Analyzers.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.VisualStudio.Threading.Analyzers.16.10.56\build\Microsoft.VisualStudio.Threading.Analyzers.targets'))" />
     <Error Condition="!Exists('..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\build\Microsoft.CodeAnalysis.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\build\Microsoft.CodeAnalysis.Analyzers.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\build\Microsoft.CodeAnalysis.Analyzers.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\build\Microsoft.CodeAnalysis.Analyzers.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeAnalysis.NetAnalyzers.5.0.3\build\Microsoft.CodeAnalysis.NetAnalyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeAnalysis.NetAnalyzers.5.0.3\build\Microsoft.CodeAnalysis.NetAnalyzers.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeAnalysis.NetAnalyzers.5.0.3\build\Microsoft.CodeAnalysis.NetAnalyzers.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeAnalysis.NetAnalyzers.5.0.3\build\Microsoft.CodeAnalysis.NetAnalyzers.targets'))" />
+    <Error Condition="!Exists('..\packages\PrimS.Build.CodeAnalysis.0.2.0-alpha0004\build\net\PrimS.Build.CodeAnalysis.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\PrimS.Build.CodeAnalysis.0.2.0-alpha0004\build\net\PrimS.Build.CodeAnalysis.props'))" />
   </Target>
   <Import Project="..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\build\Microsoft.CodeAnalysis.Analyzers.targets" Condition="Exists('..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\build\Microsoft.CodeAnalysis.Analyzers.targets')" />
+  <Import Project="..\packages\Microsoft.CodeAnalysis.NetAnalyzers.5.0.3\build\Microsoft.CodeAnalysis.NetAnalyzers.targets" Condition="Exists('..\packages\Microsoft.CodeAnalysis.NetAnalyzers.5.0.3\build\Microsoft.CodeAnalysis.NetAnalyzers.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
