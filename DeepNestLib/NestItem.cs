@@ -12,7 +12,7 @@
 
   public class NestItem
   {
-    public NFP Polygon;
+    public INfp Polygon;
     public int Quantity;
     public bool IsSheet;
   }

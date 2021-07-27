@@ -305,6 +305,9 @@
     <EmbeddedResource Include="..\DeepNestLib.CiTests\SquareInSquare.dxf">
       <Link>Dxfs\SquareInSquare.dxf</Link>
     </EmbeddedResource>
+    <None Include="..\DeepNestLib.CiTests\Dxfs\20x20outer10x10hole.dxf">
+      <Link>Dxfs\20x20outer10x10hole.dxf</Link>
+    </None>
     <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

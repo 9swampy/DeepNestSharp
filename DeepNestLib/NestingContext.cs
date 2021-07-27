@@ -75,8 +75,8 @@
     {
       try
       {
-        List<NFP> lsheets = new List<NFP>();
-        List<NFP> lpoly = new List<NFP>();
+        var lsheets = new List<INfp>();
+        var lpoly = new List<INfp>();
 
         int id = 0;
         foreach (var item in Polygons)
@@ -98,7 +98,7 @@
 
         foreach (var item in Sheets)
         {
-          NFP clone = new NFP();
+          var clone = new NFP();
           clone.Id = item.Id;
           clone.Source = item.Source;
           clone.ReplacePoints(item.Points.Select(z => new SvgPoint(z.X, z.Y) { Exact = z.Exact }));
@@ -124,12 +124,7 @@
           {
             Parallel.ForEach(grps, (item) =>
             {
-              SvgNest.OffsetTree(item.First(), 0.5 * config.Spacing);
-              foreach (var zitem in item)
-              {
-                zitem.ReplacePoints(item.First().Points);
-              }
-
+              OffsetTreeReplace(config, item);
             });
 
           }
@@ -137,18 +132,15 @@
           {
             foreach (var item in grps)
             {
-              SvgNest.OffsetTree(item.First(), 0.5 * config.Spacing);
-              foreach (var zitem in item)
-              {
-                zitem.ReplacePoints(item.First().Points);
-              }
+              OffsetTreeReplace(config, item);
             }
           }
 
           foreach (var item in lsheets)
           {
             var gap = config.SheetSpacing - (config.Spacing / 2);
-            SvgNest.OffsetTree(item, -gap, true);
+            var sheet = item;
+            SvgNest.OffsetTree(ref sheet, -gap, config, true);
           }
         }
 
@@ -210,6 +202,22 @@
 #if NCRUNCH
         throw;
 #endif
+      }
+    }
+
+    /// <summary>
+    /// This is the only point where simplification feeds in to the process so use this in tests to apply config-simplifications to imports.
+    /// </summary>
+    /// <param name="config">Config to use when simplifying.</param>
+    /// <param name="item">The item that will be modified.</param>
+    private static void OffsetTreeReplace(ISvgNestConfig config, IGrouping<int, INfp> item)
+    {
+      // Don't see the reason to apply to all in the group because later we regroup and just use the first again.
+      var target = item.First();
+      SvgNest.OffsetTree(ref target, 0.5 * config.Spacing, config);
+      foreach (var zitem in item)
+      {
+        zitem.ReplacePoints(item.First().Points);
       }
     }
 

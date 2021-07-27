@@ -46,7 +46,7 @@
       return true;
     }
 
-    public NFP ToNfp()
+    public INfp ToNfp()
     {
       NFP po = null;
       List<NFP> nfps = new List<NFP>();

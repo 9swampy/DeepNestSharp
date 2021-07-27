@@ -664,19 +664,24 @@
       return new NestResult(allPlacements, unplacedParts, totalMerged, config.PlacementType, sw.ElapsedMilliseconds);
     }
 
-    private static INfp ShiftPolygon(INfp p, IPartPlacement shift)
+    internal static INfp ShiftPolygon(INfp p, IPartPlacement shift)
+    {
+      return ShiftPolygon(p, shift.X, shift.Y);
+    }
+
+    internal static INfp ShiftPolygon(INfp p, double x, double y)
     {
       NFP shifted = new NFP();
       for (var i = 0; i < p.Length; i++)
       {
-        shifted.AddPoint(new SvgPoint(p[i].X + shift.X, p[i].Y + shift.Y) { Exact = p[i].Exact });
+        shifted.AddPoint(new SvgPoint(p[i].X + x, p[i].Y + y) { Exact = p[i].Exact });
       }
 
       if (p.Children != null /*&& p.Children.Count*/)
       {
         for (int i = 0; i < p.Children.Count(); i++)
         {
-          shifted.Children.Add(ShiftPolygon(p.Children[i], shift));
+          shifted.Children.Add(ShiftPolygon(p.Children[i], x, y));
         }
       }
 
@@ -857,7 +862,7 @@
       return frame;
     }
 
-    private INfp[] GetInnerNfp(INfp a, INfp b, MinkowskiCache type, double clipperScale)
+    internal INfp[] GetInnerNfp(INfp a, INfp b, MinkowskiCache type, double clipperScale)
     {
       a.MustNotBeNull();
       b.MustNotBeNull();
@@ -934,7 +939,7 @@
       return f.ToArray();
     }
 
-    private bool CanBePlaced(INfp sheet, INfp part, double clipperScale, out INfp[] sheetNfp)
+    internal bool CanBePlaced(INfp sheet, INfp part, double clipperScale, out INfp[] sheetNfp)
     {
       sheetNfp = GetInnerNfp(sheet, part, 0, clipperScale);
       if (sheetNfp != null && sheetNfp.Count() > 0)
@@ -1036,9 +1041,9 @@
       this.SyncPlaceParts(parts, sheets, config, index);
     }
 
-    private INfp GetOuterNfp(INfp a, INfp b, MinkowskiCache type, bool inside = false) // todo:?inside def?
+    internal INfp GetOuterNfp(INfp a, INfp b, MinkowskiCache type, bool inside = false) // todo:?inside def?
     {
-      INfp[] nfp = null;
+      INfp[] nfp;
 
       var key = new DbCacheKey(a.Source, b.Source, a.Rotation, b.Rotation);
 

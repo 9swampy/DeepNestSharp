@@ -57,7 +57,7 @@
 
     NFP GetHull();
 
-    SvgPoint[] ReplacePoints(IEnumerable<SvgPoint> points);
+    void ReplacePoints(IEnumerable<SvgPoint> points);
 
     void Reverse();
 
@@ -70,5 +70,7 @@
     string ToJson();
 
     string ToString();
+
+    string ToOpenScadPolygon();
   }
 }

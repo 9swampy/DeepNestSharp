@@ -3,6 +3,7 @@
   using System;
   using System.Collections.Generic;
   using System.Linq;
+  using System.Text;
   using System.Text.Json;
   using System.Text.Json.Serialization;
   using DeepNestLib.NestProject;
@@ -155,12 +156,14 @@
       }
     }
 
-    public SvgPoint[] ReplacePoints(IEnumerable<SvgPoint> points)
+    public void ReplacePoints(IEnumerable<SvgPoint> points)
     {
       this.points = points.ToArray();
-      return this.Points;
     }
 
+    /// <summary>
+    /// The gross outer area, not discounting for any holes.
+    /// </summary>
     [JsonIgnore]
     public double Area
     {
@@ -382,6 +385,33 @@
     public static NFP FromJson(string json)
     {
       return JsonSerializer.Deserialize<NFP>(json);
+    }
+
+    public string ToOpenScadPolygon()
+    {
+      var resultBuilder = new StringBuilder("polygon ([");
+      foreach (var p in this.Points)
+      {
+        resultBuilder.AppendLine($"[{p.X},{p.Y}],");
+      }
+
+      resultBuilder.AppendLine("]);");
+
+      if (Children.Count > 0)
+      {
+        var outer = resultBuilder.ToString();
+        resultBuilder = new StringBuilder();
+        resultBuilder.AppendLine("difference() {");
+        resultBuilder.Append(outer);
+        foreach (var c in Children)
+        {
+          resultBuilder.Append(c.ToOpenScadPolygon());
+        }
+
+        resultBuilder.AppendLine("}");
+      }
+
+      return resultBuilder.ToString();
     }
   }
 }

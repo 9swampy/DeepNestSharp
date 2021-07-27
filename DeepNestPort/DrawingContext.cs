@@ -499,8 +499,8 @@
     /// <param name="raw">The part to approximate.</param>
     private void AddApproximation(RawDetail raw)
     {
-      NFP part = raw.ToNfp();
-      var simplification = SvgNest.simplifyFunction(part, false);
+      var part = raw.ToNfp();
+      var simplification = SvgNest.simplifyFunction(part, false, SvgNest.Config);
       this.Draw(simplification, Pens.Red);
       var pointsChange = $"{part.Points.Length} => {simplification.Points.Length} points";
       this.DrawLabel(pointsChange, Brushes.Black, Color.Orange, 5, (int)(10 + this.GetLabelHeight()));

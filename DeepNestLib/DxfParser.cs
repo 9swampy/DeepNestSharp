@@ -21,11 +21,16 @@
     {
       using (var inputStream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream(path))
       {
-        DxfFile dxffile = DxfFile.Load(inputStream);
-        IEnumerable<DxfEntity> entities = dxffile.Entities.ToArray();
-        return ConvertDxfToRawDetail(path, entities);
+        return LoadDxfStream(path, inputStream);
       }
     }
+
+    public static RawDetail LoadDxfStream(string name, Stream inputStream)
+    {
+        DxfFile dxffile = DxfFile.Load(inputStream);
+        IEnumerable<DxfEntity> entities = dxffile.Entities.ToArray();
+      return ConvertDxfToRawDetail(name, entities);
+      }
 
     public static RawDetail LoadDxfFile(string path)
     {
@@ -503,5 +508,5 @@
       var y1 = (double)((x * Math.Sin(angle)) + (y * Math.Cos(angle)));
       return new DxfPoint(x1, y1, pt.Z);
     }
-  }
+}
 }

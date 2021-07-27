@@ -147,9 +147,9 @@
 
     private static volatile object cacheSyncLock = new object();
 
-    public static INfp simplifyFunction(INfp polygon, bool inside)
+    public static INfp simplifyFunction(INfp polygon, bool inside, ISvgNestConfig config)
     {
-      return simplifyFunction(polygon, inside, Config.CurveTolerance, Config.Simplify);
+      return simplifyFunction(polygon, inside, config.CurveTolerance, config.Simplify);
     }
 
     /// <summary>
@@ -563,9 +563,9 @@
     }
 
     // offset tree recursively
-    public static void OffsetTree(INfp t, double offset, bool? inside = null)
+    public static void OffsetTree(ref INfp t, double offset, ISvgNestConfig config, bool? inside = null)
     {
-      var simple = simplifyFunction(t, (inside == null) ? false : inside.Value);
+      var simple = simplifyFunction(t, (inside == null) ? false : inside.Value, config);
       var offsetpaths = new INfp[] { simple };
       if (Math.Abs(offset) > 0)
       {
@@ -601,7 +601,8 @@
       {
         for (var i = 0; i < t.Children.Count; i++)
         {
-          OffsetTree(t.Children[i], -offset, (inside == null) ? true : (!inside));
+          var child = t.Children[i];
+          OffsetTree(ref child, -offset, config, (inside == null) ? true : (!inside));
         }
       }
     }
@@ -832,7 +833,7 @@
         currentPlacements = this.TopNestResults.Top.UsedSheets[0].PartPlacements.Count;
         if (this.TopNestResults.IndexOf(payload) < this.TopNestResults.EliteSurvivors)
         {
-          this.progressDisplayer.DisplayToolStripMessage($"New top nest found: Nesting time; {payload.PlacePartTime}ms");
+          this.progressDisplayer.DisplayToolStripMessage($"New top {TopNestResults.MaxCapacity} nest found: nesting time = {payload.PlacePartTime}ms");
           this.progressDisplayer?.UpdateNestsList();
         }
       }

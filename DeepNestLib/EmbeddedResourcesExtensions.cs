@@ -18,7 +18,7 @@
       var stream = assembly.GetManifestResourceStream(resourcePath);
       if (stream == null)
       {
-        throw new ArgumentException(string.Format("The specified embedded resource \"{0}\" is not found.", relativeResourcePath));
+        throw new ArgumentException($"The specified embedded resource \"{relativeResourcePath}\" is not found at {resourcePath}.");
       }
 
       return stream;

@@ -598,8 +598,11 @@
       {
         if (this.th == null)
         {
-          this.th = new Thread(() =>
+          this.th = new Thread(
+            () =>
           {
+              try
+              {
             _ = this.Invoke((MethodInvoker)(() => { this.progressBar1.Visible = true; }));
             this.Context.StartNest();
             UpdateNestsList();
@@ -626,6 +629,12 @@
                 break;
               }
             }
+              }
+              catch (Exception ex)
+              {
+                this.th = null;
+                this.ProgressDisplayerInstance.DisplayToolStripMessage(ex.Message);
+              }
 
             ContextualiseRunStopButtons(false);
             this.th = null;
@@ -1011,6 +1020,7 @@
         ContextualiseRunStopButtons(!stop);
 
         _ = this.Invoke((MethodInvoker)(() => { this.progressBar1.Visible = false; }));
+        this.th = null;
         Application.DoEvents();
       }
       catch (Exception ex)

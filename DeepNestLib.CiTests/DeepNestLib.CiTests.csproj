@@ -149,6 +149,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CanBePlacedFixture.cs" />
     <Compile Include="ClipperFixture.cs" />
     <Compile Include="ClipperIntersectFixture.cs" />
     <Compile Include="CompareMinkowskiImplementationsFixture.cs" />
@@ -169,6 +170,7 @@
     <Compile Include="GeneticAlgorithm\SqueezeFitnessFixture.cs" />
     <Compile Include="NfpFixture.cs" />
     <Compile Include="PerfectFitnessFixture.cs" />
+    <Compile Include="OuterFitPolygonFixture.cs" />
     <Compile Include="Placement\NfpJsonFixture.cs" />
     <Compile Include="Placement\SheetPlacementJsonFixture.cs" />
     <Compile Include="PmapWorkerFixtureSetup.cs" />
@@ -181,9 +183,15 @@
     <Compile Include="RunFullNestBoundingBoxFixture.cs" />
     <Compile Include="RunFullNestGravityFixture.cs" />
     <Compile Include="RunFullNestSqueezeFixture.cs" />
+    <Compile Include="Dxfs\SquareWithHoleFixture.cs" />
     <Compile Include="TopNestResultsCollectionFixture.cs" />
+    <Compile Include="UnitTestingTraceListener.cs" />
+    <Compile Include="UnitTestLog.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Dxfs\20x20outer10x10hole.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <None Include="app.config" />
     <Content Include="..\MinkowskiDlls\minkowski.dll">
       <Link>minkowski.dll</Link>
@@ -197,6 +205,9 @@
       <Link>minkowski_x86.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <EmbeddedResource Include="Dxfs\20x20outer10x10hole.scad">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="OneSquare.dxf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -237,6 +248,9 @@
     <Content Include="OneSquare.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Dxfs\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
