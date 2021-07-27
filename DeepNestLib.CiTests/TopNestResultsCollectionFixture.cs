@@ -10,6 +10,22 @@
   public class TopNestResultsCollectionFixture
   {
     [Fact]
+    public void GivenEmptyCollectionWhenMaxCapacityZeroThenThrow()
+    {
+      var sut = new TopNestResultsCollection(A.Fake<ISvgNestConfig>());
+      Action act = () => sut.Add(A.Fake<INestResult>());
+
+      act.Should().Throw<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void GivenEmptyCollectionWhenAddResultThenReturnWasAdded()
+    {
+      var sut = new TopNestResultsCollection(new DefaultSvgNestConfig());
+      sut.Add(A.Fake<INestResult>()).Should().BeTrue();
+    }
+
+    [Fact]
     public void GivenEmptyCollectionWhenAddResultThenCountIncrement()
     {
       var sut = new TopNestResultsCollection(new DefaultSvgNestConfig());
