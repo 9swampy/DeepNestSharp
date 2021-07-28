@@ -197,6 +197,7 @@
 
     internal NestResult PlaceParts(IEnumerable<INfp> sheets, INfp[] parts, ISvgNestConfig config)
     {
+      VerboseLog("PlaceParts");
       if (sheets == null || sheets.Count() == 0)
       {
         return null;
@@ -256,13 +257,13 @@
             }
             else
             {
-              // Sheet's already used for priority parts but there's no priority parts left so fill spaces with non-priority
+              VerboseLog($"Using sheet {sheet.Id}:{sheet.Source} because although it's already used for {placed.Count()} priority parts there's no priority parts left so try fill spaces with non-priority:");
               allPlacements.Remove(sheetPlacement);
             }
           }
           else
           {
-            // It's a new sheet so just go ahead and use it for whatever's left
+            VerboseLog($"Using sheet {sheet.ToShortString()} because it's a new sheet so just go ahead and use it for whatever's left:");
             placements = new List<IPartPlacement>();
             placed = new List<INfp>();
           }
@@ -270,6 +271,7 @@
 
         if (sheet == null)
         {
+          VerboseLog("No sheets left to place parts upon; break and end the nest.");
           break;
         }
 
@@ -287,45 +289,52 @@
         for (int i = 0; i < processingParts.Length; i++)
         {
           part = processingParts[i];
+          VerboseLog($"Process {i}:{part.ToShortString()}.");
 
           // inner NFP
           INfp[] sheetNfp = null;
-          var canBePlaced = false;
-
-          // try all possible rotations until it fits
-          // (only do this for the first part of each sheet, to ensure that all parts that can be placed are, even if we have to to open a lot of sheets)
-          for (int j = 0; j < (360f / config.Rotations); j++)
+          if (placed.Count == 0)
           {
-            if (CanBePlaced(sheet, part, config.ClipperScale, out sheetNfp))
+            var canBePlaced = false;
+
+            // try all possible rotations until it fits
+            // (only do this for the first part of each sheet, to ensure that all parts that can be placed are, even if we have to to open a lot of sheets)
+            for (int j = 0; j < (360f / config.Rotations); j++)
             {
-              canBePlaced = true;
-              break;
+              if (CanBePlaced(sheet, part, config.ClipperScale, out sheetNfp))
+              {
+                VerboseLog($"{part.ToShortString()} could be placed if sheet empty (only do this for the first part on each sheet).");
+                canBePlaced = true;
+                break;
+              }
+
+              var r = part.Rotate(360f / config.Rotations);
+              r.Rotation = part.Rotation + (360f / config.Rotations);
+              r.Source = part.Source;
+              r.Id = part.Id;
+
+              // rotation is not in-place
+              part = r;
+              processingParts[i] = r;
+
+              if (part.Rotation > 360f)
+              {
+                part.Rotation = part.Rotation % 360f;
+              }
             }
 
-            var r = part.Rotate(360f / config.Rotations);
-            r.Rotation = part.Rotation + (360f / config.Rotations);
-            r.Source = part.Source;
-            r.Id = part.Id;
-
-            // rotation is not in-place
-            part = r;
-            processingParts[i] = r;
-
-            if (part.Rotation > 360f)
+            // part unplaceable, skip
+            if (!canBePlaced)
             {
-              part.Rotation = part.Rotation % 360f;
+              VerboseLog($"{part.ToShortString()} could not be placed even if sheet empty (only do this for the first part on each sheet).");
+              continue;
             }
-          }
-
-          // part unplaceable, skip
-          if (!canBePlaced)
-          {
-            continue;
           }
 
           PartPlacement position = null;
           if (placed.Count == 0)
           {
+            VerboseLog("First placement, put it on the bottom left corner. . .");
             // first placement, put it on the bottom left corner
             for (int j = 0; j < sheetNfp.Count(); j++)
             {
@@ -357,9 +366,10 @@
             }
 
             placements.Add(position);
+            VerboseLog($"Add part {part}");
             placed.Add(part);
           }
-          else
+          else if (CanBePlaced(sheet, part, config.ClipperScale, out sheetNfp))
           {
             clipperSheetNfp = InnerNfpToClipperCoordinates(sheetNfp, config.ClipperScale);
 
@@ -383,9 +393,9 @@
             {
               nfp = GetOuterNfp(placed[j], part, 0);
 
-              // minkowski difference failed. very rare but could happen
               if (nfp == null)
               {
+                VerboseLog("Minkowski difference failed: very rare but could happen. . .");
                 error = true;
                 break;
               }
@@ -417,7 +427,7 @@
             // TODO: a lot here to insert
             if (error || !clipper.Execute(ClipType.ctUnion, combinedNfp, PolyFillType.pftNonZero, PolyFillType.pftNonZero))
             {
-              // console.log('clipper error', error);
+              VerboseLog("Clipper error.");
               continue;
             }
 
@@ -442,6 +452,7 @@
 
             if (!clipper.Execute(ClipType.ctDifference, differenceWithSheetPolygonNfpPoints, PolyFillType.pftEvenOdd, PolyFillType.pftNonZero))
             {
+              VerboseLog("Clipper execute failed; move on to next part.");
               continue;
             }
 
@@ -449,11 +460,12 @@
             {
               if (part.IsPriority)
               {
-                break; /* Failed to fit a Primary part; add another sheet.
-                          However that means we'll leave additional space on the first sheet though that won't get used again
+                VerboseLog("Could not place part. As it's Priority add another sheet.");
+                break; /* However that means we'll leave additional space on the first sheet though that won't get used again
                           as everything remaining will be fit to the consequent sheet? */
               }
 
+              VerboseLog("Could not place part. As it's not Priority move on to next part.");
               continue; // Part can't be fitted but it wasn't a primary, so move on to the next part
             }
 
@@ -465,7 +477,16 @@
             }
 
             var finalNfp = differenceWithSheetPolygonNfp;
-
+#if TRACE
+            try
+            {
+              var openScad = finalNfp.Single().ToOpenScadPolygon();
+            }
+            catch (Exception)
+            {
+              // NOP
+            }
+#endif
             // choose placement that results in the smallest bounding box/hull etc
             // todo: generalize gravity direction
             /*var minwidth = null;
@@ -501,13 +522,16 @@
               allpoints = allpoints.GetHull();
             }
 
+            VerboseLog($"Iterate nfps in differenceWithSheetPolygonNfp:");
             for (int j = 0; j < finalNfp.Count; j++)
             {
+              VerboseLog($"  For j={j}");
               nf = finalNfp[j];
 
-              // console.log('evalnf',nf.length);
+              VerboseLog($"evalnf {nf.Length}");
               for (int k = 0; k < nf.Length; k++)
               {
+                VerboseLog($"    For k={k}");
                 shiftvector = new PartPlacement(part)
                 {
                   Id = part.Id,
@@ -580,12 +604,13 @@
                   area -= merged.TotalLength * config.TimeRatio;
                 }
 
-                // console.timeEnd('evalmerge');
+                VerboseLog("evalmerge");
                 if (minarea == null ||
                     area < minarea ||
                     (GeometryUtil._almostEqual(minarea, area) && (minx == null || shiftvector.X < minx)) ||
                     (GeometryUtil._almostEqual(minarea, area) && (minx != null && GeometryUtil._almostEqual(shiftvector.X, minx) && shiftvector.Y < miny)))
                 {
+                  VerboseLog($"evalmerge-entered minarea={minarea ?? -1:0.000000} x={shiftvector?.X ?? -1:0.000000} y={shiftvector?.Y ?? -1:0.000000}");
                   minarea = area;
 
                   minwidth = rectbounds != null ? rectbounds.Width : 0;
@@ -605,12 +630,15 @@
                     position.MergedLength = merged.TotalLength;
                     position.MergedSegments = merged.Segments;
                   }
+
+                  VerboseLog($"evalmerge-exit minarea={minarea ?? -1:0.000000} x={shiftvector?.X ?? -1:0.000000} y={shiftvector?.Y ?? -1:0.000000}");
                 }
               }
             }
 
             if (position != null)
             {
+              VerboseLog($"Add part {part}");
               placed.Add(part);
               placements.Add(position);
               if (position.MergedLength.HasValue)
@@ -620,6 +648,7 @@
             }
             else if (part.IsPriority)
             {
+              VerboseLog($"Could not place {part}. As it's Priority skip to next part.");
               break;
             }
 
@@ -630,8 +659,13 @@
               placednum += allPlacements[j].PartPlacements.Count;
             }
           }
+          else
+          {
+            VerboseLog($"Could not place {part.ToShortString()} even on empty {sheet.ToShortString()}.");
+          }
         }
 
+        VerboseLog("All parts processed for current sheet.");
         for (int i = 0; i < placed.Count; i++)
         {
           var index = Array.IndexOf(unplacedParts, placed[i]);
@@ -643,25 +677,37 @@
 
         if (isPriorityPlacement && unplacedParts.Length > 0)
         {
+          VerboseLog($"Requeue {sheet.ToShortString()} for reuse.");
           unusedSheets.Push(sheet);
         }
 
         while (requeue.Count > 0)
         {
+          VerboseLog($"Reinstate {sheet.ToShortString()} for reuse.");
           unusedSheets.Push(requeue.Dequeue());
         }
 
         if (placements != null && placements.Count > 0)
         {
+          VerboseLog($"Add {sheet.ToShortString()} {config.PlacementType} placement.");
           allPlacements.Add(new SheetPlacement(config.PlacementType, sheet, placements));
         }
         else
         {
+          VerboseLog($"Something's gone wrong; break out of nest.");
           break; // something went wrong
         }
       }
 
+      VerboseLog($"Nest complete in {sw.ElapsedMilliseconds}");
       return new NestResult(allPlacements, unplacedParts, totalMerged, config.PlacementType, sw.ElapsedMilliseconds);
+    }
+
+    private static void VerboseLog(string message)
+    {
+#if NCRUNCH
+      Trace.WriteLine(message);
+#endif
     }
 
     internal static INfp ShiftPolygon(INfp p, IPartPlacement shift)

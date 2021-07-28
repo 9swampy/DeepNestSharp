@@ -21,8 +21,13 @@
 
     public override string ToString()
     {
-      var str1 = (this.points != null) ? this.points.Count() + string.Empty : "null";
-      return $"nfp: id: {this.Id}; source: {this.Source}; rotation: {this.Rotation}; points: {str1}";
+      var pointStr = (this.points != null) ? this.points.Count() + string.Empty : "null";
+      return $"{this.GetType().Name}: id:{this.Id}; src:{this.Source}; rot:{this.Rotation}°@{this.X:0.###},{this.Y:0.###}; points:{pointStr} - {this.Name}";
+    }
+
+    public string ToShortString()
+    {
+      return $"{this.GetType().Name}: i:{this.Id};s:{this.Source};r:{this.Rotation}°@{this.X:0.###},{this.Y:0.###}";
     }
 
     public NFP(IList<INfp> children)
@@ -392,7 +397,7 @@
       var resultBuilder = new StringBuilder("polygon ([");
       foreach (var p in this.Points)
       {
-        resultBuilder.AppendLine($"[{p.X},{p.Y}],");
+        resultBuilder.AppendLine($"[{p.X:0.######},{p.Y:0.######}],");
       }
 
       resultBuilder.AppendLine("]);");

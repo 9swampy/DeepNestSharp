@@ -71,6 +71,8 @@
 
     string ToString();
 
+    string ToShortString();
+
     string ToOpenScadPolygon();
   }
 }

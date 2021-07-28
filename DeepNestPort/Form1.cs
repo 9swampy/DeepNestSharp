@@ -56,7 +56,7 @@
       this.ContextualiseRunStopButtons(false);
 
       LoadSettings();
-      
+
       //hack
       toolStripButton9.BackgroundImageLayout = ImageLayout.None;
       toolStripButton9.BackgroundImage = new Bitmap(1, 1);
@@ -601,40 +601,40 @@
           this.th = new Thread(
             () =>
           {
-              try
-              {
-            _ = this.Invoke((MethodInvoker)(() => { this.progressBar1.Visible = true; }));
-            this.Context.StartNest();
-            UpdateNestsList();
-
-            while (!this.stop)
+            try
             {
-              Stopwatch sw = new Stopwatch();
-              sw.Start();
-              Cursor.Current = Cursors.Default;
-              this.Context.NestIterate(SvgNest.Config);
+              _ = this.Invoke((MethodInvoker)(() => { this.progressBar1.Visible = true; }));
+              this.Context.StartNest();
               UpdateNestsList();
-              sw.Stop();
-              if (SvgNest.Config.UseParallel)
-              {
-                this.ProgressDisplayerInstance.DisplayToolStripMessage($"Iteration time: {sw.ElapsedMilliseconds}ms ({this.context.Nest.AverageNestTime}ms average)");
-              }
-              else
-              {
-                this.ProgressDisplayerInstance.DisplayToolStripMessage($"Nesting time: {sw.ElapsedMilliseconds}ms");
-              }
 
-              if (this.Context.IsErrored)
+              while (!this.stop)
               {
-                break;
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                Cursor.Current = Cursors.Default;
+                this.Context.NestIterate(SvgNest.Config);
+                UpdateNestsList();
+                sw.Stop();
+                if (SvgNest.Config.UseParallel)
+                {
+                  this.ProgressDisplayerInstance.DisplayToolStripMessage($"Iteration time: {sw.ElapsedMilliseconds}ms ({this.context.Nest.AverageNestTime}ms average)");
+                }
+                else
+                {
+                  this.ProgressDisplayerInstance.DisplayToolStripMessage($"Nesting time: {sw.ElapsedMilliseconds}ms");
+                }
+
+                if (this.Context.IsErrored)
+                {
+                  break;
+                }
               }
             }
-              }
-              catch (Exception ex)
-              {
-                this.th = null;
-                this.ProgressDisplayerInstance.DisplayToolStripMessage(ex.Message);
-              }
+            catch (Exception ex)
+            {
+              this.th = null;
+              this.ProgressDisplayerInstance.DisplayToolStripMessage(ex.Message);
+            }
 
             ContextualiseRunStopButtons(false);
             this.th = null;
