@@ -19,6 +19,7 @@
     <Compile Include="..\DeepNestLib\ExporterFactory.cs" Link="ExporterFactory.cs" />
     <Compile Include="..\DeepNestLib\Extensions.cs" Link="Extensions.cs" />
     <Compile Include="..\DeepNestLib\GeneticAlgorithm\IOriginalFitnessSheet.cs" Link="GeneticAlgorithm\IOriginalFitnessSheet.cs" />
+    <Compile Include="..\DeepNestLib\GeneticAlgorithm\ISheetPlacementFitness.cs" Link="GeneticAlgorithm\ISheetPlacementFitness.cs" />
     <Compile Include="..\DeepNestLib\GeneticAlgorithm\NestChromosome.cs" Link="GeneticAlgorithm\NestChromosome.cs" />
     <Compile Include="..\DeepNestLib\GeneticAlgorithm\NestFitness.cs" Link="GeneticAlgorithm\NestFitness.cs" />
     <Compile Include="..\DeepNestLib\GeneticAlgorithm\OriginalFitness.cs" Link="GeneticAlgorithm\OriginalFitness.cs" />
@@ -34,6 +35,7 @@
     <Compile Include="..\DeepNestLib\IMessageService.cs" Link="IMessageService.cs" />
     <Compile Include="..\DeepNestLib\IMinkowskiSumService.cs" Link="IMinkowskiSumService.cs" />
     <Compile Include="..\DeepNestLib\INfp.cs" Link="INfp.cs" />
+    <Compile Include="..\DeepNestLib\InnerFlowResult.cs" Link="InnerFlowResult.cs" />
     <Compile Include="..\DeepNestLib\InrangeItem.cs" Link="InrangeItem.cs" />
     <Compile Include="..\DeepNestLib\IntPointArrayExtensions.cs" Link="IntPointArrayExtensions.cs" />
     <Compile Include="..\DeepNestLib\IProgressDisplayer.cs" Link="IProgressDisplayer.cs" />

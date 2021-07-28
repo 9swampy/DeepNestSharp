@@ -154,6 +154,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GeneticAlgorithm\ISheetPlacementFitness.cs" />
+    <Compile Include="InnerFlowResult.cs" />
     <Compile Include="MessageBoxIcon.cs" />
     <Compile Include="NestProject\AnglesEnum.cs" />
     <Compile Include="Background.cs" />
@@ -314,6 +316,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="stylecop.json" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />

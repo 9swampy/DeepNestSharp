@@ -77,9 +77,9 @@
             materialWasted += sheetPlacement.Hull.Area + (rectBounds.Width * rectBounds.Height);
             materialWasted *= 2;
             materialWasted -= sheetPlacement.MaterialUtilization < 0.6 ? 7 : 6 * sheetPlacement.TotalPartsArea;
-            if (sheetPlacement.MaterialUtilization < 0.2)
+            if (sheetPlacement.MaterialUtilization < 0.3)
             {
-              materialWasted *= 3;
+              materialWasted *= 1.25;
             }
 
             materialWasted = Math.Max(0, materialWasted.Value);

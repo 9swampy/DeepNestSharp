@@ -1683,7 +1683,7 @@
       try
       {
         SaveFileDialog sfd = new SaveFileDialog();
-        sfd.Filter = "DeepNest Projects (*.nest)|*.nest";
+        sfd.Filter = ProjectInfo.FileDialogFilter;
         if (sfd.ShowDialog() == DialogResult.OK)
         {
           using (StreamWriter outputFile = new StreamWriter(sfd.FileName))

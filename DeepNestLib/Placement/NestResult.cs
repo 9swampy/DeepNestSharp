@@ -24,6 +24,8 @@
       this.fitness = new OriginalFitness(this);
     }
 
+    private ISheetPlacementFitness SheetPlacementFitness => this.fitness;
+
     public DateTime CreatedAt { get; } = DateTime.Now;
 
     public double Fitness
@@ -46,7 +48,7 @@
     {
       get
       {
-        return this.fitness.Sheets;
+        return this.SheetPlacementFitness.Sheets;
       }
     }
 
@@ -54,7 +56,7 @@
     {
       get
       {
-        return this.fitness.MaterialWasted;
+        return this.SheetPlacementFitness.MaterialWasted;
       }
     }
 
@@ -62,7 +64,7 @@
     {
       get
       {
-        return this.fitness.Bounds;
+        return this.SheetPlacementFitness.Bounds;
       }
     }
 
@@ -94,7 +96,7 @@
 
     public override string ToString()
     {
-      return $"{fitness.Evaluate()}=SumB{fitness.Bounds:N0}+SumS{fitness.Sheets:N0}+SumU{fitness.MaterialWasted:N0}+U{fitness.Unplaced:N0}";
+      return $"{fitness.Evaluate()}=SumB{this.SheetPlacementFitness.Bounds:N0}+SumS{this.SheetPlacementFitness.Sheets:N0}+SumU{this.SheetPlacementFitness.MaterialWasted:N0}+U{this.fitness.Unplaced:N0}";
     }
   }
 }

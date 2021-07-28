@@ -207,7 +207,6 @@
       sw.Start();
 
       var unusedSheets = new Stack<INfp>(sheets.Reverse());
-      NFP part = null;
 
       // total length of merged lines
       double totalMerged = 0;
@@ -225,8 +224,6 @@
 
       var unplacedParts = rotated.ToArray();
       SheetPlacementCollection allPlacements = new SheetPlacementCollection();
-      INfp nfp;
-      bool isPriorityPlacement;
       while (unplacedParts.Length > 0 && unusedSheets.Count > 0)
       {
         var done = parts.Length - unplacedParts.Length;
@@ -275,20 +272,21 @@
           break;
         }
 
-        string clipkey = string.Empty;
-        Dictionary<string, ClipCacheItem> clipCache = new Dictionary<string, ClipCacheItem>();
-        var clipper = new Clipper();
-        var combinedNfp = new List<List<IntPoint>>();
-        var error = false;
-        IntPoint[][] clipperSheetNfp = null;
-        double? minwidth = null;
-        double? minarea = null;
+        bool isPriorityPlacement = unplacedParts.Any(o => o.IsPriority);
+        if (isPriorityPlacement)
+        {
+          VerboseLog("Priority Placement.");
+        }
 
-        isPriorityPlacement = unplacedParts.Any(o => o.IsPriority);
+        Dictionary<string, ClipCacheItem> clipCache = new Dictionary<string, ClipCacheItem>();
         var processingParts = (isPriorityPlacement ? unplacedParts.Where(o => o.IsPriority) : unplacedParts).ToArray();
         for (int i = 0; i < processingParts.Length; i++)
         {
-          part = processingParts[i];
+          var combinedNfp = new List<List<IntPoint>>();
+          double? minwidth = null;
+          double? minarea = null;
+
+          NFP part = processingParts[i];
           VerboseLog($"Process {i}:{part.ToShortString()}.");
 
           // inner NFP
@@ -371,68 +369,32 @@
           }
           else if (CanBePlaced(sheet, part, config.ClipperScale, out sheetNfp))
           {
-            clipperSheetNfp = InnerNfpToClipperCoordinates(sheetNfp, config.ClipperScale);
-
-            clipper = new Clipper();
-            combinedNfp = new List<List<IntPoint>>();
-
-            error = false;
+            var clipper = new Clipper();
+            string clipkey = "s:" + part.Source + "r:" + part.Rotation;
+            var error = false;
+            IntPoint[][] clipperSheetNfp = InnerNfpToClipperCoordinates(sheetNfp, config.ClipperScale);
 
             // check if stored in clip cache
             // var startindex = 0;
-            clipkey = "s:" + part.Source + "r:" + part.Rotation;
-            var startindex = 0;
+            var startIndex = 0;
             if (EnableCaches && clipCache.ContainsKey(clipkey))
             {
               var prevNfp = clipCache[clipkey].nfpp;
               clipper.AddPaths(prevNfp.Select(z => z.ToList()).ToList(), PolyType.ptSubject, true);
-              startindex = clipCache[clipkey].index;
+              startIndex = clipCache[clipkey].index;
+              VerboseLog($"Retrieve {clipkey}:{startIndex} from {nameof(clipCache)}; populate {nameof(clipper)}");
             }
 
-            for (int j = startindex; j < placed.Count; j++)
+            if (!TryGetCombinedNfp(config.ClipperScale, placed, placements, part, clipper, startIndex, out combinedNfp))
             {
-              nfp = GetOuterNfp(placed[j], part, 0);
-
-              if (nfp == null)
-              {
-                VerboseLog("Minkowski difference failed: very rare but could happen. . .");
-                error = true;
-                break;
-              }
-
-              // shift to placed location
-              for (int m = 0; m < nfp.Length; m++)
-              {
-                nfp[m].X += placements[j].X;
-                nfp[m].Y += placements[j].Y;
-              }
-
-              if (nfp.Children != null && nfp.Children.Count > 0)
-              {
-                for (int n = 0; n < nfp.Children.Count; n++)
-                {
-                  for (var o = 0; o < nfp.Children[n].Length; o++)
-                  {
-                    nfp.Children[n][o].X += placements[j].X;
-                    nfp.Children[n][o].Y += placements[j].Y;
-                  }
-                }
-              }
-
-              var clipperNfp = NfpToClipperCoordinates(nfp, config.ClipperScale);
-
-              clipper.AddPaths(clipperNfp.Select(z => z.ToList()).ToList(), PolyType.ptSubject, true);
-            }
-
-            // TODO: a lot here to insert
-            if (error || !clipper.Execute(ClipType.ctUnion, combinedNfp, PolyFillType.pftNonZero, PolyFillType.pftNonZero))
-            {
-              VerboseLog("Clipper error.");
+              VerboseLog($"{nameof(TryGetCombinedNfp)} clipper error.");
+              error = true;
               continue;
             }
 
             if (EnableCaches)
             {
+              VerboseLog($"Add {clipkey} to {nameof(clipCache)}");
               clipCache[clipkey] = new ClipCacheItem()
               {
                 index = placed.Count - 1,
@@ -442,45 +404,27 @@
 
             // console.log('save cache', placed.length - 1);
 
-            // difference with sheet polygon
-            List<List<IntPoint>> differenceWithSheetPolygonNfpPoints = new List<List<IntPoint>>();
-            clipper = new Clipper();
-
-            clipper.AddPaths(combinedNfp, PolyType.ptClip, true);
-
-            clipper.AddPaths(clipperSheetNfp.Select(z => z.ToList()).ToList(), PolyType.ptSubject, true);
-
-            if (!clipper.Execute(ClipType.ctDifference, differenceWithSheetPolygonNfpPoints, PolyFillType.pftEvenOdd, PolyFillType.pftNonZero))
+            List<NFP> finalNfp;
+            InnerFlowResult clipperForDifferenceResult = TryGetDifferenceWithSheetPolygon(config, combinedNfp, part, clipperSheetNfp, out finalNfp);
+            if (clipperForDifferenceResult == InnerFlowResult.Break)
             {
-              VerboseLog("Clipper execute failed; move on to next part.");
+              break;
+            }
+            else if (clipperForDifferenceResult == InnerFlowResult.Continue)
+            {
               continue;
             }
 
-            if (differenceWithSheetPolygonNfpPoints == null || differenceWithSheetPolygonNfpPoints.Count == 0)
-            {
-              if (part.IsPriority)
-              {
-                VerboseLog("Could not place part. As it's Priority add another sheet.");
-                break; /* However that means we'll leave additional space on the first sheet though that won't get used again
-                          as everything remaining will be fit to the consequent sheet? */
-              }
-
-              VerboseLog("Could not place part. As it's not Priority move on to next part.");
-              continue; // Part can't be fitted but it wasn't a primary, so move on to the next part
-            }
-
-            List<NFP> differenceWithSheetPolygonNfp = new List<NFP>();
-            for (int j = 0; j < differenceWithSheetPolygonNfpPoints.Count; j++)
-            {
-              // back to normal scale
-              differenceWithSheetPolygonNfp.Add(differenceWithSheetPolygonNfpPoints[j].ToArray().ToNestCoordinates(config.ClipperScale));
-            }
-
-            var finalNfp = differenceWithSheetPolygonNfp;
-#if TRACE
+#if NCRUNCH
             try
             {
-              var openScad = finalNfp.Single().ToOpenScadPolygon();
+              var openScadBuilder = new StringBuilder();
+              foreach (var item in finalNfp)
+              {
+                openScadBuilder.AppendLine(item.ToOpenScadPolygon());
+              }
+
+              var openScad = openScadBuilder.ToString();
             }
             catch (Exception)
             {
@@ -689,7 +633,7 @@
 
         if (placements != null && placements.Count > 0)
         {
-          VerboseLog($"Add {sheet.ToShortString()} {config.PlacementType} placement.");
+          VerboseLog($"Add {config.PlacementType} placement {sheet.ToShortString()}.");
           allPlacements.Add(new SheetPlacement(config.PlacementType, sheet, placements));
         }
         else
@@ -701,6 +645,139 @@
 
       VerboseLog($"Nest complete in {sw.ElapsedMilliseconds}");
       return new NestResult(allPlacements, unplacedParts, totalMerged, config.PlacementType, sw.ElapsedMilliseconds);
+    }
+
+    private static InnerFlowResult TryGetDifferenceWithSheetPolygon(ISvgNestConfig config, List<List<IntPoint>> combinedNfp, NFP part, IntPoint[][] clipperSheetNfp, out List<NFP> differenceWithSheetPolygonNfp)
+    {
+      differenceWithSheetPolygonNfp = new List<NFP>();
+
+      List<List<IntPoint>> differenceWithSheetPolygonNfpPoints = new List<List<IntPoint>>();
+      var clipperForDifference = new Clipper();
+
+      VerboseLog("Add clip {nameof(combinedNfp)} to {nameof(clipperForDifference)}");
+      clipperForDifference.AddPaths(combinedNfp, PolyType.ptClip, true);
+
+      VerboseLog("Add subject {nameof(clipperSheetNfp)} to {nameof(clipperForDifference)}");
+      clipperForDifference.AddPaths(clipperSheetNfp.Select(z => z.ToList()).ToList(), PolyType.ptSubject, true);
+
+      if (!clipperForDifference.Execute(ClipType.ctDifference, differenceWithSheetPolygonNfpPoints, PolyFillType.pftEvenOdd, PolyFillType.pftNonZero))
+      {
+        VerboseLog("Clipper execute failed; move on to next part.");
+        return InnerFlowResult.Continue;
+      }
+      else
+      {
+        VerboseLog($"{nameof(clipperForDifference)} execute => {nameof(differenceWithSheetPolygonNfpPoints)}");
+      }
+
+      if (differenceWithSheetPolygonNfpPoints == null || differenceWithSheetPolygonNfpPoints.Count == 0)
+      {
+        if (part.IsPriority)
+        {
+          VerboseLog("Could not place part. As it's Priority add another sheet.");
+          return InnerFlowResult.Break; /* However that means we'll leave additional space on the first sheet though that won't get used again
+                          as everything remaining will be fit to the consequent sheet? */
+        }
+
+        VerboseLog("Could not place part. As it's not Priority move on to next part.");
+        return InnerFlowResult.Continue; // Part can't be fitted but it wasn't a primary, so move on to the next part
+      }
+
+      for (int j = 0; j < differenceWithSheetPolygonNfpPoints.Count; j++)
+      {
+        // back to normal scale
+        differenceWithSheetPolygonNfp.Add(differenceWithSheetPolygonNfpPoints[j].ToArray().ToNestCoordinates(config.ClipperScale));
+      }
+
+      return InnerFlowResult.Success;
+    }
+
+    /// <summary>
+    /// Starting from startIndex add parts placed to generate a combined NFP.
+    /// </summary>
+    /// <param name="config"></param>
+    /// <param name="placed"></param>
+    /// <param name="placements"></param>
+    /// <param name="part"></param>
+    /// <param name="clipper"></param>
+    /// <param name="startIndex"></param>
+    /// <param name="combinedNfp"></param>
+    /// <returns></returns>
+    private bool TryGetCombinedNfp(double clipperScale, List<INfp> placed, List<IPartPlacement> placements, NFP part, Clipper clipper, int startIndex, out List<List<IntPoint>> combinedNfp)
+    {
+      combinedNfp = new List<List<IntPoint>>();
+
+      if (placed.Count != placements.Count)
+      {
+        throw new InvalidOperationException();
+      }
+      else
+      {
+        foreach (var p in placements)
+        {
+          if (p.Part.X != part.X)
+          {
+            throw new InvalidOperationException();
+          }
+
+          if (p.Part.Y != part.Y)
+          {
+            throw new InvalidOperationException();
+          }
+
+          if (p.Part.Children.Count != part.Children.Count)
+          {
+            VerboseLog($"Cannot substitute {nameof(placements)}.Part for {nameof(placed)}");
+          }
+        }
+      }
+
+      for (int j = startIndex; j < placed.Count; j++)
+      {
+        var outerNfp = GetOuterNfp(placed[j], part, 0);
+
+        if (outerNfp == null)
+        {
+          VerboseLog("Minkowski difference failed: very rare but could happen. . .");
+          return false;
+        }
+
+        // shift to placed location
+        for (int m = 0; m < outerNfp.Length; m++)
+        {
+          outerNfp[m].X += placements[j].X;
+          outerNfp[m].Y += placements[j].Y;
+        }
+
+        if (outerNfp.Children != null && outerNfp.Children.Count > 0)
+        {
+          for (int n = 0; n < outerNfp.Children.Count; n++)
+          {
+            for (var o = 0; o < outerNfp.Children[n].Length; o++)
+            {
+              outerNfp.Children[n][o].X += placements[j].X;
+              outerNfp.Children[n][o].Y += placements[j].Y;
+            }
+          }
+        }
+
+        var clipperNfp = NfpToClipperCoordinates(outerNfp, clipperScale);
+
+        VerboseLog($"Add {placed[j].ToShortString()} paths to {nameof(clipper)} ({placed[j].Name})");
+        clipper.AddPaths(clipperNfp.Select(z => z.ToList()).ToList(), PolyType.ptSubject, true);
+      }
+
+      // TODO: a lot here to insert
+      if (!clipper.Execute(ClipType.ctUnion, combinedNfp, PolyFillType.pftNonZero, PolyFillType.pftNonZero))
+      {
+        return false;
+      }
+      else
+      {
+        VerboseLog($" {nameof(clipper)} union executed => {nameof(combinedNfp)}");
+      }
+
+      return true;
     }
 
     private static void VerboseLog(string message)

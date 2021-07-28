@@ -50,7 +50,7 @@
 
     private static StackFrame GetStackFrame()
     {
-      return new StackFrame(4, true);
+      return new StackFrame(5, true);
     }
   }
 }

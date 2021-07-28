@@ -76,7 +76,7 @@
     [Fact]
     public void FitnessShouldBeExpected()
     {
-      this.nestingContext.Nest.TopNestResults.Top.Fitness.Should().BeApproximately(581724, 100);
+      this.nestingContext.Nest.TopNestResults.Top.Fitness.Should().BeApproximately(515620, 100);
     }
 
     [Fact]
