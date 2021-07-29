@@ -393,7 +393,7 @@
         for (int i = 0; i < cnt; i++)
         {
           INfp loadedNfp;
-          if (r.TryGetNfp(src, out loadedNfp))
+          if (r.TryConvertToNfp(src, out loadedNfp))
           {
             this.Polygons.Add(loadedNfp);
           }

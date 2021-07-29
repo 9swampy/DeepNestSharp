@@ -30,14 +30,6 @@
       return result;
     }
 
-    private double TotalSheetArea
-    {
-      get
-      {
-        return sheetPlacement.Sheet.Area;
-      }
-    }
-
     /// <summary>
     /// Penalise for each additional sheet needed.
     /// </summary>
@@ -50,10 +42,6 @@
           if (!sheets.HasValue)
           {
             sheets = sheetPlacement.Sheet.Area;
-            if (sheetPlacement.PartPlacements.Any(p => p.Part.IsPriority))
-            {
-              sheets += sheetPlacement.Sheet.Area;
-            }
           }
         }
 

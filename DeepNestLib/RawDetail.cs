@@ -23,12 +23,7 @@
 
     public string Name { get; set; }
 
-    public bool TryImportFromRawDetail(int src, out INfp loadedNfp)
-    {
-      return this.TryGetNfp(src, out loadedNfp);
-    }
-
-    public bool TryGetNfp(int src, out INfp loadedNfp)
+    public bool TryConvertToNfp(int src, out INfp loadedNfp)
     {
       if (this == null)
       {

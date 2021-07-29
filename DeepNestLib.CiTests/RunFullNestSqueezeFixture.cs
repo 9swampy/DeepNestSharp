@@ -36,12 +36,12 @@
           this.loadedRawDetail = DxfParser.LoadDxfStream(DxfTestFilename);
           var progressCapture = new ProgressTestResponse();
           this.nestingContext = new NestingContext(A.Fake<IMessageService>(), progressCapture);
-          this.hasImportedRawDetail = this.loadedRawDetail.TryImportFromRawDetail(A.Dummy<int>(), out this.loadedNfp);
+          this.hasImportedRawDetail = this.loadedRawDetail.TryConvertToNfp(A.Dummy<int>(), out this.loadedNfp);
           this.nestingContext.Polygons.Add(this.loadedNfp);
           this.nestingContext.Polygons.Add(this.loadedNfp.Clone());
 
           INfp firstSheet;
-          DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { new DxfGenerator().Rectangle(595D, 395D, RectangleType.FileLoad) }).TryImportFromRawDetail(firstSheetIdSrc, out firstSheet).Should().BeTrue();
+          DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { new DxfGenerator().Rectangle(595D, 395D, RectangleType.FileLoad) }).TryConvertToNfp(firstSheetIdSrc, out firstSheet).Should().BeTrue();
           this.nestingContext.Sheets.Add(firstSheet);
 
           this.nestingContext.StartNest();

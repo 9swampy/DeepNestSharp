@@ -624,6 +624,10 @@
           VerboseLog($"Requeue {sheet.ToShortString()} for reuse.");
           unusedSheets.Push(sheet);
         }
+        else
+        {
+          VerboseLog($"No need to requeue {sheet.ToShortString()}.");
+        }
 
         while (requeue.Count > 0)
         {
@@ -654,10 +658,10 @@
       List<List<IntPoint>> differenceWithSheetPolygonNfpPoints = new List<List<IntPoint>>();
       var clipperForDifference = new Clipper();
 
-      VerboseLog("Add clip {nameof(combinedNfp)} to {nameof(clipperForDifference)}");
+      VerboseLog($"Add clip {nameof(combinedNfp)} to {nameof(clipperForDifference)}");
       clipperForDifference.AddPaths(combinedNfp, PolyType.ptClip, true);
 
-      VerboseLog("Add subject {nameof(clipperSheetNfp)} to {nameof(clipperForDifference)}");
+      VerboseLog($"Add subject {nameof(clipperSheetNfp)} to {nameof(clipperForDifference)}");
       clipperForDifference.AddPaths(clipperSheetNfp.Select(z => z.ToList()).ToList(), PolyType.ptSubject, true);
 
       if (!clipperForDifference.Execute(ClipType.ctDifference, differenceWithSheetPolygonNfpPoints, PolyFillType.pftEvenOdd, PolyFillType.pftNonZero))
@@ -774,7 +778,7 @@
       }
       else
       {
-        VerboseLog($" {nameof(clipper)} union executed => {nameof(combinedNfp)}");
+        VerboseLog($"{nameof(clipper)} union executed => {nameof(combinedNfp)}");
       }
 
       return true;

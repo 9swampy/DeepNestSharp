@@ -27,7 +27,7 @@
       raw = DxfParser.ConvertDxfToRawDetail(string.Empty, dxfEntities);
       ctx = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
       INfp result;
-      raw.TryGetNfp(0, out result);
+      raw.TryConvertToNfp(0, out result);
       return result;
     }
 

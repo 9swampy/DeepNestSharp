@@ -16,9 +16,9 @@
     {
       var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
       INfp sheet;
-      DxfGenerator.GenerateSquare("Sheet", 22D, RectangleType.FileLoad).TryImportFromRawDetail(0, out sheet).Should().BeTrue();
+      DxfGenerator.GenerateSquare("Sheet", 22D, RectangleType.FileLoad).TryConvertToNfp(0, out sheet).Should().BeTrue();
       INfp part;
-      DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryImportFromRawDetail(0, out part).Should().BeTrue();
+      DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryConvertToNfp(0, out part).Should().BeTrue();
       this.nestResult = new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), MinkowskiSum.CreateInstance()).PlaceParts(new INfp[] { sheet }, new INfp[] { part }, new SvgNestConfig());
     }
 
@@ -33,9 +33,9 @@
     {
       var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
       INfp sheet;
-      DxfGenerator.GenerateSquare("Sheet", 22D, RectangleType.FileLoad).TryImportFromRawDetail(0, out sheet).Should().BeTrue();
+      DxfGenerator.GenerateSquare("Sheet", 22D, RectangleType.FileLoad).TryConvertToNfp(0, out sheet).Should().BeTrue();
       INfp part;
-      DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryImportFromRawDetail(0, out part).Should().BeTrue();
+      DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryConvertToNfp(0, out part).Should().BeTrue();
 
       new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), MinkowskiSum.CreateInstance()).ExecuteDllImportMinkowski(sheet, part, MinkowskiCache.Cache).Should().NotBeNull();
     }

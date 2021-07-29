@@ -2,6 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
+using System.Diagnostics;
   using System.Linq;
   using System.Text;
   using System.Threading;
@@ -824,6 +825,9 @@
       Interlocked.Increment(ref nestCount);
       totalNestTime += payload.PlacePartTime;
 
+#if NCRUNCH
+      Trace.WriteLine("payload.Index I don't think is being set right; double check before retrying threaded execution.");
+#endif
       this.ga.Population[payload.index].Processing = false;
       this.ga.Population[payload.index].Fitness = payload.Fitness;
 

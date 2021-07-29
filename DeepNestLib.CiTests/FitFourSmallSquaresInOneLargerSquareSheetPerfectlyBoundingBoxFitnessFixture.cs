@@ -20,21 +20,21 @@
     {
       var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
       INfp firstSheet;
-      DxfGenerator.GenerateSquare("Sheet", 23D, RectangleType.FileLoad).TryImportFromRawDetail(firstSheetIdSrc, out firstSheet).Should().BeTrue();
+      DxfGenerator.GenerateSquare("Sheet", 23D, RectangleType.FileLoad).TryConvertToNfp(firstSheetIdSrc, out firstSheet).Should().BeTrue();
       INfp firstPart;
-      DxfGenerator.GenerateSquare("firstPart", 11D, RectangleType.FitFour).TryImportFromRawDetail(firstPartIdSrc, out firstPart).Should().BeTrue();
+      DxfGenerator.GenerateSquare("firstPart", 11D, RectangleType.FitFour).TryConvertToNfp(firstPartIdSrc, out firstPart).Should().BeTrue();
       // firstPart = firstPart.Rotate(180);
       firstPart.Rotation = 180;
       INfp secondPart;
-      DxfGenerator.GenerateSquare("secondPart", 11D, RectangleType.FitFour).TryImportFromRawDetail(secondPartIdSrc, out secondPart).Should().BeTrue();
+      DxfGenerator.GenerateSquare("secondPart", 11D, RectangleType.FitFour).TryConvertToNfp(secondPartIdSrc, out secondPart).Should().BeTrue();
       // secondPart = secondPart.Rotate(180);
       secondPart.Rotation = 180;
       INfp thirdPart;
-      DxfGenerator.GenerateSquare("thirdPart", 11D, RectangleType.FitFour).TryImportFromRawDetail(thirdPartIdSrc, out thirdPart).Should().BeTrue();
+      DxfGenerator.GenerateSquare("thirdPart", 11D, RectangleType.FitFour).TryConvertToNfp(thirdPartIdSrc, out thirdPart).Should().BeTrue();
       // thirdPart = thirdPart.Rotate(180);
       thirdPart.Rotation = 180;
       INfp fourthPart;
-      DxfGenerator.GenerateSquare("fourthPart", 11D, RectangleType.FitFour).TryImportFromRawDetail(fourthPartIdSrc, out fourthPart).Should().BeTrue();
+      DxfGenerator.GenerateSquare("fourthPart", 11D, RectangleType.FitFour).TryConvertToNfp(fourthPartIdSrc, out fourthPart).Should().BeTrue();
       // fourthPart = fourthPart.Rotate(180);
       fourthPart.Rotation = 180;
       var config = new DefaultSvgNestConfig();

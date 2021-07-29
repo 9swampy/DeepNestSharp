@@ -168,6 +168,7 @@
     <Compile Include="GeneticAlgorithm\GravityFitnessFixture.cs" />
     <Compile Include="GeneticAlgorithm\SheetPlacementJsonHelper.cs" />
     <Compile Include="GeneticAlgorithm\SqueezeFitnessFixture.cs" />
+    <Compile Include="GetInnerPolygonFixture.cs" />
     <Compile Include="NfpFixture.cs" />
     <Compile Include="PerfectFitnessFixture.cs" />
     <Compile Include="OuterFitPolygonFixture.cs" />

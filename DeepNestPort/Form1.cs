@@ -1414,7 +1414,7 @@
     private void AddToPolygons(int src, RawDetail det, DetailLoadInfo item)
     {
       INfp loadedNfp;
-      if (det.TryGetNfp(src, out loadedNfp))
+      if (det.TryConvertToNfp(src, out loadedNfp))
       {
         loadedNfp.IsPriority = item.IsPriority;
         loadedNfp.StrictAngle = item.StrictAngle;

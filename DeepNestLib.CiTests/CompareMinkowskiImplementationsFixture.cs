@@ -25,9 +25,9 @@
     {
       var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
       INfp firstPart;
-      DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Rectangle(11D) }).TryGetNfp(firstPartIdSrc, out firstPart).Should().BeTrue();
+      DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Rectangle(11D) }).TryConvertToNfp(firstPartIdSrc, out firstPart).Should().BeTrue();
       INfp secondPart;
-      DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Rectangle(11D) }).TryGetNfp(secondPartIdSrc, out secondPart).Should().BeTrue();
+      DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Rectangle(11D) }).TryConvertToNfp(secondPartIdSrc, out secondPart).Should().BeTrue();
       var sw = new Stopwatch();
       sw.Start();
       var minkowskiSumService = MinkowskiSum.CreateInstance();
