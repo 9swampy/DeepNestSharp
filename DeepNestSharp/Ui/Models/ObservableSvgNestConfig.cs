@@ -43,6 +43,8 @@
       set => SetProperty(nameof(ExploreConcave), () => svgNestConfig.ExploreConcave, v => svgNestConfig.ExploreConcave = v, value);
     }
 
+    public override bool IsDirty => throw new System.NotImplementedException();
+
     public bool MergeLines
     {
       get => svgNestConfig.MergeLines;

@@ -13,6 +13,6 @@
     <PreloadReferencedAssemblies>True</PreloadReferencedAssemblies>
     <SolutionConfigured>True</SolutionConfigured>
     <UseBuildConfiguration>DEBUG</UseBuildConfiguration>
-    <UseBuildPlatform>x86</UseBuildPlatform>
+    <UseBuildPlatform>x64</UseBuildPlatform>
   </Settings>
 </SolutionConfiguration>

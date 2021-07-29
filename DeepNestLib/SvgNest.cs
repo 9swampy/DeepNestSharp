@@ -117,7 +117,7 @@ using System.Diagnostics;
     public static bool pointInPolygon(SvgPoint point, INfp polygon)
     {
       // scaling is deliberately coarse to filter out points that lie *on* the polygon
-      var p = svgToClipper2(polygon, 1000);
+      var p = SvgToClipper2(polygon, 1000);
       var pt = new ClipperLib.IntPoint(1000 * point.X, 1000 * point.Y);
 
       return ClipperLib.Clipper.PointInPolygon(pt, p.ToList()) > 0;
@@ -150,7 +150,7 @@ using System.Diagnostics;
 
     public static INfp simplifyFunction(INfp polygon, bool inside, ISvgNestConfig config)
     {
-      return simplifyFunction(polygon, inside, config.CurveTolerance, config.Simplify);
+      return SimplifyFunction(polygon, inside, config.CurveTolerance, config.Simplify);
     }
 
     /// <summary>
@@ -160,7 +160,7 @@ using System.Diagnostics;
     /// <param name="inside"></param>
     /// <param name="curveTolerance"></param>
     /// <returns></returns>
-    internal static INfp simplifyFunction(INfp polygon, bool inside, double curveTolerance, bool useHull)
+    internal static INfp SimplifyFunction(INfp polygon, bool inside, double curveTolerance, bool useHull)
     {
       var markExact = true;
       var straighten = true;
@@ -195,7 +195,7 @@ using System.Diagnostics;
         }
       }
 
-      var cleaned = cleanPolygon2(polygon);
+      var cleaned = CleanPolygon2(polygon);
       if (cleaned != null && cleaned.Length > 1)
       {
         polygon = cleaned;
@@ -242,7 +242,7 @@ using System.Diagnostics;
         simple.ReplacePoints(simple.Points.Take(simple.Points.Count() - 1));
 
         // could be dirty again (self intersections and/or coincident points)
-        simple = cleanPolygon2(simple);
+        simple = CleanPolygon2(simple);
       }
 
       // simplification process reduced poly to a line or point; or it came back just as complex as the original
@@ -419,7 +419,7 @@ using System.Diagnostics;
         }
       }
 
-      cleaned = cleanPolygon2(offset);
+      cleaned = CleanPolygon2(offset);
       if (cleaned != null && cleaned.Length > 1)
       {
         offset = cleaned;
@@ -617,7 +617,7 @@ using System.Diagnostics;
         return new[] { polygon };
       }
 
-      var p = svgToClipper(polygon).ToList();
+      var p = SvgToClipper(polygon).ToList();
 
       var miterLimit = 4;
       var co = new ClipperLib.ClipperOffset(miterLimit, Config.CurveTolerance * Config.ClipperScale);
@@ -636,14 +636,14 @@ using System.Diagnostics;
     }
 
     // converts a polygon from normal double coordinates to integer coordinates used by clipper, as well as x/y -> X/Y
-    public static IntPoint[] svgToClipper2(INfp polygon, double? scale = null)
+    public static IntPoint[] SvgToClipper2(INfp polygon, double? scale = null)
     {
       var d = DeepNestClipper.ScaleUpPaths(polygon.Points, scale == null ? Config.ClipperScale : scale.Value);
       return d.ToArray();
     }
 
     // converts a polygon from normal double coordinates to integer coordinates used by clipper, as well as x/y -> X/Y
-    public static ClipperLib.IntPoint[] svgToClipper(INfp polygon)
+    public static ClipperLib.IntPoint[] SvgToClipper(INfp polygon)
     {
       var d = DeepNestClipper.ScaleUpPaths(polygon.Points, Config.ClipperScale);
       return d.ToArray();
@@ -652,9 +652,9 @@ using System.Diagnostics;
     }
 
     // returns a less complex polygon that satisfies the curve tolerance
-    public static INfp cleanPolygon(INfp polygon)
+    public static INfp CleanPolygon(INfp polygon)
     {
-      var p = svgToClipper2(polygon);
+      var p = SvgToClipper2(polygon);
 
       // remove self-intersections and find the biggest polygon that's left
       var simple = ClipperLib.Clipper.SimplifyPolygon(p.ToList(), ClipperLib.PolyFillType.pftNonZero);
@@ -687,9 +687,9 @@ using System.Diagnostics;
       return clipperToSvg(clean);
     }
 
-    public static INfp cleanPolygon2(INfp polygon)
+    public static INfp CleanPolygon2(INfp polygon)
     {
-      var p = svgToClipper(polygon);
+      var p = SvgToClipper(polygon);
 
       // remove self-intersections and find the biggest polygon that's left
       var simple = ClipperLib.Clipper.SimplifyPolygon(p.ToList(), ClipperLib.PolyFillType.pftNonZero);

@@ -1,14 +1,26 @@
 ﻿namespace DeepNestSharp.Ui.Models
 {
+  using System.Windows;
+  using System.Windows.Input;
   using DeepNestLib;
   using DeepNestLib.Placement;
+  using Microsoft.Toolkit.Mvvm.Input;
 
   public class ObservablePartPlacement : ObservablePropertyObject, IPartPlacement
   {
     private readonly IPartPlacement partPlacement;
-    private System.Windows.Media.PointCollection points;
+    private readonly Point originalPosition;
+    private readonly double originalRotation;
+    private System.Windows.Media.PointCollection? points;
+    private RelayCommand? resetCommand = null;
 
-    public ObservablePartPlacement(IPartPlacement partPlacement) => this.partPlacement = partPlacement;
+    public ObservablePartPlacement(IPartPlacement partPlacement)
+    {
+      this.partPlacement = partPlacement;
+      this.originalPosition = new Point(partPlacement.X, partPlacement.Y);
+      this.originalRotation = partPlacement.Rotation;
+      this.PropertyChanged += this.ObservablePartPlacement_PropertyChanged;
+    }
 
     public int Source
     {
@@ -67,6 +79,19 @@
       set => SetProperty(nameof(Id), () => partPlacement.Id, v => partPlacement.Id = v, value);
     }
 
+    public ICommand ResetCommand
+    {
+      get
+      {
+        if (resetCommand == null)
+        {
+          resetCommand = new RelayCommand(OnReset, () => IsDirty);
+        }
+
+        return resetCommand;
+      }
+    }
+
     public double X
     {
       get => partPlacement.X;
@@ -91,6 +116,16 @@
       set => SetProperty(nameof(HullSheet), () => partPlacement.HullSheet, v => partPlacement.HullSheet = v, value);
     }
 
+    public override bool IsDirty
+    {
+      get
+      {
+        return this.originalPosition.X != this.partPlacement.X ||
+               this.originalPosition.Y != this.partPlacement.Y ||
+               this.originalRotation != this.partPlacement.Rotation;
+      }
+    }
+
     public double? MergedLength => partPlacement.MergedLength;
 
     public object MergedSegments
@@ -105,6 +140,21 @@
     {
       get => partPlacement.Rotation;
       set => partPlacement.Rotation = value;
+    }
+
+    private void ObservablePartPlacement_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+      if (e.PropertyName == nameof(IsDirty))
+      {
+        resetCommand?.NotifyCanExecuteChanged();
+      }
+    }
+
+    private void OnReset()
+    {
+      this.X = originalPosition.X;
+      this.Y = originalPosition.Y;
+      this.Rotation = originalRotation;
     }
   }
 }

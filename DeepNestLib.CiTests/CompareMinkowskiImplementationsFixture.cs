@@ -76,7 +76,7 @@
     [Fact]
     public void BackgroundResultShouldHave4Points()
     {
-      SvgNest.cleanPolygon2(dllImportResult).Points.Length.Should().Be(4);
+      SvgNest.CleanPolygon2(dllImportResult).Points.Length.Should().Be(4);
     }
 
     [Fact]
@@ -98,7 +98,7 @@
     [Fact]
     public void CleanedResultsShouldBeEquivalent()
     {
-      SvgNest.cleanPolygon2(dllImportResult).Should().BeEquivalentTo(clipperResult, options => options
+      SvgNest.CleanPolygon2(dllImportResult).Should().BeEquivalentTo(clipperResult, options => options
                                     .Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 1))
                                     .WhenTypeIs<double>());
     }

@@ -51,6 +51,9 @@
 
     private void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
+#if DEBUG
+      ViewModel.LoadSheetPlacement(@"C:\Git\CanDispenserCnc\CuttingLists\Std320x164\300x200GoodSwitchbackNest.dnsp");
+#endif
       return;
 
       var serializer = new AvalonDock.Layout.Serialization.XmlLayoutSerializer(dockManager);

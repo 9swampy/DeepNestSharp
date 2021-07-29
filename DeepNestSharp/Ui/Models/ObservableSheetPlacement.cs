@@ -22,6 +22,10 @@
     public ObservableSheetPlacement(ISheetPlacement item)
       : this() => this.Set(item);
 
+    public double X => this.Sheet.X;
+
+    public double Y => this.Sheet.Y;
+
     public bool IsSet => this.item != null;
 
     public void Set(ISheetPlacement item)

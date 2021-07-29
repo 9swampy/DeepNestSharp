@@ -174,7 +174,7 @@
 
       if (minkowskiSumCleaning == MinkowskiSumCleaning.Cleaned)
       {
-        ret = SvgNest.cleanPolygon2(ret);
+        ret = SvgNest.CleanPolygon2(ret);
       }
 
       return ret;

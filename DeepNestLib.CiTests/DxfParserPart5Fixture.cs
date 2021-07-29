@@ -33,7 +33,7 @@
           var sw = new Stopwatch();
           sw.Start();
           var config = new DefaultSvgNestConfig() { CurveTolerance = 0.72D };
-          this.simplifiedNfp = SvgNest.simplifyFunction(this.loadedNfp, false, config.CurveTolerance, config.Simplify);
+          this.simplifiedNfp = SvgNest.SimplifyFunction(this.loadedNfp, false, config.CurveTolerance, config.Simplify);
           sw.Stop();
           this.simplifiedNfpTime = sw.ElapsedMilliseconds;
         }

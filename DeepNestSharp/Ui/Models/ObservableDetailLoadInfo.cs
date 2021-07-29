@@ -6,7 +6,7 @@
   using DeepNestLib;
   using DeepNestLib.NestProject;
 
-    public class ObservableDetailLoadInfo : ObservablePropertyObject, IDetailLoadInfo
+  public class ObservableDetailLoadInfo : ObservablePropertyObject, IDetailLoadInfo
   {
     private readonly IDetailLoadInfo detailLoadInfo;
 
@@ -59,6 +59,8 @@
     }
 
     public IList<AnglesEnum> AnglesList => Enum.GetValues(typeof(AnglesEnum)).OfType<AnglesEnum>().ToList();
+
+    public override bool IsDirty => throw new NotImplementedException();
 
     internal INfp Load()
     {

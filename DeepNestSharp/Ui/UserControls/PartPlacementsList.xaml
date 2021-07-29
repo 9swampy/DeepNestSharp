@@ -33,7 +33,7 @@
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel >
-                  <TextBox HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Text="{Binding Path=Rotation, Mode=OneWay}"/>
+                  <TextBox HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Text="{Binding Path=Rotation, Mode=TwoWay}"/>
                 </DockPanel>
               </DataTemplate>
             </GridViewColumn.CellTemplate>
@@ -42,7 +42,7 @@
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel >
-                  <TextBox HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Text="{Binding Path=X, Mode=OneWay, StringFormat={}{0:0.0000}}"/>
+                  <TextBox HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Text="{Binding Path=X, Mode=TwoWay, StringFormat={}{0:0.0000}}"/>
                 </DockPanel>
               </DataTemplate>
             </GridViewColumn.CellTemplate>
@@ -51,7 +51,16 @@
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel >
-                  <TextBox HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Text="{Binding Path=Y, Mode=OneWay, StringFormat={}{0:0.0000}}"/>
+                  <TextBox HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Text="{Binding Path=Y, Mode=TwoWay, StringFormat={}{0:0.0000}}"/>
+                </DockPanel>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Width="65">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <DockPanel >
+                  <Button Command="{Binding ResetCommand}" Content="Reset" />
                 </DockPanel>
               </DataTemplate>
             </GridViewColumn.CellTemplate>

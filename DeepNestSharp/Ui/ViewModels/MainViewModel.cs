@@ -54,6 +54,8 @@
       this.SelectedTheme = Themes.First();
     }
 
+    public event EventHandler ActiveDocumentChanged;
+
     private void SaveNestProject()
     {
       throw new NotImplementedException();
@@ -63,8 +65,6 @@
     {
       throw new NotImplementedException();
     }
-
-    public event EventHandler ActiveDocumentChanged;
 
     public List<Tuple<string, Theme>> Themes { get; set; }
 
@@ -185,11 +185,16 @@
 
       if (openFileDialog.ShowDialog() == true)
       {
-        var loaded = new SheetPlacementViewModel(this, openFileDialog.FileName);
-        this.SheetPlacement.Set(loaded.SheetPlacement);
-        this.files.Add(loaded);
-        this.ActiveDocument = loaded;
+        LoadSheetPlacement(openFileDialog.FileName);
       }
+    }
+
+    public void LoadSheetPlacement(string fileName)
+    {
+      var loaded = new SheetPlacementViewModel(this, fileName);
+      this.SheetPlacement.Set(loaded.SheetPlacement);
+      this.files.Add(loaded);
+      this.ActiveDocument = loaded;
     }
 
     public void LoadNestProject()

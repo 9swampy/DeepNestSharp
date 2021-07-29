@@ -3,6 +3,7 @@
   using System;
   using System.Collections.ObjectModel;
   using System.ComponentModel;
+  using System.Windows;
   using System.Windows.Media;
   using DeepNestLib;
   using DeepNestLib.Placement;
@@ -13,7 +14,13 @@
   {
     private readonly MainViewModel mainViewModel;
     private readonly PointCollection points = new PointCollection();
-    private Func<IPartPlacement>? getSelectedPartPlacementFunc;
+    private SheetPlacementViewModel lastSheetPlacementViewModel;
+    private IPartPlacement hoverPartPlacement;
+    private Point mousePosition;
+    private Point dragOffset;
+    private Point? dragStart;
+    private double canvasScale = 1;
+    private Point canvasOffset = new Point(0,0);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PreviewViewModel"/> class.
@@ -28,19 +35,113 @@
 
     public ObservableCollection<object> DrawingContext { get; private set; } = new ObservableCollection<object>();
 
-    public IPartPlacement? SelectedPartPlacement => getSelectedPartPlacementFunc != null ? getSelectedPartPlacementFunc() : default;
+    public IPartPlacement? SelectedPartPlacement
+    {
+      get
+      {
+        if (this.mainViewModel.ActiveDocument is SheetPlacementViewModel sheetPlacementViewModel)
+        {
+          return sheetPlacementViewModel.SelectedItem;
+        }
+
+        return default;
+      }
+
+      set
+      {
+        if (this.mainViewModel.ActiveDocument is SheetPlacementViewModel sheetPlacementViewModel)
+        {
+          sheetPlacementViewModel.SelectedItem = value;
+        }
+      }
+    }
+
+    public IPartPlacement? HoverPartPlacement
+    {
+      get => hoverPartPlacement;
+
+      set
+      {
+        hoverPartPlacement = value;
+        OnPropertyChanged(nameof(DrawingContext));
+        OnPropertyChanged(nameof(SelectedPartPlacement));
+        OnPropertyChanged(nameof(HoverPartPlacement));
+      }
+    }
+
+    public Point MousePosition
+    {
+      get => mousePosition;
+      internal set
+      {
+        mousePosition = value;
+        OnPropertyChanged(nameof(MousePosition));
+      }
+    }
+
+    public bool IsDragging
+    {
+      get => dragStart.HasValue;
+    }
+
+    public Point DragOffset
+    {
+      get => dragOffset;
+      internal set
+      {
+        dragOffset = value;
+        OnPropertyChanged(nameof(DragOffset));
+      }
+    }
+
+    public Point? DragStart
+    {
+      get => dragStart;
+      internal set
+      {
+        dragStart = value;
+        OnPropertyChanged(nameof(DragStart));
+        OnPropertyChanged(nameof(IsDragging));
+      }
+    }
+
+    public double CanvasScale
+    {
+      get => canvasScale;
+      internal set
+      {
+        canvasScale = value;
+        OnPropertyChanged(nameof(CanvasScale));
+      }
+    }
+
+    public Point CanvasOffset
+    {
+      get => canvasOffset;
+      internal set
+      {
+        canvasOffset = value;
+        OnPropertyChanged(nameof(CanvasOffset));
+      }
+    }
 
     private void MainViewModel_ActiveDocumentChanged(object? sender, EventArgs e)
     {
+      if (lastSheetPlacementViewModel != null)
+      {
+        lastSheetPlacementViewModel.PropertyChanged -= this.LastSheetPlacementViewModel_PropertyChanged;
+        lastSheetPlacementViewModel = null;
+      }
+
       if (sender is MainViewModel mainViewModel)
       {
-        getSelectedPartPlacementFunc = null;
         ResetDrawingContext();
 
         if (mainViewModel.ActiveDocument is SheetPlacementViewModel sheetPlacementViewModel &&
             sheetPlacementViewModel.SheetPlacement is ObservableSheetPlacement sheetPlacement)
         {
-          getSelectedPartPlacementFunc = () => sheetPlacementViewModel.SelectedItem;
+          lastSheetPlacementViewModel = sheetPlacementViewModel;
+          lastSheetPlacementViewModel.PropertyChanged += this.LastSheetPlacementViewModel_PropertyChanged;
           sheetPlacementViewModel.PropertyChanged += SheetPlacementViewModel_PropertyChanged;
           Set(sheetPlacement);
         }
@@ -52,6 +153,17 @@
             Set(detailLoadInfo);
           }
         }
+      }
+    }
+
+    private void LastSheetPlacementViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+      if (sender == mainViewModel.ActiveDocument &&
+          e.PropertyName == "SelectedItem" &&
+          sender is SheetPlacementViewModel sheetPlacementViewModel &&
+          sheetPlacementViewModel.SheetPlacement is ObservableSheetPlacement sheetPlacement)
+      {
+        Set(sheetPlacement);
       }
     }
 

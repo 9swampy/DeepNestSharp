@@ -1,5 +1,6 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
+  using System;
   using DeepNestLib.Placement;
   using DeepNestSharp.Ui.Docking;
   using DeepNestSharp.Ui.Models;
@@ -44,7 +45,17 @@
     public IPartPlacement SelectedItem
     {
       get => selectedItem;
-      set => SetProperty(ref selectedItem, value);
+      set
+      {
+        if (value is ObservablePartPlacement observablePartPlacement)
+        {
+          SetProperty(ref selectedItem, observablePartPlacement);
+        }
+        else
+        {
+          throw new ArgumentException(nameof(SelectedItem));
+        }
+      }
     }
 
     protected override void LoadContent()

@@ -43,6 +43,12 @@ csharp_style_implicit_object_creation_when_type_is_apparent = false
 # IDE0019: Use pattern matching
 dotnet_diagnostic.IDE0019.severity = suggestion
 
+# CS8601: Possible null reference assignment.
+dotnet_diagnostic.CS8601.severity = suggestion
+
+# CS1717: Assignment made to same variable
+dotnet_diagnostic.CS1717.severity = error
+
 [*.{cs,vb}]
 dotnet_diagnostic.CA1707.severity=warning
 
