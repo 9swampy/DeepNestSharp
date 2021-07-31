@@ -16,6 +16,10 @@
     /// <param name="sheetLoadInfo">The ProjectInfo to wrap.</param>
     public ObservableDetailLoadInfo(IDetailLoadInfo detailLoadInfo) => this.detailLoadInfo = detailLoadInfo;
 
+    public IList<AnglesEnum> AnglesList => Enum.GetValues(typeof(AnglesEnum)).OfType<AnglesEnum>().ToList();
+
+    public override bool IsDirty => true;
+
     public bool IsIncluded
     {
       get => detailLoadInfo.IsIncluded;
@@ -57,10 +61,6 @@
       get => detailLoadInfo.StrictAngle;
       set => SetProperty(nameof(StrictAngle), () => detailLoadInfo.StrictAngle, v => detailLoadInfo.StrictAngle = v, value);
     }
-
-    public IList<AnglesEnum> AnglesList => Enum.GetValues(typeof(AnglesEnum)).OfType<AnglesEnum>().ToList();
-
-    public override bool IsDirty => throw new NotImplementedException();
 
     internal INfp Load()
     {

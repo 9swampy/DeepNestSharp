@@ -6,6 +6,13 @@
   {
     double ClipperScale { get; set; }
 
+    /// <summary>
+    /// Gets or sets whether to clip the simplified polygon used in nesting by the hull.
+    /// This often improves the fit to the original part but may slightly increase the number
+    /// of points in the simplification and accordingly may marginally slow the nest.
+    /// Requires a restart of the application because it's not a part of the cache key so
+    /// you have to restart to reinitialise the cache.
+    /// </summary>
     bool ClipByHull { get; set; }
 
     double CurveTolerance { get; set; }

@@ -93,6 +93,16 @@
               <userControls:SvgNestConfigEditor />
             </DataTemplate>
           </docking:PanesTemplateSelector.SettingsEditorTemplate>
+          <docking:PanesTemplateSelector.PropertiesEditorTemplate>
+            <DataTemplate>
+              <userControls:PropertiesEditor />
+            </DataTemplate>
+          </docking:PanesTemplateSelector.PropertiesEditorTemplate>
+          <docking:PanesTemplateSelector.PartEditorTemplate>
+            <DataTemplate>
+              <userControls:PartEditor />
+            </DataTemplate>
+          </docking:PanesTemplateSelector.PartEditorTemplate>
         </docking:PanesTemplateSelector>
       </DockingManager.LayoutItemTemplateSelector>
       <DockingManager.LayoutItemContainerStyleSelector>

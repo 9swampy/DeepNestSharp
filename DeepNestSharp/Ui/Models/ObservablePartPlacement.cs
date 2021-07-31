@@ -126,6 +126,10 @@
       }
     }
 
+    public double MaxX => this.partPlacement.MaxX;
+
+    public double MaxY => this.partPlacement.MaxY;
+
     public double? MergedLength => partPlacement.MergedLength;
 
     public object MergedSegments
@@ -133,6 +137,10 @@
       get => partPlacement.MergedSegments;
       set => SetProperty(nameof(MergedSegments), () => partPlacement.MergedSegments, v => partPlacement.MergedSegments = v, value);
     }
+
+    public double MinX => this.partPlacement.MinX;
+
+    public double MinY => this.partPlacement.MinY;
 
     public INfp Part => partPlacement.Part;
 

@@ -6,13 +6,13 @@
 
   internal class PanesStyleSelector : StyleSelector
   {
-    public Style ToolStyle
+    public Style? ToolStyle
     {
       get;
       set;
     }
 
-    public Style FileStyle
+    public Style? FileStyle
     {
       get;
       set;

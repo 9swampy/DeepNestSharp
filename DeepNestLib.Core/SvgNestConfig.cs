@@ -40,10 +40,7 @@
 
     public bool MergeLines { get; set; } = false;
 
-    /// <summary>
-    /// Port feature; don't exist in the original DeepNest project.Disabled in the UI because it's not a part of the cache key so
-    /// doesn't make sense to change during the litetime of the application.
-    /// </summary>
+    /// <inheritdoc />
     public bool ClipByHull
     {
       get

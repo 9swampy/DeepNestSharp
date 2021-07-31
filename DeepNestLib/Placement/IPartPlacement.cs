@@ -1,6 +1,6 @@
 ﻿namespace DeepNestLib.Placement
 {
-  public interface IPartPlacement
+  public interface IPartPlacement : IMinMaxXY
   {
     INfp Hull { get; set; }
 

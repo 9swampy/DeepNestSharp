@@ -35,6 +35,7 @@
     <Compile Include="..\DeepNestLib\IHiddenNfp.cs" Link="IHiddenNfp.cs" />
     <Compile Include="..\DeepNestLib\IMessageService.cs" Link="IMessageService.cs" />
     <Compile Include="..\DeepNestLib\IMinkowskiSumService.cs" Link="IMinkowskiSumService.cs" />
+    <Compile Include="..\DeepNestLib\IMinMaxXY.cs" Link="IMinMaxXY.cs" />
     <Compile Include="..\DeepNestLib\INfp.cs" Link="INfp.cs" />
     <Compile Include="..\DeepNestLib\InnerFlowResult.cs" Link="InnerFlowResult.cs" />
     <Compile Include="..\DeepNestLib\InrangeItem.cs" Link="InrangeItem.cs" />
@@ -98,11 +99,6 @@
     <Compile Include="..\DeepNestLib\SvgPointArrayExtensions.cs" Link="SvgPointArrayExtensions.cs" />
     <Compile Include="..\DeepNestLib\TopNestResultsCollection.cs" Link="TopNestResultsCollection.cs" />
     <Compile Include="..\DeepNestLib\WindowUnk.cs" Link="WindowUnk.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="GeneticAlgorithm\" />
-    <Folder Include="Placement\" />
   </ItemGroup>
 
   <ItemGroup>

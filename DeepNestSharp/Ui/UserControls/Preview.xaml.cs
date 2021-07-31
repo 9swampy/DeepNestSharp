@@ -14,16 +14,41 @@
   public partial class Preview : UserControl
   {
     private Point partPlacementStartPos;
-    private ObservablePartPlacement capturePartPlacement;
-    private Polygon capturePolygon;
+    private ObservablePartPlacement? capturePartPlacement;
+    private Polygon? capturePolygon;
 
-    public Preview() => InitializeComponent();
+    public Preview()
+    {
+      InitializeComponent();
+      this.SizeChanged += this.Preview_SizeChanged;
+      this.Loaded += this.Preview_Loaded;
+    }
 
     private static bool IsDragModifierPressed
     {
       get
       {
         return Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
+      }
+    }
+
+    private void Preview_Loaded(object sender, RoutedEventArgs e)
+    {
+      if (this.DataContext is PreviewViewModel viewModel &&
+          sender is Preview preview &&
+          preview.GetChildOfType<Canvas>() is Canvas canvas)
+      {
+        viewModel.Canvas = canvas;
+      }
+    }
+
+    private void Preview_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+      if (this.DataContext is PreviewViewModel viewModel &&
+          sender is Preview preview &&
+          preview.GetChildOfType<ScrollViewer>() is ScrollViewer scrollViewer)
+      {
+        viewModel.Viewport = new Point(scrollViewer.ViewportWidth, scrollViewer.ViewportHeight);
       }
     }
 
@@ -63,7 +88,9 @@
           DataContext is PreviewViewModel vm)
       {
         vm.MousePosition = e.GetPosition(itemsControl);
-        if (vm.IsDragging && vm.DragStart != null)
+        if (vm.IsDragging &&
+            vm.DragStart != null &&
+            capturePartPlacement != null)
         {
           if (IsDragModifierPressed)
           {
@@ -79,7 +106,7 @@
             System.Diagnostics.Debug.Print("Drag cancel MouseMove:IsDragModifierPressed.");
             capturePartPlacement.X = partPlacementStartPos.X;
             capturePartPlacement.Y = partPlacementStartPos.Y;
-            capturePolygon.ReleaseMouseCapture();
+            capturePolygon?.ReleaseMouseCapture();
             vm.DragStart = null;
           }
         }
@@ -90,24 +117,24 @@
     {
       System.Diagnostics.Debug.Print("ItemsControl_MouseUp");
       if (DataContext is PreviewViewModel vm &&
-          vm.IsDragging)
+          vm.IsDragging &&
+          capturePartPlacement != null)
       {
         if (IsDragModifierPressed && vm.DragStart.HasValue)
         {
           var dragStart = vm.DragStart.Value;
           vm.DragOffset = new Point((vm.MousePosition.X - dragStart.X) / vm.CanvasScale, (vm.MousePosition.Y - dragStart.Y) / vm.CanvasScale);
-          System.Diagnostics.Debug.Print($"Do drag commit@{vm.DragOffset.X:N2},{vm.DragOffset.Y:N2}");
+          System.Diagnostics.Debug.Print($"Drag commit@{vm.DragOffset.X:N2},{vm.DragOffset.Y:N2}");
           capturePartPlacement.X = partPlacementStartPos.X + vm.DragOffset.X;
           capturePartPlacement.Y = partPlacementStartPos.Y + vm.DragOffset.Y;
-          capturePolygon.ReleaseMouseCapture();
-          vm.DragStart = null;
         }
         else
         {
           System.Diagnostics.Debug.Print("Drag cancel MouseUp:IsDragModifierPressed.");
-          capturePolygon.ReleaseMouseCapture();
-          vm.DragStart = null;
         }
+
+        capturePolygon?.ReleaseMouseCapture();
+        vm.DragStart = null;
 
         this.InvalidateVisual();
       }

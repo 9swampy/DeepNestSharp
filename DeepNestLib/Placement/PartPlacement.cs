@@ -1,6 +1,7 @@
 ﻿namespace DeepNestLib.Placement
 {
   using System;
+  using System.Linq;
   using System.Text.Json;
   using System.Text.Json.Serialization;
 
@@ -52,6 +53,18 @@
     /// </summary>
     [JsonIgnore]
     public INfp HullSheet { get; set; }
+
+    [JsonIgnore]
+    public double MaxX => this.Part.Points.Max(p => p.X);
+
+    [JsonIgnore]
+    public double MaxY => this.Part.Points.Max(p => p.Y);
+
+    [JsonIgnore]
+    public double MinX => this.Part.Points.Min(p => p.X);
+
+    [JsonIgnore]
+    public double MinY => this.Part.Points.Min(p => p.Y);
 
     /// <summary>
     /// Rotation of the part (sheets I don't think ever get rotated, so this would be absolute).

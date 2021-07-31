@@ -3,7 +3,7 @@
   using System.Collections.Generic;
   using DeepNestLib.NestProject;
 
-  public interface INfp
+  public interface INfp : IMinMaxXY
   {
     double Area { get; }
 

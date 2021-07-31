@@ -1,15 +1,12 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
   using DeepNestLib;
-  using DeepNestLib.NestProject;
   using DeepNestSharp.Ui.Docking;
   using DeepNestSharp.Ui.Models;
 
   public class SvgNestConfigViewModel : ToolViewModel
   {
     private readonly MainViewModel mainViewModel;
-    private int selectedDetailLoadInfoIndex;
-    private IDetailLoadInfo selectedDetailLoadInfo;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SvgNestConfigViewModel"/> class.

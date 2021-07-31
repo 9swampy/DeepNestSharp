@@ -3,7 +3,7 @@
   using System.Collections.Generic;
   using DeepNestLib.GeneticAlgorithm;
 
-  public interface ISheetPlacement
+  public interface ISheetPlacement : IMinMaxXY
   {
     OriginalFitnessSheet Fitness { get; }
 

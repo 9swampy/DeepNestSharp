@@ -3,24 +3,32 @@
   using System;
   using System.Collections.ObjectModel;
   using System.ComponentModel;
+  using System.Linq;
   using System.Windows;
+  using System.Windows.Controls;
+  using System.Windows.Input;
   using System.Windows.Media;
   using DeepNestLib;
   using DeepNestLib.Placement;
   using DeepNestSharp.Ui.Docking;
   using DeepNestSharp.Ui.Models;
+  using Microsoft.Toolkit.Mvvm.Input;
 
   public class PreviewViewModel : ToolViewModel
   {
+    private const double Gap = 10;
     private readonly MainViewModel mainViewModel;
     private readonly PointCollection points = new PointCollection();
-    private SheetPlacementViewModel lastSheetPlacementViewModel;
-    private IPartPlacement hoverPartPlacement;
+    private SheetPlacementViewModel? lastSheetPlacementViewModel;
+    private IPartPlacement? hoverPartPlacement;
     private Point mousePosition;
     private Point dragOffset;
     private Point? dragStart;
     private double canvasScale = 1;
-    private Point canvasOffset = new Point(0,0);
+    private Point canvasOffset = new Point(0, 0);
+    private Point? viewport;
+    private Transform? transform;
+    private RelayCommand? fitAllCommand = null;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PreviewViewModel"/> class.
@@ -31,9 +39,34 @@
     {
       this.mainViewModel = mainViewModel;
       this.mainViewModel.ActiveDocumentChanged += MainViewModel_ActiveDocumentChanged;
+      this.PropertyChanged += this.PreviewViewModel_PropertyChanged;
+    }
+
+    private void PreviewViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+      if (e.PropertyName == nameof(DrawingContext))
+      {
+        OnPropertyChanged(nameof(UpperBound));
+        OnPropertyChanged(nameof(LowerBound));
+        OnPropertyChanged(nameof(WidthBound));
+        OnPropertyChanged(nameof(HeightBound));
+      }
     }
 
     public ObservableCollection<object> DrawingContext { get; private set; } = new ObservableCollection<object>();
+
+    public ICommand FitAllCommand
+    {
+      get
+      {
+        if (fitAllCommand == null)
+        {
+          fitAllCommand = new RelayCommand(OnFitAll);
+        }
+
+        return fitAllCommand;
+      }
+    }
 
     public IPartPlacement? SelectedPartPlacement
     {
@@ -108,12 +141,26 @@
     public double CanvasScale
     {
       get => canvasScale;
-      internal set
+      set
       {
         canvasScale = value;
+        if (this.Transform is MatrixTransform matrixTransform)
+        {
+          var scale = canvasScale / matrixTransform.Matrix.M11;
+          var mat = matrixTransform.Matrix;
+          mat.Scale(scale, scale);
+          matrixTransform.Matrix = mat;
+        }
+
         OnPropertyChanged(nameof(CanvasScale));
       }
     }
+
+    public bool IsTransformSet => this.Transform != null;
+
+    public double CanvasScaleMax => 10;
+
+    public double CanvasScaleMin => 0.5;
 
     public Point CanvasOffset
     {
@@ -121,7 +168,71 @@
       internal set
       {
         canvasOffset = value;
+        if (this.Transform is MatrixTransform matrixTransform)
+        {
+          var mat = matrixTransform.Matrix;
+          mat.Translate(canvasOffset.X - mat.OffsetX, canvasOffset.Y - mat.OffsetY);
+          matrixTransform.Matrix = mat;
+        }
+
         OnPropertyChanged(nameof(CanvasOffset));
+      }
+    }
+
+    public Canvas? Canvas
+    {
+      get;
+      internal set;
+    }
+
+    public Point LowerBound
+    {
+      get
+      {
+        return new Point(Extremum(o => o.MinX), Extremum(o => o.MinY));
+      }
+    }
+
+    public Point UpperBound
+    {
+      get
+      {
+        return new Point(Extremum(o => o.MaxX), Extremum(o => o.MaxY));
+      }
+    }
+
+    public double WidthBound
+    {
+      get
+      {
+        return Extremum(o => o.MaxX) - Extremum(o => o.MinX);
+      }
+    }
+
+    public double HeightBound
+    {
+      get
+      {
+        return Extremum(o => o.MaxY) - Extremum(o => o.MinY);
+      }
+    }
+
+    public Point? Viewport
+    {
+      get => viewport;
+      internal set
+      {
+        SetProperty(ref viewport, value, nameof(Viewport));
+      }
+    }
+
+    public Transform? Transform
+    {
+      get => transform;
+      internal set
+      {
+        SetProperty(ref transform, value, nameof(Transform));
+        OnPropertyChanged(nameof(IsTransformSet));
       }
     }
 
@@ -153,6 +264,13 @@
             Set(detailLoadInfo);
           }
         }
+        else if (mainViewModel.ActiveDocument is PartViewModel partViewModel)
+        {
+          if (partViewModel.Part is ObservableNfp nfp)
+          {
+            Set(nfp);
+          }
+        }
       }
     }
 
@@ -178,6 +296,48 @@
       }
     }
 
+    private void OnFitAll()
+    {
+      if (this.Viewport.HasValue)
+      {
+        var maxX = Extremum(p => p.MaxX);
+        var minX = Extremum(p => p.MinX);
+        var maxY = Extremum(p => p.MaxY);
+        var minY = Extremum(p => p.MinY);
+
+        var width = this.Viewport.Value.X;
+        var height = this.Viewport.Value.Y;
+
+        var deltaX = maxX - minX;
+        var scaleX = width / deltaX;
+        var deltaY = maxY - minY;
+        var scaleY = height / deltaY;
+
+        // var oz = this.CanvasScale;
+        // var sz1 = new System.Drawing.Size((int)(deltaX * scaleX), (int)(deltaY * scaleX));
+        // var sz2 = new System.Drawing.Size((int)(deltaX * scaleY), (int)(deltaY * scaleY));
+        this.CanvasScale = Math.Min(scaleX, scaleY);
+
+        var x = (deltaX / 2) + minX;
+        var y = (deltaY / 2) + minY;
+
+        this.CanvasOffset = new Point((width / 2F / this.CanvasScale) - x, -((height / 2F / this.CanvasScale) + y));
+      }
+    }
+
+    private double Extremum(Func<IMinMaxXY, double> accessor)
+    {
+      return this.DrawingContext.Max(o =>
+      {
+        if (o is IMinMaxXY item)
+        {
+          return accessor(item);
+        }
+
+        throw new NotSupportedException($"{o.GetType().Name} could not be handled.");
+      });
+    }
+
     private void SheetPlacementViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
       if (sender == mainViewModel.ActiveDocument &&
@@ -189,7 +349,7 @@
       }
     }
 
-    public void Set(ObservableSheetPlacement item)
+    private void Set(ObservableSheetPlacement item)
     {
       ResetDrawingContext();
       this.DrawingContext.Add(item);
@@ -207,14 +367,45 @@
       this.DrawingContext.Clear();
     }
 
-    public void Set(ObservableDetailLoadInfo item)
+    private void Set(ObservableDetailLoadInfo item)
     {
       ResetDrawingContext();
       var polygon = item.Load();
-      this.DrawingContext.Add(new ObservableNfp(polygon));
+      Set(new ObservableNfp(polygon));
+    }
+
+    /// <summary>
+    /// Top level for each part added should be Observable.
+    /// </summary>
+    /// <param name="polygon">Ultimate parent of the part.</param>
+    private void Set(ObservableNfp polygon)
+    {
+      this.DrawingContext.Add(polygon);
       foreach (var child in polygon.Children)
       {
-        this.DrawingContext.Add(new ObservableNfp(child));
+        if (child is ObservableNfp observableChild)
+        {
+          Set(observableChild);
+        }
+        else
+        {
+          Set(child);
+        }
+      }
+
+      OnPropertyChanged(nameof(DrawingContext));
+    }
+
+    /// <summary>
+    /// Adding in children as not ObservableHoles so can fill differently.
+    /// </summary>
+    /// <param name="polygon"></param>
+    private void Set(INfp polygon)
+    {
+      this.DrawingContext.Add(new ObservableHole(polygon));
+      foreach (var child in polygon.Children)
+      {
+        Set(child);
       }
 
       OnPropertyChanged(nameof(DrawingContext));

@@ -2,7 +2,6 @@
 {
   using System.Windows;
   using System.Windows.Controls;
-  using AvalonDock.Layout;
   using DeepNestSharp.Ui.ViewModels;
 
   internal class PanesTemplateSelector : DataTemplateSelector
@@ -11,31 +10,43 @@
     {
     }
 
-    public DataTemplate SheetPlacementEditorTemplate
+    public DataTemplate? SheetPlacementEditorTemplate
     {
       get;
       set;
     }
 
-    public DataTemplate SheetPlacementPreviewEditorTemplate
+    public DataTemplate? SheetPlacementPreviewEditorTemplate
     {
       get;
       set;
     }
 
-    public DataTemplate PreviewTemplate
+    public DataTemplate? PreviewTemplate
     {
       get;
       set;
     }
 
-    public DataTemplate NestProjectEditorTemplate
+    public DataTemplate? NestProjectEditorTemplate
     {
       get;
       set;
     }
 
-    public DataTemplate SettingsEditorTemplate
+    public DataTemplate? SettingsEditorTemplate
+    {
+      get;
+      set;
+    }
+
+    public DataTemplate? PropertiesEditorTemplate
+    {
+      get;
+      set;
+    }
+
+    public DataTemplate? PartEditorTemplate
     {
       get;
       set;
@@ -43,27 +54,71 @@
 
     public override DataTemplate SelectTemplate(object item, DependencyObject container)
     {
-      var itemAsLayoutContent = item as LayoutContent;
-
-      if (item is MainViewModel)
+      if (item is NestProjectViewModel)
       {
-        return SheetPlacementPreviewEditorTemplate;
-      }
-      else if (item is NestProjectViewModel)
-      {
-        return NestProjectEditorTemplate;
+        if (NestProjectEditorTemplate == null)
+        {
+          throw new System.InvalidOperationException($"{nameof(NestProjectEditorTemplate)} not set.");
+        }
+        else
+        {
+          return NestProjectEditorTemplate;
+        }
       }
       else if (item is SheetPlacementViewModel)
       {
-        return SheetPlacementEditorTemplate;
+        if (SheetPlacementEditorTemplate == null)
+        {
+          throw new System.InvalidOperationException($"{nameof(SheetPlacementEditorTemplate)} not set.");
+        }
+        else
+        {
+          return SheetPlacementEditorTemplate;
+        }
       }
       else if (item is PreviewViewModel)
       {
-        return PreviewTemplate;
+        if (PreviewTemplate == null)
+        {
+          throw new System.InvalidOperationException($"{nameof(PreviewTemplate)} not set.");
+        }
+        else
+        {
+          return PreviewTemplate;
+        }
       }
       else if (item is SvgNestConfigViewModel)
       {
-        return SettingsEditorTemplate;
+        if (SettingsEditorTemplate == null)
+        {
+          throw new System.InvalidOperationException($"{nameof(SettingsEditorTemplate)} not set.");
+        }
+        else
+        {
+          return SettingsEditorTemplate;
+        }
+      }
+      else if (item is PartViewModel)
+      {
+        if (PartEditorTemplate == null)
+        {
+          throw new System.InvalidOperationException($"{nameof(PartEditorTemplate)} not set.");
+        }
+        else
+        {
+          return PartEditorTemplate;
+        }
+      }
+      else if (item is PropertiesViewModel)
+      {
+        if (PropertiesEditorTemplate == null)
+        {
+          throw new System.InvalidOperationException($"{nameof(PropertiesEditorTemplate)} not set.");
+        }
+        else
+        {
+          return PropertiesEditorTemplate;
+        }
       }
 
       return base.SelectTemplate(item, container);

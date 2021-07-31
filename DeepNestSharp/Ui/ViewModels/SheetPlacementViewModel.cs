@@ -1,15 +1,19 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
   using System;
+  using System.IO;
+  using System.Windows.Input;
   using DeepNestLib.Placement;
   using DeepNestSharp.Ui.Docking;
   using DeepNestSharp.Ui.Models;
+  using Microsoft.Toolkit.Mvvm.Input;
 
   public class SheetPlacementViewModel : FileViewModel, ISheetPlacementViewModel
   {
     private int selectedIndex;
     private IPartPlacement selectedItem;
     private ISheetPlacement sheetPlacement;
+    private RelayCommand? loadPartFileCommand = null;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SheetPlacementViewModel"/> class.
@@ -28,6 +32,19 @@
     public SheetPlacementViewModel(MainViewModel mainViewModel, string filePath)
       : base(mainViewModel, filePath)
     {
+    }
+
+    public ICommand LoadPartFileCommand
+    {
+      get
+      {
+        if (loadPartFileCommand == null)
+        {
+          loadPartFileCommand = new RelayCommand(OnLoadPartFile, () => new FileInfo(this.SelectedItem.Part.Name).Exists);
+        }
+
+        return loadPartFileCommand;
+      }
     }
 
     public ISheetPlacement SheetPlacement
@@ -66,6 +83,11 @@
     protected override void NotifyContentUpdated()
     {
       OnPropertyChanged(nameof(SheetPlacement));
+    }
+
+    private void OnLoadPartFile()
+    {
+      this.MainViewModel.LoadPart(SelectedItem.Part.Name);
     }
   }
 }

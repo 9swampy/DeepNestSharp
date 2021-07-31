@@ -10,6 +10,7 @@
 
   public class NFP : PolygonBase, INfp, IHiddenNfp, IStringify
   {
+    public const string FileDialogFilter = "AutoCad Drawing Exchange Format (*.dxf)|*.dxf|All files (*.*)|*.*";
     private double rotation;
 
     public bool Fitted
@@ -67,8 +68,20 @@
     [JsonConverter(typeof(DoublePrecisionConverter))]
     public double X { get; set; }
 
+    [JsonIgnore]
+    public double MaxX => points.Max(p => p.X);
+
+    [JsonIgnore]
+    public double MinX => points.Min(p => p.X);
+
     [JsonConverter(typeof(DoublePrecisionConverter))]
     public double Y { get; set; }
+
+    [JsonIgnore]
+    public double MaxY => points.Max(p => p.Y);
+
+    [JsonIgnore]
+    public double MinY => points.Min(p => p.Y);
 
     [JsonIgnore]
     public double WidthCalculated

@@ -10,8 +10,6 @@
   {
     private static ImageSourceConverter imageSourceConverter = new ImageSourceConverter();
 
-    private readonly MainViewModel mainViewModel;
-
     private string? filePath;
     private string textContent = string.Empty;
     private bool isDirty = false;
@@ -25,7 +23,7 @@
     /// </summary>
     public FileViewModel(MainViewModel mainViewModel, string filePath)
     {
-      this.mainViewModel = mainViewModel;
+      this.MainViewModel = mainViewModel;
       FilePath = filePath;
       Title = FileName;
 
@@ -39,7 +37,7 @@
     /// </summary>
     public FileViewModel(MainViewModel mainViewModel)
     {
-      this.mainViewModel = mainViewModel;
+      this.MainViewModel = mainViewModel;
       IsDirty = true;
       Title = FileName;
     }
@@ -69,9 +67,7 @@
       }
     }
 
-    protected abstract void NotifyContentUpdated();
-
-    protected abstract void LoadContent();
+    protected MainViewModel MainViewModel { get; }
 
     /// <summary>
     /// Gets the name of the file, excluding path.
@@ -156,6 +152,10 @@
       }
     }
 
+    protected abstract void NotifyContentUpdated();
+
+    protected abstract void LoadContent();
+
     private bool CanClose()
     {
       return true;
@@ -163,7 +163,7 @@
 
     private void OnClose()
     {
-      mainViewModel.Close(this);
+      MainViewModel.Close(this);
     }
 
     private bool CanSave()
@@ -173,7 +173,7 @@
 
     private void OnSave()
     {
-      mainViewModel.Save(this, false);
+      MainViewModel.Save(this, false);
     }
 
     private bool CanSaveAs()
@@ -183,7 +183,7 @@
 
     private void OnSaveAs()
     {
-      mainViewModel.Save(this, true);
+      MainViewModel.Save(this, true);
     }
   }
 }

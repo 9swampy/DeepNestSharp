@@ -6,6 +6,7 @@
   using System.Windows.Controls;
   using DeepNestLib.Placement;
   using DeepNestSharp.Ui.Models;
+  using DeepNestSharp.Ui.ViewModels;
 
   /// <summary>
   /// Interaction logic for PartPlacements.xaml.

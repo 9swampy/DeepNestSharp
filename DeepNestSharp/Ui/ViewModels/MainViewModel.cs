@@ -29,6 +29,7 @@
     private SvgNestConfigViewModel svgNestConfigViewModel;
     private Tuple<string, Theme> selectedTheme;
     private FileViewModel activeDocument;
+    private PropertiesViewModel propertiesViewModel;
 
     public MainViewModel()
     {
@@ -56,16 +57,6 @@
 
     public event EventHandler ActiveDocumentChanged;
 
-    private void SaveNestProject()
-    {
-      throw new NotImplementedException();
-    }
-
-    private void SaveSheetPlacement()
-    {
-      throw new NotImplementedException();
-    }
-
     public List<Tuple<string, Theme>> Themes { get; set; }
 
     public Tuple<string, Theme> SelectedTheme
@@ -85,7 +76,7 @@
       {
         if (tools == null)
         {
-          tools = new ToolViewModel[] { PreviewViewModel, SvgNestConfigViewModel };
+          tools = new ToolViewModel[] { PreviewViewModel, SvgNestConfigViewModel, PropertiesViewModel };
         }
 
         return tools;
@@ -115,6 +106,19 @@
         }
 
         return previewViewModel;
+      }
+    }
+
+    public PropertiesViewModel PropertiesViewModel
+    {
+      get
+      {
+        if (propertiesViewModel == null)
+        {
+          propertiesViewModel = new PropertiesViewModel(this);
+        }
+
+        return propertiesViewModel;
       }
     }
 
@@ -176,6 +180,46 @@
       }
     }
 
+    public void LoadNestProject()
+    {
+      var openFileDialog = new OpenFileDialog
+      {
+        Filter = ProjectInfo.FileDialogFilter,
+      };
+
+      if (openFileDialog.ShowDialog() == true)
+      {
+        LoadNestProject(openFileDialog.FileName);
+      }
+    }
+
+    public void LoadNestProject(string fileName)
+    {
+      var loaded = new NestProjectViewModel(this, fileName);
+      this.files.Add(loaded);
+      this.ActiveDocument = loaded;
+    }
+
+    public void LoadPart()
+    {
+      var openFileDialog = new OpenFileDialog()
+      {
+        Filter = DeepNestLib.NFP.FileDialogFilter,
+      };
+
+      if (openFileDialog.ShowDialog() == true)
+      {
+        LoadPart(openFileDialog.FileName);
+      }
+    }
+
+    public void LoadPart(string fileName)
+    {
+      var loaded = new PartViewModel(this, fileName);
+      this.files.Add(loaded);
+      this.ActiveDocument = loaded;
+    }
+
     public void LoadSheetPlacement()
     {
       var openFileDialog = new OpenFileDialog()
@@ -195,21 +239,6 @@
       this.SheetPlacement.Set(loaded.SheetPlacement);
       this.files.Add(loaded);
       this.ActiveDocument = loaded;
-    }
-
-    public void LoadNestProject()
-    {
-      var openFileDialog = new OpenFileDialog
-      {
-        Filter = ProjectInfo.FileDialogFilter,
-      };
-
-      if (openFileDialog.ShowDialog() == true)
-      {
-        var loaded = new NestProjectViewModel(this, openFileDialog.FileName);
-        this.files.Add(loaded);
-        this.ActiveDocument = loaded;
-      }
     }
 
     internal void Close(FileViewModel fileToClose)
@@ -249,6 +278,16 @@
 
       File.WriteAllText(fileToSave.FilePath, fileToSave.TextContent);
       ActiveDocument.IsDirty = false;
+    }
+
+    private void SaveNestProject()
+    {
+      throw new NotImplementedException();
+    }
+
+    private void SaveSheetPlacement()
+    {
+      throw new NotImplementedException();
     }
   }
 }

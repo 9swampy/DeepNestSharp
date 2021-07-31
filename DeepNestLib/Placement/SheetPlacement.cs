@@ -88,6 +88,18 @@
     [JsonIgnore]
     public OriginalFitnessSheet Fitness { get; }
 
+    [JsonIgnore]
+    public double MaxX => PartPlacements.Max(pp => pp.MaxX);
+
+    [JsonIgnore]
+    public double MinX => PartPlacements.Max(pp => pp.MinX);
+
+    [JsonIgnore]
+    public double MaxY => PartPlacements.Max(pp => pp.MaxY);
+
+    [JsonIgnore]
+    public double MinY => PartPlacements.Max(pp => pp.MinY);
+
     public static SheetPlacement LoadFromFile(string fileName)
     {
       using (StreamReader inputFile = new StreamReader(fileName))

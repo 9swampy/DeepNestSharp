@@ -18,7 +18,7 @@
       set => SetProperty(nameof(Height), () => sheetLoadInfo.Height, v => sheetLoadInfo.Height = v, value);
     }
 
-    public override bool IsDirty => throw new System.NotImplementedException();
+    public override bool IsDirty => true;
 
     public int Quantity
     {

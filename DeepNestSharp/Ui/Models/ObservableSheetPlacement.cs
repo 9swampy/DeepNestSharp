@@ -51,7 +51,15 @@
 
     public INfp Hull => item.Hull;
 
+    public double MaxX => this.item.MaxX;
+
+    public double MaxY => this.item.MaxY;
+
     public double MaterialUtilization => item.MaterialUtilization;
+
+    public double MinX => this.item.MinX;
+
+    public double MinY => this.item.MinY;
 
     public IReadOnlyList<IPartPlacement> PartPlacements => this.observablePartPlacements;
 

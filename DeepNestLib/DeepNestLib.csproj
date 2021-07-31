@@ -155,6 +155,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GeneticAlgorithm\ISheetPlacementFitness.cs" />
+    <Compile Include="IMinMaxXY.cs" />
     <Compile Include="InnerFlowResult.cs" />
     <Compile Include="MessageBoxIcon.cs" />
     <Compile Include="NestProject\AnglesEnum.cs" />

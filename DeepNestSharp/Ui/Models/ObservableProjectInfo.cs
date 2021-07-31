@@ -8,8 +8,8 @@
   public class ObservableProjectInfo : ObservableObject, IProjectInfo
   {
     private readonly IProjectInfo projectInfo;
-    private ObservableCollection<IDetailLoadInfo> detailLoadInfos;
-    private ObservableCollection<ISheetLoadInfo> sheetLoadInfos;
+    private ObservableCollection<IDetailLoadInfo>? detailLoadInfos;
+    private ObservableCollection<ISheetLoadInfo>? sheetLoadInfos;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ObservableProjectInfo"/> class.
