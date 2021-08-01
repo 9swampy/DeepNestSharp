@@ -18,7 +18,6 @@
 
     public FitFourSmallSquaresInOneLargerSquareSheetPerfectlyFixture()
     {
-      var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
       INfp firstSheet;
       DxfGenerator.GenerateSquare("Sheet", 23D, RectangleType.FileLoad).TryConvertToNfp(firstSheetIdSrc, out firstSheet).Should().BeTrue();
       INfp firstPart;
@@ -197,6 +196,30 @@
     public void ShouldHaveNoUnplacedParts()
     {
       this.nestResult.UnplacedParts.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void GivenSimpleSheetPlacementWhenGetMaxXThenShouldBeExpected()
+    {
+      this.nestResult.UsedSheets[0].MaxX.Should().BeApproximately(22, 0.1);
+    }
+
+    [Fact]
+    public void GivenSimpleSheetPlacementWhenGetMaxYThenShouldBeExpected()
+    {
+      this.nestResult.UsedSheets[0].MaxY.Should().BeApproximately(22, 0.1);
+    }
+
+    [Fact]
+    public void GivenSimpleSheetPlacementWhenGetMinXThenShouldBeExpected()
+    {
+      this.nestResult.UsedSheets[0].MinX.Should().BeApproximately(0, 0.1);
+    }
+
+    [Fact]
+    public void GivenSimpleSheetPlacementWhenGetMinYThenShouldBeExpected()
+    {
+      this.nestResult.UsedSheets[0].MinY.Should().BeApproximately(0, 0.1);
     }
   }
 }

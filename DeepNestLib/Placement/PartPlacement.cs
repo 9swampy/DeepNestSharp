@@ -55,16 +55,16 @@
     public INfp HullSheet { get; set; }
 
     [JsonIgnore]
-    public double MaxX => this.Part.Points.Max(p => p.X);
+    public double MaxX => this.X + this.Part.Points.Max(p => p.X);
 
     [JsonIgnore]
-    public double MaxY => this.Part.Points.Max(p => p.Y);
+    public double MaxY => this.Y + this.Part.Points.Max(p => p.Y);
 
     [JsonIgnore]
-    public double MinX => this.Part.Points.Min(p => p.X);
+    public double MinX => this.X + this.Part.Points.Min(p => p.X);
 
     [JsonIgnore]
-    public double MinY => this.Part.Points.Min(p => p.Y);
+    public double MinY => this.Y + this.Part.Points.Min(p => p.Y);
 
     /// <summary>
     /// Rotation of the part (sheets I don't think ever get rotated, so this would be absolute).

@@ -53,8 +53,8 @@
     {
 #if DEBUG
       ViewModel.LoadSheetPlacement(@"C:\Git\CanDispenserCnc\CuttingLists\Std320x164\300x200GoodSwitchbackNest.dnsp");
-      ViewModel.LoadNestProject(@"C:\Git\CanDispenserCnc\CuttingLists\Std320x164\SwitchbacksAndFront295x195.dnest");
-      ViewModel.LoadPart(@"C:\Git\CanDispenserCnc\CuttingLists\Std320x164\FrontWall.dxf");
+      // ViewModel.LoadNestProject(@"C:\Git\CanDispenserCnc\CuttingLists\Std320x164\SwitchbacksAndFront295x195.dnest");
+      // ViewModel.LoadPart(@"C:\Git\CanDispenserCnc\CuttingLists\Std320x164\FrontWall.dxf");
 #endif
       return;
 

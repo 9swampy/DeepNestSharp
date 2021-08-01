@@ -130,5 +130,29 @@
     {
       this.nestResult.UnplacedParts.Should().BeEmpty();
     }
+
+    [Fact]
+    public void GivenSimpleSheetPlacementWhenGetMaxXThenShouldBeExpected()
+    {
+      this.nestResult.UsedSheets[0].MaxX.Should().Be(11);
+    }
+
+    [Fact]
+    public void GivenSimpleSheetPlacementWhenGetMaxYThenShouldBeExpected()
+    {
+      this.nestResult.UsedSheets[0].MaxY.Should().Be(11);
+    }
+
+    [Fact]
+    public void GivenSimpleSheetPlacementWhenGetMinXThenShouldBeExpected()
+    {
+      this.nestResult.UsedSheets[0].MinX.Should().Be(0);
+    }
+
+    [Fact]
+    public void GivenSimpleSheetPlacementWhenGetMinYThenShouldBeExpected()
+    {
+      this.nestResult.UsedSheets[0].MinY.Should().Be(0);
+    }
   }
 }

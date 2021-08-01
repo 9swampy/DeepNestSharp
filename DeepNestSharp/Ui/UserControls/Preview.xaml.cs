@@ -20,7 +20,6 @@
     public Preview()
     {
       InitializeComponent();
-      this.SizeChanged += this.Preview_SizeChanged;
       this.Loaded += this.Preview_Loaded;
     }
 
@@ -36,20 +35,63 @@
     {
       if (this.DataContext is PreviewViewModel viewModel &&
           sender is Preview preview &&
-          preview.GetChildOfType<Canvas>() is Canvas canvas)
+          preview.GetVisualParent<Window>() is Window window &&
+          preview.GetChildOfType<Canvas>() is Canvas canvas &&
+          preview.GetChildOfType<ScrollViewer>() is ScrollViewer scrollViewer)
       {
         viewModel.Canvas = canvas;
+        scrollViewer.SizeChanged += this.ScrollViewer_SizeChanged;
+        //scrollViewer.LayoutUpdated += this.ScrollViewer_LayoutUpdated;
+        window.StateChanged += this.Window_StateChanged;
+        SetViewport(viewModel, scrollViewer);
       }
     }
 
-    private void Preview_SizeChanged(object sender, SizeChangedEventArgs e)
+    private void Window_StateChanged(object? sender, System.EventArgs e)
     {
       if (this.DataContext is PreviewViewModel viewModel &&
-          sender is Preview preview &&
+          sender is Window window &&
+          window.GetChildOfType<Preview>() is Preview preview &&
           preview.GetChildOfType<ScrollViewer>() is ScrollViewer scrollViewer)
       {
-        viewModel.Viewport = new Point(scrollViewer.ViewportWidth, scrollViewer.ViewportHeight);
+        switch (window.WindowState)
+        {
+          case WindowState.Maximized:
+            SetViewport(viewModel, scrollViewer);
+            break;
+        }
       }
+    }
+
+    private void ScrollViewer_LayoutUpdated(object? sender, System.EventArgs e)
+    {
+      if (this.DataContext is PreviewViewModel viewModel &&
+          sender is ScrollViewer scrollViewer)
+      {
+        SetViewport(viewModel, scrollViewer);
+      }
+    }
+
+    private void ScrollViewer_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+      if (this.DataContext is PreviewViewModel viewModel &&
+          sender is ScrollViewer scrollViewer)
+      {
+        SetViewport(viewModel, scrollViewer);
+      }
+    }
+
+    private static void SetViewport(PreviewViewModel viewModel, ScrollViewer scrollViewer)
+    {
+      System.Diagnostics.Debug.Print($"Width {scrollViewer.Width},{scrollViewer.Height}");
+      System.Diagnostics.Debug.Print($"ActualWidth {scrollViewer.ActualWidth},{scrollViewer.ActualHeight}");
+      System.Diagnostics.Debug.Print($"ExtentWidth {scrollViewer.ExtentWidth},{scrollViewer.ExtentHeight}");
+      System.Diagnostics.Debug.Print($"MaxWidth {scrollViewer.MaxWidth},{scrollViewer.MaxHeight}");
+      System.Diagnostics.Debug.Print($"MinWidth {scrollViewer.MinWidth},{scrollViewer.MinHeight}");
+      System.Diagnostics.Debug.Print($"ScrollableWidth {scrollViewer.ScrollableWidth},{scrollViewer.ScrollableHeight}");
+      System.Diagnostics.Debug.Print($"ViewportWidth {scrollViewer.ViewportWidth},{scrollViewer.ViewportHeight}");
+      viewModel.Viewport = new Point(scrollViewer.ViewportWidth, scrollViewer.ViewportHeight);
+      viewModel.Actual = new Point(scrollViewer.ActualWidth, scrollViewer.ActualHeight);
     }
 
     private void Polygon_MouseDown(object sender, MouseButtonEventArgs e)
@@ -85,9 +127,11 @@
     private void ItemsControl_MouseMove(object sender, MouseEventArgs e)
     {
       if (sender is ItemsControl itemsControl &&
+          itemsControl.GetChildOfType<Canvas>() is Canvas canvas &&
           DataContext is PreviewViewModel vm)
       {
         vm.MousePosition = e.GetPosition(itemsControl);
+        vm.CanvasPosition = e.GetPosition(canvas);
         if (vm.IsDragging &&
             vm.DragStart != null &&
             capturePartPlacement != null)

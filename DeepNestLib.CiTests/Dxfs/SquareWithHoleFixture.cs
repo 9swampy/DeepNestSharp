@@ -60,5 +60,29 @@
         openScad.Should().Be(reader.ReadToEnd());
       }
     }
+
+    [Fact]
+    public void GivenSimpleSquareWhenGetMaxXThenShouldBeExpected()
+    {
+      squareWithHole.MaxX.Should().Be(20);
+    }
+
+    [Fact]
+    public void GivenSimpleSquareWhenGetMinXThenShouldBeExpected()
+    {
+      squareWithHole.MinX.Should().Be(0);
+    }
+
+    [Fact]
+    public void GivenSimpleSquareWhenGetMaxYThenShouldBeExpected()
+    {
+      squareWithHole.MaxY.Should().Be(20);
+    }
+
+    [Fact]
+    public void GivenSimpleSquareWhenGetMinYThenShouldBeExpected()
+    {
+      squareWithHole.MinY.Should().Be(0);
+    }
   }
 }

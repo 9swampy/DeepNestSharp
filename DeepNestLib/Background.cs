@@ -791,7 +791,7 @@
 #endif
     }
 
-    internal static INfp ShiftPolygon(INfp p, IPartPlacement shift)
+    public static INfp ShiftPolygon(INfp p, IPartPlacement shift)
     {
       return ShiftPolygon(p, shift.X, shift.Y);
     }

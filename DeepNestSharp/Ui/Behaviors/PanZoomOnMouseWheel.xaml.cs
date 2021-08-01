@@ -88,15 +88,7 @@
         var pos1 = e.GetPosition(grid);
         var scale = e.Delta > 0 ? 1.1 : 1 / 1.1;
         var mat = matrixTransform.Matrix;
-        if (scale * mat.M11 > previewViewModel.CanvasScaleMax)
-        {
-          scale = previewViewModel.CanvasScaleMax / mat.M11;
-        }
-        else if (scale * mat.M11 < previewViewModel.CanvasScaleMin)
-        {
-          scale = previewViewModel.CanvasScaleMin / mat.M11;
-        }
-
+        scale = previewViewModel.LimitScaleTransform(scale);
         mat.ScaleAt(scale, scale, pos1.X, pos1.Y);
         matrixTransform.Matrix = mat;
 

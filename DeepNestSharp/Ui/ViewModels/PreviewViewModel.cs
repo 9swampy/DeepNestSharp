@@ -3,7 +3,6 @@
   using System;
   using System.Collections.ObjectModel;
   using System.ComponentModel;
-  using System.Linq;
   using System.Windows;
   using System.Windows.Controls;
   using System.Windows.Input;
@@ -18,7 +17,6 @@
   {
     private const double Gap = 10;
     private readonly MainViewModel mainViewModel;
-    private readonly PointCollection points = new PointCollection();
     private SheetPlacementViewModel? lastSheetPlacementViewModel;
     private IPartPlacement? hoverPartPlacement;
     private Point mousePosition;
@@ -29,6 +27,8 @@
     private Point? viewport;
     private Transform? transform;
     private RelayCommand? fitAllCommand = null;
+    private Point? actual;
+    private Point? canvasPosition;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PreviewViewModel"/> class.
@@ -112,6 +112,15 @@
       }
     }
 
+    public Point? CanvasPosition
+    {
+      get => canvasPosition;
+      internal set
+      {
+        SetProperty(ref canvasPosition, value, nameof(CanvasPosition));
+      }
+    }
+
     public bool IsDragging
     {
       get => dragStart.HasValue;
@@ -122,8 +131,7 @@
       get => dragOffset;
       internal set
       {
-        dragOffset = value;
-        OnPropertyChanged(nameof(DragOffset));
+        SetProperty(ref dragOffset, value, nameof(DragOffset));
       }
     }
 
@@ -132,8 +140,7 @@
       get => dragStart;
       internal set
       {
-        dragStart = value;
-        OnPropertyChanged(nameof(DragStart));
+        SetProperty(ref dragStart, value, nameof(DragStart));
         OnPropertyChanged(nameof(IsDragging));
       }
     }
@@ -143,16 +150,18 @@
       get => canvasScale;
       set
       {
-        canvasScale = value;
         if (this.Transform is MatrixTransform matrixTransform)
         {
-          var scale = canvasScale / matrixTransform.Matrix.M11;
+          var scale = value / matrixTransform.Matrix.M11;
           var mat = matrixTransform.Matrix;
           mat.Scale(scale, scale);
           matrixTransform.Matrix = mat;
+          SetProperty(ref canvasScale, value, nameof(CanvasScale));
         }
-
-        OnPropertyChanged(nameof(CanvasScale));
+        else
+        {
+          throw new NotSupportedException($"Only {nameof(MatrixTransform)} is supported.");
+        }
       }
     }
 
@@ -189,7 +198,7 @@
     {
       get
       {
-        return new Point(Extremum(o => o.MinX), Extremum(o => o.MinY));
+        return new Point(DrawingContext.Extremum(MinMax.Min, XY.X), DrawingContext.Extremum(MinMax.Min, XY.Y));
       }
     }
 
@@ -197,7 +206,7 @@
     {
       get
       {
-        return new Point(Extremum(o => o.MaxX), Extremum(o => o.MaxY));
+        return new Point(DrawingContext.Extremum(MinMax.Max, XY.X), DrawingContext.Extremum(MinMax.Max, XY.Y));
       }
     }
 
@@ -205,7 +214,7 @@
     {
       get
       {
-        return Extremum(o => o.MaxX) - Extremum(o => o.MinX);
+        return DrawingContext.Extremum(MinMax.Max, XY.X) - DrawingContext.Extremum(MinMax.Min, XY.X);
       }
     }
 
@@ -213,7 +222,16 @@
     {
       get
       {
-        return Extremum(o => o.MaxY) - Extremum(o => o.MinY);
+        return DrawingContext.Extremum(MinMax.Max, XY.Y) - DrawingContext.Extremum(MinMax.Min, XY.Y);
+      }
+    }
+
+    public Point? Actual
+    {
+      get => actual;
+      internal set
+      {
+        SetProperty(ref actual, value, nameof(Actual));
       }
     }
 
@@ -298,15 +316,15 @@
 
     private void OnFitAll()
     {
-      if (this.Viewport.HasValue)
+      if (this.Actual.HasValue)
       {
-        var maxX = Extremum(p => p.MaxX);
-        var minX = Extremum(p => p.MinX);
-        var maxY = Extremum(p => p.MaxY);
-        var minY = Extremum(p => p.MinY);
+        var maxX = DrawingContext.Extremum(MinMax.Max, XY.X);
+        var minX = DrawingContext.Extremum(MinMax.Min, XY.X);
+        var maxY = DrawingContext.Extremum(MinMax.Max, XY.Y);
+        var minY = DrawingContext.Extremum(MinMax.Min, XY.Y);
 
-        var width = this.Viewport.Value.X;
-        var height = this.Viewport.Value.Y;
+        var width = this.Actual.Value.X * .9;
+        var height = this.Actual.Value.Y * .9;
 
         var deltaX = maxX - minX;
         var scaleX = width / deltaX;
@@ -316,26 +334,15 @@
         // var oz = this.CanvasScale;
         // var sz1 = new System.Drawing.Size((int)(deltaX * scaleX), (int)(deltaY * scaleX));
         // var sz2 = new System.Drawing.Size((int)(deltaX * scaleY), (int)(deltaY * scaleY));
-        this.CanvasScale = Math.Min(scaleX, scaleY);
+        this.CanvasScale = LimitAbsoluteScale(Math.Min(scaleX, scaleY));
 
         var x = (deltaX / 2) + minX;
         var y = (deltaY / 2) + minY;
 
-        this.CanvasOffset = new Point((width / 2F / this.CanvasScale) - x, -((height / 2F / this.CanvasScale) + y));
+        this.CanvasOffset = new Point(0, 0);
+
+        //this.CanvasOffset = new Point((Canvas.Width / 2F / this.CanvasScale) - x, -((Canvas.Height / 2F / this.CanvasScale) + y));
       }
-    }
-
-    private double Extremum(Func<IMinMaxXY, double> accessor)
-    {
-      return this.DrawingContext.Max(o =>
-      {
-        if (o is IMinMaxXY item)
-        {
-          return accessor(item);
-        }
-
-        throw new NotSupportedException($"{o.GetType().Name} could not be handled.");
-      });
     }
 
     private void SheetPlacementViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -353,17 +360,33 @@
     {
       ResetDrawingContext();
       this.DrawingContext.Add(item);
+
+      // This was original and works, all bound up with the hover logic.
       foreach (var partPlacement in item.PartPlacements)
       {
         this.DrawingContext.Add(partPlacement);
       }
+
+      // This gets really close but no hover/select logic works any more and there's some random holes added too.
+      //foreach (var partPlacement in item.PartPlacements)
+      //{
+      //  INfp part = partPlacement.Part.CloneTree();
+      //  part = Background.ShiftPolygon(part, partPlacement);
+      //  if (part is ObservableNfp observableNfp)
+      //  {
+      //    Set(observableNfp);
+      //  }
+      //  else
+      //  {
+      //    Set(new ObservableNfp(part));
+      //  }
+      //}
 
       OnPropertyChanged(nameof(DrawingContext));
     }
 
     private void ResetDrawingContext()
     {
-      this.points?.Clear();
       this.DrawingContext.Clear();
     }
 
@@ -385,7 +408,7 @@
       {
         if (child is ObservableNfp observableChild)
         {
-          Set(observableChild);
+          throw new InvalidOperationException("In the abscence of tests prevent this, not anticipated and it'll mess rendering.");
         }
         else
         {
@@ -397,7 +420,7 @@
     }
 
     /// <summary>
-    /// Adding in children as not ObservableHoles so can fill differently.
+    /// Adding in children as <see cref="ObservableHoles"/> so can fill differently.
     /// </summary>
     /// <param name="polygon"></param>
     private void Set(INfp polygon)
@@ -409,6 +432,39 @@
       }
 
       OnPropertyChanged(nameof(DrawingContext));
+    }
+
+    public double LimitAbsoluteScale(double proposed)
+    {
+      if (proposed > CanvasScaleMax)
+      {
+        return CanvasScaleMax;
+      }
+      else if (proposed < CanvasScaleMin)
+      {
+        return CanvasScaleMin;
+      }
+
+      return proposed;
+    }
+
+    /// <summary>
+    /// If proposed scale breaches the limits then limit the scale to that which will scale to the limit.
+    /// </summary>
+    /// <param name="proposed">Proposed scale.</param>
+    /// <returns>Permissible scale within limits.</returns>
+    public double LimitScaleTransform(double proposed)
+    {
+      if (proposed * CanvasScale > CanvasScaleMax)
+      {
+        proposed = CanvasScaleMax / CanvasScale;
+      }
+      else if (proposed * CanvasScale < CanvasScaleMin)
+      {
+        proposed = CanvasScaleMin / CanvasScale;
+      }
+
+      return proposed;
     }
   }
 }
