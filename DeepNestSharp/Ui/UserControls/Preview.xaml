@@ -26,6 +26,7 @@
     </Grid.ColumnDefinitions>
     <TextBlock Grid.Column="0" Grid.Row="0" Text="{Binding MousePosition, StringFormat=N2}" Width="100" HorizontalAlignment="Center" Margin="5,0" />
     <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal" Margin="5,0">
+      <CheckBox Content="IsExperimental" IsChecked="{Binding IsExperimental, Mode=TwoWay}" />
       <TextBlock Text="CanvasPosition=" />
       <TextBlock Text="{Binding CanvasPosition, StringFormat=N1}" />
       <TextBlock Text="Offset=" />
@@ -75,7 +76,8 @@
         <ItemsControl.Resources>
           <DataTemplate DataType="{x:Type models:ObservablePartPlacement}">
             <Polygon Points="{Binding Points}" Stroke="Black" 
-                                   MouseDown="Polygon_MouseDown">
+                                   MouseDown="Polygon_MouseDown"
+                                   MouseUp="Polygon_MouseUp">
               <Polygon.Fill>
                 <MultiBinding Converter="{StaticResource IsSelectedToFillColor}">
                   <Binding />
@@ -93,19 +95,7 @@
             <Polygon Points="{Binding Points}" Fill="White" Stroke="Black" />
           </DataTemplate>
           <DataTemplate DataType="{x:Type models:ObservableNfp}">
-            <Polygon Points="{Binding Points}" Stroke="Black" StrokeThickness="0.2">
-              <Polygon.Fill>
-                <MultiBinding Converter="{StaticResource IsSelectedToFillColor}">
-                  <Binding />
-                  <Binding Path="SelectedPartPlacement" Mode="OneWay" />
-                  <Binding Path="HoverPartPlacement" Mode="OneWay" />
-                </MultiBinding>
-              </Polygon.Fill>
-              <interactivity:Interaction.Behaviors>
-                <behaviors:PolygonMouseHover />
-                <behaviors:PolygonMouseDrag />
-              </interactivity:Interaction.Behaviors>
-            </Polygon>
+            <Polygon Points="{Binding Points}" Fill="Aquamarine" Stroke="Black" StrokeThickness="0.2" />
           </DataTemplate>
           <DataTemplate DataType="{x:Type models:ObservableHole}">
             <Polygon Points="{Binding Points}" Fill="White" Stroke="DeepPink" StrokeThickness="0.1" />

@@ -66,7 +66,7 @@
       {
         if (value is ObservablePartPlacement observablePartPlacement)
         {
-          SetProperty(ref selectedItem, observablePartPlacement);
+          SetProperty(ref selectedItem, observablePartPlacement, nameof(SelectedItem));
         }
         else
         {
@@ -88,6 +88,12 @@
     private void OnLoadPartFile()
     {
       this.MainViewModel.LoadPart(SelectedItem.Part.Name);
+    }
+
+    internal void RaiseDrawingContext()
+    {      
+      // This makes the drag render holes correctly but seriously kills the drag.
+      OnPropertyChanged(nameof(SelectedItem));
     }
   }
 }

@@ -152,7 +152,6 @@
       {
         selectedPartItem = value;
         OnPropertyChanged(nameof(SelectedPartItem));
-        SheetPlacement.RaiseOnPropertyChangedDrawingContext();
       }
     }
 
@@ -236,7 +235,6 @@
     public void LoadSheetPlacement(string fileName)
     {
       var loaded = new SheetPlacementViewModel(this, fileName);
-      this.SheetPlacement.Set(loaded.SheetPlacement);
       this.files.Add(loaded);
       this.ActiveDocument = loaded;
     }

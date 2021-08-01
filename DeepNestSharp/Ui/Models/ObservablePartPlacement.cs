@@ -1,5 +1,6 @@
 ﻿namespace DeepNestSharp.Ui.Models
 {
+  using System;
   using System.Windows;
   using System.Windows.Input;
   using DeepNestLib;
@@ -12,7 +13,9 @@
     private readonly Point originalPosition;
     private readonly double originalRotation;
     private System.Windows.Media.PointCollection? points;
-    private RelayCommand? resetCommand = null;
+    private RelayCommand? resetCommand;
+
+    public event EventHandler RenderChildren;
 
     public ObservablePartPlacement(IPartPlacement partPlacement)
     {
@@ -32,7 +35,7 @@
     {
       get
       {
-        if (points == null)
+        if (points == null || points.Count == 0)
         {
           points = new System.Windows.Media.PointCollection();
           INfp loadedNfp;

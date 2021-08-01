@@ -29,6 +29,7 @@
     private RelayCommand? fitAllCommand = null;
     private Point? actual;
     private Point? canvasPosition;
+    private bool isExperimental;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PreviewViewModel"/> class.
@@ -53,7 +54,11 @@
       }
     }
 
-    public ObservableCollection<object> DrawingContext { get; private set; } = new ObservableCollection<object>();
+    public ObservableCollection<object> DrawingContext
+    {
+      get;
+      private set;
+    } = new ObservableCollection<object>();
 
     public ICommand FitAllCommand
     {
@@ -67,6 +72,8 @@
         return fitAllCommand;
       }
     }
+
+    public MainViewModel MainViewModel => mainViewModel;
 
     public IPartPlacement? SelectedPartPlacement
     {
@@ -85,6 +92,7 @@
         if (this.mainViewModel.ActiveDocument is SheetPlacementViewModel sheetPlacementViewModel)
         {
           sheetPlacementViewModel.SelectedItem = value;
+          OnPropertyChanged(nameof(SelectedPartPlacement));
         }
       }
     }
@@ -126,6 +134,16 @@
       get => dragStart.HasValue;
     }
 
+    public bool IsExperimental
+    {
+      get => isExperimental;
+      set
+      {
+        SetProperty(ref isExperimental, value, nameof(IsExperimental));
+        InitialiseDrawingContext(mainViewModel);
+      }
+    }
+
     public Point DragOffset
     {
       get => dragOffset;
@@ -142,6 +160,7 @@
       {
         SetProperty(ref dragStart, value, nameof(DragStart));
         OnPropertyChanged(nameof(IsDragging));
+        OnPropertyChanged(nameof(DrawingContext));
       }
     }
 
@@ -256,6 +275,11 @@
 
     private void MainViewModel_ActiveDocumentChanged(object? sender, EventArgs e)
     {
+      InitialiseDrawingContext(sender);
+    }
+
+    private void InitialiseDrawingContext(object? sender)
+    {
       if (lastSheetPlacementViewModel != null)
       {
         lastSheetPlacementViewModel.PropertyChanged -= this.LastSheetPlacementViewModel_PropertyChanged;
@@ -290,6 +314,19 @@
           }
         }
       }
+    }
+
+    internal void RaiseSelectItem()
+    {
+      System.Diagnostics.Debug.Print("Force RaiseSelectItem");
+      OnPropertyChanged(nameof(SelectedPartPlacement));
+    }
+
+    internal void RaiseDrawingContext()
+    {
+      System.Diagnostics.Debug.Print("Force RaiseDrawingContext");
+      OnPropertyChanged(nameof(DrawingContext));
+      lastSheetPlacementViewModel?.RaiseDrawingContext();
     }
 
     private void LastSheetPlacementViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -360,27 +397,15 @@
     {
       ResetDrawingContext();
       this.DrawingContext.Add(item);
-
-      // This was original and works, all bound up with the hover logic.
       foreach (var partPlacement in item.PartPlacements)
       {
+        INfp part = partPlacement.Part;
         this.DrawingContext.Add(partPlacement);
+        foreach (var child in part.Children)
+        {
+          Set(new ObservableHole((ObservablePartPlacement)partPlacement, Background.ShiftPolygon(child, partPlacement)));
+        }
       }
-
-      // This gets really close but no hover/select logic works any more and there's some random holes added too.
-      //foreach (var partPlacement in item.PartPlacements)
-      //{
-      //  INfp part = partPlacement.Part.CloneTree();
-      //  part = Background.ShiftPolygon(part, partPlacement);
-      //  if (part is ObservableNfp observableNfp)
-      //  {
-      //    Set(observableNfp);
-      //  }
-      //  else
-      //  {
-      //    Set(new ObservableNfp(part));
-      //  }
-      //}
 
       OnPropertyChanged(nameof(DrawingContext));
     }
@@ -408,11 +433,11 @@
       {
         if (child is ObservableNfp observableChild)
         {
-          throw new InvalidOperationException("In the abscence of tests prevent this, not anticipated and it'll mess rendering.");
+          throw new InvalidOperationException("In the abscence of tests prevent this, not anticipated - wouldn't it mess rendering?");
         }
         else
         {
-          Set(child);
+          Set(new ObservableHole(child));
         }
       }
 
@@ -423,12 +448,12 @@
     /// Adding in children as <see cref="ObservableHoles"/> so can fill differently.
     /// </summary>
     /// <param name="polygon"></param>
-    private void Set(INfp polygon)
+    private void Set(ObservableHole child)
     {
-      this.DrawingContext.Add(new ObservableHole(polygon));
-      foreach (var child in polygon.Children)
+      this.DrawingContext.Add(child);
+      foreach (var c in child.Children)
       {
-        Set(child);
+        Set(new ObservableHole(c));
       }
 
       OnPropertyChanged(nameof(DrawingContext));

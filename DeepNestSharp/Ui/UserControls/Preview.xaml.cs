@@ -1,5 +1,6 @@
 ﻿namespace DeepNestSharp.Ui.UserControls
 {
+  using System.Reflection;
   using System.Windows;
   using System.Windows.Controls;
   using System.Windows.Input;
@@ -83,15 +84,19 @@
 
     private static void SetViewport(PreviewViewModel viewModel, ScrollViewer scrollViewer)
     {
-      System.Diagnostics.Debug.Print($"Width {scrollViewer.Width},{scrollViewer.Height}");
-      System.Diagnostics.Debug.Print($"ActualWidth {scrollViewer.ActualWidth},{scrollViewer.ActualHeight}");
-      System.Diagnostics.Debug.Print($"ExtentWidth {scrollViewer.ExtentWidth},{scrollViewer.ExtentHeight}");
-      System.Diagnostics.Debug.Print($"MaxWidth {scrollViewer.MaxWidth},{scrollViewer.MaxHeight}");
-      System.Diagnostics.Debug.Print($"MinWidth {scrollViewer.MinWidth},{scrollViewer.MinHeight}");
-      System.Diagnostics.Debug.Print($"ScrollableWidth {scrollViewer.ScrollableWidth},{scrollViewer.ScrollableHeight}");
-      System.Diagnostics.Debug.Print($"ViewportWidth {scrollViewer.ViewportWidth},{scrollViewer.ViewportHeight}");
       viewModel.Viewport = new Point(scrollViewer.ViewportWidth, scrollViewer.ViewportHeight);
       viewModel.Actual = new Point(scrollViewer.ActualWidth, scrollViewer.ActualHeight);
+    }
+
+    private void Polygon_MouseUp(object sender, MouseButtonEventArgs e)
+    {
+      System.Diagnostics.Debug.Print("Polygon_MouseUp");
+      if (sender is Polygon polygon &&
+          polygon.GetVisualParent<ItemsControl>() is ItemsControl itemsControl &&
+          DataContext is PreviewViewModel vm)
+      {
+        MouseUpHandler(vm, itemsControl);
+      }
     }
 
     private void Polygon_MouseDown(object sender, MouseButtonEventArgs e)
@@ -112,7 +117,7 @@
             System.Diagnostics.Debug.Print($"Drag start set@{vm.DragStart?.X},{vm.DragStart?.Y}. {vm.IsDragging}");
             capturePartPlacement = partPlacement;
             capturePolygon = polygon;
-            polygon.CaptureMouse();
+            capturePolygon.CaptureMouse();
             e.Handled = true;
           }
         }
@@ -140,10 +145,10 @@
           {
             var dragStart = vm.DragStart.Value;
             vm.DragOffset = new Point((vm.MousePosition.X - dragStart.X) / vm.CanvasScale, (vm.MousePosition.Y - dragStart.Y) / vm.CanvasScale);
-            System.Diagnostics.Debug.Print($"DragOffset={vm.DragOffset:N2}");
+
+            // System.Diagnostics.Debug.Print($"DragOffset={vm.DragOffset:N2}");
             capturePartPlacement.X = partPlacementStartPos.X + vm.DragOffset.X;
             capturePartPlacement.Y = partPlacementStartPos.Y + vm.DragOffset.Y;
-            this.InvalidateArrange();
           }
           else
           {
@@ -153,6 +158,9 @@
             capturePolygon?.ReleaseMouseCapture();
             vm.DragStart = null;
           }
+
+          vm.RaiseDrawingContext();
+          this.InvalidateArrange();
         }
       }
     }
@@ -160,28 +168,36 @@
     private void ItemsControl_MouseUp(object sender, MouseButtonEventArgs e)
     {
       System.Diagnostics.Debug.Print("ItemsControl_MouseUp");
-      if (DataContext is PreviewViewModel vm &&
-          vm.IsDragging &&
-          capturePartPlacement != null)
+      if (sender is ItemsControl itemsControl &&
+          DataContext is PreviewViewModel vm)
       {
-        if (IsDragModifierPressed && vm.DragStart.HasValue)
+        MouseUpHandler(vm, itemsControl);
+      }
+    }
+
+    private void MouseUpHandler(PreviewViewModel vm, ItemsControl itemsControl)
+    {
+      System.Diagnostics.Debug.Print("Handle MouseUp");
+      if (vm.IsDragging && IsDragModifierPressed && vm.DragStart.HasValue)
+      {
+        var dragStart = vm.DragStart.Value;
+        vm.DragOffset = new Point((vm.MousePosition.X - dragStart.X) / vm.CanvasScale, (vm.MousePosition.Y - dragStart.Y) / vm.CanvasScale);
+        System.Diagnostics.Debug.Print($"Drag commit@{vm.DragOffset.X:N2},{vm.DragOffset.Y:N2}");
+        if (capturePartPlacement != null)
         {
-          var dragStart = vm.DragStart.Value;
-          vm.DragOffset = new Point((vm.MousePosition.X - dragStart.X) / vm.CanvasScale, (vm.MousePosition.Y - dragStart.Y) / vm.CanvasScale);
-          System.Diagnostics.Debug.Print($"Drag commit@{vm.DragOffset.X:N2},{vm.DragOffset.Y:N2}");
           capturePartPlacement.X = partPlacementStartPos.X + vm.DragOffset.X;
           capturePartPlacement.Y = partPlacementStartPos.Y + vm.DragOffset.Y;
         }
-        else
-        {
-          System.Diagnostics.Debug.Print("Drag cancel MouseUp:IsDragModifierPressed.");
-        }
-
-        capturePolygon?.ReleaseMouseCapture();
-        vm.DragStart = null;
-
-        this.InvalidateVisual();
       }
+
+      capturePolygon?.ReleaseMouseCapture();
+      vm.DragStart = null;
+      vm.RaiseSelectItem();
+      vm.RaiseDrawingContext();
+      System.Diagnostics.Debug.Print("Force ItemsControl.UpdateTarget");
+      itemsControl.GetBindingExpression(ItemsControl.ItemsSourceProperty).UpdateTarget();
+      itemsControl.GetBindingExpression(ItemsControl.ItemsSourceProperty).UpdateSource();
+      this.InvalidateVisual();
     }
   }
 }

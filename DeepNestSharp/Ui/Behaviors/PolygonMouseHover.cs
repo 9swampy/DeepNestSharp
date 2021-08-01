@@ -4,28 +4,8 @@
   using System.Windows.Controls;
   using System.Windows.Input;
   using System.Windows.Interactivity;
-  using System.Windows.Shapes;
-  using DeepNestLib.Placement;
   using DeepNestSharp.Ui.Models;
   using DeepNestSharp.Ui.ViewModels;
-
-  public class PolygonMouseDrag : Behavior<FrameworkElement>
-  {
-    private MainViewModel? mainViewModel;
-    private ObservablePartPlacement? partPlacement;
-
-    protected override void OnAttached()
-    {
-      base.OnAttached();
-      if (this.AssociatedObject.DataContext is ObservablePartPlacement partPlacement &&
-          this.AssociatedObject.GetVisualParent<Window>() is Window window &&
-          window.DataContext is MainViewModel mainViewModel)
-      {
-        this.mainViewModel = mainViewModel;
-        this.partPlacement = partPlacement;
-      }
-    }
-  }
 
   public class PolygonMouseHover : Behavior<FrameworkElement>
   {
@@ -35,22 +15,21 @@
     protected override void OnAttached()
     {
       base.OnAttached();
-      if (this.AssociatedObject.DataContext is ObservablePartPlacement partPlacement &&
-          this.AssociatedObject.GetVisualParent<Window>() is Window window &&
+      if (this.AssociatedObject.GetVisualParent<Window>() is Window window &&
+          this.AssociatedObject.DataContext is ObservablePartPlacement partPlacement &&
           window.DataContext is MainViewModel mainViewModel)
       {
         this.mainViewModel = mainViewModel;
         this.partPlacement = partPlacement;
-      }
 
-      this.AssociatedObject.MouseEnter += this.AssociatedObject_MouseEnter;
-      this.AssociatedObject.MouseLeave += this.AssociatedObject_MouseLeave;
+        this.AssociatedObject.MouseEnter += this.AssociatedObject_MouseEnter;
+        this.AssociatedObject.MouseLeave += this.AssociatedObject_MouseLeave;
+      }
     }
 
     private void AssociatedObject_MouseEnter(object sender, MouseEventArgs e)
     {
-      if (sender is Polygon polygon &&
-          this.AssociatedObject.GetVisualParent<Canvas>() is Canvas canvas)
+      if (this.AssociatedObject.GetVisualParent<Canvas>() is Canvas canvas)
       {
         canvas.Focus();
         if (this.mainViewModel != null)

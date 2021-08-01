@@ -1,9 +1,9 @@
 ﻿namespace DeepNestSharp.Ui.Models
 {
   using System.Collections.Generic;
-  using System.Collections.ObjectModel;
   using DeepNestLib;
   using DeepNestLib.NestProject;
+  using DeepNestSharp.Ui.ViewModels;
 
   public class ObservableNfp : ObservablePropertyObject, INfp
   {
@@ -14,6 +14,8 @@
     {
       this.item = nfp;
     }
+
+    public INfp SourceItem => item;
 
     public System.Windows.Media.PointCollection Points
     {
@@ -168,6 +170,7 @@
       get => this.item.Y;
       set => SetProperty(nameof(Y), () => this.item.Y, v => this.item.Y = v, value);
     }
+    public MainViewModel MainViewModel { get; }
 
     public SvgPoint this[int ind] => this.item[ind];
 

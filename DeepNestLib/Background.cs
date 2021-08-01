@@ -799,6 +799,12 @@
     internal static INfp ShiftPolygon(INfp p, double x, double y)
     {
       NFP shifted = new NFP();
+      shifted.Id = p.Id;
+      shifted.Name = p.Name;
+      shifted.PlacementOrder = p.PlacementOrder;
+      shifted.Rotation = p.Rotation;
+      shifted.Source = p.Source;
+      shifted.StrictAngle = p.StrictAngle;
       for (var i = 0; i < p.Length; i++)
       {
         shifted.AddPoint(new SvgPoint(p[i].X + x, p[i].Y + y) { Exact = p[i].Exact });

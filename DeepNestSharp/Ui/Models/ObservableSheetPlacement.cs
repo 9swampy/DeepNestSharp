@@ -16,7 +16,6 @@
     public ObservableSheetPlacement()
     {
       this.observablePartPlacements = new ObservableCollection<ObservablePartPlacement>();
-      this.DrawingContext = new ObservableCollection<object>();
     }
 
     public ObservableSheetPlacement(ISheetPlacement item)
@@ -28,18 +27,15 @@
 
     public bool IsSet => this.item != null;
 
-    public void Set(ISheetPlacement item)
+    private void Set(ISheetPlacement item)
     {
       this.item = item;
       this.observablePartPlacements.Clear();
       this.points?.Clear();
-      this.DrawingContext.Clear();
-      this.DrawingContext.Add(this);
       foreach (var partPlacement in item.PartPlacements)
       {
         var obsPart = new ObservablePartPlacement(partPlacement);
         this.observablePartPlacements.Add(obsPart);
-        this.DrawingContext.Add(obsPart);
       }
 
       OnPropertyChanged(nameof(PartPlacements));
@@ -62,8 +58,6 @@
     public double MinY => this.item.MinY;
 
     public IReadOnlyList<IPartPlacement> PartPlacements => this.observablePartPlacements;
-
-    public ObservableCollection<object> DrawingContext { get; }
 
     public PlacementTypeEnum PlacementType => item.PlacementType;
 
@@ -99,11 +93,6 @@
     public string ToJson()
     {
       return this.item.ToJson();
-    }
-
-    public void RaiseOnPropertyChangedDrawingContext()
-    {
-      OnPropertyChanged(nameof(DrawingContext));
     }
   }
 }
