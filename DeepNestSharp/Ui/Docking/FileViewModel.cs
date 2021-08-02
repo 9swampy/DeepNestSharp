@@ -17,6 +17,9 @@
     private RelayCommand? saveAsCommand;
     private RelayCommand? closeCommand;
 
+    public FileViewModel()
+    { }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="FileViewModel"/> class.
     /// Use this to access an existing file.

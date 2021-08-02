@@ -28,6 +28,12 @@
       set;
     }
 
+    public DataTemplate? NestMonitorTemplate
+    {
+      get;
+      set;
+    }
+
     public DataTemplate? NestProjectEditorTemplate
     {
       get;
@@ -54,7 +60,18 @@
 
     public override DataTemplate SelectTemplate(object item, DependencyObject container)
     {
-      if (item is NestProjectViewModel)
+      if (item is NestMonitorViewModel)
+      {
+        if (NestMonitorTemplate == null)
+        {
+          throw new System.InvalidOperationException($"{nameof(NestMonitorTemplate)} not set.");
+        }
+        else
+        {
+          return NestMonitorTemplate;
+        }
+      }
+      else if (item is NestProjectViewModel)
       {
         if (NestProjectEditorTemplate == null)
         {

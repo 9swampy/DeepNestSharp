@@ -4,6 +4,9 @@
   {
     private bool isVisible = true;
 
+    public ToolViewModel()
+    { }
+
     public ToolViewModel(string name)
     {
       Name = name;

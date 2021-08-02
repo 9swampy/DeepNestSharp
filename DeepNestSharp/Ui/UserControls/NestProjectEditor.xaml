@@ -7,9 +7,14 @@
                         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                         mc:Ignorable="d" 
                         d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-    <!--This works picking up everything from the code behind DependencyProperties bound to the DataContext AvalonDock has set as the ViewModel<ListView ItemsSource="{Binding Path=ItemsSource.DetailLoadInfos, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedItem="{Binding SelectedPart, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedIndex="{Binding SelectedPartIndex, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}">-->
-    <!--The following works bypassing the need for the codebehind altogether -->
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+    <StackPanel Orientation="Horizontal" >
+      <Button Content="Execute" Command="{Binding ExecuteNestCommand}" />
+    </StackPanel>
     <ListView ItemsSource="{Binding Path=ProjectInfo.DetailLoadInfos}" SelectedItem="{Binding SelectedDetailLoadInfo}" SelectedIndex="{Binding SelectedDetailLoadInfoIndex, Mode=TwoWay}">
       <ListView.Resources>
         <DataTemplate x:Key="EditableDouble">

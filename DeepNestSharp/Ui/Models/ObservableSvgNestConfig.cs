@@ -56,7 +56,7 @@
     }
 
     /// <inheritdoc />
-    public override bool IsDirty => throw new System.NotImplementedException();
+    public override bool IsDirty => true;
 
     /// <inheritdoc />
     public bool MergeLines

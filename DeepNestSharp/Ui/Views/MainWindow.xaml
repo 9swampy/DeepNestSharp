@@ -10,7 +10,7 @@
         xmlns:converters="clr-namespace:DeepNestSharp.Ui.Converters" 
         xmlns:behaviors="clr-namespace:DeepNestSharp.Ui.Behaviors"
         xmlns:sys="clr-namespace:System;assembly=System.Runtime" 
-        xmlns:docking="clr-namespace:DeepNestSharp.Ui.Docking"
+        xmlns:docking="clr-namespace:DeepNestSharp.Ui.Docking" 
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
   <Window.Resources>
@@ -43,7 +43,10 @@
         <MenuItem Header="Load SheetPlacement" Command="{Binding ExecuteLoadSheetPlacement}" />
         <MenuItem Header="Save SheetPlacement" Command="{Binding ExecuteSaveSheetPlacement}" />
         <Separator />
-        <MenuItem Header="Exit" />
+        <MenuItem Header="Load Layout" Command="{Binding LoadLayoutCommand}" />
+        <MenuItem Header="Save Layout" Command="{Binding SaveLayoutCommand}" />
+        <Separator />
+        <MenuItem Header="Exit" Command="{Binding ExitCommand}" />
       </MenuItem>
 
       <MenuItem Header="Help" HorizontalAlignment="Right">
@@ -83,6 +86,11 @@
               <userControls:Preview />
             </DataTemplate>
           </docking:PanesTemplateSelector.PreviewTemplate>
+          <docking:PanesTemplateSelector.NestMonitorTemplate>
+            <DataTemplate>
+              <userControls:NestMonitor />
+            </DataTemplate>
+          </docking:PanesTemplateSelector.NestMonitorTemplate>
           <docking:PanesTemplateSelector.NestProjectEditorTemplate>
             <DataTemplate>
               <userControls:NestProjectEditor />

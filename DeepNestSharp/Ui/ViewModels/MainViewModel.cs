@@ -5,8 +5,12 @@
   using System.Collections.ObjectModel;
   using System.IO;
   using System.Linq;
+  using System.Reflection;
   using System.Windows;
   using System.Windows.Input;
+  using AvalonDock;
+  using AvalonDock.Layout;
+  using AvalonDock.Layout.Serialization;
   using AvalonDock.Themes;
   using DeepNestLib.NestProject;
   using DeepNestSharp.Ui.Docking;
@@ -30,6 +34,11 @@
     private Tuple<string, Theme> selectedTheme;
     private FileViewModel activeDocument;
     private PropertiesViewModel propertiesViewModel;
+    private NestMonitorViewModel nestMonitorViewModel;
+
+    private RelayCommand loadLayoutCommand = null;
+    private RelayCommand saveLayoutCommand = null;
+    private RelayCommand exitCommand = null;
 
     public MainViewModel()
     {
@@ -76,7 +85,7 @@
       {
         if (tools == null)
         {
-          tools = new ToolViewModel[] { PreviewViewModel, SvgNestConfigViewModel, PropertiesViewModel };
+          tools = new ToolViewModel[] { PreviewViewModel, SvgNestConfigViewModel, PropertiesViewModel, NestMonitorViewModel };
         }
 
         return tools;
@@ -93,6 +102,19 @@
         }
 
         return readonlyFiles;
+      }
+    }
+
+    public NestMonitorViewModel NestMonitorViewModel
+    {
+      get
+      {
+        if (nestMonitorViewModel == null)
+        {
+          nestMonitorViewModel = new NestMonitorViewModel(this);
+        }
+
+        return nestMonitorViewModel;
       }
     }
 
@@ -163,7 +185,48 @@
 
     public ICommand ExecuteSaveNestProject { get; }
 
+    public ICommand ExitCommand
+    {
+      get
+      {
+        if (exitCommand == null)
+        {
+          exitCommand = new RelayCommand(OnExit, CanExit);
+        }
+
+        return exitCommand;
+      }
+    }
+
+    public ICommand LoadLayoutCommand
+    {
+      get
+      {
+        if (loadLayoutCommand == null)
+        {
+          loadLayoutCommand = new RelayCommand(OnLoadLayout, CanLoadLayout);
+        }
+
+        return loadLayoutCommand;
+      }
+    }
+
+    public ICommand SaveLayoutCommand
+    {
+      get
+      {
+        if (saveLayoutCommand == null)
+        {
+          saveLayoutCommand = new RelayCommand(OnSaveLayout, CanSaveLayout);
+        }
+
+        return saveLayoutCommand;
+      }
+    }
+
     public ObservableSheetPlacement SheetPlacement { get; } = new ObservableSheetPlacement();
+
+
 
     public FileViewModel ActiveDocument
     {
@@ -177,6 +240,99 @@
           ActiveDocumentChanged?.Invoke(this, EventArgs.Empty);
         }
       }
+    }
+
+    public DockingManager DockManager { get; internal set; }
+
+    private bool CanExit()
+    {
+      return true;
+    }
+
+    private bool CanLoadLayout()
+    {
+      return File.Exists(@".\AvalonDock.Layout.config");
+    }
+
+    private bool CanSaveLayout()
+    {
+      return true;
+    }
+
+    private void OnExit()
+    {
+      Application.Current.MainWindow.Close();
+    }
+
+    private void OnLoadLayout()
+    {
+      // Walk down the layout and gather the LayoutContent elements.
+      // AD bails out when it tries to invoke RemoveViewFromLogicalChild
+      // on them.
+      //var l = GatherLayoutContent(DockManager.Layout).ToArray();
+      //// Remove the views by force
+      //foreach (var x in l)
+      //{
+      //  DockManager.GetType()
+      //      .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
+      //      .Where(m => m.Name.Equals("RemoveViewFromLogicalChild"))
+      //      .First()
+      //      .Invoke(DockManager, new object[] { x });
+      //}
+
+
+      var layoutSerializer = new XmlLayoutSerializer(DockManager);
+      //layoutSerializer.LayoutSerializationCallback += (s, e) =>
+      //{
+      //  object o = e.Content;
+      //};
+      var configFile = new FileInfo(@".\AvalonDock.Layout.config");
+      if (configFile.Exists)
+      {
+        layoutSerializer.Deserialize(configFile.FullName);
+      }
+    }
+
+    private static IEnumerable<LayoutContent> GatherLayoutContent(ILayoutElement le)
+    {
+      if (le is LayoutContent)
+      {
+        yield return (LayoutContent)le;
+      }
+      IEnumerable<ILayoutElement> children = new ILayoutElement[0];
+      if (le is LayoutRoot)
+      {
+        children = ((LayoutRoot)le).Children;
+      }
+      else if (le is LayoutPanel)
+      {
+        children = ((LayoutPanel)le).Children;
+      }
+      else if (le is LayoutDocumentPaneGroup)
+      {
+        children = ((LayoutDocumentPaneGroup)le).Children;
+      }
+      else if (le is LayoutAnchorablePane)
+      {
+        children = ((LayoutAnchorablePane)le).Children;
+      }
+      else if (le is LayoutDocumentPane)
+      {
+        children = ((LayoutDocumentPane)le).Children;
+      }
+      foreach (var child in children)
+      {
+        foreach (var x in GatherLayoutContent(child))
+        {
+          yield return x;
+        }
+      }
+    }
+
+    private void OnSaveLayout()
+    {
+      var layoutSerializer = new XmlLayoutSerializer(DockManager);
+      layoutSerializer.Serialize(@".\AvalonDock.Layout.config");
     }
 
     public void LoadNestProject()

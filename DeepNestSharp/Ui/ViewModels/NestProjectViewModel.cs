@@ -1,14 +1,16 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
-  using DeepNestLib;
+  using System.Windows.Input;
   using DeepNestLib.NestProject;
   using DeepNestSharp.Ui.Docking;
   using DeepNestSharp.Ui.Models;
+  using Microsoft.Toolkit.Mvvm.Input;
 
   public class NestProjectViewModel : FileViewModel, INestProjectViewModel
   {
     private int selectedDetailLoadInfoIndex;
     private IDetailLoadInfo selectedDetailLoadInfo;
+    private RelayCommand? executeNestCommand;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NestProjectViewModel"/> class.
@@ -27,6 +29,19 @@
     public NestProjectViewModel(MainViewModel mainViewModel, string filePath)
       : base(mainViewModel, filePath)
     {
+    }
+
+    public ICommand ExecuteNestCommand
+    {
+      get
+      {
+        if (executeNestCommand == null)
+        {
+          executeNestCommand = new RelayCommand(OnExecuteNest);
+        }
+
+        return executeNestCommand;
+      }
     }
 
     public IProjectInfo ProjectInfo { get; } = new ObservableProjectInfo(new ProjectInfo());
@@ -53,6 +68,13 @@
       OnPropertyChanged(nameof(ProjectInfo));
       OnPropertyChanged(nameof(SelectedDetailLoadInfoIndex));
       OnPropertyChanged(nameof(SelectedDetailLoadInfo));
+    }
+
+    private void OnExecuteNest()
+    {
+      System.Diagnostics.Debug.Print("Set the Nest Monitor active and start the Nest.");
+      //MainViewModel.Tools.First(o=>object is NestMonitorViewModel)
+      //var nestMonitorViewModel = new NestMonitorViewModel(this, MainViewModel);
     }
   }
 }
