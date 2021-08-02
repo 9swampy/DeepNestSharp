@@ -29,6 +29,7 @@
     public NestProjectViewModel(MainViewModel mainViewModel, string filePath)
       : base(mainViewModel, filePath)
     {
+      mainViewModel.NestMonitorViewModel.PropertyChanged += this.NestMonitorViewModel_PropertyChanged;
     }
 
     public ICommand ExecuteNestCommand
@@ -37,10 +38,18 @@
       {
         if (executeNestCommand == null)
         {
-          executeNestCommand = new RelayCommand(OnExecuteNest);
+          executeNestCommand = new RelayCommand(OnExecuteNest, () => !MainViewModel.NestMonitorViewModel.IsRunning);
         }
 
         return executeNestCommand;
+      }
+    }
+
+    private void NestMonitorViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+      if (e.PropertyName == $"{nameof(NestMonitorViewModel.IsRunning)}")
+      {
+        executeNestCommand?.NotifyCanExecuteChanged();
       }
     }
 
@@ -73,7 +82,7 @@
     private void OnExecuteNest()
     {
       System.Diagnostics.Debug.Print("Set the Nest Monitor active and start the Nest.");
-      //MainViewModel.Tools.First(o=>object is NestMonitorViewModel)
+      MainViewModel.NestMonitorViewModel.TryStart(this);
       //var nestMonitorViewModel = new NestMonitorViewModel(this, MainViewModel);
     }
   }

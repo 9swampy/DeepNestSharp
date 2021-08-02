@@ -39,6 +39,7 @@
     private int lastOpenFilterIndex = 1;
     private readonly ProjectInfo projectInfo = new ProjectInfo();
     private bool autoFit = true;
+    private NestExecutionHelper nestExecutionHelper = new NestExecutionHelper();
 
     internal ICollection<INfp> Polygons
     {
@@ -52,7 +53,7 @@
     {
       InitializeComponent();
 
-      this.ProgressDisplayerInstance = new ProgressDisplayer(this, InitialiseUiForStartNest);
+      this.ProgressDisplayerInstance = new ProgressDisplayer(this, InitialiseUiForStartNest, new MessageBoxService());
       this.ContextualiseRunStopButtons(false);
 
       LoadSettings();
@@ -119,7 +120,7 @@
         {
           if (this.context == null)
           {
-            this.context = new NestingContext(new MessageBoxService(), new ProgressDisplayer(this, InitialiseUiForStartNest));
+            this.context = new NestingContext(new MessageBoxService(), new ProgressDisplayer(this, InitialiseUiForStartNest, new MessageBoxService()));
           }
         }
 
@@ -342,13 +343,7 @@
 
     private Sheet NewSheet(int w = 3000, int h = 1500)
     {
-      var tt = new RectangleSheet();
-      tt.Name = "rectSheet" + (Sheets.Count + 1);
-      tt.Height = h;
-      tt.Width = w;
-      tt.Rebuild();
-
-      return tt;
+      return Sheet.NewSheet(Sheets.Count + 1, w, h);
     }
 
     private Sheet NewRhombusSheet(int w = 3000, int h = 1500)
@@ -537,7 +532,7 @@
         QntDialog q = new QntDialog();
         if (q.ShowDialog() == DialogResult.OK)
         {
-          RawDetail det = LoadRawDetail(f);
+          RawDetail det = nestExecutionHelper.LoadRawDetail(f);
 
           int src = 0;
           if (Polygons.Any())
@@ -545,26 +540,10 @@
             src = Polygons.Max(z => z.Source) + 1;
           }
 
-          AddToPolygons(src, det, q.Qnt);
+          nestExecutionHelper.AddToPolygons(Context, src, det, q.Qnt, ProgressDisplayerInstance);
           UpdateList();
         }
       }
-    }
-
-    private static RawDetail LoadRawDetail(FileInfo f)
-    {
-      RawDetail det = null;
-      if (f.Extension == ".svg")
-      {
-        det = SvgParser.LoadSvg(f.FullName);
-      }
-
-      if (f.Extension == ".dxf")
-      {
-        det = DxfParser.LoadDxfFile(f.FullName);
-      }
-
-      return det;
     }
 
     private void importSelectedToolStripMenuItem_Click(object sender, EventArgs e)
@@ -577,7 +556,7 @@
         foreach (var item in listView3.SelectedItems)
         {
           var t = (item as ListViewItem).Tag as FileInfo;
-          var det = LoadRawDetail(t);
+          var det = nestExecutionHelper.LoadRawDetail(t);
 
           int src = 0;
           if (Polygons.Any())
@@ -585,7 +564,7 @@
             src = Polygons.Max(z => z.Source) + 1;
           }
 
-          AddToPolygons(src, det, q.Qnt);
+          nestExecutionHelper.AddToPolygons(Context, src, det, q.Qnt, ProgressDisplayerInstance);
         }
 
         UpdateList();
@@ -605,7 +584,7 @@
             {
               _ = this.Invoke((MethodInvoker)(() => { this.progressBar1.Visible = true; }));
               this.Context.StartNest();
-              UpdateNestsList();
+              this.ProgressDisplayerInstance.UpdateNestsList();
 
               while (!this.stop)
               {
@@ -613,7 +592,7 @@
                 sw.Start();
                 Cursor.Current = Cursors.Default;
                 this.Context.NestIterate(SvgNest.Config);
-                UpdateNestsList();
+                this.ProgressDisplayerInstance.UpdateNestsList();
                 sw.Stop();
                 if (SvgNest.Config.UseParallel)
                 {
@@ -1371,70 +1350,15 @@
     private void runNestingButton_Click(object sender, EventArgs e)
     {
       Cursor.Current = Cursors.WaitCursor;
-      RebuildNest();
+      nestExecutionHelper.RebuildNest(Context, projectInfo.SheetLoadInfos, projectInfo.DetailLoadInfos, this.ProgressDisplayerInstance);
       RunNestIfPossible();
-    }
-
-    private void RebuildNest()
-    {
-      Context.Reset();
-      int src = 0;
-      foreach (var item in projectInfo.SheetLoadInfos)
-      {
-        src = Context.GetNextSheetSource();
-        for (int i = 0; i < item.Quantity; i++)
-        {
-          var ns = NewSheet(item.Width, item.Height);
-          Sheets.Add(ns);
-          ns.Source = src;
-        }
-      }
-
-      Context.ReorderSheets();
-      src = 0;
-      foreach (var item in projectInfo.DetailLoadInfos.Where(o => o.IsIncluded))
-      {
-        this.ProgressDisplayerInstance.DisplayToolStripMessage($"Preload {item.Path}. . .");
-        var det = LoadRawDetail(new FileInfo(item.Path));
-
-        AddToPolygons(src, det, item.Quantity, isPriority: item.IsPriority, isMultiplied: item.IsMultiplied, strictAngles: item.StrictAngle);
-
-        src++;
-      }
-
-      this.ProgressDisplayerInstance.DisplayToolStripMessage(string.Empty);
-    }
-
-    private void AddToPolygons(int src, RawDetail det, int quantity, bool isIncluded = true, bool isPriority = false, bool isMultiplied = false, AnglesEnum strictAngles = AnglesEnum.Vertical)
-    {
-      var item = new DetailLoadInfo() { Quantity = quantity, IsIncluded = isIncluded, IsPriority = isPriority, IsMultiplied = isMultiplied, StrictAngle = strictAngles };
-      AddToPolygons(src, det, item);
-    }
-
-    private void AddToPolygons(int src, RawDetail det, DetailLoadInfo item)
-    {
-      INfp loadedNfp;
-      if (det.TryConvertToNfp(src, out loadedNfp))
-      {
-        loadedNfp.IsPriority = item.IsPriority;
-        loadedNfp.StrictAngle = item.StrictAngle;
-        var quantity = item.Quantity * (item.IsMultiplied ? SvgNest.Config.Multiplier : 1);
-        for (int i = 0; i < quantity; i++)
-        {
-          Context.Polygons.Add(loadedNfp.Clone());
-        }
-      }
-      else
-      {
-        MessageBox.Show($"Failed to import {det.Name}.");
-      }
     }
 
     private void objectListView1_SelectedIndexChanged(object sender, EventArgs e)
     {
       if (partsList.SelectedObject == null) return;
       Cursor.Current = Cursors.WaitCursor;
-      preview = LoadRawDetail(new FileInfo((partsList.SelectedObject as DetailLoadInfo).Path));
+      preview = nestExecutionHelper.LoadRawDetail(new FileInfo((partsList.SelectedObject as DetailLoadInfo).Path));
       if (autoFit) fitAll();
       Cursor.Current = Cursors.Default;
     }

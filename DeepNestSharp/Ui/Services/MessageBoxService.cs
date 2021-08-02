@@ -1,9 +1,9 @@
-﻿namespace DeepNestPort
+﻿namespace DeepNestSharp.Ui.ViewModels
 {
   using System;
-  using System.Windows.Forms;
+  using System.Windows;
   using DeepNestLib;
-
+  
   internal class MessageBoxService : IMessageService
   {
     public void DisplayMessage(string message)
@@ -16,9 +16,9 @@
       MessageBox.Show($"{ex.Message}/n{ex.StackTrace}");
     }
 
-    public void DisplayMessageBox(string text, string caption, DeepNestLib.MessageBoxIcon icon)
+    public void DisplayMessageBox(string text, string caption, MessageBoxIcon icon)
     {
-      MessageBox.Show(text, caption, MessageBoxButtons.OK, (System.Windows.Forms.MessageBoxIcon)icon);
+      MessageBox.Show(text, caption, MessageBoxButton.OK, (MessageBoxImage)icon);
     }
   }
 }

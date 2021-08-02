@@ -158,6 +158,7 @@
     <Compile Include="IMinMaxXY.cs" />
     <Compile Include="InnerFlowResult.cs" />
     <Compile Include="MessageBoxIcon.cs" />
+    <Compile Include="NestExecutionHelper.cs" />
     <Compile Include="NestProject\AnglesEnum.cs" />
     <Compile Include="Background.cs" />
     <Compile Include="CacheHelper.cs" />

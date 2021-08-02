@@ -14,5 +14,13 @@
     {
       Console.WriteLine($"{ex.Message}/n{ex.StackTrace}");
     }
+
+    public void DisplayMessageBox(string text, string caption, MessageBoxIcon icon)
+    {
+      Console.WriteLine($"--------------------------------------------------------------/n" +
+                        $"{caption}/n" +
+                        $"{text}/n" +
+                        $"--------------------------------------------------------------");
+    }
   }
 }

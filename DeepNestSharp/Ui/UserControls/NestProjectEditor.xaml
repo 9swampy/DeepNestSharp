@@ -12,10 +12,10 @@
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
-    <StackPanel Orientation="Horizontal" >
+    <StackPanel Grid.Row="0" Orientation="Horizontal" >
       <Button Content="Execute" Command="{Binding ExecuteNestCommand}" />
     </StackPanel>
-    <ListView ItemsSource="{Binding Path=ProjectInfo.DetailLoadInfos}" SelectedItem="{Binding SelectedDetailLoadInfo}" SelectedIndex="{Binding SelectedDetailLoadInfoIndex, Mode=TwoWay}">
+    <ListView Grid.Row="1" ItemsSource="{Binding Path=ProjectInfo.DetailLoadInfos}" SelectedItem="{Binding SelectedDetailLoadInfo}" SelectedIndex="{Binding SelectedDetailLoadInfoIndex, Mode=TwoWay}">
       <ListView.Resources>
         <DataTemplate x:Key="EditableDouble">
           <DockPanel >

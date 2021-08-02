@@ -8,11 +8,13 @@
   {
     private readonly Form1 form;
     private readonly Action initialiseUiForStartNest;
+    private readonly IMessageService messageService;
 
-    public ProgressDisplayer(Form1 form, Action initialiseUiForStartNest)
+    public ProgressDisplayer(Form1 form, Action initialiseUiForStartNest, IMessageService messageService)
     {
       this.form = form;
       this.initialiseUiForStartNest = initialiseUiForStartNest;
+      this.messageService = messageService;
     }
 
     public void DisplayProgress(int placedParts, int currentPopulation)
@@ -34,7 +36,7 @@
 
     public void DisplayMessageBox(string text, string caption, DeepNestLib.MessageBoxIcon icon)
     {
-      MessageBox.Show(text, caption, MessageBoxButtons.OK, (System.Windows.Forms.MessageBoxIcon)icon);
+      messageService.DisplayMessageBox(text, caption, icon);
     }
 
     public void UpdateNestsList()

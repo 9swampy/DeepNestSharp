@@ -53,6 +53,7 @@
     <Compile Include="..\DeepNestLib\MinkowskiSum.cs" Link="MinkowskiSum.cs" />
     <Compile Include="..\DeepNestLib\MinkowskiSumCleaning.cs" Link="MinkowskiSumCleaning.cs" />
     <Compile Include="..\DeepNestLib\MinkowskiSumPick.cs" Link="MinkowskiSumPick.cs" />
+    <Compile Include="..\DeepNestLib\NestExecutionHelper.cs" Link="NestExecutionHelper.cs" />
     <Compile Include="..\DeepNestLib\NestingContext.cs" Link="NestingContext.cs" />
     <Compile Include="..\DeepNestLib\NestItem.cs" Link="NestItem.cs" />
     <Compile Include="..\DeepNestLib\NestProject\AnglesEnum.cs" Link="NestProject\AnglesEnum.cs" />
