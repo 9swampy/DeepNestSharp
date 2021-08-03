@@ -583,7 +583,7 @@
             try
             {
               _ = this.Invoke((MethodInvoker)(() => { this.progressBar1.Visible = true; }));
-              this.Context.StartNest();
+              this.Context.StartNest(MinkowskiSum.Default);
               this.ProgressDisplayerInstance.UpdateNestsList();
 
               while (!this.stop)

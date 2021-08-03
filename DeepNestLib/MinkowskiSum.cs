@@ -8,40 +8,40 @@
   using ClipperLib;
   using Minkowski;
 
-  internal class MinkowskiSum : IMinkowskiSumService
+  public class MinkowskiSum : IMinkowskiSumService
   {
+    private static volatile object minkowskiSyncLock = new object();
+    private MinkowskiDictionary minkowskiCache = new MinkowskiDictionary();
+
+    private readonly NestState State;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="MinkowskiSum"/> class.
     /// Private because sharing/reusing the cache is dangerous. 
     /// Replacing static global dependencies with factories to facilitate Unit Tests.
     /// </summary>
-    private MinkowskiSum()
+    private MinkowskiSum(NestState state)
     {
+      this.State = state;
     }
 
     /// <summary>
-    /// Gets default instance to use if you're happy to be reusing the same cache.
+    /// Gets default instance to use if you're happy to be reusing the same cache, and using NestState.Default.
     /// </summary>
-    public static IMinkowskiSumService Default { get; } = new MinkowskiSum();
+    public static IMinkowskiSumService Default { get; } = new MinkowskiSum(NestState.Default);
 
     /// <summary>
     /// Create a new instance with a self contained cache.
     /// </summary>
     /// <returns></returns>
-    public static IMinkowskiSumService CreateInstance() => new MinkowskiSum();
+    internal static IMinkowskiSumService CreateInstance() => new MinkowskiSum(NestState.Default);
 
-    private static volatile object minkowskiSyncLock = new object();
-    private MinkowskiDictionary minkowskiCache = new MinkowskiDictionary();
-
-    private int callCounter = 0;
-
-    int IMinkowskiSumService.CallCounter
-    {
-      get
-      {
-        return callCounter;
-      }
-    }
+    /// <summary>
+    /// Create a new instance with a self contained cache.
+    /// </summary>
+    /// <param name="nestState">Shared NestState (instead of NestState.Default).</param>
+    /// <returns></returns>
+    public static IMinkowskiSumService CreateInstance(NestState nestState) => new MinkowskiSum(nestState);
 
     INfp IMinkowskiSumService.DllImportExecute(INfp a, INfp b, MinkowskiSumCleaning minkowskiSumCleaning = MinkowskiSumCleaning.None)
     {
@@ -94,7 +94,7 @@
 #endif
           MinkowskiWrapper.calculateNFP();
 
-          Interlocked.Increment(ref callCounter);
+          State.IncrementCallCounter();
 
           int[] sizes;
           int[] sizes1;

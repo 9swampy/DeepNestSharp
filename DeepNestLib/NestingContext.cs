@@ -12,15 +12,14 @@
   {
     private readonly IMessageService messageService;
     private readonly IProgressDisplayer progressDisplayer;
-    private int iterations = 0;
     private volatile bool isStopped;
     private volatile SvgNest nest;
 
     public NestingContext(IMessageService messageService, IProgressDisplayer progressDisplayer)
-      : this(messageService, progressDisplayer, SvgNestState.Default)
+      : this(messageService, progressDisplayer, NestState.Default)
     { }
 
-    public NestingContext(IMessageService messageService, IProgressDisplayer progressDisplayer, SvgNestState state)
+    public NestingContext(IMessageService messageService, IProgressDisplayer progressDisplayer, NestState state)
     {
       this.messageService = messageService;
       this.progressDisplayer = progressDisplayer;
@@ -33,8 +32,6 @@
 
     public List<INfp> Sheets { get; private set; } = new List<INfp>();
 
-    public int PlacedPartsCount => Current?.TotalPlacedCount ?? 0;
-
     public INestResult Current { get; private set; } = null;
 
     public SvgNest Nest
@@ -43,15 +40,7 @@
       private set => nest = value;
     }
 
-    public int Iterations
-    {
-      get
-      {
-        return iterations;
-      }
-    }
-
-    public SvgNestState State { get; }
+    public NestState State { get; }
 
     public void StartNest(IMinkowskiSumService minkowskiSumService)
     {
@@ -195,7 +184,7 @@
             }
           }
 
-          Interlocked.Increment(ref iterations);
+          State.IncrementIterations();
         }
       }
       catch (Exception ex)
@@ -429,7 +418,6 @@
       this.nest?.TopNestResults.Clear();
       this.nest?.TopNestResults.Clear();
       Current = null;
-      Interlocked.Exchange(ref iterations, 0);
       this.IsErrored = false;
       this.Current = null;
     }

@@ -1,31 +1,28 @@
 ﻿namespace DeepNestLib
 {
-  using System;
-  using System.Collections.Generic;
 #if NCRUNCH
   using System.Diagnostics;
 #endif
-  using System.Linq;
   using System.Threading;
-  using ClipperLib;
-  using DeepNestLib.GeneticAlgorithm;
-  using DeepNestLib.Placement;
-  using GeneticSharp.Domain.Populations;
 
-  public class SvgNestState
+  public class NestState : INestState
   {
-    private static int generations = 0;
-    private static int population = 0;
-    private static int threads = 0;
-    private static int nestCount = 0;
-    private static long totalNestTime = 0;
-    private static long lastPlacementTime = 0;
+    private int callCounter;
+    private int generations;
+    private int iterations;
+    private int population;
+    private int threads;
+    private int nestCount;
+    private long totalNestTime;
+    private long lastPlacementTime;
 
-    public static SvgNestState Default { get; } = new SvgNestState();
+    public static NestState Default { get; } = new NestState();
 
     public long AverageNestTime => nestCount == 0 ? 0 : totalNestTime / nestCount;
 
     public long LastPlacementTime => lastPlacementTime;
+
+    public int Iterations => iterations;
 
     public int NestCount => nestCount;
 
@@ -35,6 +32,8 @@
 
     public int Generations => generations;
 
+    public int CallCounter => callCounter;
+
     internal void Reset()
     {
       Interlocked.Exchange(ref nestCount, 0);
@@ -42,6 +41,8 @@
       Interlocked.Exchange(ref generations, 0);
       Interlocked.Exchange(ref population, 0);
       Interlocked.Exchange(ref lastPlacementTime, 0);
+      Interlocked.Exchange(ref iterations, 0);
+      Interlocked.Exchange(ref callCounter, 0);
     }
 
     internal void IncrementPopulation()
@@ -82,6 +83,16 @@
     internal void DecrementThreads()
     {
       Interlocked.Decrement(ref threads);
+    }
+
+    internal void IncrementIterations()
+    {
+      Interlocked.Increment(ref iterations);
+    }
+
+    internal void IncrementCallCounter()
+    {
+      Interlocked.Increment(ref callCounter);
     }
   }
 }

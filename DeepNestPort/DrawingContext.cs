@@ -327,7 +327,7 @@
         yy += (int)font.Size + gap;
         if (context.Nest != null && context.Nest.TopNestResults != null && context.Nest.TopNestResults.Top != null)
         {
-          this.gr.DrawString($"Material Utilization: {Math.Round(context.Nest.TopNestResults.Top.MaterialUtilization * 100.0f, 2)}%   Iterations: {context.Iterations}    Parts placed: {context.PlacedPartsCount}/{polygons.Count} ({100 * context.Nest.TopNestResults.Top.PartsPlacedPercent:N2}%)", font, Brushes.DarkBlue, 0, yy);
+          this.gr.DrawString($"Material Utilization: {Math.Round((context.Current?.MaterialUtilization ?? 0) * 100.0f, 2)}%   Iterations: {context.State.Iterations}    Parts placed: {context.Current?.TotalPlacedCount ?? 0}/{polygons.Count} ({100 * context.Current?.PartsPlacedPercent ?? 0:N2}%)", font, Brushes.DarkBlue, 0, yy);
           yy += (int)font.Size + gap;
           if (SvgNest.Config.UseParallel)
           {
@@ -351,7 +351,7 @@
       {
         if (context.Nest != null && context.Nest.TopNestResults != null && context.Nest.TopNestResults.Top != null)
         {
-          this.gr.DrawString($"Iterations: {context.Iterations}    Parts placed: {context.PlacedPartsCount}/{polygons.Count} ({100 * context.Nest.TopNestResults.Top.PartsPlacedPercent:N2}%)", font, Brushes.DarkBlue, 0, yy);
+          this.gr.DrawString($"Iterations: {context.State.Iterations}    Parts placed: {context.Current?.TotalPlacedCount ?? 0}/{polygons.Count} ({100 * context.Nest.TopNestResults.Top.PartsPlacedPercent:N2}%)", font, Brushes.DarkBlue, 0, yy);
           yy += (int)font.Size + gap;
         }
 

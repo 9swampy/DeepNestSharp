@@ -158,6 +158,7 @@
     <Compile Include="IMinMaxXY.cs" />
     <Compile Include="INestingContext.cs" />
     <Compile Include="INestingContextState.cs" />
+    <Compile Include="INestState.cs" />
     <Compile Include="InnerFlowResult.cs" />
     <Compile Include="MessageBoxIcon.cs" />
     <Compile Include="NestExecutionHelper.cs" />
@@ -213,6 +214,7 @@
     <Compile Include="NestingContext.cs" />
     <Compile Include="NestItem.cs" />
     <Compile Include="NestProject\SheetLoadInfoJsonConverter.cs" />
+    <Compile Include="NestState.cs" />
     <Compile Include="NFP.cs" />
     <Compile Include="NfpExtensions.cs" />
     <Compile Include="NfpJsonConverter.cs" />
@@ -251,7 +253,6 @@
     <Compile Include="Simplify.cs" />
     <Compile Include="SvgNest.cs" />
     <Compile Include="SvgNestConfig.cs" />
-    <Compile Include="SvgNestState.cs" />
     <Compile Include="SvgParser.cs" />
     <Compile Include="PolygonSimplificationEqualityComparer.cs" />
     <Compile Include="SvgPoint.cs" />

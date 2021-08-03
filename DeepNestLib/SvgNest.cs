@@ -21,26 +21,26 @@
     private IProgressDisplayer progressDisplayer;
     private volatile bool isStopped;
 
-    public int CallCounter
-    {
-      get
-      {
-        return minkowskiSumService.CallCounter;
-      }
-    }
-
     public SvgNest(
       IMessageService messageService,
       IProgressDisplayer progressDisplayer,
       Action setIsErrored,
       IMinkowskiSumService minkowskiSumService,
-      SvgNestState svgNestState)
+      NestState svgNestState)
     {
       this.State = svgNestState;
       this.messageService = messageService;
       this.progressDisplayer = progressDisplayer;
       this.setIsErrored = setIsErrored;
       this.minkowskiSumService = minkowskiSumService;
+    }
+
+    public int CallCounter
+    {
+      get
+      {
+        return State.CallCounter;
+      }
     }
 
     public TopNestResultsCollection TopNestResults { get; private set; } = new TopNestResultsCollection(Config);
@@ -959,6 +959,6 @@
       State.DecrementThreads();
     }
 
-    private SvgNestState State { get; } = SvgNestState.Default;
+    private NestState State { get; } = NestState.Default;
   }
 }

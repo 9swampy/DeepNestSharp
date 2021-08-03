@@ -38,6 +38,7 @@
     <Compile Include="..\DeepNestLib\IMinMaxXY.cs" Link="IMinMaxXY.cs" />
     <Compile Include="..\DeepNestLib\INestingContext.cs" Link="INestingContext.cs" />
     <Compile Include="..\DeepNestLib\INestingContextState.cs" Link="INestingContextState.cs" />
+    <Compile Include="..\DeepNestLib\INestState.cs" Link="INestState.cs" />
     <Compile Include="..\DeepNestLib\INfp.cs" Link="INfp.cs" />
     <Compile Include="..\DeepNestLib\InnerFlowResult.cs" Link="InnerFlowResult.cs" />
     <Compile Include="..\DeepNestLib\InrangeItem.cs" Link="InrangeItem.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="..\DeepNestLib\NestProject\ProjectInfo.cs" Link="NestProject\ProjectInfo.cs" />
     <Compile Include="..\DeepNestLib\NestProject\SheetLoadInfo.cs" Link="NestProject\SheetLoadInfo.cs" />
     <Compile Include="..\DeepNestLib\NestProject\SheetLoadInfoJsonConverter.cs" Link="NestProject\SheetLoadInfoJsonConverter.cs" />
+    <Compile Include="..\DeepNestLib\NestState.cs" Link="NestState.cs" />
     <Compile Include="..\DeepNestLib\NFP.cs" Link="NFP.cs" />
     <Compile Include="..\DeepNestLib\NfpExtensions.cs" Link="NfpExtensions.cs" />
     <Compile Include="..\DeepNestLib\NfpJsonConverter.cs" Link="NfpJsonConverter.cs" />

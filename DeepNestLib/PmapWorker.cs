@@ -65,7 +65,7 @@
       {
         if (!NfpPairCache.TryGetValue(a.Points, b.Points, pair.ARotation, pair.BRotation, pair.Asource, pair.Bsource, MinkowskiSumPick.Largest, out clipperNfp))
         {
-          // DisplayProgress(); //This jumps around quite a bit sometimes I think. Reinstate if jumping still occurs; it was put in because initial load can be slow.
+          DisplayProgress();
           clipperNfp = minkoskiSumService.ClipperExecute(a.Points, b.Points, MinkowskiSumPick.Largest);
           NfpPairCache.Add(a.Points, b.Points, pair.ARotation, pair.BRotation, pair.Asource, pair.Bsource, MinkowskiSumPick.Largest, clipperNfp);
         }
