@@ -10,7 +10,7 @@
 
     void DisplayProgress(int placedParts, int currentPopulation);
 
-    void DisplayToolStripMessage(string message);
+    void DisplayTransientMessage(string message);
 
     void DisplayMessageBox(string text, string caption, MessageBoxIcon icon);
 

@@ -21,7 +21,7 @@
       Are.Set();
     }
 
-    public void DisplayToolStripMessage(string message)
+    public void DisplayTransientMessage(string message)
     {
       Are.Set();
     }

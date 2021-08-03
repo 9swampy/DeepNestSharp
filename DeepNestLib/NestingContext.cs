@@ -8,19 +8,23 @@
   using System.Xml.Linq;
   using DeepNestLib.Placement;
 
-  public class NestingContext
+  public class NestingContext : INestingContext
   {
     private readonly IMessageService messageService;
     private readonly IProgressDisplayer progressDisplayer;
-    private readonly Random random = new Random();
     private int iterations = 0;
     private volatile bool isStopped;
     private volatile SvgNest nest;
 
     public NestingContext(IMessageService messageService, IProgressDisplayer progressDisplayer)
+      : this(messageService, progressDisplayer, SvgNestState.Default)
+    { }
+
+    public NestingContext(IMessageService messageService, IProgressDisplayer progressDisplayer, SvgNestState state)
     {
       this.messageService = messageService;
       this.progressDisplayer = progressDisplayer;
+      this.State = state;
     }
 
     public bool IsErrored { get; private set; }
@@ -47,6 +51,8 @@
       }
     }
 
+    public SvgNestState State { get; }
+
     public void StartNest(IMinkowskiSumService minkowskiSumService)
     {
       this.ReorderSheets();
@@ -56,8 +62,9 @@
         this.messageService,
         this.progressDisplayer,
         () => this.IsErrored = true,
-        minkowskiSumService);
-      this.progressDisplayer.DisplayToolStripMessage($"Pre-processing. . .");
+        minkowskiSumService,
+        State);
+      this.progressDisplayer.DisplayTransientMessage($"Pre-processing. . .");
       this.isStopped = false;
     }
 
@@ -418,7 +425,7 @@
     /// </summary>
     private void InternalReset()
     {
-      SvgNest.Reset();
+      State.Reset();
       this.nest?.TopNestResults.Clear();
       this.nest?.TopNestResults.Clear();
       Current = null;

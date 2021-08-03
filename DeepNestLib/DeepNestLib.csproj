@@ -156,6 +156,8 @@
   <ItemGroup>
     <Compile Include="GeneticAlgorithm\ISheetPlacementFitness.cs" />
     <Compile Include="IMinMaxXY.cs" />
+    <Compile Include="INestingContext.cs" />
+    <Compile Include="INestingContextState.cs" />
     <Compile Include="InnerFlowResult.cs" />
     <Compile Include="MessageBoxIcon.cs" />
     <Compile Include="NestExecutionHelper.cs" />
@@ -249,6 +251,7 @@
     <Compile Include="Simplify.cs" />
     <Compile Include="SvgNest.cs" />
     <Compile Include="SvgNestConfig.cs" />
+    <Compile Include="SvgNestState.cs" />
     <Compile Include="SvgParser.cs" />
     <Compile Include="PolygonSimplificationEqualityComparer.cs" />
     <Compile Include="SvgPoint.cs" />

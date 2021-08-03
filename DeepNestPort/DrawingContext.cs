@@ -331,11 +331,11 @@
           yy += (int)font.Size + gap;
           if (SvgNest.Config.UseParallel)
           {
-            this.gr.DrawString($"Generations: {SvgNest.Generations}    Population: {SvgNest.Population}    Threads: {SvgNest.Threads}", font, Brushes.DarkBlue, 0, yy);
+            this.gr.DrawString($"Generations: {context.State.Generations}    Population: {context.State.Population}    Threads: {context.State.Threads}", font, Brushes.DarkBlue, 0, yy);
           }
           else
           {
-            this.gr.DrawString($"Generations: {SvgNest.Generations}    Population: {SvgNest.Population}", font, Brushes.DarkBlue, 0, yy);
+            this.gr.DrawString($"Generations: {context.State.Generations}    Population: {context.State.Population}", font, Brushes.DarkBlue, 0, yy);
           }
 
           yy += (int)font.Size + gap;
@@ -343,7 +343,7 @@
           yy += (int)font.Size + gap;
           this.gr.DrawString($"Nests: {context.Nest.TopNestResults.Count} Fitness: {context.Nest.TopNestResults.Top.Fitness}   Area:{context.Nest.TopNestResults.Top.TotalSheetsArea}  ", font, Brushes.DarkBlue, 0, yy);
           yy += (int)font.Size + gap;
-          this.gr.DrawString($"Minkowski Calls: {context.Nest.CallCounter};  Last placing time: {context.Nest.LastPlacementTime}ms;  Average nest time: {context.Nest.AverageNestTime}ms", font, Brushes.DarkBlue, 0, yy);
+          this.gr.DrawString($"Minkowski Calls: {context.Nest.CallCounter};  Last placing time: {context.State.LastPlacementTime}ms;  Average nest time: {context.State.AverageNestTime}ms", font, Brushes.DarkBlue, 0, yy);
           yy += (int)font.Size + gap;
         }
       }
@@ -355,7 +355,7 @@
           yy += (int)font.Size + gap;
         }
 
-        this.gr.DrawString($"Generations: {SvgNest.Generations}    Population: {SvgNest.Population}", font, Brushes.DarkBlue, 0, yy);
+        this.gr.DrawString($"Generations: {context.State.Generations}    Population: {context.State.Population}", font, Brushes.DarkBlue, 0, yy);
         yy += (int)font.Size + gap;
         this.gr.DrawString($"Sheets: {sheets.Count}   Parts:{polygons.Count}    Parts types: {polygons.GroupBy(z => z.Source).Count()}", font, Brushes.DarkBlue, 0, yy);
         yy += (int)font.Size + gap;

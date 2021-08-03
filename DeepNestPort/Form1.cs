@@ -596,11 +596,11 @@
                 sw.Stop();
                 if (SvgNest.Config.UseParallel)
                 {
-                  this.ProgressDisplayerInstance.DisplayToolStripMessage($"Iteration time: {sw.ElapsedMilliseconds}ms ({this.context.Nest.AverageNestTime}ms average)");
+                  this.ProgressDisplayerInstance.DisplayTransientMessage($"Iteration time: {sw.ElapsedMilliseconds}ms ({this.context.State.AverageNestTime}ms average)");
                 }
                 else
                 {
-                  this.ProgressDisplayerInstance.DisplayToolStripMessage($"Nesting time: {sw.ElapsedMilliseconds}ms");
+                  this.ProgressDisplayerInstance.DisplayTransientMessage($"Nesting time: {sw.ElapsedMilliseconds}ms");
                 }
 
                 if (this.Context.IsErrored)
@@ -612,7 +612,7 @@
             catch (Exception ex)
             {
               this.th = null;
-              this.ProgressDisplayerInstance.DisplayToolStripMessage(ex.Message);
+              this.ProgressDisplayerInstance.DisplayTransientMessage(ex.Message);
             }
 
             ContextualiseRunStopButtons(false);
@@ -1259,7 +1259,7 @@
       for (int i = 0; i < ofd.FileNames.Length; i++)
       {
         lastOpenFilterIndex = ofd.FilterIndex;
-        this.ProgressDisplayerInstance.DisplayToolStripMessage($"Load {ofd.FileNames[i]}");
+        this.ProgressDisplayerInstance.DisplayTransientMessage($"Load {ofd.FileNames[i]}");
         try
         {
           //if (ofd.FileNames[i].ToLower().EndsWith("dxf"))
@@ -1331,7 +1331,7 @@
       }
 
       UpdateInfos();
-      this.ProgressDisplayerInstance.DisplayToolStripMessage(string.Empty);
+      this.ProgressDisplayerInstance.DisplayTransientMessage(string.Empty);
       Cursor.Current = Cursors.Default;
     }
 
@@ -1350,7 +1350,7 @@
     private void runNestingButton_Click(object sender, EventArgs e)
     {
       Cursor.Current = Cursors.WaitCursor;
-      nestExecutionHelper.RebuildNest(Context, projectInfo.SheetLoadInfos, projectInfo.DetailLoadInfos, this.ProgressDisplayerInstance);
+      nestExecutionHelper.InitialiseNest(Context, projectInfo.SheetLoadInfos, projectInfo.DetailLoadInfos, this.ProgressDisplayerInstance);
       RunNestIfPossible();
     }
 

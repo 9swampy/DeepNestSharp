@@ -2,31 +2,21 @@
 {
   using System;
   using System.Collections.Generic;
-using System.Diagnostics;
+#if NCRUNCH
+  using System.Diagnostics;
+#endif
   using System.Linq;
-  using System.Text;
   using System.Threading;
-  using System.Threading.Tasks;
   using ClipperLib;
   using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
 
   public partial class SvgNest
   {
-    private static int generations = 0;
-    private static int population = 0;
-    private static int threads = 0;
-    private static int nestCount = 0;
-    private static long totalNestTime = 0;
-    private static long lastPlacementTime = 0;
-
     private readonly IMessageService messageService;
     private readonly Action setIsErrored;
     private readonly IMinkowskiSumService minkowskiSumService;
     private GeneticAlgorithm.Procreant ga;
-    private PolygonTreeItem[] tree;
-    private bool useHoles;
-    private bool searchEdges;
 
     private IProgressDisplayer progressDisplayer;
     private volatile bool isStopped;
@@ -39,8 +29,14 @@ using System.Diagnostics;
       }
     }
 
-    public SvgNest(IMessageService messageService, IProgressDisplayer progressDisplayer, Action setIsErrored, IMinkowskiSumService minkowskiSumService)
+    public SvgNest(
+      IMessageService messageService,
+      IProgressDisplayer progressDisplayer,
+      Action setIsErrored,
+      IMinkowskiSumService minkowskiSumService,
+      SvgNestState svgNestState)
     {
+      this.State = svgNestState;
       this.messageService = messageService;
       this.progressDisplayer = progressDisplayer;
       this.setIsErrored = setIsErrored;
@@ -48,18 +44,6 @@ using System.Diagnostics;
     }
 
     public TopNestResultsCollection TopNestResults { get; private set; } = new TopNestResultsCollection(Config);
-
-    public long AverageNestTime => nestCount == 0 ? 0 : totalNestTime / nestCount;
-
-    public long LastPlacementTime => lastPlacementTime;
-
-    public static int NestCount => nestCount;
-
-    public static int Population => population;
-
-    public static int Threads => threads;
-
-    public static int Generations => generations;
 
     private static SvgPoint GetTarget(SvgPoint o, INfp simple, double tol)
     {
@@ -451,15 +435,6 @@ using System.Diagnostics;
       return offset;
     }
 
-    internal static void Reset()
-    {
-      Interlocked.Exchange(ref nestCount, 0);
-      Interlocked.Exchange(ref totalNestTime, 0);
-      Interlocked.Exchange(ref generations, 0);
-      Interlocked.Exchange(ref population, 0);
-      Interlocked.Exchange(ref lastPlacementTime, 0);
-    }
-
     internal void Stop()
     {
       this.isStopped = true;
@@ -820,10 +795,10 @@ using System.Diagnostics;
         return;
       }
 
-      Interlocked.Increment(ref population);
-      lastPlacementTime = payload.PlacePartTime;
-      Interlocked.Increment(ref nestCount);
-      totalNestTime += payload.PlacePartTime;
+      State.IncrementPopulation();
+      State.SetLastPlacementTime(payload.PlacePartTime);
+      State.IncrementNestCount();
+      State.IncrementTotalNestTime(payload.PlacePartTime);
 
 #if NCRUNCH
       Trace.WriteLine("payload.Index I don't think is being set right; double check before retrying threaded execution.");
@@ -837,12 +812,12 @@ using System.Diagnostics;
         currentPlacements = this.TopNestResults.Top.UsedSheets[0].PartPlacements.Count;
         if (this.TopNestResults.IndexOf(payload) < this.TopNestResults.EliteSurvivors)
         {
-          this.progressDisplayer.DisplayToolStripMessage($"New top {TopNestResults.MaxCapacity} nest found: nesting time = {payload.PlacePartTime}ms");
+          this.progressDisplayer.DisplayTransientMessage($"New top {TopNestResults.MaxCapacity} nest found: nesting time = {payload.PlacePartTime}ms");
           this.progressDisplayer?.UpdateNestsList();
         }
       }
 
-      this.progressDisplayer?.DisplayProgress(currentPlacements, population);
+      this.progressDisplayer?.DisplayProgress(currentPlacements, State.Population);
     }
 
     /// <summary>
@@ -859,7 +834,7 @@ using System.Diagnostics;
         {
           if (this.ga == null)
           {
-            Reset();
+            State.Reset();
             this.ga = new Procreant(parts, config);
           }
 
@@ -869,8 +844,8 @@ using System.Diagnostics;
             // all individuals have been evaluated, start next generation
 
             this.ga.Generate();
-            Interlocked.Increment(ref generations);
-            Interlocked.Exchange(ref population, 0);
+            State.IncrementGenerations();
+            State.ResetPopulation();
           }
 
           List<INfp> sheets = new List<INfp>();
@@ -928,7 +903,7 @@ using System.Diagnostics;
 
     private void ProcessPopulation(int start, int end, ISvgNestConfig config, INfp[] sheets, int[] sheetids, int[] sheetsources, List<List<INfp>> sheetchildren)
     {
-      Interlocked.Increment(ref threads);
+      State.IncrementThreads();
       for (int i = start; i < end; i++)
       {
         if (this.isStopped)
@@ -981,29 +956,9 @@ using System.Diagnostics;
         }
       }
 
-      Interlocked.Decrement(ref threads);
+      State.DecrementThreads();
     }
 
-    private int PopulationRunning
-    {
-      get
-      {
-        return this.ga.Population.Where((p) => { return p.Processing; }).Count();
-      }
-    }
-
-    public static IntPoint[] toClipperCoordinates(NFP polygon)
-    {
-      var clone = new List<IntPoint>();
-      for (var i = 0; i < polygon.Length; i++)
-      {
-        clone.Add(
-            new IntPoint(
-             polygon[i].X,
-             polygon[i].Y));
-      }
-
-      return clone.ToArray();
-    }
+    private SvgNestState State { get; } = SvgNestState.Default;
   }
 }

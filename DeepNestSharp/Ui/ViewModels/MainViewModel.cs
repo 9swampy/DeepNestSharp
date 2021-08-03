@@ -111,8 +111,7 @@
       {
         if (nestMonitorViewModel == null)
         {
-          var messageBoxService = new MessageBoxService();
-          nestMonitorViewModel = new NestMonitorViewModel(this, messageBoxService, new ProgressDisplayer(messageBoxService));
+          nestMonitorViewModel = new NestMonitorViewModel(this, new MessageBoxService());
         }
 
         return nestMonitorViewModel;

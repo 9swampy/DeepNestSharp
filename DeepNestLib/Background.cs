@@ -226,12 +226,6 @@
       SheetPlacementCollection allPlacements = new SheetPlacementCollection();
       while (unplacedParts.Length > 0 && unusedSheets.Count > 0)
       {
-        var done = parts.Length - unplacedParts.Length;
-        if (done > 5 && sw.ElapsedMilliseconds / done * parts.Length > 5000)
-        {
-          this.progressDisplayer.DisplayProgress((float)done / parts.Length);
-        }
-
         List<INfp> placed = new List<INfp>();
         var placements = new List<IPartPlacement>();
 

@@ -1,16 +1,18 @@
-﻿using DeepNestLib;
-using static System.Net.Mime.MediaTypeNames;
-using System.Drawing;
-
-namespace DeepNestSharp.Ui.ViewModels
+﻿namespace DeepNestSharp.Ui.ViewModels
 {
+  using DeepNestLib;
+  using static System.Net.Mime.MediaTypeNames;
+  using System.Drawing;
+
   internal class ProgressDisplayer : IProgressDisplayer
   {
     private readonly IMessageService messageService;
+    private readonly NestMonitorViewModel nestMonitorViewModel;
 
-    public ProgressDisplayer(IMessageService messageService)
+    public ProgressDisplayer(NestMonitorViewModel nestMonitorViewModel, IMessageService messageService)
     {
       this.messageService = messageService;
+      this.nestMonitorViewModel = nestMonitorViewModel;
     }
 
     public void DisplayMessageBox(string text, string caption, MessageBoxIcon icon)
@@ -20,17 +22,20 @@ namespace DeepNestSharp.Ui.ViewModels
 
     public void DisplayProgress(double percentageComplete)
     {
-      messageService.DisplayMessage(percentageComplete.ToString());
+      DisplayTransientMessage(percentageComplete.ToString());
     }
 
     public void DisplayProgress(int placedParts, int currentPopulation)
     {
-      messageService.DisplayMessage($"{placedParts}/{currentPopulation}");
+      DisplayTransientMessage($"{placedParts}/{currentPopulation}");
     }
 
-    public void DisplayToolStripMessage(string message)
+    public void DisplayTransientMessage(string message)
     {
-      messageService.DisplayMessage(message);
+      if (!string.IsNullOrWhiteSpace(message))
+      {
+        nestMonitorViewModel.MessageLogBuilder.AppendLine(message);
+      }
     }
 
     public void InitialiseUiForStartNest()
@@ -40,7 +45,7 @@ namespace DeepNestSharp.Ui.ViewModels
 
     public void UpdateNestsList()
     {
-      // NOP
+      nestMonitorViewModel.UpdateNestsList();
     }
   }
 }

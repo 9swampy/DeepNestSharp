@@ -1,16 +1,13 @@
 ﻿namespace DeepNestLib
 {
-  using DeepNestLib.NestProject;
-  using System;
   using System.Collections.Generic;
-using System.IO;
+  using System.IO;
   using System.Linq;
-  using System.Text;
-  using System.Threading.Tasks;
-
+  using DeepNestLib.NestProject;
+  
   public class NestExecutionHelper
   {
-    public void RebuildNest(NestingContext context, IList<ISheetLoadInfo> sheetLoadInfos, IList<IDetailLoadInfo> detailLoadInfos, IProgressDisplayer progressDisplayer)
+    public void InitialiseNest(NestingContext context, IList<ISheetLoadInfo> sheetLoadInfos, IList<IDetailLoadInfo> detailLoadInfos, IProgressDisplayer progressDisplayer)
     {
       context.Reset();
       int src = 0;
@@ -29,7 +26,7 @@ using System.IO;
       src = 0;
       foreach (var item in detailLoadInfos.Where(o => o.IsIncluded))
       {
-        progressDisplayer.DisplayToolStripMessage($"Preload {item.Path}. . .");
+        progressDisplayer.DisplayTransientMessage($"Preload {item.Path}. . .");
         var det = LoadRawDetail(new FileInfo(item.Path));
 
         AddToPolygons(context, src, det, item.Quantity, progressDisplayer, isPriority: item.IsPriority, isMultiplied: item.IsMultiplied, strictAngles: item.StrictAngle);
@@ -37,7 +34,7 @@ using System.IO;
         src++;
       }
 
-      progressDisplayer.DisplayToolStripMessage(string.Empty);
+      progressDisplayer.DisplayTransientMessage(string.Empty);
     }
 
     public void AddToPolygons(NestingContext context, int src, RawDetail det, int quantity, IProgressDisplayer progressDisplayer, bool isIncluded = true, bool isPriority = false, bool isMultiplied = false, AnglesEnum strictAngles = AnglesEnum.Vertical)
@@ -61,7 +58,7 @@ using System.IO;
       }
       else
       {
-        progressDisplayer.DisplayMessageBox($"Failed to import {det.Name}.", "Load Error", DeepNestLib.MessageBoxIcon.Stop);
+        progressDisplayer.DisplayMessageBox($"Failed to import {det.Name}.", "Load Error", MessageBoxIcon.Stop);
       }
     }
 

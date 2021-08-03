@@ -36,6 +36,8 @@
     <Compile Include="..\DeepNestLib\IMessageService.cs" Link="IMessageService.cs" />
     <Compile Include="..\DeepNestLib\IMinkowskiSumService.cs" Link="IMinkowskiSumService.cs" />
     <Compile Include="..\DeepNestLib\IMinMaxXY.cs" Link="IMinMaxXY.cs" />
+    <Compile Include="..\DeepNestLib\INestingContext.cs" Link="INestingContext.cs" />
+    <Compile Include="..\DeepNestLib\INestingContextState.cs" Link="INestingContextState.cs" />
     <Compile Include="..\DeepNestLib\INfp.cs" Link="INfp.cs" />
     <Compile Include="..\DeepNestLib\InnerFlowResult.cs" Link="InnerFlowResult.cs" />
     <Compile Include="..\DeepNestLib\InrangeItem.cs" Link="InrangeItem.cs" />

@@ -3,7 +3,7 @@
   using System;
   using System.Windows;
   using DeepNestLib;
-  
+
   internal class MessageBoxService : IMessageService
   {
     public void DisplayMessage(string message)

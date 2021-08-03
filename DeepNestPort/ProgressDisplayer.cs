@@ -29,7 +29,7 @@
       this.form.DisplayProgress(percentageComplete);
     }
 
-    public void DisplayToolStripMessage(string message)
+    public void DisplayTransientMessage(string message)
     {
       this.form.ToolStripMessage = message;
     }
