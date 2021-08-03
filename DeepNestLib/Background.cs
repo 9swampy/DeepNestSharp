@@ -185,7 +185,7 @@
         return cacheProcess[key];
       }
 
-      var ret = minkowskiSumService.DllImportExecute(a, b);
+      var ret = minkowskiSumService.DllImportExecute(a, b, MinkowskiSumCleaning.None);
       var res = new INfp[] { ret };
       if (cacheAllow)
       {

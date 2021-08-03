@@ -11,7 +11,7 @@
     public PmapWorkerPmapDeepNestFixture()
     {
       var pairs = new NfpPair[] { pair1, pair2 };
-      processed = new PmapWorker(pairs, A.Fake<IProgressDisplayer>(), false, MinkowskiSum.CreateInstance()).PmapDeepNest();
+      processed = new PmapWorker(pairs, A.Fake<IProgressDisplayer>(), false, A.Dummy<MinkowskiSum>()).PmapDeepNest();
     }
 
     [Fact]

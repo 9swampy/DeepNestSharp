@@ -10,7 +10,7 @@
 
     public PmapWorkerProcessSecondFixture()
     {
-      processed = new PmapWorker(null, A.Fake<IProgressDisplayer>(), false, MinkowskiSum.CreateInstance()).Process(pair2);
+      processed = new PmapWorker(null, A.Fake<IProgressDisplayer>(), false, A.Dummy<MinkowskiSum>()).Process(pair2);
     }
 
     [Fact]

@@ -48,7 +48,7 @@
 
           this.nestingContext.StartNest();
           int i = 0;
-          while (i < 100 && this.nestingContext.Nest.TopNestResults.Count < terminateNestResultCount)
+          while (i < 100 && this.nestingContext.State.TopNestResults.Count < terminateNestResultCount)
           {
             i++;
             this.nestingContext.NestIterate(this.config);
@@ -73,25 +73,25 @@
     [Fact]
     public void ShouldHaveReturnedNestResults()
     {
-      this.nestingContext.Nest.TopNestResults.Count.Should().BeGreaterOrEqualTo(terminateNestResultCount);
+      this.nestingContext.State.TopNestResults.Count.Should().BeGreaterOrEqualTo(terminateNestResultCount);
     }
 
     [Fact]
     public void ShouldHaveNoUnplacedParts()
     {
-      this.nestingContext.Nest.TopNestResults.Top.UnplacedParts.Should().BeEmpty();
+      this.nestingContext.State.TopNestResults.Top.UnplacedParts.Should().BeEmpty();
     }
 
     [Fact]
     public void FitnessShouldBeExpected()
     {
-      this.nestingContext.Nest.TopNestResults.Top.Fitness.Should().BeLessThan(600000);
+      this.nestingContext.State.TopNestResults.Top.Fitness.Should().BeLessThan(600000);
     }
 
     [Fact]
     public void PlacementTypeShouldBeExpected()
     {
-      this.nestingContext.Nest.TopNestResults.Top.PlacementType.Should().Be(config.PlacementType);
+      this.nestingContext.State.TopNestResults.Top.PlacementType.Should().Be(config.PlacementType);
     }
   }
 }

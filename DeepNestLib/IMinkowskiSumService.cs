@@ -6,6 +6,6 @@
 
     NFP ClipperExecute(SvgPoint[] a, SvgPoint[] b, MinkowskiSumPick minkowskiSumPick);
 
-    INfp DllImportExecute(INfp a, INfp b, MinkowskiSumCleaning minkowskiSumCleaning = MinkowskiSumCleaning.None);
+    INfp DllImportExecute(INfp a, INfp b, MinkowskiSumCleaning minkowskiSumCleaning);
   }
 }

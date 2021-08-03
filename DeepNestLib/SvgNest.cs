@@ -14,7 +14,6 @@
   public partial class SvgNest
   {
     private readonly IMessageService messageService;
-    private readonly Action setIsErrored;
     private readonly IMinkowskiSumService minkowskiSumService;
     private GeneticAlgorithm.Procreant ga;
 
@@ -24,26 +23,14 @@
     public SvgNest(
       IMessageService messageService,
       IProgressDisplayer progressDisplayer,
-      Action setIsErrored,
       IMinkowskiSumService minkowskiSumService,
       NestState svgNestState)
     {
       this.State = svgNestState;
       this.messageService = messageService;
       this.progressDisplayer = progressDisplayer;
-      this.setIsErrored = setIsErrored;
       this.minkowskiSumService = minkowskiSumService;
     }
-
-    public int CallCounter
-    {
-      get
-      {
-        return State.CallCounter;
-      }
-    }
-
-    public TopNestResultsCollection TopNestResults { get; private set; } = new TopNestResultsCollection(Config);
 
     private static SvgPoint GetTarget(SvgPoint o, INfp simple, double tol)
     {
@@ -807,12 +794,12 @@
       this.ga.Population[payload.index].Fitness = payload.Fitness;
 
       int currentPlacements = 0;
-      if (this.TopNestResults.Add(payload))
+      if (this.State.TopNestResults.Add(payload))
       {
-        currentPlacements = this.TopNestResults.Top.UsedSheets[0].PartPlacements.Count;
-        if (this.TopNestResults.IndexOf(payload) < this.TopNestResults.EliteSurvivors)
+        currentPlacements = this.State.TopNestResults.Top.UsedSheets[0].PartPlacements.Count;
+        if (this.State.TopNestResults.IndexOf(payload) < this.State.TopNestResults.EliteSurvivors)
         {
-          this.progressDisplayer.DisplayTransientMessage($"New top {TopNestResults.MaxCapacity} nest found: nesting time = {payload.PlacePartTime}ms");
+          this.progressDisplayer.DisplayTransientMessage($"New top {this.State.TopNestResults.MaxCapacity} nest found: nesting time = {payload.PlacePartTime}ms");
           this.progressDisplayer?.UpdateNestsList();
         }
       }
@@ -897,7 +884,7 @@
       catch (Exception ex)
       {
         this.messageService.DisplayMessage(ex);
-        this.setIsErrored();
+        State.SetIsErrored();
       }
     }
 

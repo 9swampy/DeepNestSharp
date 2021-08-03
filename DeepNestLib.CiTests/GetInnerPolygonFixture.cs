@@ -15,7 +15,7 @@
       var generator = new DxfGenerator();
       var sheet = generator.GenerateSquare("sheet", 10, RectangleType.FileLoad).ToNfp();
       var part = generator.GenerateSquare("part", 10, RectangleType.FileLoad).ToNfp();
-      var nfp = new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), MinkowskiSum.CreateInstance()).GetInnerNfp(sheet, part, MinkowskiCache.NoCache, 100000);
+      var nfp = new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), A.Dummy<MinkowskiSum>()).GetInnerNfp(sheet, part, MinkowskiCache.NoCache, 100000);
       nfp.Should().BeNull("couldn't fit part inside sheet.");
     }
 
@@ -25,7 +25,7 @@
       var generator = new DxfGenerator();
       var sheet = generator.GenerateSquare("sheet", 20, RectangleType.FileLoad).ToNfp();
       var part = generator.GenerateSquare("part", 10, RectangleType.FileLoad).ToNfp();
-      var nfp = new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), MinkowskiSum.CreateInstance()).GetInnerNfp(sheet, part, MinkowskiCache.NoCache, 100000);
+      var nfp = new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), A.Dummy<MinkowskiSum>()).GetInnerNfp(sheet, part, MinkowskiCache.NoCache, 100000);
       nfp.Should().NotBeNull("could fit part inside sheet.");
     }
 
@@ -35,7 +35,7 @@
       var generator = new DxfGenerator();
       var sheet = generator.GenerateSquare("sheet", 20, RectangleType.FileLoad).ToNfp();
       var part = generator.GenerateSquare("part", 10, RectangleType.FileLoad).ToNfp();
-      var nfp = new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), MinkowskiSum.CreateInstance()).GetInnerNfp(sheet, part, MinkowskiCache.NoCache, 100000);
+      var nfp = new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), A.Dummy<MinkowskiSum>()).GetInnerNfp(sheet, part, MinkowskiCache.NoCache, 100000);
       nfp.Length.Should().Be(1);
     }
 
@@ -47,7 +47,7 @@
       var larger = smaller + (new Random().NextDouble() * 200);
       var sheet = generator.GenerateSquare("sheet", larger, RectangleType.FileLoad).ToNfp();
       var part = generator.GenerateSquare("part", smaller, RectangleType.FileLoad).ToNfp();
-      var nfp = new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), MinkowskiSum.CreateInstance()).GetInnerNfp(sheet, part, MinkowskiCache.NoCache, 100000);
+      var nfp = new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), A.Dummy<MinkowskiSum>()).GetInnerNfp(sheet, part, MinkowskiCache.NoCache, 100000);
       nfp[0].Area.Should().BeApproximately((float)Math.Pow(larger - smaller, 2), 0.01f);
     }
   }

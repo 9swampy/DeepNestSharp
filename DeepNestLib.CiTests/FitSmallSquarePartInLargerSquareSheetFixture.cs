@@ -19,13 +19,13 @@
       DxfGenerator.GenerateSquare("Sheet", 22D, RectangleType.FileLoad).TryConvertToNfp(0, out sheet).Should().BeTrue();
       INfp part;
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryConvertToNfp(0, out part).Should().BeTrue();
-      this.nestResult = new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), MinkowskiSum.CreateInstance()).PlaceParts(new INfp[] { sheet }, new INfp[] { part }, new SvgNestConfig());
+      this.nestResult = new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), A.Dummy<MinkowskiSum>()).PlaceParts(new INfp[] { sheet }, new INfp[] { part }, new SvgNestConfig());
     }
 
     [Fact]
     public void GivenNullSheetsPassedInThenNullReturned()
     {
-      new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), MinkowskiSum.CreateInstance()).PlaceParts(null, new NFP[] { new NFP() }, new SvgNestConfig()).Should().BeNull();
+      new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), A.Dummy<MinkowskiSum>()).PlaceParts(null, new NFP[] { new NFP() }, new SvgNestConfig()).Should().BeNull();
     }
 
     [Fact]
@@ -37,7 +37,7 @@
       INfp part;
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryConvertToNfp(0, out part).Should().BeTrue();
 
-      new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), MinkowskiSum.CreateInstance()).ExecuteDllImportMinkowski(sheet, part, MinkowskiCache.Cache).Should().NotBeNull();
+      new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), A.Dummy<MinkowskiSum>()).ExecuteDllImportMinkowski(sheet, part, MinkowskiCache.Cache).Should().NotBeNull();
     }
 
     [Fact]

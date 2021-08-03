@@ -165,7 +165,7 @@
             await DisplayToolStripMessage($"Nesting time: {sw.ElapsedMilliseconds}ms");
           }
 
-          if (nestMonitorViewModel.Context.IsErrored)
+          if (nestMonitorViewModel.Context.State.IsErrored)
           {
             break;
           }

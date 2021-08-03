@@ -305,7 +305,7 @@
       }
     }
 
-    public void RenderNestResult(Font font, bool isInfoShow, NestingContext context, ICollection<INfp> sheets, ICollection<INfp> polygons)
+    public void RenderNestResult(Font font, bool isInfoShow, NestingContext context)
     {
       var pos1 = this.GetPos();
       var posx = pos1.X;
@@ -325,9 +325,9 @@
       {
         this.gr.DrawString("X:" + posx.ToString("0.00") + " Y: " + posy.ToString("0.00"), font, Brushes.Blue, 0, yy);
         yy += (int)font.Size + gap;
-        if (context.Nest != null && context.Nest.TopNestResults != null && context.Nest.TopNestResults.Top != null)
+        if (context.Nest != null && context.State.TopNestResults != null && context.State.TopNestResults.Top != null)
         {
-          this.gr.DrawString($"Material Utilization: {Math.Round((context.Current?.MaterialUtilization ?? 0) * 100.0f, 2)}%   Iterations: {context.State.Iterations}    Parts placed: {context.Current?.TotalPlacedCount ?? 0}/{polygons.Count} ({100 * context.Current?.PartsPlacedPercent ?? 0:N2}%)", font, Brushes.DarkBlue, 0, yy);
+          this.gr.DrawString($"Material Utilization: {Math.Round((context.Current?.MaterialUtilization ?? 0) * 100.0f, 2)}%   Iterations: {context.State.Iterations}    Parts placed: {context.Current?.TotalPlacedCount ?? 0}/{context.Polygons.Count} ({100 * context.Current?.PartsPlacedPercent ?? 0:N2}%)", font, Brushes.DarkBlue, 0, yy);
           yy += (int)font.Size + gap;
           if (SvgNest.Config.UseParallel)
           {
@@ -339,30 +339,30 @@
           }
 
           yy += (int)font.Size + gap;
-          this.gr.DrawString($"Sheets: {sheets.Count}   Parts:{polygons.Count}    parts types: {polygons.GroupBy(z => z.Source).Count()}", font, Brushes.DarkBlue, 0, yy);
+          this.gr.DrawString($"Sheets: {context.Sheets.Count}   Parts:{context.Polygons.Count}    parts types: {context.Polygons.GroupBy(z => z.Source).Count()}", font, Brushes.DarkBlue, 0, yy);
           yy += (int)font.Size + gap;
-          this.gr.DrawString($"Nests: {context.Nest.TopNestResults.Count} Fitness: {context.Nest.TopNestResults.Top.Fitness}   Area:{context.Nest.TopNestResults.Top.TotalSheetsArea}  ", font, Brushes.DarkBlue, 0, yy);
+          this.gr.DrawString($"Nests: {context.State.TopNestResults.Count} Fitness: {context.State.TopNestResults.Top.Fitness}   Area:{context.State.TopNestResults.Top.TotalSheetsArea}  ", font, Brushes.DarkBlue, 0, yy);
           yy += (int)font.Size + gap;
-          this.gr.DrawString($"Minkowski Calls: {context.Nest.CallCounter};  Last placing time: {context.State.LastPlacementTime}ms;  Average nest time: {context.State.AverageNestTime}ms", font, Brushes.DarkBlue, 0, yy);
+          this.gr.DrawString($"Minkowski Calls: {context.State.CallCounter};  Last placing time: {context.State.LastPlacementTime}ms;  Average nest time: {context.State.AverageNestTime}ms", font, Brushes.DarkBlue, 0, yy);
           yy += (int)font.Size + gap;
         }
       }
       else
       {
-        if (context.Nest != null && context.Nest.TopNestResults != null && context.Nest.TopNestResults.Top != null)
+        if (context.Nest != null && context.State.TopNestResults != null && context.State.TopNestResults.Top != null)
         {
-          this.gr.DrawString($"Iterations: {context.State.Iterations}    Parts placed: {context.Current?.TotalPlacedCount ?? 0}/{polygons.Count} ({100 * context.Nest.TopNestResults.Top.PartsPlacedPercent:N2}%)", font, Brushes.DarkBlue, 0, yy);
+          this.gr.DrawString($"Iterations: {context.State.Iterations}    Parts placed: {context.Current?.TotalPlacedCount ?? 0}/{context.Polygons.Count} ({100 * context.Current?.PartsPlacedPercent:N2}%)", font, Brushes.DarkBlue, 0, yy);
           yy += (int)font.Size + gap;
         }
 
         this.gr.DrawString($"Generations: {context.State.Generations}    Population: {context.State.Population}", font, Brushes.DarkBlue, 0, yy);
         yy += (int)font.Size + gap;
-        this.gr.DrawString($"Sheets: {sheets.Count}   Parts:{polygons.Count}    Parts types: {polygons.GroupBy(z => z.Source).Count()}", font, Brushes.DarkBlue, 0, yy);
+        this.gr.DrawString($"Sheets: {context.Sheets.Count}   Parts:{context.Polygons.Count}    Parts types: {context.Polygons.GroupBy(z => z.Source).Count()}", font, Brushes.DarkBlue, 0, yy);
         yy += (int)font.Size + gap;
       }
 
       int i = 0;
-      foreach (var item in polygons.Union(sheets))
+      foreach (var item in context.Polygons.Union(context.Sheets))
       {
         if (!(item is Sheet))
         {
@@ -409,7 +409,7 @@
           }
           else*/
           {
-            if (!sheets.Contains(item))
+            if (!context.Sheets.Contains(item))
             {
               this.gr.FillPath(new SolidBrush(Color.FromArgb(128, Color.LightBlue)), path);
             }

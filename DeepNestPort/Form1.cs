@@ -40,19 +40,13 @@
     private readonly ProjectInfo projectInfo = new ProjectInfo();
     private bool autoFit = true;
     private NestExecutionHelper nestExecutionHelper = new NestExecutionHelper();
-
-    internal ICollection<INfp> Polygons
-    {
-      get
-      {
-        return Context.Polygons;
-      }
-    }
+    private NestState nestState;
 
     public Form1()
     {
       InitializeComponent();
 
+      this.nestState = NestState.CreateInstance(SvgNest.Config);
       this.ProgressDisplayerInstance = new ProgressDisplayer(this, InitialiseUiForStartNest, new MessageBoxService());
       this.ContextualiseRunStopButtons(false);
 
@@ -112,7 +106,7 @@
 
     private ProgressDisplayer ProgressDisplayerInstance { get; }
 
-    private NestingContext Context
+    internal NestingContext Context
     {
       get
       {
@@ -120,7 +114,7 @@
         {
           if (this.context == null)
           {
-            this.context = new NestingContext(new MessageBoxService(), new ProgressDisplayer(this, InitialiseUiForStartNest, new MessageBoxService()));
+            this.context = new NestingContext(new MessageBoxService(), new ProgressDisplayer(this, InitialiseUiForStartNest, new MessageBoxService()), this.nestState);
           }
         }
 
@@ -165,19 +159,19 @@
     public void UpdateList()
     {
       listView1.Items.Clear();
-      foreach (var item in Polygons)
+      foreach (var item in context.Polygons)
       {
         listView1.Items.Add(new ListViewItem(new string[] { item.Id.ToString(), item.Source.ToString(), item.Name, item.Points.Count().ToString() }) { Tag = item });
       }
 
       listView2.Items.Clear();
-      foreach (var item in Sheets)
+      foreach (var item in context.Sheets)
       {
         listView2.Items.Add(new ListViewItem(new string[] { item.Id.ToString(), item.Source.ToString(), item.Name, item.Points.Count().ToString() }) { Tag = item });
       }
 
-      groupBox5.Text = "Parts: " + Polygons.Count();
-      groupBox6.Text = "Sheets: " + Sheets.Count;
+      groupBox5.Text = "Parts: " + context.Polygons.Count();
+      groupBox6.Text = "Sheets: " + context.Sheets.Count;
     }
 
     private void Redraw()
@@ -195,7 +189,7 @@
         if (this.tabControl1.Visible && this.tabControl1.SelectedIndex == (int)UiTab.Nest)
         {
           var pos = nestPreview.PointToClient(Cursor.Position);
-          nestPreviewDrawingContext.RenderNestResult(Font, isInfoShow, this.Context, Sheets, Polygons);
+          nestPreviewDrawingContext.RenderNestResult(Font, isInfoShow, this.Context);
         }
       }
       catch (Exception ex)
@@ -251,7 +245,7 @@
                 int selectedIndex = listViewTopNests.FocusedItem?.Index ?? 0;
                 listViewTopNests.Items.Clear();
                 int i = 0;
-                foreach (var item in this.Context.Nest.TopNestResults.ToList())
+                foreach (var item in this.Context.State.TopNestResults.ToList())
                 {
                   var listItem = new ListViewItem(new string[] { item.Fitness.ToString("N0"), item.CreatedAt.ToString("HH:mm:ss.fff") }) { Tag = item };
                   listViewTopNests.Items.Add(listItem);
@@ -343,13 +337,13 @@
 
     private Sheet NewSheet(int w = 3000, int h = 1500)
     {
-      return Sheet.NewSheet(Sheets.Count + 1, w, h);
+      return Sheet.NewSheet(context.Sheets.Count + 1, w, h);
     }
 
     private Sheet NewRhombusSheet(int w = 3000, int h = 1500)
     {
       var tt = new Sheet();
-      tt.Name = "rhombSheet" + (Sheets.Count + 1);
+      tt.Name = "rhombSheet" + (context.Sheets.Count + 1);
 
       tt.Height = h;
       tt.Width = w;
@@ -369,7 +363,7 @@
     private Sheet NewCircleSheet(int w = 3000)
     {
       var tt = new Sheet();
-      tt.Name = "circleSheet" + (Sheets.Count + 1);
+      tt.Name = "circleSheet" + (context.Sheets.Count + 1);
 
       tt.Height = w;
       tt.Width = w;
@@ -388,7 +382,7 @@
 
     private void clearAllToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      Polygons.Clear();
+      context.Polygons.Clear();
       UpdateList();
     }
 
@@ -398,7 +392,7 @@
       {
         for (int i = 0; i < listView1.SelectedItems.Count; i++)
         {
-          Polygons.Remove(listView1.SelectedItems[i].Tag as NFP);
+          context.Polygons.Remove(listView1.SelectedItems[i].Tag as NFP);
         }
 
         UpdateList();
@@ -456,7 +450,7 @@
       if (listView1.SelectedItems.Count > 0)
       {
         var pol = listView1.SelectedItems[0].Tag as NFP;
-        Polygons.Remove(pol);
+        context.Polygons.Remove(pol);
         var b = GeometryUtil.getPolygonBounds(pol);
         Sheet sheet = new Sheet();
         foreach (var item in pol.Points)
@@ -483,7 +477,7 @@
         sheet.Height = (double)b.Height;
 
         sheet.Source = Context.GetNextSheetSource();
-        Sheets.Add(sheet);
+        context.Sheets.Add(sheet);
         Context.ReorderSheets();
         UpdateList();
       }
@@ -491,7 +485,7 @@
 
     private void clearAllToolStripMenuItem1_Click(object sender, EventArgs e)
     {
-      Sheets.Clear();
+      context.Sheets.Clear();
       UpdateList();
     }
 
@@ -500,8 +494,8 @@
       if (listView2.SelectedItems.Count > 0)
       {
         var pol = listView2.SelectedItems[0].Tag as NFP;
-        Sheets.Remove(pol);
-        Polygons.Add(pol);
+        context.Sheets.Remove(pol);
+        context.Polygons.Add(pol);
         UpdateList();
       }
     }
@@ -535,9 +529,9 @@
           RawDetail det = nestExecutionHelper.LoadRawDetail(f);
 
           int src = 0;
-          if (Polygons.Any())
+          if (context.Polygons.Any())
           {
-            src = Polygons.Max(z => z.Source) + 1;
+            src = context.Polygons.Max(z => z.Source) + 1;
           }
 
           nestExecutionHelper.AddToPolygons(Context, src, det, q.Qnt, ProgressDisplayerInstance);
@@ -559,9 +553,9 @@
           var det = nestExecutionHelper.LoadRawDetail(t);
 
           int src = 0;
-          if (Polygons.Any())
+          if (context.Polygons.Any())
           {
-            src = Polygons.Max(z => z.Source) + 1;
+            src = context.Polygons.Max(z => z.Source) + 1;
           }
 
           nestExecutionHelper.AddToPolygons(Context, src, det, q.Qnt, ProgressDisplayerInstance);
@@ -583,7 +577,7 @@
             try
             {
               _ = this.Invoke((MethodInvoker)(() => { this.progressBar1.Visible = true; }));
-              this.Context.StartNest(MinkowskiSum.Default);
+              this.Context.StartNest();
               this.ProgressDisplayerInstance.UpdateNestsList();
 
               while (!this.stop)
@@ -603,7 +597,7 @@
                   this.ProgressDisplayerInstance.DisplayTransientMessage($"Nesting time: {sw.ElapsedMilliseconds}ms");
                 }
 
-                if (this.Context.IsErrored)
+                if (this.Context.State.IsErrored)
                 {
                   break;
                 }
@@ -640,7 +634,7 @@
           for (int i = 0; i < qd.Qnt; i++)
           {
             var r = nfp.Clone();
-            Polygons.Add(r);
+            context.Polygons.Add(r);
           }
 
           UpdateList();
@@ -666,7 +660,7 @@
 
     private void RunNestIfPossible()
     {
-      if (Sheets.Count == 0 || Polygons.Count == 0)
+      if (context.Sheets.Count == 0 || context.Polygons.Count == 0)
       {
         Cursor.Current = Cursors.Default;
         ProgressDisplayerInstance.DisplayMessageBox("There are no sheets or parts", Text, DeepNestLib.MessageBoxIcon.Error);
@@ -849,12 +843,12 @@
         var hh = r.Next(60) + 5;
         NFP pl = new NFP();
         int src = 0;
-        if (Polygons.Any())
+        if (context.Polygons.Any())
         {
-          src = Polygons.Max(z => z.Source) + 1;
+          src = context.Polygons.Max(z => z.Source) + 1;
         }
 
-        Polygons.Add(pl);
+        context.Polygons.Add(pl);
         pl.Source = src;
         pl.X = xx;
         pl.Y = yy;
@@ -878,13 +872,13 @@
 
         NFP pl = new NFP();
         int src = 0;
-        if (Polygons.Any())
+        if (context.Polygons.Any())
         {
-          src = Polygons.Max(z => z.Source) + 1;
+          src = context.Polygons.Max(z => z.Source) + 1;
         }
 
         pl.Source = src;
-        Polygons.Add(pl);
+        context.Polygons.Add(pl);
         pl.X = xx;
         pl.Y = yy;
         for (int ang = 0; ang < 360; ang += 15)
@@ -910,13 +904,13 @@
         var hh = r.Next(60) + 5;
         NFP pl = new NFP();
         int src = 0;
-        if (Polygons.Any())
+        if (context.Polygons.Any())
         {
-          src = Polygons.Max(z => z.Source) + 1;
+          src = context.Polygons.Max(z => z.Source) + 1;
         }
 
         pl.Source = src;
-        Polygons.Add(pl);
+        context.Polygons.Add(pl);
         pl.X = xx;
         pl.Y = yy;
         pl.AddPoint(new SvgPoint(-ww, 0));
@@ -940,13 +934,13 @@
         var hh = r.Next(400) + 5;
         NFP pl = new NFP();
         int src = 0;
-        if (Polygons.Any())
+        if (context.Polygons.Any())
         {
-          src = Polygons.Max(z => z.Source) + 1;
+          src = context.Polygons.Max(z => z.Source) + 1;
         }
 
         pl.Source = src;
-        Polygons.Add(pl);
+        context.Polygons.Add(pl);
         pl.AddPoint(new SvgPoint(xx, yy));
         pl.AddPoint(new SvgPoint(xx + ww, yy));
         pl.AddPoint(new SvgPoint(xx + ww, yy + hh));
@@ -962,9 +956,9 @@
       var hh = r.Next(400) + 5;
       QntDialog q = new QntDialog();
       int src = 0;
-      if (Polygons.Any())
+      if (context.Polygons.Any())
       {
-        src = Polygons.Max(z => z.Source) + 1;
+        src = context.Polygons.Max(z => z.Source) + 1;
       }
 
       if (q.ShowDialog() == DialogResult.OK)
@@ -977,7 +971,7 @@
           NFP pl = new NFP();
 
           pl.Source = src;
-          Polygons.Add(pl);
+          context.Polygons.Add(pl);
           pl.X = xx;
           pl.Y = yy;
           pl.AddPoint(new SvgPoint(0, 0));
@@ -1020,12 +1014,12 @@
         var hh = r.Next(250) + 120;
         NFP pl = new NFP();
         int src = 0;
-        if (Polygons.Any())
+        if (context.Polygons.Any())
         {
-          src = Polygons.Max(z => z.Source) + 1;
+          src = context.Polygons.Max(z => z.Source) + 1;
         }
 
-        Polygons.Add(pl);
+        context.Polygons.Add(pl);
         pl.Source = src;
         pl.AddPoint(new SvgPoint(0, 0));
         pl.AddPoint(new SvgPoint(0 + ww, 0));
@@ -1060,13 +1054,13 @@
 
         NFP pl = new NFP();
         int src = 0;
-        if (Polygons.Any())
+        if (context.Polygons.Any())
         {
-          src = Polygons.Max(z => z.Source) + 1;
+          src = context.Polygons.Max(z => z.Source) + 1;
         }
 
         pl.Source = src;
-        Polygons.Add(pl);
+        context.Polygons.Add(pl);
 
         NFP hole = new NFP();
         for (int ang = 0; ang < 360; ang += 15)
@@ -1093,7 +1087,7 @@
       if (listView2.SelectedItems.Count > 0)
       {
         var f = listView2.SelectedItems[0].Tag as NFP;
-        Sheets.Remove(f);
+        context.Sheets.Remove(f);
         UpdateList();
         Context.ReorderSheets();
       }
@@ -1110,12 +1104,12 @@
       var hh = 20;
       NFP pl = new NFP();
       int src = 0;
-      if (Polygons.Any())
+      if (context.Polygons.Any())
       {
-        src = Polygons.Max(z => z.Source) + 1;
+        src = context.Polygons.Max(z => z.Source) + 1;
       }
 
-      Polygons.Add(pl);
+      context.Polygons.Add(pl);
       pl.Source = src;
       pl.X = xx;
       pl.Y = yy;
@@ -1168,36 +1162,28 @@
       }
     }
 
-    private List<INfp> Sheets
-    {
-      get
-      {
-        return Context.Sheets;
-      }
-    }
-
     private void exportButton_Click_1(object sender, EventArgs e)
     {
       SaveFileDialog sfd = new SaveFileDialog();
-      if (Polygons.ContainsDxfs() && Polygons.ContainsSvgs())
+      if (context.Polygons.ContainsDxfs() && context.Polygons.ContainsSvgs())
       {
         MessageBox.Show("It's not possible to export when your parts were a mix of Svg's and Dxf's.", "DeepNestPort: Not Implemented", MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
       }
       else
       {
-        IExport exporter = ExporterFactory.GetExporter(Polygons, SvgNest.Config);
+        IExport exporter = ExporterFactory.GetExporter(context.Polygons, SvgNest.Config);
         sfd.Filter = exporter.SaveFileDialogFilter;
         if (sfd.ShowDialog() == DialogResult.OK)
         {
-          exporter.Export(sfd.FileName, Polygons.ToArray(), Sheets.ToArray());
+          exporter.Export(sfd.FileName, context.Polygons.ToArray(), context.Sheets.ToArray());
         }
       }
     }
 
     private void button7_Click(object sender, EventArgs e)
     {
-      var sh = Sheets[0] as Sheet;
-      nestPreviewDrawingContext.RenderSheetToClipboard(sh, Polygons, Sheets);
+      var sh = context.Sheets[0] as Sheet;
+      nestPreviewDrawingContext.RenderSheetToClipboard(sh, context.Polygons, context.Sheets);
     }
 
     private void button8_Click(object sender, EventArgs e)
@@ -1208,12 +1194,12 @@
       var hh = r.Next(250) + 120;
       NFP pl = new NFP();
       int src = 0;
-      if (Polygons.Any())
+      if (context.Polygons.Any())
       {
-        src = Polygons.Max(z => z.Source) + 1;
+        src = context.Polygons.Max(z => z.Source) + 1;
       }
 
-      Polygons.Add(pl);
+      context.Polygons.Add(pl);
       pl.Source = src;
       pl.AddPoint(new SvgPoint(0, 0));
       pl.AddPoint(new SvgPoint(0 + ww, 0));

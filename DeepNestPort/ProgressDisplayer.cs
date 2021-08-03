@@ -20,7 +20,7 @@
     public void DisplayProgress(int placedParts, int currentPopulation)
     {
       double progressPopulation = 0.66f * ((double)currentPopulation / (double)SvgNest.Config.PopulationSize);
-      double progressPlacements = 0.34f * ((double)placedParts / (double)this.form.Polygons.Count);
+      double progressPlacements = 0.34f * ((double)placedParts / (double)this.form.Context.Polygons.Count);
       this.form.DisplayProgress(progressPopulation + progressPlacements);
     }
 

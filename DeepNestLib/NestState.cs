@@ -16,11 +16,20 @@
     private long totalNestTime;
     private long lastPlacementTime;
 
-    public static NestState Default { get; } = new NestState();
+    private NestState(ISvgNestConfig config)
+    {
+      this.TopNestResults = new TopNestResultsCollection(config);
+    }
+
+    public static NestState Default { get; } = new NestState(SvgNest.Config);
+
+    public static NestState CreateInstance(ISvgNestConfig config) => new NestState(config);
 
     public long AverageNestTime => nestCount == 0 ? 0 : totalNestTime / nestCount;
 
     public long LastPlacementTime => lastPlacementTime;
+
+    public bool IsErrored { get; private set; }
 
     public int Iterations => iterations;
 
@@ -29,6 +38,8 @@
     public int Population => population;
 
     public int Threads => threads;
+
+    public TopNestResultsCollection TopNestResults { get; }
 
     public int Generations => generations;
 
@@ -43,6 +54,8 @@
       Interlocked.Exchange(ref lastPlacementTime, 0);
       Interlocked.Exchange(ref iterations, 0);
       Interlocked.Exchange(ref callCounter, 0);
+      this.IsErrored = false;
+      TopNestResults.Clear();
     }
 
     internal void IncrementPopulation()
@@ -93,6 +106,11 @@
     internal void IncrementCallCounter()
     {
       Interlocked.Increment(ref callCounter);
+    }
+
+    internal void SetIsErrored()
+    {
+      this.IsErrored = true;
     }
   }
 }

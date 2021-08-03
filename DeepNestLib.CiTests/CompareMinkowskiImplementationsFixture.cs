@@ -30,7 +30,7 @@
       DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Rectangle(11D) }).TryConvertToNfp(secondPartIdSrc, out secondPart).Should().BeTrue();
       var sw = new Stopwatch();
       sw.Start();
-      var minkowskiSumService = MinkowskiSum.CreateInstance();
+      IMinkowskiSumService minkowskiSumService = A.Dummy<MinkowskiSum>();
       for (int i = 0; i < iterations; i++)
       {
         clipperResult = minkowskiSumService.ClipperExecute(firstPart, secondPart, MinkowskiSumPick.Largest);

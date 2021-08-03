@@ -26,24 +26,13 @@
     }
 
     /// <summary>
-    /// Gets default instance to use if you're happy to be reusing the same cache, and using NestState.Default.
-    /// </summary>
-    public static IMinkowskiSumService Default { get; } = new MinkowskiSum(NestState.Default);
-
-    /// <summary>
-    /// Create a new instance with a self contained cache.
-    /// </summary>
-    /// <returns></returns>
-    internal static IMinkowskiSumService CreateInstance() => new MinkowskiSum(NestState.Default);
-
-    /// <summary>
     /// Create a new instance with a self contained cache.
     /// </summary>
     /// <param name="nestState">Shared NestState (instead of NestState.Default).</param>
     /// <returns></returns>
     public static IMinkowskiSumService CreateInstance(NestState nestState) => new MinkowskiSum(nestState);
 
-    INfp IMinkowskiSumService.DllImportExecute(INfp a, INfp b, MinkowskiSumCleaning minkowskiSumCleaning = MinkowskiSumCleaning.None)
+    INfp IMinkowskiSumService.DllImportExecute(INfp a, INfp b, MinkowskiSumCleaning minkowskiSumCleaning)
     {
       Dictionary<string, List<PointF>> dic1 = new Dictionary<string, List<PointF>>();
       Dictionary<string, List<double>> dic2 = new Dictionary<string, List<double>>();

@@ -26,11 +26,9 @@
       this.State = state;
     }
 
-    public bool IsErrored { get; private set; }
-
     public ICollection<INfp> Polygons { get; } = new HashSet<INfp>();
 
-    public List<INfp> Sheets { get; private set; } = new List<INfp>();
+    public IList<INfp> Sheets { get; private set; } = new List<INfp>();
 
     public INestResult Current { get; private set; } = null;
 
@@ -42,7 +40,7 @@
 
     public NestState State { get; }
 
-    public void StartNest(IMinkowskiSumService minkowskiSumService)
+    public void StartNest()
     {
       this.ReorderSheets();
       this.InternalReset();
@@ -50,16 +48,10 @@
       this.Nest = new SvgNest(
         this.messageService,
         this.progressDisplayer,
-        () => this.IsErrored = true,
-        minkowskiSumService,
+        MinkowskiSum.CreateInstance(State),
         State);
       this.progressDisplayer.DisplayTransientMessage($"Pre-processing. . .");
       this.isStopped = false;
-    }
-
-    public void StartNest()
-    {
-      this.StartNest(MinkowskiSum.Default);
     }
 
     public void ResumeNest()
@@ -174,9 +166,9 @@
             Nest.launchWorkers(partsLocal.ToArray(), config);
           }
 
-          if (Nest.TopNestResults != null && Nest.TopNestResults.Count > 0)
+          if (State.TopNestResults != null && State.TopNestResults.Count > 0)
           {
-            var plcpr = Nest.TopNestResults.Top;
+            var plcpr = State.TopNestResults.Top;
 
             if (Current == null || plcpr.Fitness < Current.Fitness)
             {
@@ -189,9 +181,9 @@
       }
       catch (Exception ex)
       {
-        if (!this.IsErrored)
+        if (!State.IsErrored)
         {
-          this.IsErrored = true;
+          State.SetIsErrored();
           this.messageService.DisplayMessage(ex);
         }
 
@@ -415,10 +407,7 @@
     private void InternalReset()
     {
       State.Reset();
-      this.nest?.TopNestResults.Clear();
-      this.nest?.TopNestResults.Clear();
       Current = null;
-      this.IsErrored = false;
       this.Current = null;
     }
 

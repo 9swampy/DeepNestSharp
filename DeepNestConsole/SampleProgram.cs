@@ -18,7 +18,7 @@
     private bool IsFinished()
     {
       // Place code here to define when your Nest can be considered complete.
-      return this.Context?.Nest.TopNestResults.Count() >= 3;
+      return this.Context?.State.TopNestResults.Count() >= 3;
 
       // The example above considers the nest completed when the
       // first response has been iteratively improved upon twice.
