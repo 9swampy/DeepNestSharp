@@ -9,7 +9,7 @@
   public class NestProjectViewModel : FileViewModel, INestProjectViewModel
   {
     private int selectedDetailLoadInfoIndex;
-    private IDetailLoadInfo selectedDetailLoadInfo;
+    private IDetailLoadInfo? selectedDetailLoadInfo;
     private RelayCommand? executeNestCommand;
 
     /// <summary>
@@ -45,24 +45,13 @@
       }
     }
 
-    private void NestMonitorViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-      if (MainViewModel.DispatcherService.InvokeRequired)
-      {
-        MainViewModel.DispatcherService.Invoke(() => NestMonitorViewModel_PropertyChanged(sender, e));
-      }
-
-      if (e.PropertyName == $"{nameof(NestMonitorViewModel.IsRunning)}")
-      {
-        MainViewModel.DispatcherService.Invoke(() => executeNestCommand?.NotifyCanExecuteChanged());
-      }
-    }
-
     public IProjectInfo ProjectInfo { get; } = new ObservableProjectInfo(new ProjectInfo());
 
     public IDetailLoadInfo SelectedDetailLoadInfo
     {
+#pragma warning disable CS8603 // Possible null reference return.
       get => selectedDetailLoadInfo;
+#pragma warning restore CS8603 // Possible null reference return.
       set => SetProperty(ref selectedDetailLoadInfo, value, nameof(SelectedDetailLoadInfo));
     }
 
@@ -84,10 +73,24 @@
       OnPropertyChanged(nameof(SelectedDetailLoadInfo));
     }
 
+    private void NestMonitorViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+      if (MainViewModel.DispatcherService.InvokeRequired)
+      {
+        MainViewModel.DispatcherService.Invoke(() => NestMonitorViewModel_PropertyChanged(sender, e));
+      }
+
+      if (e.PropertyName == $"{nameof(NestMonitorViewModel.IsRunning)}")
+      {
+        MainViewModel.DispatcherService.Invoke(() => executeNestCommand?.NotifyCanExecuteChanged());
+      }
+    }
+
     private void OnExecuteNest()
     {
       System.Diagnostics.Debug.Print("Set the Nest Monitor active and start the Nest.");
       MainViewModel.NestMonitorViewModel.TryStart(this);
+      MainViewModel.NestMonitorViewModel.IsActive = true;
       //var nestMonitorViewModel = new NestMonitorViewModel(this, MainViewModel);
     }
   }

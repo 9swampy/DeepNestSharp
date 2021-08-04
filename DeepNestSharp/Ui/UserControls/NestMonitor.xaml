@@ -18,9 +18,9 @@
       <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
     <StackPanel Orientation="Horizontal" Grid.Row="0">
-      <Button Content="Stop" Command="{Binding StopCommand}" />
-      <Button Content="Restart" Command="{Binding RestartCommand}" />
-      <Button Content="Continue" Command="{Binding ContinueCommand}" />
+      <Button Content="Stop" Command="{Binding StopNestCommand}" />
+      <Button Content="Restart" Command="{Binding RestartNestCommand}" />
+      <Button Content="Continue" Command="{Binding ContinueNestCommand}" />
       <TextBlock Text="AverageNestTime" />
       <TextBlock Text="{Binding State.AverageNestTime, Mode=OneWay}" />
       <TextBlock Text="CallCounter" />
@@ -53,45 +53,18 @@
       </ListView.Resources>
       <interactivity:Interaction.Triggers>
         <interactivity:EventTrigger EventName="MouseDoubleClick">
-          <interactivity:InvokeCommandAction Command="{Binding LoadPartFileCommand}" CommandParameter="{Binding Path=SelectedItem}"/>
+          <interactivity:InvokeCommandAction Command="{Binding LoadSheetPlacementCommand}" CommandParameter="{Binding Path=SelectedItem}"/>
         </interactivity:EventTrigger>
       </interactivity:Interaction.Triggers>
       <ListView.View>
         <GridView>
-          <GridViewColumn Header="Id" Width="25" DisplayMemberBinding="{Binding Path=Id, Mode=OneWay}" />
-          <GridViewColumn Header="Source" Width="50" DisplayMemberBinding="{Binding Path=Source, Mode=OneWay}"/>
-          <GridViewColumn Header="Rotation" Width="60" >
+          <GridViewColumn Header="Fitness" Width="25" DisplayMemberBinding="{Binding Path=Fitness, Mode=OneWay}" />
+          <GridViewColumn Header="Placed" Width="50" DisplayMemberBinding="{Binding Path=TotalPlacedCount, Mode=OneWay}"/>
+          <GridViewColumn Header="CreatedAt" Width="60" >
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel >
-                  <TextBox HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Text="{Binding Path=Rotation, Mode=TwoWay}"/>
-                </DockPanel>
-              </DataTemplate>
-            </GridViewColumn.CellTemplate>
-          </GridViewColumn>
-          <GridViewColumn Header="X" Width="85">
-            <GridViewColumn.CellTemplate>
-              <DataTemplate>
-                <DockPanel >
-                  <TextBox HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Text="{Binding Path=X, Mode=TwoWay, StringFormat={}{0:0.0000}}"/>
-                </DockPanel>
-              </DataTemplate>
-            </GridViewColumn.CellTemplate>
-          </GridViewColumn>
-          <GridViewColumn Header="Y" Width="85">
-            <GridViewColumn.CellTemplate>
-              <DataTemplate>
-                <DockPanel >
-                  <TextBox HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Text="{Binding Path=Y, Mode=TwoWay, StringFormat={}{0:0.0000}}"/>
-                </DockPanel>
-              </DataTemplate>
-            </GridViewColumn.CellTemplate>
-          </GridViewColumn>
-          <GridViewColumn Width="65">
-            <GridViewColumn.CellTemplate>
-              <DataTemplate>
-                <DockPanel >
-                  <Button Command="{Binding ResetCommand}" Content="Reset" />
+                  <Button Command="{Binding LoadSheetPlacementCommand}" CommandParameter="{Binding Path=SelectedItem}" Content="Edit" />
                 </DockPanel>
               </DataTemplate>
             </GridViewColumn.CellTemplate>

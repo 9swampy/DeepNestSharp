@@ -7,6 +7,7 @@
   using System.Threading.Tasks;
   using System.Windows.Input;
   using DeepNestLib;
+  using DeepNestLib.Placement;
   using DeepNestSharp.Ui.Docking;
   using Microsoft.Toolkit.Mvvm.Input;
 
@@ -28,10 +29,13 @@
     private Task? nestWorkerTask;
     private string lastLogMessage = string.Empty;
     private double progress;
+    private int selectedIndex;
+    private INestResult? selectedItem;
 
-    private RelayCommand? stopNestCommand = null;
-    private RelayCommand? continueNestCommand = null;
-    private RelayCommand? restartNestCommand = null;
+    private RelayCommand? stopNestCommand;
+    private RelayCommand? continueNestCommand;
+    private RelayCommand? restartNestCommand;
+    private RelayCommand? loadSheetPlacementCommand;
 
     public NestMonitorViewModel(MainViewModel mainViewModel, IMessageService messageService, ISvgNestConfig config)
       : base("Monitor")
@@ -65,6 +69,7 @@
       private set
       {
         SetProperty(ref this.isRunning, value);
+        Contextualise();
       }
     }
 
@@ -78,6 +83,20 @@
       private set
       {
         SetProperty(ref this.isStopping, value);
+        Contextualise();
+      }
+    }
+
+    public ICommand LoadSheetPlacementCommand
+    {
+      get
+      {
+        if (loadSheetPlacementCommand == null)
+        {
+          loadSheetPlacementCommand = new RelayCommand(OnLoadSheetPlacement, () => false);
+        }
+
+        return loadSheetPlacementCommand;
       }
     }
 
@@ -112,7 +131,7 @@
       {
         if (stopNestCommand == null)
         {
-          stopNestCommand = new RelayCommand(OnStopNest, () => IsRunning);
+          stopNestCommand = new RelayCommand(OnStopNest, () => IsRunning && !IsStopping);
         }
 
         return stopNestCommand;
@@ -123,6 +142,18 @@
     {
       get => lastLogMessage;
       internal set => SetProperty(ref lastLogMessage, value);
+    }
+
+    public int SelectedIndex
+    {
+      get => selectedIndex;
+      set => SetProperty(ref selectedIndex, value);
+    }
+
+    public INestResult? SelectedItem
+    {
+      get => selectedItem;
+      set => SetProperty(ref selectedItem, value);
     }
 
     public TopNestResultsCollection TopNestResults => Context.State.TopNestResults;
@@ -149,6 +180,20 @@
       }
     }
 
+    private void Contextualise()
+    {
+      if (mainViewModel.DispatcherService.InvokeRequired)
+      {
+        mainViewModel.DispatcherService.Invoke(Contextualise);
+      }
+      else
+      {
+        stopNestCommand?.NotifyCanExecuteChanged();
+        restartNestCommand?.NotifyCanExecuteChanged();
+        continueNestCommand?.NotifyCanExecuteChanged();
+      }
+    }
+
     public bool TryStart(INestProjectViewModel nestProjectViewModel)
     {
       lock (syncLock)
@@ -158,7 +203,7 @@
           return false;
         }
 
-        this.isRunning = true;
+        this.IsRunning = true;
 
         this.nestProjectViewModel = nestProjectViewModel;
         this.nestExecutionHelper.InitialiseNest(
@@ -200,7 +245,7 @@
       lock (syncLock)
       {
         this.IsStopping = true;
-        this.nestWorkerTask?.Wait();
+        this.nestWorkerTask?.Wait(5000);
       }
     }
 
@@ -210,6 +255,11 @@
     }
 
     private void OnContinueNest()
+    {
+      throw new NotImplementedException();
+    }
+
+    private void OnLoadSheetPlacement()
     {
       throw new NotImplementedException();
     }
