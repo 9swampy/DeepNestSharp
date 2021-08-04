@@ -1,6 +1,7 @@
 ﻿namespace DeepNestSharp
 {
   using System.IO;
+  using System.Threading;
   using System.Windows;
   using System.Windows.Input;
   using DeepNestSharp.Ui.ViewModels;
@@ -12,7 +13,6 @@
     {
       InitializeComponent();
       this.DataContext = viewModel;
-
       viewModel.DockManager = this.dockManager;
       this.Loaded += new RoutedEventHandler(MainWindow_Loaded);
       this.Unloaded += new RoutedEventHandler(MainWindow_Unloaded);

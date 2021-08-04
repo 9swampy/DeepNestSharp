@@ -1,12 +1,18 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
   using System;
+  using System.Collections.ObjectModel;
   using System.Diagnostics;
   using System.Runtime.CompilerServices;
   using System.Text;
   using System.Threading.Tasks;
+  using System.Windows;
+  using System.Windows.Data;
+  using System.Windows.Threading;
   using DeepNestLib;
+  using DeepNestLib.Placement;
   using DeepNestSharp.Ui.Docking;
+  using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
   public class NestMonitorViewModel : ToolViewModel
   {
@@ -14,6 +20,7 @@
 
     private readonly MainViewModel mainViewModel;
     private readonly IMessageService messageService;
+    private readonly ISvgNestConfig config;
     private readonly IProgressDisplayer progressDisplayer;
     private INestProjectViewModel? nestProjectViewModel;
     private bool isRunning;
@@ -23,18 +30,22 @@
     private NestWorker? nestWorker;
     private ConfiguredTaskAwaitable? nestWorkerConfiguredTaskAwaitable;
     private Task? nestWorkerTask;
+    private string lastLogMessage;
+    private double progress;
 
-    public NestMonitorViewModel(MainViewModel mainViewModel, IMessageService messageService)
+    public NestMonitorViewModel(MainViewModel mainViewModel, IMessageService messageService, ISvgNestConfig config)
       : base("Monitor")
     {
       this.mainViewModel = mainViewModel;
       this.messageService = messageService;
-      this.progressDisplayer = new ProgressDisplayer(this, messageService);
+      this.config = config;
+      this.progressDisplayer = new ProgressDisplayer(this, messageService, mainViewModel.DispatcherService);
     }
 
     internal void UpdateNestsList()
     {
-      throw new NotImplementedException();
+      OnPropertyChanged(nameof(TopNestResults));
+      System.Diagnostics.Debug.Print("UpdateNestsList");
     }
 
     public bool IsRunning
@@ -81,12 +92,28 @@
         {
           if (this.context == null)
           {
-            this.context = new NestingContext(messageService, progressDisplayer);
+            this.context = new NestingContext(messageService, progressDisplayer, new NestState(config, mainViewModel.DispatcherService));
           }
         }
 
         return this.context;
       }
+    }
+
+    public NestState State => Context.State;
+
+    public TopNestResultsCollection TopNestResults => Context.State.TopNestResults;
+
+    public string LastLogMessage
+    {
+      get => lastLogMessage;
+      internal set => SetProperty(ref lastLogMessage, value);
+    }
+
+    public double Progress
+    {
+      get => progress;
+      internal set => SetProperty(ref progress, value);
     }
 
     public bool TryStart(INestProjectViewModel nestProjectViewModel)
@@ -117,9 +144,18 @@
         else
         {
           this.nestWorker = new NestWorker(this);
-          this.nestWorkerTask = new Task(async () => await this.nestWorker.Execute());
+          this.nestWorkerTask = new Task(async () =>
+          {
+            System.Diagnostics.Debug.Print("Pre-Execute");
+            await this.nestWorker.Execute();
+            System.Diagnostics.Debug.Print("Post-Execute");
+          });
           this.nestWorkerConfiguredTaskAwaitable = this.nestWorkerTask.ConfigureAwait(false);
-          this.nestWorkerConfiguredTaskAwaitable?.GetAwaiter().OnCompleted(() => this.IsRunning = false);
+          this.nestWorkerConfiguredTaskAwaitable?.GetAwaiter().OnCompleted(() =>
+          {
+            System.Diagnostics.Debug.Print("OnCompleted-Execute");
+            this.IsRunning = false;
+          });
           this.nestWorkerTask.Start();
         }
 
@@ -147,28 +183,44 @@
 
       public async Task Execute()
       {
-        nestMonitorViewModel.Context.StartNest();
-        nestMonitorViewModel.progressDisplayer.UpdateNestsList();
-        while (!nestMonitorViewModel.IsStopping)
+        try
         {
-          Stopwatch sw = new Stopwatch();
-          sw.Start();
-          await NestIterate();
-          await UpdateNestsList();
-          sw.Stop();
-          if (SvgNest.Config.UseParallel)
+          System.Diagnostics.Debug.Print("Start-Execute");
+          nestMonitorViewModel.Context.StartNest();
+          nestMonitorViewModel.progressDisplayer.UpdateNestsList();
+          while (!nestMonitorViewModel.IsStopping)
           {
-            await DisplayToolStripMessage($"Iteration time: {sw.ElapsedMilliseconds}ms ({nestMonitorViewModel.Context.State.AverageNestTime}ms average)");
-          }
-          else
-          {
-            await DisplayToolStripMessage($"Nesting time: {sw.ElapsedMilliseconds}ms");
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            await NestIterate();
+            await UpdateNestsList();
+            sw.Stop();
+            if (SvgNest.Config.UseParallel)
+            {
+              await DisplayToolStripMessage($"Iteration time: {sw.ElapsedMilliseconds}ms ({nestMonitorViewModel.Context.State.AverageNestTime}ms average)");
+            }
+            else
+            {
+              await DisplayToolStripMessage($"Nesting time: {sw.ElapsedMilliseconds}ms");
+            }
+
+            if (nestMonitorViewModel.Context.State.IsErrored)
+            {
+              break;
+            }
           }
 
-          if (nestMonitorViewModel.Context.State.IsErrored)
-          {
-            break;
-          }
+          System.Diagnostics.Debug.Print("Exit-Execute");
+        }
+        catch (Exception ex)
+        {
+          System.Diagnostics.Debug.Print("Error-Execute");
+          System.Diagnostics.Debug.Print(ex.Message);
+          System.Diagnostics.Debug.Print(ex.StackTrace);
+        }
+        finally
+        {
+          System.Diagnostics.Debug.Print("Finally-Execute");
         }
       }
 
@@ -192,7 +244,10 @@
       {
         if (!nestMonitorViewModel.IsStopping)
         {
-          await Task.Run(() => nestMonitorViewModel.Context.NestIterate(SvgNest.Config)).ConfigureAwait(false);
+          await Task.Run(() =>
+          {
+            nestMonitorViewModel.Context.NestIterate(SvgNest.Config);
+          }).ConfigureAwait(false);
         }
       }
     }

@@ -12,6 +12,7 @@
   using AvalonDock.Layout;
   using AvalonDock.Layout.Serialization;
   using AvalonDock.Themes;
+  using DeepNestLib;
   using DeepNestLib.NestProject;
   using DeepNestSharp.Ui.Docking;
   using DeepNestSharp.Ui.Models;
@@ -40,7 +41,7 @@
     private RelayCommand saveLayoutCommand = null;
     private RelayCommand exitCommand = null;
 
-    public MainViewModel()
+    public MainViewModel(IDispatcherService dispatcherService, ISvgNestConfig config)
     {
       ExecuteLoadSheetPlacement = new RelayCommand(LoadSheetPlacement);
       ExecuteLoadNestProject = new RelayCommand(LoadNestProject);
@@ -62,6 +63,8 @@
       };
 
       this.SelectedTheme = Themes.First();
+      this.DispatcherService = dispatcherService;
+      this.Config = config;
     }
 
     public event EventHandler ActiveDocumentChanged;
@@ -111,7 +114,7 @@
       {
         if (nestMonitorViewModel == null)
         {
-          nestMonitorViewModel = new NestMonitorViewModel(this, new MessageBoxService());
+          nestMonitorViewModel = new NestMonitorViewModel(this, new MessageBoxService(), Config);
         }
 
         return nestMonitorViewModel;
@@ -243,6 +246,9 @@
     }
 
     public DockingManager DockManager { get; internal set; }
+    
+    public IDispatcherService DispatcherService { get; }
+    public ISvgNestConfig Config { get; }
 
     private bool CanExit()
     {

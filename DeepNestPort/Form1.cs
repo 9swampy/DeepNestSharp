@@ -46,7 +46,7 @@
     {
       InitializeComponent();
 
-      this.nestState = NestState.CreateInstance(SvgNest.Config);
+      this.nestState = NestState.CreateInstance(SvgNest.Config, new DispatcherService());
       this.ProgressDisplayerInstance = new ProgressDisplayer(this, InitialiseUiForStartNest, new MessageBoxService());
       this.ContextualiseRunStopButtons(false);
 

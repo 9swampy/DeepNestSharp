@@ -15,10 +15,6 @@
     private volatile bool isStopped;
     private volatile SvgNest nest;
 
-    public NestingContext(IMessageService messageService, IProgressDisplayer progressDisplayer)
-      : this(messageService, progressDisplayer, NestState.Default)
-    { }
-
     public NestingContext(IMessageService messageService, IProgressDisplayer progressDisplayer, NestState state)
     {
       this.messageService = messageService;

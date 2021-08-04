@@ -160,7 +160,8 @@
     <Compile Include="ClipperIntersectFixture.cs" />
     <Compile Include="CompareMinkowskiImplementationsFixture.cs" />
     <Compile Include="DefaultSvgNestConfig.cs" />
-    <Compile Include="DummyNestStateFactory.cs" />
+    <Compile Include="DummyFactories\DummyMinkowskiSumFactory.cs" />
+    <Compile Include="DummyFactories\DummyNestStateFactory.cs" />
     <Compile Include="DxfGenerator.cs" />
     <Compile Include="DxfParserPart5Fixture.cs" />
     <Compile Include="DxfParserPart1Fixture.cs" />
@@ -194,7 +195,8 @@
     <Compile Include="Dxfs\SquareWithHoleFixture.cs" />
     <Compile Include="TopNestResultsCollectionFixture.cs" />
     <Compile Include="UnitTestingTraceListener.cs" />
-    <Compile Include="UnitTestLog.cs" />
+    <Compile Include="UnitTraceLog.cs" />
+    <Compile Include="UnitTraceLogEntry.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Dxfs\20x20outer10x10hole.dxf">

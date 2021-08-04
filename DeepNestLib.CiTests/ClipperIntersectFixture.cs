@@ -23,9 +23,7 @@
     private static INfp GetNfp(List<DxfEntity> dxfEntities)
     {
       RawDetail raw;
-      NestingContext ctx;
       raw = DxfParser.ConvertDxfToRawDetail(string.Empty, dxfEntities);
-      ctx = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
       INfp result;
       raw.TryConvertToNfp(0, out result);
       return result;

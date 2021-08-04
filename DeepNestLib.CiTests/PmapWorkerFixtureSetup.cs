@@ -43,11 +43,8 @@
     protected NfpPair pair1;
     protected NfpPair pair2;
 
-    private NfpPair[] processed;
-
     public PmapWorkerFixtureSetup()
     {
-      var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
       DxfGenerator.GenerateSquare("firstPart", 11D, RectangleType.FileLoad).TryConvertToNfp(firstPartIdSrc, out firstPart).Should().BeTrue();
       firstPart = SvgNest.CleanPolygon2(firstPart);
       firstPart.Rotation = 180;

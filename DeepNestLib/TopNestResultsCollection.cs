@@ -3,18 +3,39 @@
   using System;
   using System.Collections;
   using System.Collections.Generic;
+  using System.Collections.ObjectModel;
+  using System.Collections.Specialized;
   using System.Linq;
   using DeepNestLib.Placement;
 
-  public class TopNestResultsCollection : IEnumerable<INestResult>
+  public class TopNestResultsCollection : IEnumerable<INestResult>, INotifyCollectionChanged
   {
-    private readonly ISvgNestConfig config;
-    private List<INestResult> items = new List<INestResult>();
-    private static volatile object addToTopNestsLock = new object();
+    private static volatile object lockItemsObject = new object();
 
-    public TopNestResultsCollection(ISvgNestConfig config)
+    private readonly ISvgNestConfig config;
+    private readonly IDispatcherService dispatcherService;
+
+    private ObservableCollection<INestResult> items = new ObservableCollection<INestResult>();
+
+    public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+    public TopNestResultsCollection(ISvgNestConfig config, IDispatcherService dispatcherService)
     {
       this.config = config;
+      this.dispatcherService = dispatcherService;
+      this.items.CollectionChanged += this.Items_CollectionChanged;
+    }
+
+    private void Items_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    {
+      if (dispatcherService.InvokeRequired)
+      {
+        dispatcherService.Invoke(() => Items_CollectionChanged(sender, e));
+      }
+      else
+      {
+        CollectionChanged?.Invoke(this, e);
+      }
     }
 
     public int Count => items.Count;
@@ -23,7 +44,12 @@
 
     public bool Add(INestResult payload)
     {
-      lock (addToTopNestsLock)
+      if (dispatcherService.InvokeRequired)
+      {
+        dispatcherService.Invoke(() => Add(payload));
+      }
+
+      lock (lockItemsObject)
       {
         var isAdded = true;
         if (items.Count == 0)
@@ -99,7 +125,17 @@
 
     internal void Clear()
     {
-      this.items.Clear();
+      if (dispatcherService.InvokeRequired)
+      {
+        dispatcherService.Invoke(() => Clear());
+      }
+      else
+      {
+        lock (lockItemsObject)
+        {
+          this.items.Clear();
+        }
+      }
     }
   }
 }

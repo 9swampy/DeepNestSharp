@@ -13,7 +13,7 @@
 
   public class SampleProgram
   {
-    internal NestingContext Context { get; } = new NestingContext(new ConsoleMessageService(), null);
+    internal NestingContext Context { get; } = new NestingContext(new ConsoleMessageService(), null, null);
 
     private bool IsFinished()
     {

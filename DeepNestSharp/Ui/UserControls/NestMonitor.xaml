@@ -3,10 +3,102 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:DeepNestSharp.Ui.UserControls"
+             xmlns:local="clr-namespace:DeepNestSharp.Ui.UserControls" 
+             xmlns:interactivity="http://schemas.microsoft.com/expression/2010/interactivity"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+  <UserControl.Resources>
+    <BooleanToVisibilityConverter x:Key="BoolToVis" />
+  </UserControl.Resources>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <StackPanel Orientation="Horizontal" Grid.Row="0">
+      <Button Content="Stop" Command="{Binding StopCommand}" />
+      <Button Content="Restart" Command="{Binding RestartCommand}" />
+      <Button Content="Continue" Command="{Binding ContinueCommand}" />
+      <TextBlock Text="AverageNestTime" />
+      <TextBlock Text="{Binding State.AverageNestTime, Mode=OneWay}" />
+      <TextBlock Text="CallCounter" />
+      <TextBlock Text="{Binding State.CallCounter, Mode=OneWay}" />
+      <TextBlock Text="Generations" />
+      <TextBlock Text="{Binding State.Generations, Mode=OneWay}" />
+      <TextBlock Text="IsErrored" />
+      <TextBlock Text="{Binding State.IsErrored, Mode=OneWay}" />
+      <TextBlock Text="Iterations" />
+      <TextBlock Text="{Binding State.Iterations, Mode=OneWay}" />
+      <TextBlock Text="LastPlacementTime" />
+      <TextBlock Text="{Binding State.LastPlacementTime, Mode=OneWay}" />
+      <TextBlock Text="NestCount" />
+      <TextBlock Text="{Binding State.NestCount, Mode=OneWay}" />
+      <TextBlock Text="Population" />
+      <TextBlock Text="{Binding State.Population, Mode=OneWay}" />
+      <TextBlock Text="Threads" />
+      <TextBlock Text="{Binding State.Threads, Mode=OneWay}" />
+    </StackPanel>
+    <ProgressBar Grid.Row="1" Height="10" HorizontalAlignment="Stretch" Minimum="0" Maximum="1" Value="{Binding Progress, Mode=OneWay}" Visibility="Visible" />
+    <!--Visibility="{Binding IsRunning, Converter={StaticResource BoolToVis}}" />-->
+    <ListView Grid.Row="2"
+              ItemsSource="{Binding TopNestResults}" 
+              SelectedItem="{Binding SelectedItem}" 
+              SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}">
+      <ListView.Resources>
+        <Style TargetType="ListViewItem">
+          <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
+      </ListView.Resources>
+      <interactivity:Interaction.Triggers>
+        <interactivity:EventTrigger EventName="MouseDoubleClick">
+          <interactivity:InvokeCommandAction Command="{Binding LoadPartFileCommand}" CommandParameter="{Binding Path=SelectedItem}"/>
+        </interactivity:EventTrigger>
+      </interactivity:Interaction.Triggers>
+      <ListView.View>
+        <GridView>
+          <GridViewColumn Header="Id" Width="25" DisplayMemberBinding="{Binding Path=Id, Mode=OneWay}" />
+          <GridViewColumn Header="Source" Width="50" DisplayMemberBinding="{Binding Path=Source, Mode=OneWay}"/>
+          <GridViewColumn Header="Rotation" Width="60" >
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <DockPanel >
+                  <TextBox HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Text="{Binding Path=Rotation, Mode=TwoWay}"/>
+                </DockPanel>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Header="X" Width="85">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <DockPanel >
+                  <TextBox HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Text="{Binding Path=X, Mode=TwoWay, StringFormat={}{0:0.0000}}"/>
+                </DockPanel>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Header="Y" Width="85">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <DockPanel >
+                  <TextBox HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Text="{Binding Path=Y, Mode=TwoWay, StringFormat={}{0:0.0000}}"/>
+                </DockPanel>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Width="65">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <DockPanel >
+                  <Button Command="{Binding ResetCommand}" Content="Reset" />
+                </DockPanel>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+        </GridView>
+      </ListView.View>
+    </ListView>
+    <TextBlock Grid.Row="3" Text="{Binding LastLogMessage}" HorizontalAlignment="Stretch" />
+  </Grid>
 </UserControl>

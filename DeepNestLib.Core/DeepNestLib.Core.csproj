@@ -31,6 +31,7 @@
     <Compile Include="..\DeepNestLib\IDataInfo.cs" Link="IDataInfo.cs" />
     <Compile Include="..\DeepNestLib\IDbCache.cs" Link="IDbCache.cs" />
     <Compile Include="..\DeepNestLib\IDeprecatedClipper.cs" Link="IDeprecatedClipper.cs" />
+    <Compile Include="..\DeepNestLib\IDispatcherService.cs" Link="IDispatcherService.cs" />
     <Compile Include="..\DeepNestLib\IExport.cs" Link="IExport.cs" />
     <Compile Include="..\DeepNestLib\IHiddenNfp.cs" Link="IHiddenNfp.cs" />
     <Compile Include="..\DeepNestLib\IMessageService.cs" Link="IMessageService.cs" />

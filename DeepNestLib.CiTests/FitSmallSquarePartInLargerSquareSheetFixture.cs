@@ -14,7 +14,6 @@
 
     public FitSmallSquarePartInLargerSquareSheetFixture()
     {
-      var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
       INfp sheet;
       DxfGenerator.GenerateSquare("Sheet", 22D, RectangleType.FileLoad).TryConvertToNfp(0, out sheet).Should().BeTrue();
       INfp part;
@@ -31,7 +30,6 @@
     [Fact]
     private void TestAnActualCallOutToMinkowskiBecauseWhyDoTestsWorkButApplicationCrashes()
     {
-      var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
       INfp sheet;
       DxfGenerator.GenerateSquare("Sheet", 22D, RectangleType.FileLoad).TryConvertToNfp(0, out sheet).Should().BeTrue();
       INfp part;

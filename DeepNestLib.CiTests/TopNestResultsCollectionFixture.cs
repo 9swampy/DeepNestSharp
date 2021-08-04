@@ -1,6 +1,7 @@
 ﻿namespace DeepNestLib.CiTests
 {
   using System;
+  using System.Collections.ObjectModel;
   using System.Linq;
   using DeepNestLib.Placement;
   using FakeItEasy;
@@ -12,7 +13,7 @@
     [Fact]
     public void GivenEmptyCollectionWhenMaxCapacityZeroThenThrow()
     {
-      var sut = new TopNestResultsCollection(A.Fake<ISvgNestConfig>());
+      var sut = A.Dummy<TopNestResultsCollection>();
       Action act = () => sut.Add(A.Fake<INestResult>());
 
       act.Should().Throw<InvalidOperationException>();
@@ -21,14 +22,14 @@
     [Fact]
     public void GivenEmptyCollectionWhenAddResultThenReturnWasAdded()
     {
-      var sut = new TopNestResultsCollection(new DefaultSvgNestConfig());
+      var sut = new TopNestResultsCollection(new DefaultSvgNestConfig(), A.Fake<IDispatcherService>());
       sut.Add(A.Fake<INestResult>()).Should().BeTrue();
     }
 
     [Fact]
     public void GivenEmptyCollectionWhenAddResultThenCountIncrement()
     {
-      var sut = new TopNestResultsCollection(new DefaultSvgNestConfig());
+      var sut = new TopNestResultsCollection(new DefaultSvgNestConfig(), A.Fake<IDispatcherService>());
       sut.Add(A.Fake<INestResult>());
 
       sut.Count.Should().Be(1);
@@ -37,7 +38,7 @@
     [Fact]
     public void GivenEmptyCollectionWhenAddResultThenMemoise()
     {
-      var sut = new TopNestResultsCollection(new DefaultSvgNestConfig());
+      var sut = new TopNestResultsCollection(new DefaultSvgNestConfig(), A.Fake<IDispatcherService>());
       var expected = A.Fake<INestResult>();
       sut.Add(expected);
 
@@ -47,14 +48,14 @@
     [Fact]
     public void MaxCapacityShouldBeGreaterThanOrEqualToEliteSurvivors()
     {
-      var sut = new TopNestResultsCollection(new DefaultSvgNestConfig());
+      var sut = new TopNestResultsCollection(new DefaultSvgNestConfig(), A.Fake<IDispatcherService>());
       sut.MaxCapacity.Should().BeGreaterOrEqualTo(sut.EliteSurvivors);
     }
 
     [Fact]
     public void GivenHigherFitnessWhenAddResultThenMemoiseAfterExisting()
     {
-      var sut = new TopNestResultsCollection(new DefaultSvgNestConfig());
+      var sut = new TopNestResultsCollection(new DefaultSvgNestConfig(), A.Fake<IDispatcherService>());
       var first = A.Fake<INestResult>();
       sut.Add(first);
       A.CallTo(() => first.Fitness).Returns(1);
@@ -70,7 +71,7 @@
     [Fact]
     public void GivenLowerFitnessWhenAddResultThenMemoiseBeforeExisting()
     {
-      var sut = new TopNestResultsCollection(new DefaultSvgNestConfig());
+      var sut = new TopNestResultsCollection(new DefaultSvgNestConfig(), A.Fake<IDispatcherService>());
       var first = A.Fake<INestResult>();
       sut.Add(first);
       A.CallTo(() => first.Fitness).Returns(2);
@@ -88,7 +89,7 @@
     {
       var random = new Random();
       var config = new DefaultSvgNestConfig();
-      var sut = new TopNestResultsCollection(config);
+      var sut = new TopNestResultsCollection(config, A.Fake<IDispatcherService>());
       for (int i = 0; i < sut.MaxCapacity; i++)
       {
         var item = A.Fake<INestResult>();

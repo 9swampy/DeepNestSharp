@@ -36,7 +36,7 @@
           config.PopulationSize = 40;
           this.loadedRawDetail = DxfParser.LoadDxfStream(DxfTestFilename);
           this.loadedRawDetail.Should().NotBeNull();
-          this.nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
+          this.nestingContext = A.Dummy<NestingContext>();
           this.hasImportedRawDetail = loadedRawDetail.TryConvertToNfp(A.Dummy<int>(), out this.loadedNfp);
           this.nestingContext.Polygons.Add(this.loadedNfp);
           this.nestingContext.Polygons.Add(this.loadedNfp.Clone());

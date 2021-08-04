@@ -101,9 +101,11 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ControlExtensions.cs" />
+    <Compile Include="DispatcherService.cs" />
     <Compile Include="DrawingContext.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>

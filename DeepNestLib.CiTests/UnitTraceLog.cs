@@ -1,16 +1,7 @@
 ﻿namespace DeepNestLib.CiTests
 {
-  using System;
   using System.Collections.Generic;
-  using System.Diagnostics;
-  using System.IO;
-  using System.Linq;
-  using System.Reflection;
   using System.Text;
-  using FakeItEasy;
-  using FluentAssertions;
-  using IxMilia.Dxf.Entities;
-  using Xunit;
 
   public class UnitTraceLog : List<UnitTraceLogEntry>
   {
@@ -24,18 +15,5 @@
 
       return resultBuilder.ToString();
     }
-  }
-
-  public class UnitTraceLogEntry
-  {
-    public UnitTraceLogEntry(StackFrame stackFrame, string message)
-    {
-      StackFrame = stackFrame;
-      Message = message;
-    }
-
-    public StackFrame StackFrame { get; }
-
-    public string Message { get; }
   }
 }

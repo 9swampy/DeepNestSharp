@@ -38,6 +38,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Clipper.Core", "Clipper.Cor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MinkowskiWrapper.Core", "MinkowskiWrapper.Core\MinkowskiWrapper.Core.csproj", "{D38B082A-8D76-4EC6-B8FB-DCF3A7301FC7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeepNestSharp.CiTests", "DeepNestSharp.CiTests\DeepNestSharp.CiTests.csproj", "{EF2C4D9C-FF99-4BBD-BBB3-BEA2BDA1FE10}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -175,6 +177,18 @@ Global
 		{D38B082A-8D76-4EC6-B8FB-DCF3A7301FC7}.Release|x64.Build.0 = Release|x64
 		{D38B082A-8D76-4EC6-B8FB-DCF3A7301FC7}.Release|x86.ActiveCfg = Release|x86
 		{D38B082A-8D76-4EC6-B8FB-DCF3A7301FC7}.Release|x86.Build.0 = Release|x86
+		{EF2C4D9C-FF99-4BBD-BBB3-BEA2BDA1FE10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF2C4D9C-FF99-4BBD-BBB3-BEA2BDA1FE10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF2C4D9C-FF99-4BBD-BBB3-BEA2BDA1FE10}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EF2C4D9C-FF99-4BBD-BBB3-BEA2BDA1FE10}.Debug|x64.Build.0 = Debug|Any CPU
+		{EF2C4D9C-FF99-4BBD-BBB3-BEA2BDA1FE10}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EF2C4D9C-FF99-4BBD-BBB3-BEA2BDA1FE10}.Debug|x86.Build.0 = Debug|Any CPU
+		{EF2C4D9C-FF99-4BBD-BBB3-BEA2BDA1FE10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF2C4D9C-FF99-4BBD-BBB3-BEA2BDA1FE10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF2C4D9C-FF99-4BBD-BBB3-BEA2BDA1FE10}.Release|x64.ActiveCfg = Release|Any CPU
+		{EF2C4D9C-FF99-4BBD-BBB3-BEA2BDA1FE10}.Release|x64.Build.0 = Release|Any CPU
+		{EF2C4D9C-FF99-4BBD-BBB3-BEA2BDA1FE10}.Release|x86.ActiveCfg = Release|Any CPU
+		{EF2C4D9C-FF99-4BBD-BBB3-BEA2BDA1FE10}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

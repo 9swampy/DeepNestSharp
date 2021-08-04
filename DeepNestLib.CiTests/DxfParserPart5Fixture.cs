@@ -28,7 +28,7 @@
         if (!this.hasImportedRawDetail)
         {
           this.loadedRawDetail = DxfParser.LoadDxfStream(DxfTestFilename);
-          this.nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
+          this.nestingContext = A.Dummy<NestingContext>();
           this.hasImportedRawDetail = this.loadedRawDetail.TryConvertToNfp(A.Dummy<int>(), out this.loadedNfp);
           var sw = new Stopwatch();
           sw.Start();

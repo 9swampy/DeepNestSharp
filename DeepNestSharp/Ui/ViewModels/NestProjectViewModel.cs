@@ -47,9 +47,14 @@
 
     private void NestMonitorViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
+      if (MainViewModel.DispatcherService.InvokeRequired)
+      {
+        MainViewModel.DispatcherService.Invoke(() => NestMonitorViewModel_PropertyChanged(sender, e));
+      }
+
       if (e.PropertyName == $"{nameof(NestMonitorViewModel.IsRunning)}")
       {
-        executeNestCommand?.NotifyCanExecuteChanged();
+        MainViewModel.DispatcherService.Invoke(() => executeNestCommand?.NotifyCanExecuteChanged());
       }
     }
 

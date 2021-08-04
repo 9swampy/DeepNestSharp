@@ -24,9 +24,9 @@
       IMessageService messageService,
       IProgressDisplayer progressDisplayer,
       IMinkowskiSumService minkowskiSumService,
-      NestState svgNestState)
+      NestState nestState)
     {
-      this.State = svgNestState;
+      this.State = nestState;
       this.messageService = messageService;
       this.progressDisplayer = progressDisplayer;
       this.minkowskiSumService = minkowskiSumService;
@@ -946,6 +946,6 @@
       State.DecrementThreads();
     }
 
-    private NestState State { get; } = NestState.Default;
+    private NestState State { get; }
   }
 }

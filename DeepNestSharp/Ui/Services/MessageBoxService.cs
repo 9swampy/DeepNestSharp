@@ -18,7 +18,7 @@
 
     public void DisplayMessageBox(string text, string caption, MessageBoxIcon icon)
     {
-      MessageBox.Show(text, caption, MessageBoxButton.OK, (MessageBoxImage)icon);
+      Application.Current.Dispatcher.Invoke(() => MessageBox.Show(text, caption, MessageBoxButton.OK, (MessageBoxImage)icon));
     }
   }
 }

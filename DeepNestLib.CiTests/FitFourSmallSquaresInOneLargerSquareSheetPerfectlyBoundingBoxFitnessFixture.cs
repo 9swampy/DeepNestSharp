@@ -18,7 +18,6 @@
 
     public FitFourSmallSquaresInOneLargerSquareSheetPerfectlyBoundingBoxFitnessFixture()
     {
-      var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
       INfp firstSheet;
       DxfGenerator.GenerateSquare("Sheet", 23D, RectangleType.FileLoad).TryConvertToNfp(firstSheetIdSrc, out firstSheet).Should().BeTrue();
       INfp firstPart;
