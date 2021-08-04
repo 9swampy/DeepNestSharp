@@ -1,18 +1,14 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
   using System;
-  using System.Collections.ObjectModel;
   using System.Diagnostics;
   using System.Runtime.CompilerServices;
   using System.Text;
   using System.Threading.Tasks;
-  using System.Windows;
-  using System.Windows.Data;
-  using System.Windows.Threading;
+  using System.Windows.Input;
   using DeepNestLib;
-  using DeepNestLib.Placement;
   using DeepNestSharp.Ui.Docking;
-  using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
+  using Microsoft.Toolkit.Mvvm.Input;
 
   public class NestMonitorViewModel : ToolViewModel
   {
@@ -30,8 +26,12 @@
     private NestWorker? nestWorker;
     private ConfiguredTaskAwaitable? nestWorkerConfiguredTaskAwaitable;
     private Task? nestWorkerTask;
-    private string lastLogMessage;
+    private string lastLogMessage = string.Empty;
     private double progress;
+
+    private RelayCommand? stopNestCommand = null;
+    private RelayCommand? continueNestCommand = null;
+    private RelayCommand? restartNestCommand = null;
 
     public NestMonitorViewModel(MainViewModel mainViewModel, IMessageService messageService, ISvgNestConfig config)
       : base("Monitor")
@@ -42,10 +42,17 @@
       this.progressDisplayer = new ProgressDisplayer(this, messageService, mainViewModel.DispatcherService);
     }
 
-    internal void UpdateNestsList()
+    public ICommand ContinueNestCommand
     {
-      OnPropertyChanged(nameof(TopNestResults));
-      System.Diagnostics.Debug.Print("UpdateNestsList");
+      get
+      {
+        if (continueNestCommand == null)
+        {
+          continueNestCommand = new RelayCommand(OnContinueNest, () => false);
+        }
+
+        return continueNestCommand;
+      }
     }
 
     public bool IsRunning
@@ -84,6 +91,48 @@
 
     public StringBuilder MessageLogBuilder { get; } = new StringBuilder();
 
+    public NestState State => Context.State;
+
+    public ICommand RestartNestCommand
+    {
+      get
+      {
+        if (restartNestCommand == null)
+        {
+          restartNestCommand = new RelayCommand(OnRestartNest, () => false);
+        }
+
+        return restartNestCommand;
+      }
+    }
+
+    public ICommand StopNestCommand
+    {
+      get
+      {
+        if (stopNestCommand == null)
+        {
+          stopNestCommand = new RelayCommand(OnStopNest, () => IsRunning);
+        }
+
+        return stopNestCommand;
+      }
+    }
+
+    public string LastLogMessage
+    {
+      get => lastLogMessage;
+      internal set => SetProperty(ref lastLogMessage, value);
+    }
+
+    public TopNestResultsCollection TopNestResults => Context.State.TopNestResults;
+
+    public double Progress
+    {
+      get => progress;
+      internal set => SetProperty(ref progress, value);
+    }
+
     private NestingContext Context
     {
       get
@@ -98,22 +147,6 @@
 
         return this.context;
       }
-    }
-
-    public NestState State => Context.State;
-
-    public TopNestResultsCollection TopNestResults => Context.State.TopNestResults;
-
-    public string LastLogMessage
-    {
-      get => lastLogMessage;
-      internal set => SetProperty(ref lastLogMessage, value);
-    }
-
-    public double Progress
-    {
-      get => progress;
-      internal set => SetProperty(ref progress, value);
     }
 
     public bool TryStart(INestProjectViewModel nestProjectViewModel)
@@ -144,16 +177,15 @@
         else
         {
           this.nestWorker = new NestWorker(this);
-          this.nestWorkerTask = new Task(async () =>
+          this.nestWorkerTask = new Task(() =>
           {
-            System.Diagnostics.Debug.Print("Pre-Execute");
-            await this.nestWorker.Execute();
-            System.Diagnostics.Debug.Print("Post-Execute");
+#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
+            Task.Run(() => this.nestWorker.Execute()).Wait();
+#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
           });
           this.nestWorkerConfiguredTaskAwaitable = this.nestWorkerTask.ConfigureAwait(false);
           this.nestWorkerConfiguredTaskAwaitable?.GetAwaiter().OnCompleted(() =>
           {
-            System.Diagnostics.Debug.Print("OnCompleted-Execute");
             this.IsRunning = false;
           });
           this.nestWorkerTask.Start();
@@ -170,6 +202,26 @@
         this.IsStopping = true;
         this.nestWorkerTask?.Wait();
       }
+    }
+
+    internal void UpdateNestsList()
+    {
+      OnPropertyChanged(nameof(TopNestResults));
+    }
+
+    private void OnContinueNest()
+    {
+      throw new NotImplementedException();
+    }
+
+    private void OnRestartNest()
+    {
+      throw new NotImplementedException();
+    }
+
+    private void OnStopNest()
+    {
+      this.Stop();
     }
 
     private class NestWorker

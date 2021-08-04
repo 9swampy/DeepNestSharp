@@ -5,7 +5,6 @@
   using System.Collections.ObjectModel;
   using System.IO;
   using System.Linq;
-  using System.Reflection;
   using System.Windows;
   using System.Windows.Input;
   using AvalonDock;
@@ -23,23 +22,22 @@
   public class MainViewModel : ObservableRecipient
   {
     private int selectedPartIndex;
-    private ObservablePartPlacement selectedPartItem;
+    private ObservablePartPlacement? selectedPartItem;
     private ToolViewModel[] tools;
 
     private ObservableCollection<FileViewModel> files = new ObservableCollection<FileViewModel>();
-    private ReadOnlyObservableCollection<FileViewModel> readonlyFiles;
+    private ReadOnlyObservableCollection<FileViewModel>? readonlyFiles;
 
-    private MainViewModel mainViewModel;
     private PreviewViewModel previewViewModel;
-    private SvgNestConfigViewModel svgNestConfigViewModel;
-    private Tuple<string, Theme> selectedTheme;
-    private FileViewModel activeDocument;
-    private PropertiesViewModel propertiesViewModel;
-    private NestMonitorViewModel nestMonitorViewModel;
+    private SvgNestConfigViewModel? svgNestConfigViewModel;
+    private Tuple<string, Theme>? selectedTheme;
+    private FileViewModel? activeDocument;
+    private PropertiesViewModel? propertiesViewModel;
+    private NestMonitorViewModel? nestMonitorViewModel;
 
-    private RelayCommand loadLayoutCommand = null;
-    private RelayCommand saveLayoutCommand = null;
-    private RelayCommand exitCommand = null;
+    private RelayCommand? loadLayoutCommand = null;
+    private RelayCommand? saveLayoutCommand = null;
+    private RelayCommand? exitCommand = null;
 
     public MainViewModel(IDispatcherService dispatcherService, ISvgNestConfig config)
     {
@@ -52,14 +50,15 @@
       this.Themes = new List<Tuple<string, Theme>>
       {
         new Tuple<string, Theme>(nameof(GenericTheme), new GenericTheme()),
-        //new Tuple<string, Theme>(nameof(AeroTheme),new AeroTheme()),
-        //new Tuple<string, Theme>(nameof(ExpressionDarkTheme),new ExpressionDarkTheme()),
-        //new Tuple<string, Theme>(nameof(ExpressionLightTheme),new ExpressionLightTheme()),
-        //new Tuple<string, Theme>(nameof(MetroTheme),new MetroTheme()),
-        //new Tuple<string, Theme>(nameof(VS2010Theme),new VS2010Theme()),
-        //new Tuple<string, Theme>(nameof(Vs2013BlueTheme),new Vs2013BlueTheme()),
-        //new Tuple<string, Theme>(nameof(Vs2013DarkTheme),new Vs2013DarkTheme()),
-        //new Tuple<string, Theme>(nameof(Vs2013LightTheme),new Vs2013LightTheme()),
+
+        // new Tuple<string, Theme>(nameof(AeroTheme),new AeroTheme()),
+        // new Tuple<string, Theme>(nameof(ExpressionDarkTheme),new ExpressionDarkTheme()),
+        // new Tuple<string, Theme>(nameof(ExpressionLightTheme),new ExpressionLightTheme()),
+        // new Tuple<string, Theme>(nameof(MetroTheme),new MetroTheme()),
+        // new Tuple<string, Theme>(nameof(VS2010Theme),new VS2010Theme()),
+        // new Tuple<string, Theme>(nameof(Vs2013BlueTheme),new Vs2013BlueTheme()),
+        // new Tuple<string, Theme>(nameof(Vs2013DarkTheme),new Vs2013DarkTheme()),
+        // new Tuple<string, Theme>(nameof(Vs2013LightTheme),new Vs2013LightTheme()),
       };
 
       this.SelectedTheme = Themes.First();
@@ -67,7 +66,7 @@
       this.Config = config;
     }
 
-    public event EventHandler ActiveDocumentChanged;
+    public event EventHandler? ActiveDocumentChanged;
 
     public List<Tuple<string, Theme>> Themes { get; set; }
 
@@ -229,8 +228,6 @@
 
     public ObservableSheetPlacement SheetPlacement { get; } = new ObservableSheetPlacement();
 
-
-
     public FileViewModel ActiveDocument
     {
       get => activeDocument;
@@ -245,9 +242,10 @@
       }
     }
 
-    public DockingManager DockManager { get; internal set; }
-    
+    public DockingManager? DockManager { get; internal set; }
+
     public IDispatcherService DispatcherService { get; }
+
     public ISvgNestConfig Config { get; }
 
     private bool CanExit()
@@ -305,6 +303,7 @@
       {
         yield return (LayoutContent)le;
       }
+
       IEnumerable<ILayoutElement> children = new ILayoutElement[0];
       if (le is LayoutRoot)
       {
@@ -326,6 +325,7 @@
       {
         children = ((LayoutDocumentPane)le).Children;
       }
+
       foreach (var child in children)
       {
         foreach (var x in GatherLayoutContent(child))
