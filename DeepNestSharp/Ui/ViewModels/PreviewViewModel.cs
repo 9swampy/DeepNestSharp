@@ -43,22 +43,13 @@
       this.PropertyChanged += this.PreviewViewModel_PropertyChanged;
     }
 
-    private void PreviewViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-      if (e.PropertyName == nameof(DrawingContext))
-      {
-        OnPropertyChanged(nameof(UpperBound));
-        OnPropertyChanged(nameof(LowerBound));
-        OnPropertyChanged(nameof(WidthBound));
-        OnPropertyChanged(nameof(HeightBound));
-      }
-    }
-
     public ObservableCollection<object> DrawingContext
     {
       get;
       private set;
-    } = new ObservableCollection<object>();
+    }
+
+      = new ObservableCollection<object>();
 
     public ICommand FitAllCommand
     {
@@ -273,9 +264,61 @@
       }
     }
 
-    private void MainViewModel_ActiveDocumentChanged(object? sender, EventArgs e)
+    public double LimitAbsoluteScale(double proposed)
     {
-      InitialiseDrawingContext(sender);
+      if (proposed > CanvasScaleMax)
+      {
+        return CanvasScaleMax;
+      }
+      else if (proposed < CanvasScaleMin)
+      {
+        return CanvasScaleMin;
+      }
+
+      return proposed;
+    }
+
+    /// <summary>
+    /// If proposed scale breaches the limits then limit the scale to that which will scale to the limit.
+    /// </summary>
+    /// <param name="proposed">Proposed scale.</param>
+    /// <returns>Permissible scale within limits.</returns>
+    public double LimitScaleTransform(double proposed)
+    {
+      if (proposed * CanvasScale > CanvasScaleMax)
+      {
+        proposed = CanvasScaleMax / CanvasScale;
+      }
+      else if (proposed * CanvasScale < CanvasScaleMin)
+      {
+        proposed = CanvasScaleMin / CanvasScale;
+      }
+
+      return proposed;
+    }
+
+    internal void RaiseSelectItem()
+    {
+      System.Diagnostics.Debug.Print("Force RaiseSelectItem");
+      OnPropertyChanged(nameof(SelectedPartPlacement));
+    }
+
+    internal void RaiseDrawingContext()
+    {
+      System.Diagnostics.Debug.Print("Force RaiseDrawingContext");
+      OnPropertyChanged(nameof(DrawingContext));
+      lastSheetPlacementViewModel?.RaiseDrawingContext();
+    }
+
+    private void LastSheetPlacementViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+      if (sender == mainViewModel.ActiveDocument &&
+          e.PropertyName == "SelectedItem" &&
+          sender is SheetPlacementViewModel sheetPlacementViewModel &&
+          sheetPlacementViewModel.SheetPlacement is ObservableSheetPlacement sheetPlacement)
+      {
+        Set(sheetPlacement);
+      }
     }
 
     private void InitialiseDrawingContext(object? sender)
@@ -316,28 +359,9 @@
       }
     }
 
-    internal void RaiseSelectItem()
+    private void MainViewModel_ActiveDocumentChanged(object? sender, EventArgs e)
     {
-      System.Diagnostics.Debug.Print("Force RaiseSelectItem");
-      OnPropertyChanged(nameof(SelectedPartPlacement));
-    }
-
-    internal void RaiseDrawingContext()
-    {
-      System.Diagnostics.Debug.Print("Force RaiseDrawingContext");
-      OnPropertyChanged(nameof(DrawingContext));
-      lastSheetPlacementViewModel?.RaiseDrawingContext();
-    }
-
-    private void LastSheetPlacementViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-      if (sender == mainViewModel.ActiveDocument &&
-          e.PropertyName == "SelectedItem" &&
-          sender is SheetPlacementViewModel sheetPlacementViewModel &&
-          sheetPlacementViewModel.SheetPlacement is ObservableSheetPlacement sheetPlacement)
-      {
-        Set(sheetPlacement);
-      }
+      InitialiseDrawingContext(sender);
     }
 
     private void NestProjectViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -378,8 +402,24 @@
 
         this.CanvasOffset = new Point(0, 0);
 
-        //this.CanvasOffset = new Point((Canvas.Width / 2F / this.CanvasScale) - x, -((Canvas.Height / 2F / this.CanvasScale) + y));
+        // this.CanvasOffset = new Point((Canvas.Width / 2F / this.CanvasScale) - x, -((Canvas.Height / 2F / this.CanvasScale) + y));
       }
+    }
+
+    private void PreviewViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+      if (e.PropertyName == nameof(DrawingContext))
+      {
+        OnPropertyChanged(nameof(UpperBound));
+        OnPropertyChanged(nameof(LowerBound));
+        OnPropertyChanged(nameof(WidthBound));
+        OnPropertyChanged(nameof(HeightBound));
+      }
+    }
+
+    private void ResetDrawingContext()
+    {
+      this.DrawingContext.Clear();
     }
 
     private void SheetPlacementViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -408,11 +448,6 @@
       }
 
       OnPropertyChanged(nameof(DrawingContext));
-    }
-
-    private void ResetDrawingContext()
-    {
-      this.DrawingContext.Clear();
     }
 
     private void Set(ObservableDetailLoadInfo item)
@@ -457,39 +492,6 @@
       }
 
       OnPropertyChanged(nameof(DrawingContext));
-    }
-
-    public double LimitAbsoluteScale(double proposed)
-    {
-      if (proposed > CanvasScaleMax)
-      {
-        return CanvasScaleMax;
-      }
-      else if (proposed < CanvasScaleMin)
-      {
-        return CanvasScaleMin;
-      }
-
-      return proposed;
-    }
-
-    /// <summary>
-    /// If proposed scale breaches the limits then limit the scale to that which will scale to the limit.
-    /// </summary>
-    /// <param name="proposed">Proposed scale.</param>
-    /// <returns>Permissible scale within limits.</returns>
-    public double LimitScaleTransform(double proposed)
-    {
-      if (proposed * CanvasScale > CanvasScaleMax)
-      {
-        proposed = CanvasScaleMax / CanvasScale;
-      }
-      else if (proposed * CanvasScale < CanvasScaleMin)
-      {
-        proposed = CanvasScaleMin / CanvasScale;
-      }
-
-      return proposed;
     }
   }
 }
