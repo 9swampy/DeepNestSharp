@@ -88,10 +88,8 @@
 
     private void OnExecuteNest()
     {
-      System.Diagnostics.Debug.Print("Set the Nest Monitor active and start the Nest.");
-      MainViewModel.NestMonitorViewModel.TryStart(this);
       MainViewModel.NestMonitorViewModel.IsActive = true;
-      //var nestMonitorViewModel = new NestMonitorViewModel(this, MainViewModel);
+      MainViewModel.NestMonitorViewModel.TryStart(this);
     }
   }
 }

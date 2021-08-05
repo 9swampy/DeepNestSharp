@@ -794,7 +794,7 @@
       this.ga.Population[payload.index].Fitness = payload.Fitness;
 
       int currentPlacements = 0;
-      if (this.State.TopNestResults.Add(payload))
+      if (this.State.TopNestResults.TryAdd(payload))
       {
         currentPlacements = this.State.TopNestResults.Top.UsedSheets[0].PartPlacements.Count;
         if (this.State.TopNestResults.IndexOf(payload) < this.State.TopNestResults.EliteSurvivors)
@@ -803,8 +803,6 @@
           this.progressDisplayer?.UpdateNestsList();
         }
       }
-
-      this.progressDisplayer?.DisplayProgress(currentPlacements, State.Population);
     }
 
     /// <summary>

@@ -42,47 +42,54 @@
 
     public INestResult Top => items?.FirstOrDefault();
 
-    public bool Add(INestResult payload)
+    public bool TryAdd(INestResult payload)
     {
       if (dispatcherService.InvokeRequired)
       {
-        dispatcherService.Invoke(() => Add(payload));
+        bool result = false;
+        dispatcherService.Invoke(() => result = TryAdd(payload));
+        return result;
       }
-
-      lock (lockItemsObject)
+      else
       {
-        var isAdded = true;
-        if (items.Count == 0)
+        lock (lockItemsObject)
         {
-          items.Insert(0, payload);
-          isAdded = true;
-        }
-        else
-        {
-          int i = 0;
-          while (i < items.Count && items[i].Fitness < payload.Fitness)
+          var isAdded = false;
+          if (items.Count == 0)
           {
-            i++;
-          }
-
-          if (i == items.Count)
-          {
-            items.Add(payload);
+            items.Insert(0, payload);
             isAdded = true;
           }
-          else if (Math.Round(items[i].Fitness, 3) != Math.Round(payload.Fitness, 3))
+          else
           {
-            items.Insert(i, payload);
-            isAdded = true;
+            int i = 0;
+            while (i < items.Count && items[i].Fitness < payload.Fitness)
+            {
+              i++;
+            }
+
+            if (i == items.Count)
+            {
+              if (items.Count < MaxCapacity)
+              {
+                items.Add(payload);
+                isAdded = true;
+              }
+            }
+            else if (Math.Round(items[i].Fitness, 3) != Math.Round(payload.Fitness, 3))
+            {
+              items.Insert(i, payload);
+              isAdded = true;
+            }
           }
-        }
 
-        if (items.Count > MaxCapacity)
-        {
-          items.RemoveAt(items.Count - 1);
-        }
+          if (items.Count > MaxCapacity)
+          {
+            items.RemoveAt(items.Count - 1);
+          }
 
-        return isAdded;
+          return isAdded;
+        }
       }
     }
 

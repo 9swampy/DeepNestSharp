@@ -1,6 +1,7 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
   using System;
+  using System.Collections.ObjectModel;
   using System.Diagnostics;
   using System.Runtime.CompilerServices;
   using System.Text;
@@ -10,6 +11,7 @@
   using DeepNestLib.Placement;
   using DeepNestSharp.Ui.Docking;
   using Microsoft.Toolkit.Mvvm.Input;
+  using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
   public class NestMonitorViewModel : ToolViewModel
   {
@@ -153,8 +155,23 @@
     public INestResult? SelectedItem
     {
       get => selectedItem;
-      set => SetProperty(ref selectedItem, value);
+      set
+      {
+        SetProperty(ref selectedItem, value);
+        if (value == null)
+        {
+          DrawingContext.Clear();
+        }
+        else
+        {
+          DrawingContext.Set(value.UsedSheets[0]);
+        }
+
+        OnPropertyChanged(nameof(DrawingContext));
+      }
     }
+
+    public ZoomPreviewDrawingContext DrawingContext { get; } = new ZoomPreviewDrawingContext();
 
     public TopNestResultsCollection TopNestResults => Context.State.TopNestResults;
 
@@ -177,20 +194,6 @@
         }
 
         return this.context;
-      }
-    }
-
-    private void Contextualise()
-    {
-      if (mainViewModel.DispatcherService.InvokeRequired)
-      {
-        mainViewModel.DispatcherService.Invoke(Contextualise);
-      }
-      else
-      {
-        stopNestCommand?.NotifyCanExecuteChanged();
-        restartNestCommand?.NotifyCanExecuteChanged();
-        continueNestCommand?.NotifyCanExecuteChanged();
       }
     }
 
@@ -254,6 +257,20 @@
       OnPropertyChanged(nameof(TopNestResults));
     }
 
+    private void Contextualise()
+    {
+      if (mainViewModel.DispatcherService.InvokeRequired)
+      {
+        mainViewModel.DispatcherService.Invoke(Contextualise);
+      }
+      else
+      {
+        stopNestCommand?.NotifyCanExecuteChanged();
+        restartNestCommand?.NotifyCanExecuteChanged();
+        continueNestCommand?.NotifyCanExecuteChanged();
+      }
+    }
+
     private void OnContinueNest()
     {
       throw new NotImplementedException();
@@ -299,11 +316,11 @@
             sw.Stop();
             if (SvgNest.Config.UseParallel)
             {
-              await DisplayToolStripMessage($"Iteration time: {sw.ElapsedMilliseconds}ms ({nestMonitorViewModel.Context.State.AverageNestTime}ms average)");
+              await DisplayToolStripMessage($"Iteration time:{sw.ElapsedMilliseconds}ms Average:{nestMonitorViewModel.Context.State.AverageNestTime}ms");
             }
             else
             {
-              await DisplayToolStripMessage($"Nesting time: {sw.ElapsedMilliseconds}ms");
+              await DisplayToolStripMessage($"Nesting time:{sw.ElapsedMilliseconds}ms Average:{nestMonitorViewModel.Context.State.AverageNestTime}ms");
             }
 
             if (nestMonitorViewModel.Context.State.IsErrored)

@@ -14,7 +14,7 @@
     public void GivenEmptyCollectionWhenMaxCapacityZeroThenThrow()
     {
       var sut = A.Dummy<TopNestResultsCollection>();
-      Action act = () => sut.Add(A.Fake<INestResult>());
+      Action act = () => sut.TryAdd(A.Fake<INestResult>());
 
       act.Should().Throw<InvalidOperationException>();
     }
@@ -23,14 +23,14 @@
     public void GivenEmptyCollectionWhenAddResultThenReturnWasAdded()
     {
       var sut = new TopNestResultsCollection(new DefaultSvgNestConfig(), A.Fake<IDispatcherService>());
-      sut.Add(A.Fake<INestResult>()).Should().BeTrue();
+      sut.TryAdd(A.Fake<INestResult>()).Should().BeTrue();
     }
 
     [Fact]
     public void GivenEmptyCollectionWhenAddResultThenCountIncrement()
     {
       var sut = new TopNestResultsCollection(new DefaultSvgNestConfig(), A.Fake<IDispatcherService>());
-      sut.Add(A.Fake<INestResult>());
+      sut.TryAdd(A.Fake<INestResult>());
 
       sut.Count.Should().Be(1);
     }
@@ -40,7 +40,7 @@
     {
       var sut = new TopNestResultsCollection(new DefaultSvgNestConfig(), A.Fake<IDispatcherService>());
       var expected = A.Fake<INestResult>();
-      sut.Add(expected);
+      sut.TryAdd(expected);
 
       sut.Single().Should().Be(expected);
     }
@@ -57,13 +57,13 @@
     {
       var sut = new TopNestResultsCollection(new DefaultSvgNestConfig(), A.Fake<IDispatcherService>());
       var first = A.Fake<INestResult>();
-      sut.Add(first);
+      sut.TryAdd(first);
       A.CallTo(() => first.Fitness).Returns(1);
       sut.First().Should().Be(first);
 
       var second = A.Fake<INestResult>();
       A.CallTo(() => second.Fitness).Returns(2);
-      sut.Add(second);
+      sut.TryAdd(second);
 
       sut.Skip(1).First().Should().Be(second);
     }
@@ -73,13 +73,13 @@
     {
       var sut = new TopNestResultsCollection(new DefaultSvgNestConfig(), A.Fake<IDispatcherService>());
       var first = A.Fake<INestResult>();
-      sut.Add(first);
+      sut.TryAdd(first);
       A.CallTo(() => first.Fitness).Returns(2);
       sut.First().Should().Be(first);
 
       var second = A.Fake<INestResult>();
       A.CallTo(() => second.Fitness).Returns(1);
-      sut.Add(second);
+      sut.TryAdd(second);
 
       sut.First().Should().Be(second);
     }
@@ -94,13 +94,13 @@
       {
         var item = A.Fake<INestResult>();
         A.CallTo(() => item.Fitness).Returns(i + 1);
-        sut.Add(item);
+        sut.TryAdd(item);
         sut.Should().Contain(item);
       }
 
       var second = A.Fake<INestResult>();
       A.CallTo(() => second.Fitness).Returns(0);
-      sut.Add(second);
+      sut.TryAdd(second);
 
       sut.First().Should().Be(second);
       sut.Count.Should().Be(sut.MaxCapacity);

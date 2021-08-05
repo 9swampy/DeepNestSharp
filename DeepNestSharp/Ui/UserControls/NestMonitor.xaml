@@ -17,28 +17,52 @@
       <RowDefinition Height="*" />
       <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
-    <StackPanel Orientation="Horizontal" Grid.Row="0">
-      <Button Content="Stop" Command="{Binding StopNestCommand}" />
-      <Button Content="Restart" Command="{Binding RestartNestCommand}" />
-      <Button Content="Continue" Command="{Binding ContinueNestCommand}" />
-      <TextBlock Text="AverageNestTime" />
-      <TextBlock Text="{Binding State.AverageNestTime, Mode=OneWay}" />
-      <TextBlock Text="CallCounter" />
-      <TextBlock Text="{Binding State.CallCounter, Mode=OneWay}" />
-      <TextBlock Text="Generations" />
-      <TextBlock Text="{Binding State.Generations, Mode=OneWay}" />
-      <TextBlock Text="IsErrored" />
-      <TextBlock Text="{Binding State.IsErrored, Mode=OneWay}" />
-      <TextBlock Text="Iterations" />
-      <TextBlock Text="{Binding State.Iterations, Mode=OneWay}" />
-      <TextBlock Text="LastPlacementTime" />
-      <TextBlock Text="{Binding State.LastPlacementTime, Mode=OneWay}" />
-      <TextBlock Text="NestCount" />
-      <TextBlock Text="{Binding State.NestCount, Mode=OneWay}" />
-      <TextBlock Text="Population" />
-      <TextBlock Text="{Binding State.Population, Mode=OneWay}" />
-      <TextBlock Text="Threads" />
-      <TextBlock Text="{Binding State.Threads, Mode=OneWay}" />
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+    <StackPanel Orientation="Vertical" Grid.Row="0">
+      <StackPanel Orientation="Horizontal">
+        <Button Content="Stop" Command="{Binding StopNestCommand}" />
+        <Button Content="Restart" Command="{Binding RestartNestCommand}" />
+        <Button Content="Continue" Command="{Binding ContinueNestCommand}" />
+      </StackPanel>
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+        <TextBlock Text="AverageNestTime" />
+        <TextBlock Text="{Binding State.AverageNestTime, Mode=OneWay}" HorizontalAlignment="Right" />
+      </StackPanel>
+      <StackPanel Orientation="Horizontal">
+        <TextBlock Text="CallCounter" />
+        <TextBlock Text="{Binding State.CallCounter, Mode=OneWay}" />
+      </StackPanel>
+      <StackPanel Orientation="Horizontal">
+        <TextBlock Text="Generations" />
+        <TextBlock Text="{Binding State.Generations, Mode=OneWay}" />
+      </StackPanel>
+      <StackPanel Orientation="Horizontal">
+        <TextBlock Text="IsErrored" />
+        <TextBlock Text="{Binding State.IsErrored, Mode=OneWay}" />
+      </StackPanel>
+      <StackPanel Orientation="Horizontal">
+        <TextBlock Text="Iterations" />
+        <TextBlock Text="{Binding State.Iterations, Mode=OneWay}" />
+      </StackPanel>
+      <StackPanel Orientation="Horizontal">
+        <TextBlock Text="LastPlacementTime" />
+        <TextBlock Text="{Binding State.LastPlacementTime, Mode=OneWay}" />
+      </StackPanel>
+      <StackPanel Orientation="Horizontal">
+        <TextBlock Text="NestCount" />
+        <TextBlock Text="{Binding State.NestCount, Mode=OneWay}" />
+      </StackPanel>
+      <StackPanel Orientation="Horizontal">
+        <TextBlock Text="Population" />
+        <TextBlock Text="{Binding State.Population, Mode=OneWay}" />
+      </StackPanel>
+      <StackPanel Orientation="Horizontal">
+        <TextBlock Text="Threads" />
+        <TextBlock Text="{Binding State.Threads, Mode=OneWay}" />
+      </StackPanel>
     </StackPanel>
     <ProgressBar Grid.Row="1" Height="10" HorizontalAlignment="Stretch" Minimum="0" Maximum="1" Value="{Binding Progress, Mode=OneWay}" Visibility="Visible" />
     <!--Visibility="{Binding IsRunning, Converter={StaticResource BoolToVis}}" />-->
@@ -58,9 +82,10 @@
       </interactivity:Interaction.Triggers>
       <ListView.View>
         <GridView>
-          <GridViewColumn Header="Fitness" Width="25" DisplayMemberBinding="{Binding Path=Fitness, Mode=OneWay}" />
-          <GridViewColumn Header="Placed" Width="50" DisplayMemberBinding="{Binding Path=TotalPlacedCount, Mode=OneWay}"/>
-          <GridViewColumn Header="CreatedAt" Width="60" >
+          <GridViewColumn Header="Fitness" Width="80" DisplayMemberBinding="{Binding Path=Fitness, StringFormat=0.0000, Mode=OneWay}" />
+          <GridViewColumn Header="Placed" Width="60" DisplayMemberBinding="{Binding Path=TotalPlacedCount, Mode=OneWay}"/>
+          <GridViewColumn Header="Created" Width="80" DisplayMemberBinding="{Binding Path=CreatedAt, StringFormat=ddd HH:mm:ss, Mode=OneWay}"/>
+          <GridViewColumn Width="60" >
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel >
@@ -73,5 +98,6 @@
       </ListView.View>
     </ListView>
     <TextBlock Grid.Row="3" Text="{Binding LastLogMessage}" HorizontalAlignment="Stretch" />
+    <local:ZoomPreview Grid.Column="1" Grid.Row="0" Grid.RowSpan="4" />
   </Grid>
 </UserControl>
