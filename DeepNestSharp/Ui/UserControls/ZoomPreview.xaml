@@ -5,9 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DeepNestSharp.Ui.UserControls" 
              xmlns:interactivity="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:converters="clr-namespace:DeepNestSharp.Ui.Converters"
              xmlns:models="clr-namespace:DeepNestSharp.Ui.Models"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+  <UserControl.Resources>
+    <converters:DrawingContextConverter x:Key="DrawingContextConverter" />
+  </UserControl.Resources>
   <Grid>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="Auto"/>
@@ -22,7 +26,7 @@
           </TransformGroup>
         </Grid.LayoutTransform>
         <Viewbox Grid.Column="0" Grid.Row="0">
-          <ItemsControl ItemsSource="{Binding DrawingContext}"
+          <ItemsControl ItemsSource="{Binding }"
                     ScrollViewer.HorizontalScrollBarVisibility="Visible"
                     ScrollViewer.VerticalScrollBarVisibility="Visible">
             <!--MouseMove="ItemsControl_MouseMove" 
@@ -30,8 +34,8 @@
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
                 <Canvas Background="Beige" 
-                        Width="{Binding SelectedItem.UsedSheets[0].Sheet.WidthCalculated}"
-                        Height="{Binding SelectedItem.UsedSheets[0].Sheet.HeightCalculated}"/>
+                        Width="{Binding Width}"
+                        Height="{Binding Height}"/>
               </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemContainerStyle>

@@ -28,24 +28,27 @@
     private ObservableCollection<FileViewModel> files = new ObservableCollection<FileViewModel>();
     private ReadOnlyObservableCollection<FileViewModel>? readonlyFiles;
 
-    private PreviewViewModel previewViewModel;
+    private PreviewViewModel? previewViewModel;
     private SvgNestConfigViewModel? svgNestConfigViewModel;
     private Tuple<string, Theme>? selectedTheme;
     private FileViewModel? activeDocument;
     private PropertiesViewModel? propertiesViewModel;
     private NestMonitorViewModel? nestMonitorViewModel;
 
-    private RelayCommand? loadLayoutCommand = null;
-    private RelayCommand? saveLayoutCommand = null;
-    private RelayCommand? exitCommand = null;
+    private RelayCommand? loadLayoutCommand;
+    private RelayCommand? saveLayoutCommand;
+    private RelayCommand? exitCommand;
+    private RelayCommand? executeLoadNestProject;
+    private RelayCommand? executeLoadSheetPlacement;
+    private RelayCommand? executeActiveDocumentSave;
+    private RelayCommand? executeActiveDocumentSaveAs;
 
     public MainViewModel(IDispatcherService dispatcherService, ISvgNestConfig config)
     {
-      ExecuteLoadSheetPlacement = new RelayCommand(LoadSheetPlacement);
-      ExecuteLoadNestProject = new RelayCommand(LoadNestProject);
-
-      ExecuteSaveSheetPlacement = new RelayCommand(SaveSheetPlacement);
-      ExecuteSaveNestProject = new RelayCommand(SaveNestProject);
+      executeLoadNestProject = new RelayCommand(LoadNestProject);
+      executeLoadSheetPlacement = new RelayCommand(LoadSheetPlacement);
+      executeActiveDocumentSave = new RelayCommand(() => Save(this.ActiveDocument, false), () => this.ActiveDocument?.IsDirty ?? false);
+      executeActiveDocumentSaveAs = new RelayCommand(() => Save(this.ActiveDocument, true), () => true);
 
       this.Themes = new List<Tuple<string, Theme>>
       {
@@ -64,13 +67,15 @@
       this.SelectedTheme = Themes.First();
       this.DispatcherService = dispatcherService;
       this.Config = config;
+
+      this.ActiveDocumentChanged += this.MainViewModel_ActiveDocumentChanged;
     }
 
     public event EventHandler? ActiveDocumentChanged;
 
     public List<Tuple<string, Theme>> Themes { get; set; }
 
-    public Tuple<string, Theme> SelectedTheme
+    public Tuple<string, Theme>? SelectedTheme
     {
       get => selectedTheme;
 
@@ -169,7 +174,7 @@
       }
     }
 
-    public ObservablePartPlacement SelectedPartItem
+    public ObservablePartPlacement? SelectedPartItem
     {
       get => selectedPartItem;
       set
@@ -179,15 +184,15 @@
       }
     }
 
-    public ICommand ExecuteLoadSheetPlacement { get; }
+    public ICommand? ExecuteLoadSheetPlacement => executeLoadSheetPlacement;
 
-    public ICommand ExecuteLoadNestProject { get; }
+    public ICommand? ExecuteLoadNestProject => executeLoadNestProject;
 
-    public ICommand ExecuteSaveSheetPlacement { get; }
+    public ICommand? ExecuteActiveDocumentSave => executeActiveDocumentSave;
 
-    public ICommand ExecuteSaveNestProject { get; }
+    public ICommand? ExecuteActiveDocumentSaveAs => executeActiveDocumentSaveAs;
 
-    public ICommand ExitCommand
+    public ICommand? ExitCommand
     {
       get
       {
@@ -228,7 +233,7 @@
 
     public ObservableSheetPlacement SheetPlacement { get; } = new ObservableSheetPlacement();
 
-    public FileViewModel ActiveDocument
+    public FileViewModel? ActiveDocument
     {
       get => activeDocument;
       set
@@ -248,99 +253,6 @@
 
     public ISvgNestConfig Config { get; }
 
-    private bool CanExit()
-    {
-      return true;
-    }
-
-    private bool CanLoadLayout()
-    {
-      return File.Exists(@".\AvalonDock.Layout.config");
-    }
-
-    private bool CanSaveLayout()
-    {
-      return true;
-    }
-
-    private void OnExit()
-    {
-      Application.Current.MainWindow.Close();
-    }
-
-    private void OnLoadLayout()
-    {
-      // Walk down the layout and gather the LayoutContent elements.
-      // AD bails out when it tries to invoke RemoveViewFromLogicalChild
-      // on them.
-      //var l = GatherLayoutContent(DockManager.Layout).ToArray();
-      //// Remove the views by force
-      //foreach (var x in l)
-      //{
-      //  DockManager.GetType()
-      //      .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
-      //      .Where(m => m.Name.Equals("RemoveViewFromLogicalChild"))
-      //      .First()
-      //      .Invoke(DockManager, new object[] { x });
-      //}
-
-
-      var layoutSerializer = new XmlLayoutSerializer(DockManager);
-      //layoutSerializer.LayoutSerializationCallback += (s, e) =>
-      //{
-      //  object o = e.Content;
-      //};
-      var configFile = new FileInfo(@".\AvalonDock.Layout.config");
-      if (configFile.Exists)
-      {
-        layoutSerializer.Deserialize(configFile.FullName);
-      }
-    }
-
-    private static IEnumerable<LayoutContent> GatherLayoutContent(ILayoutElement le)
-    {
-      if (le is LayoutContent)
-      {
-        yield return (LayoutContent)le;
-      }
-
-      IEnumerable<ILayoutElement> children = new ILayoutElement[0];
-      if (le is LayoutRoot)
-      {
-        children = ((LayoutRoot)le).Children;
-      }
-      else if (le is LayoutPanel)
-      {
-        children = ((LayoutPanel)le).Children;
-      }
-      else if (le is LayoutDocumentPaneGroup)
-      {
-        children = ((LayoutDocumentPaneGroup)le).Children;
-      }
-      else if (le is LayoutAnchorablePane)
-      {
-        children = ((LayoutAnchorablePane)le).Children;
-      }
-      else if (le is LayoutDocumentPane)
-      {
-        children = ((LayoutDocumentPane)le).Children;
-      }
-
-      foreach (var child in children)
-      {
-        foreach (var x in GatherLayoutContent(child))
-        {
-          yield return x;
-        }
-      }
-    }
-
-    private void OnSaveLayout()
-    {
-      var layoutSerializer = new XmlLayoutSerializer(DockManager);
-      layoutSerializer.Serialize(@".\AvalonDock.Layout.config");
-    }
-
     public void LoadNestProject()
     {
       var openFileDialog = new OpenFileDialog
@@ -357,6 +269,7 @@
     public void LoadNestProject(string fileName)
     {
       var loaded = new NestProjectViewModel(this, fileName);
+      loaded.PropertyChanged += this.NestProjectViewModel_PropertyChanged;
       this.files.Add(loaded);
       this.ActiveDocument = loaded;
     }
@@ -420,29 +333,139 @@
       files.Remove(fileToClose);
     }
 
-    internal void Save(FileViewModel fileToSave, bool saveAsFlag = false)
+    internal void Save(FileViewModel? fileToSave, bool saveAsFlag = false)
     {
-      if (fileToSave.FilePath == null || saveAsFlag)
+      if (fileToSave != null)
       {
-        var dlg = new SaveFileDialog();
-        if (dlg.ShowDialog().GetValueOrDefault())
+        if (fileToSave.FilePath == null || saveAsFlag)
         {
-          fileToSave.FilePath = dlg.SafeFileName;
+          var dlg = new SaveFileDialog();
+          var response = dlg.ShowDialog();
+          if (response.HasValue && response.Value)
+          {
+            fileToSave.FilePath = dlg.FileName;
+          }
+        }
+
+        if (fileToSave?.FilePath == null)
+        {
+          return;
+        }
+
+        File.WriteAllText(fileToSave.FilePath, fileToSave.TextContent);
+        if (ActiveDocument != null)
+        {
+          ActiveDocument.IsDirty = false;
         }
       }
-
-      if (fileToSave.FilePath == null)
-      {
-        return;
-      }
-
-      File.WriteAllText(fileToSave.FilePath, fileToSave.TextContent);
-      ActiveDocument.IsDirty = false;
     }
 
-    private void SaveNestProject()
+    private static IEnumerable<LayoutContent> GatherLayoutContent(ILayoutElement le)
     {
-      throw new NotImplementedException();
+      if (le is LayoutContent)
+      {
+        yield return (LayoutContent)le;
+      }
+
+      IEnumerable<ILayoutElement> children = new ILayoutElement[0];
+      if (le is LayoutRoot)
+      {
+        children = ((LayoutRoot)le).Children;
+      }
+      else if (le is LayoutPanel)
+      {
+        children = ((LayoutPanel)le).Children;
+      }
+      else if (le is LayoutDocumentPaneGroup)
+      {
+        children = ((LayoutDocumentPaneGroup)le).Children;
+      }
+      else if (le is LayoutAnchorablePane)
+      {
+        children = ((LayoutAnchorablePane)le).Children;
+      }
+      else if (le is LayoutDocumentPane)
+      {
+        children = ((LayoutDocumentPane)le).Children;
+      }
+
+      foreach (var child in children)
+      {
+        foreach (var x in GatherLayoutContent(child))
+        {
+          yield return x;
+        }
+      }
+    }
+
+    private bool CanExit()
+    {
+      return true;
+    }
+
+    private bool CanLoadLayout()
+    {
+      return File.Exists(@".\AvalonDock.Layout.config");
+    }
+
+    private bool CanSaveLayout()
+    {
+      return true;
+    }
+
+    private void OnExit()
+    {
+      Application.Current.MainWindow.Close();
+    }
+
+    private void OnLoadLayout()
+    {
+      // Walk down the layout and gather the LayoutContent elements.
+      // AD bails out when it tries to invoke RemoveViewFromLogicalChild
+      // on them.
+      /*var l = GatherLayoutContent(DockManager.Layout).ToArray();
+      // Remove the views by force
+      foreach (var x in l)
+      {
+        DockManager.GetType()
+            .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
+            .Where(m => m.Name.Equals("RemoveViewFromLogicalChild"))
+            .First()
+            .Invoke(DockManager, new object[] { x });
+      }*/
+
+      var layoutSerializer = new XmlLayoutSerializer(DockManager);
+      /*layoutSerializer.LayoutSerializationCallback += (s, e) =>
+      //{
+      //  object o = e.Content;
+      };*/
+
+      var configFile = new FileInfo(@".\AvalonDock.Layout.config");
+      if (configFile.Exists)
+      {
+        layoutSerializer.Deserialize(configFile.FullName);
+      }
+    }
+
+    private void MainViewModel_ActiveDocumentChanged(object? sender, EventArgs e)
+    {
+      this.executeActiveDocumentSave?.NotifyCanExecuteChanged();
+      this.executeActiveDocumentSaveAs?.NotifyCanExecuteChanged();
+    }
+
+    private void NestProjectViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+      if (e.PropertyName == $"{nameof(FileViewModel.IsDirty)}")
+      {
+        executeActiveDocumentSave?.NotifyCanExecuteChanged();
+        executeActiveDocumentSaveAs?.NotifyCanExecuteChanged();
+      }
+    }
+
+    private void OnSaveLayout()
+    {
+      var layoutSerializer = new XmlLayoutSerializer(DockManager);
+      layoutSerializer.Serialize(@".\AvalonDock.Layout.config");
     }
 
     private void SaveSheetPlacement()

@@ -38,10 +38,9 @@
       </Menu.ItemsPanel>
       <MenuItem Header="File">
         <MenuItem Header="Load Project" Command="{Binding ExecuteLoadNestProject}" />
-        <MenuItem Header="Save Project" Command="{Binding ExecuteSaveNestProject}" />
-        <Separator />
         <MenuItem Header="Load SheetPlacement" Command="{Binding ExecuteLoadSheetPlacement}" />
-        <MenuItem Header="Save SheetPlacement" Command="{Binding ExecuteSaveSheetPlacement}" />
+        <MenuItem Header="Save" Command="{Binding ExecuteActiveDocumentSave}" />
+        <MenuItem Header="Save As" Command="{Binding ExecuteActiveDocumentSaveAs}" />
         <Separator />
         <MenuItem Header="Load Layout" Command="{Binding LoadLayoutCommand}" />
         <MenuItem Header="Save Layout" Command="{Binding SaveLayoutCommand}" />

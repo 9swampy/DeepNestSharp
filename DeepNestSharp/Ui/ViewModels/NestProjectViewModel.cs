@@ -91,5 +91,7 @@
       MainViewModel.NestMonitorViewModel.IsActive = true;
       MainViewModel.NestMonitorViewModel.TryStart(this);
     }
+
+    public override string TextContent { get => this.ProjectInfo.ToJson(); }
   }
 }

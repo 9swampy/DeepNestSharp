@@ -88,19 +88,7 @@
       }
     }
 
-    public string TextContent
-    {
-      get => textContent;
-      set
-      {
-        if (textContent != value)
-        {
-          textContent = value;
-          OnPropertyChanged(nameof(TextContent));
-          IsDirty = true;
-        }
-      }
-    }
+    public abstract string TextContent { get; }
 
     public bool IsDirty
     {

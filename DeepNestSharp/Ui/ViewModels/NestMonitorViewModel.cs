@@ -164,7 +164,7 @@
         }
         else
         {
-          DrawingContext.Set(value.UsedSheets[0]);
+          DrawingContext.For(value.UsedSheets[0]);
         }
 
         OnPropertyChanged(nameof(DrawingContext));
@@ -333,12 +333,14 @@
         }
         catch (Exception ex)
         {
+          this.nestMonitorViewModel.State.SetIsErrored();
           System.Diagnostics.Debug.Print("Error-Execute");
           System.Diagnostics.Debug.Print(ex.Message);
           System.Diagnostics.Debug.Print(ex.StackTrace);
         }
         finally
         {
+          nestMonitorViewModel.IsStopping = false;
           System.Diagnostics.Debug.Print("Finally-Execute");
         }
       }

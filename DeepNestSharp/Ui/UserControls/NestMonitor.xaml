@@ -3,12 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:DeepNestSharp.Ui.UserControls" 
-             xmlns:interactivity="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:userControls="clr-namespace:DeepNestSharp.Ui.UserControls" 
+             xmlns:interactivity="http://schemas.microsoft.com/expression/2010/interactivity" 
+             xmlns:converters="clr-namespace:DeepNestSharp.Ui.Converters" 
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
     <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    <converters:DrawingContextConverter x:Key="DrawingContextConverter" />
   </UserControl.Resources>
   <Grid>
     <Grid.RowDefinitions>
@@ -22,50 +25,29 @@
       <ColumnDefinition Width="*" />
     </Grid.ColumnDefinitions>
     <StackPanel Orientation="Vertical" Grid.Row="0">
-      <StackPanel Orientation="Horizontal">
-        <Button Content="Stop" Command="{Binding StopNestCommand}" />
-        <Button Content="Restart" Command="{Binding RestartNestCommand}" />
-        <Button Content="Continue" Command="{Binding ContinueNestCommand}" />
-      </StackPanel>
-      <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-        <TextBlock Text="AverageNestTime" />
-        <TextBlock Text="{Binding State.AverageNestTime, Mode=OneWay}" HorizontalAlignment="Right" />
-      </StackPanel>
-      <StackPanel Orientation="Horizontal">
-        <TextBlock Text="CallCounter" />
-        <TextBlock Text="{Binding State.CallCounter, Mode=OneWay}" />
-      </StackPanel>
-      <StackPanel Orientation="Horizontal">
-        <TextBlock Text="Generations" />
-        <TextBlock Text="{Binding State.Generations, Mode=OneWay}" />
-      </StackPanel>
-      <StackPanel Orientation="Horizontal">
-        <TextBlock Text="IsErrored" />
-        <TextBlock Text="{Binding State.IsErrored, Mode=OneWay}" />
-      </StackPanel>
-      <StackPanel Orientation="Horizontal">
-        <TextBlock Text="Iterations" />
-        <TextBlock Text="{Binding State.Iterations, Mode=OneWay}" />
-      </StackPanel>
-      <StackPanel Orientation="Horizontal">
-        <TextBlock Text="LastPlacementTime" />
-        <TextBlock Text="{Binding State.LastPlacementTime, Mode=OneWay}" />
-      </StackPanel>
-      <StackPanel Orientation="Horizontal">
-        <TextBlock Text="NestCount" />
-        <TextBlock Text="{Binding State.NestCount, Mode=OneWay}" />
-      </StackPanel>
-      <StackPanel Orientation="Horizontal">
-        <TextBlock Text="Population" />
-        <TextBlock Text="{Binding State.Population, Mode=OneWay}" />
-      </StackPanel>
-      <StackPanel Orientation="Horizontal">
-        <TextBlock Text="Threads" />
-        <TextBlock Text="{Binding State.Threads, Mode=OneWay}" />
-      </StackPanel>
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="1*" />
+          <ColumnDefinition Width="1*" />
+          <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+        <Button Grid.Column="0" Content="Stop" Command="{Binding StopNestCommand}" />
+        <Button Grid.Column="1" Content="Restart" Command="{Binding RestartNestCommand}" />
+        <Button Grid.Column="2" Content="Continue" Command="{Binding ContinueNestCommand}" />
+      </Grid>
+      <xctk:PropertyGrid 
+        HorizontalAlignment="Stretch" 
+        VerticalAlignment="Stretch"
+        SelectedObject="{Binding State}"
+        AutoGenerateProperties="true" 
+        ShowHorizontalScrollBar="false"
+        ShowAdvancedOptions="False"
+        ShowSortOptions="False"
+        ShowTitle="False"
+        ShowSearchBox="False">
+      </xctk:PropertyGrid>
     </StackPanel>
-    <ProgressBar Grid.Row="1" Height="10" HorizontalAlignment="Stretch" Minimum="0" Maximum="1" Value="{Binding Progress, Mode=OneWay}" Visibility="Visible" />
-    <!--Visibility="{Binding IsRunning, Converter={StaticResource BoolToVis}}" />-->
+    <ProgressBar Grid.Row="1" Height="10" HorizontalAlignment="Stretch" Minimum="0" Maximum="1" Value="{Binding Progress, Mode=OneWay}" Visibility="{Binding IsRunning, Converter={StaticResource BoolToVis}}" />
     <ListView Grid.Row="2"
               ItemsSource="{Binding TopNestResults}" 
               SelectedItem="{Binding SelectedItem}" 
@@ -83,7 +65,14 @@
       <ListView.View>
         <GridView>
           <GridViewColumn Header="Fitness" Width="80" DisplayMemberBinding="{Binding Path=Fitness, StringFormat=0.0000, Mode=OneWay}" />
-          <GridViewColumn Header="Placed" Width="60" DisplayMemberBinding="{Binding Path=TotalPlacedCount, Mode=OneWay}"/>
+          <GridViewColumn Header="Placed" Width="60" DisplayMemberBinding="{Binding Path=TotalPlacedCount, Mode=OneWay}">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding TotalPlacedCount}" HorizontalAlignment="Center" />
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Header="Sheets" Width="60" DisplayMemberBinding="{Binding Path=UsedSheets.Count, Mode=OneWay}" />
           <GridViewColumn Header="Created" Width="80" DisplayMemberBinding="{Binding Path=CreatedAt, StringFormat=ddd HH:mm:ss, Mode=OneWay}"/>
           <GridViewColumn Width="60" >
             <GridViewColumn.CellTemplate>
@@ -98,6 +87,22 @@
       </ListView.View>
     </ListView>
     <TextBlock Grid.Row="3" Text="{Binding LastLogMessage}" HorizontalAlignment="Stretch" />
-    <local:ZoomPreview Grid.Column="1" Grid.Row="0" Grid.RowSpan="4" />
+    <Grid Grid.Column="1"
+          Grid.Row="0" 
+          Grid.RowSpan="4">
+      <ListBox Name="Container"
+             HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+             Margin="5,5,5,5"
+             Padding="0"
+             Grid.IsSharedSizeScope="True"
+             UseLayoutRounding="True"
+             ItemsSource="{Binding SelectedItem.UsedSheets, Converter={StaticResource DrawingContextConverter}}">
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <userControls:ZoomPreview />
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </Grid>
   </Grid>
 </UserControl>

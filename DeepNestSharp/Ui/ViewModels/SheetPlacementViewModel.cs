@@ -75,6 +75,8 @@
       }
     }
 
+    public override string TextContent => this.SheetPlacement.ToJson();
+
     protected override void LoadContent()
     {
       this.SheetPlacement = new ObservableSheetPlacement(DeepNestLib.Placement.SheetPlacement.LoadFromFile(this.FilePath));

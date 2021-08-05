@@ -1,5 +1,6 @@
 namespace DeepNestLib.NestProject
 {
+  using System;
   using System.Collections.Generic;
   using System.IO;
   using System.Linq;
@@ -16,12 +17,28 @@ namespace DeepNestLib.NestProject
     [JsonInclude]
     public IList<ISheetLoadInfo> SheetLoadInfos { get; private set; } = new List<ISheetLoadInfo>() { new SheetLoadInfo() };
 
+    [JsonInclude]
+    public ISvgNestConfig Config => SvgNest.Config;
+
     public static ProjectInfo FromJson(string json)
     {
-      var options = new JsonSerializerOptions();
-      options.Converters.Add(new DetailLoadInfoJsonConverter());
-      options.Converters.Add(new SheetLoadInfoJsonConverter());
-      return JsonSerializer.Deserialize<ProjectInfo>(json, options);
+      try
+      {
+        if (!string.IsNullOrWhiteSpace(json))
+        {
+          var options = new JsonSerializerOptions();
+          options.Converters.Add(new DetailLoadInfoJsonConverter());
+          options.Converters.Add(new SheetLoadInfoJsonConverter());
+          options.Converters.Add(new SvgNestConfigJsonConverter());
+          return JsonSerializer.Deserialize<ProjectInfo>(json, options);
+        }
+
+        return new ProjectInfo();
+      }
+      catch (Exception)
+      {
+        return new ProjectInfo();
+      }
     }
 
     /// <summary>
@@ -51,6 +68,7 @@ namespace DeepNestLib.NestProject
       var options = new JsonSerializerOptions();
       options.Converters.Add(new DetailLoadInfoJsonConverter());
       options.Converters.Add(new SheetLoadInfoJsonConverter());
+      options.Converters.Add(new SvgNestConfigJsonConverter());
       return JsonSerializer.Serialize(this, options);
     }
 
@@ -66,6 +84,14 @@ namespace DeepNestLib.NestProject
     {
       var source = LoadFromFile(filePath);
       Load(source);
+    }
+
+    public void Save(string fileName)
+    {
+      using (StreamWriter outputFile = new StreamWriter(fileName))
+      {
+        outputFile.WriteLine(this.ToJson());
+      }
     }
   }
 }

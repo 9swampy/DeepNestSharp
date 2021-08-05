@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
-
-namespace DeepNestLib.NestProject
+﻿namespace DeepNestLib.NestProject
 {
+  using System.Collections.Generic;
+
   public interface IProjectInfo
   {
+    ISvgNestConfig Config { get; }
+
     IList<IDetailLoadInfo> DetailLoadInfos { get; }
 
     IList<ISheetLoadInfo> SheetLoadInfos { get; }

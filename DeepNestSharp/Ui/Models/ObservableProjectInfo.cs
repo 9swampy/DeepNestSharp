@@ -2,6 +2,7 @@
 {
   using System.Collections.Generic;
   using System.Collections.ObjectModel;
+  using DeepNestLib;
   using DeepNestLib.NestProject;
   using Microsoft.Toolkit.Mvvm.ComponentModel;
 
@@ -50,6 +51,8 @@
         return this.sheetLoadInfos;
       }
     }
+
+    public ISvgNestConfig Config => SvgNest.Config;
 
     public void Load(string filePath)
     {

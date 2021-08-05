@@ -14,6 +14,12 @@
     </Grid.RowDefinitions>
     <StackPanel Grid.Row="0" Orientation="Horizontal" >
       <Button Content="Execute" Command="{Binding ExecuteNestCommand}" />
+      <DockPanel Width="300">
+        <TextBlock HorizontalAlignment="Right">Multiplier</TextBlock>
+      </DockPanel>
+      <DockPanel Width="50">
+        <xctk:IntegerUpDown Value="{Binding ProjectInfo.Config.Multiplier}" HorizontalAlignment="Right" />
+      </DockPanel>
     </StackPanel>
     <ListView Grid.Row="1" ItemsSource="{Binding Path=ProjectInfo.DetailLoadInfos}" SelectedItem="{Binding SelectedDetailLoadInfo}" SelectedIndex="{Binding SelectedDetailLoadInfoIndex, Mode=TwoWay}">
       <ListView.Resources>

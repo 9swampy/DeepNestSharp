@@ -41,6 +41,8 @@
       }
     }
 
+    public override string TextContent => this.Part?.ToJson() ?? string.Empty;
+
     protected override void LoadContent()
     {
       this.Part = new ObservableNfp(DxfParser.LoadDxfFile(this.FilePath).ToNfp());

@@ -1,5 +1,6 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
+  using System;
   using System.Collections.ObjectModel;
   using DeepNestLib;
   using DeepNestLib.Placement;
@@ -13,18 +14,31 @@
     {
     }
 
-    public double Width => sheetPlacement?.Sheet.WidthCalculated ?? 0;
+    public double Width { get; private set; }
 
-    public double Height => sheetPlacement?.Sheet.HeightCalculated ?? 0;
+    public double Height { get; private set; }
 
     public void Set(ISheetPlacement sheetPlacement)
     {
+      For(sheetPlacement);
+    }
+
+    public ZoomPreviewDrawingContext For(ISheetPlacement sheetPlacement)
+    {
       Set(new ObservableSheetPlacement(sheetPlacement));
+      return this;
     }
 
     public void Set(ObservableSheetPlacement sheetPlacement)
     {
+      For(sheetPlacement);
+    }
+
+    public ZoomPreviewDrawingContext For(ObservableSheetPlacement sheetPlacement)
+    {
       this.Clear();
+      this.Width = sheetPlacement.Sheet.WidthCalculated;
+      this.Height = sheetPlacement.Sheet.HeightCalculated;
       this.Add(sheetPlacement);
       foreach (var partPlacement in sheetPlacement.PartPlacements)
       {
@@ -35,6 +49,8 @@
           Set(new ObservableHole((ObservablePartPlacement)partPlacement, Background.ShiftPolygon(child, partPlacement)));
         }
       }
+
+      return this;
     }
 
     /// <summary>

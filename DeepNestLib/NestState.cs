@@ -42,6 +42,7 @@
 
     public int Threads => threads;
 
+    [Browsable(false)]
     public TopNestResultsCollection TopNestResults { get; }
 
     public static NestState CreateInstance(ISvgNestConfig config, IDispatcherService dispatcherService) => new NestState(config, dispatcherService);
@@ -129,7 +130,7 @@
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CallCounter)));
     }
 
-    internal void SetIsErrored()
+    public void SetIsErrored()
     {
       this.IsErrored = true;
     }

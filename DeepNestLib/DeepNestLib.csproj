@@ -216,6 +216,7 @@
     <Compile Include="NestingContext.cs" />
     <Compile Include="NestItem.cs" />
     <Compile Include="NestProject\SheetLoadInfoJsonConverter.cs" />
+    <Compile Include="NestProject\SvgNestConfigJsonConverter.cs" />
     <Compile Include="NestState.cs" />
     <Compile Include="NFP.cs" />
     <Compile Include="NfpExtensions.cs" />

@@ -1590,16 +1590,18 @@
 
     private void toolStripButtonSaveNestProject_Click(object sender, EventArgs e)
     {
+      SaveProject();
+    }
+
+    private void SaveProject()
+    {
       try
       {
         SaveFileDialog sfd = new SaveFileDialog();
         sfd.Filter = ProjectInfo.FileDialogFilter;
         if (sfd.ShowDialog() == DialogResult.OK)
         {
-          using (StreamWriter outputFile = new StreamWriter(sfd.FileName))
-          {
-            outputFile.WriteLine(this.projectInfo.ToJson());
-          }
+          this.projectInfo.Save(sfd.FileName);
         }
       }
       catch (Exception ex)
