@@ -790,7 +790,7 @@
       return ShiftPolygon(p, shift.X, shift.Y);
     }
 
-    internal static INfp ShiftPolygon(INfp p, double x, double y)
+    public static INfp ShiftPolygon(INfp p, double x, double y)
     {
       NFP shifted = new NFP();
       shifted.Id = p.Id;

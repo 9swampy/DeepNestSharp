@@ -7,6 +7,7 @@
   using System.Windows.Controls;
   using System.Windows.Input;
   using System.Windows.Media;
+  using System.Windows.Shapes;
   using DeepNestLib;
   using DeepNestLib.Placement;
   using DeepNestSharp.Ui.Docking;
@@ -43,13 +44,11 @@
       this.PropertyChanged += this.PreviewViewModel_PropertyChanged;
     }
 
-    public ObservableCollection<object> DrawingContext
-    {
-      get;
-      private set;
-    }
+    public FileViewModel? ActiveDocument => mainViewModel.ActiveDocument;
 
-      = new ObservableCollection<object>();
+    public ZoomPreviewDrawingContext ZoomDrawingContext { get; } = new ZoomPreviewDrawingContext();
+
+    public ObservableCollection<object> DrawingContext { get; } = new ObservableCollection<object>();
 
     public ICommand FitAllCommand
     {
@@ -96,6 +95,7 @@
       {
         hoverPartPlacement = value;
         OnPropertyChanged(nameof(DrawingContext));
+        OnPropertyChanged(nameof(ZoomDrawingContext));
         OnPropertyChanged(nameof(SelectedPartPlacement));
         OnPropertyChanged(nameof(HoverPartPlacement));
       }
@@ -152,6 +152,7 @@
         SetProperty(ref dragStart, value, nameof(DragStart));
         OnPropertyChanged(nameof(IsDragging));
         OnPropertyChanged(nameof(DrawingContext));
+        OnPropertyChanged(nameof(ZoomDrawingContext));
       }
     }
 
@@ -362,6 +363,7 @@
     private void MainViewModel_ActiveDocumentChanged(object? sender, EventArgs e)
     {
       InitialiseDrawingContext(sender);
+      OnPropertyChanged(nameof(ActiveDocument));
     }
 
     private void NestProjectViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -420,6 +422,7 @@
     private void ResetDrawingContext()
     {
       this.DrawingContext.Clear();
+      this.ZoomDrawingContext.Clear();
     }
 
     private void SheetPlacementViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -437,6 +440,7 @@
     {
       ResetDrawingContext();
       this.DrawingContext.Add(item);
+      this.ZoomDrawingContext.Set(item);
       foreach (var partPlacement in item.PartPlacements)
       {
         INfp part = partPlacement.Part;
@@ -448,13 +452,15 @@
       }
 
       OnPropertyChanged(nameof(DrawingContext));
+      OnPropertyChanged(nameof(ZoomDrawingContext));
     }
 
     private void Set(ObservableDetailLoadInfo item)
     {
       ResetDrawingContext();
       var polygon = item.Load();
-      Set(new ObservableNfp(polygon));
+      var shiftedPart = Background.ShiftPolygon(polygon, -polygon.MinX, -polygon.MinY);
+      Set(new ObservableNfp(shiftedPart));
     }
 
     /// <summary>
@@ -464,6 +470,7 @@
     private void Set(ObservableNfp polygon)
     {
       this.DrawingContext.Add(polygon);
+      this.ZoomDrawingContext.For(polygon);
       foreach (var child in polygon.Children)
       {
         if (child is ObservableNfp observableChild)
@@ -477,6 +484,7 @@
       }
 
       OnPropertyChanged(nameof(DrawingContext));
+      OnPropertyChanged(nameof(ZoomDrawingContext));
     }
 
     /// <summary>

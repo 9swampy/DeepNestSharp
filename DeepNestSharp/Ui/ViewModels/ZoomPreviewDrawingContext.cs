@@ -8,12 +8,6 @@
 
   public class ZoomPreviewDrawingContext : ObservableCollection<object>
   {
-    private readonly ISheetPlacement? sheetPlacement;
-
-    public ZoomPreviewDrawingContext()
-    {
-    }
-
     public double Width { get; private set; }
 
     public double Height { get; private set; }
@@ -46,23 +40,55 @@
         this.Add(partPlacement);
         foreach (var child in part.Children)
         {
-          Set(new ObservableHole((ObservablePartPlacement)partPlacement, Background.ShiftPolygon(child, partPlacement)));
+          AppendChild(new ObservableHole((ObservablePartPlacement)partPlacement, Background.ShiftPolygon(child, partPlacement)));
         }
       }
 
       return this;
     }
 
+    internal ZoomPreviewDrawingContext For(INfp part)
+    {
+      For(new ObservableNfp(part));
+      return this;
+    }
+
+    internal ZoomPreviewDrawingContext For(ObservableNfp part)
+    {
+      this.Clear();
+      this.Width = part.WidthCalculated;
+      this.Height = part.HeightCalculated;
+      this.Add(part);
+      foreach (var c in part.Children)
+      {
+        AppendChild(c);
+      }
+
+      return this;
+    }
+
+    private void AppendChild(INfp c)
+    {
+      if (c is ObservableHole observableHole)
+      {
+        AppendChild(observableHole);
+      }
+      else
+      {
+        AppendChild(new ObservableHole(c));
+      }
+    }
+
     /// <summary>
     /// Adding in children as <see cref="ObservableHoles"/> so can fill differently.
     /// </summary>
     /// <param name="child">Child to add; presumption's it will be a Hole.</param>
-    private void Set(ObservableHole child)
+    private void AppendChild(ObservableHole child)
     {
       this.Add(child);
       foreach (var c in child.Children)
       {
-        Set(new ObservableHole(c));
+        AppendChild(new ObservableHole(c));
       }
     }
   }

@@ -60,4 +60,17 @@
     <ProjectReference Include="..\DeepNestLib.Core\DeepNestLib.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Ui\UserControls\DrawingContextBoundZoomPreview.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Ui\UserControls\DrawingContextBoundZoomPreview.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
 </Project>
