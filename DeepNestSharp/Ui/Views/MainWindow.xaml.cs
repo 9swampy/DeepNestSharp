@@ -1,11 +1,8 @@
 ﻿namespace DeepNestSharp
 {
   using System.IO;
-  using System.Threading;
   using System.Windows;
-  using System.Windows.Input;
   using DeepNestSharp.Ui.ViewModels;
-  using Microsoft.Toolkit.Mvvm.Input;
 
   public partial class MainWindow : Window
   {
@@ -25,7 +22,7 @@
 #if DEBUG
       ViewModel.LoadSheetPlacement(@"C:\Git\CanDispenserCnc\CuttingLists\Std320x164\300x200GoodSwitchbackNest.dnsp");
       ViewModel.LoadNestProject(@"C:\Git\CanDispenserCnc\CuttingLists\Std320x164\SwitchbacksAndFront295x195.dnest");
-      //ViewModel.LoadPart(@"C:\Git\CanDispenserCnc\CuttingLists\Std320x164\FrontWall.dxf");
+      ViewModel.LoadPart(@"C:\Git\CanDispenserCnc\CuttingLists\Std320x164\FrontWall.dxf");
 #endif
       return;
 

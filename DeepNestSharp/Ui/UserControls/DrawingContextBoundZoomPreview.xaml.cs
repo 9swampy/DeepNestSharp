@@ -1,25 +1,16 @@
 ﻿namespace DeepNestSharp.Ui.UserControls
 {
-using DeepNestSharp.Ui.Behaviors;
-using DeepNestSharp.Ui.Models;
-using DeepNestSharp.Ui.ViewModels;
   using System;
-  using System.Collections.Generic;
-  using System.Linq;
-  using System.Text;
-  using System.Threading.Tasks;
   using System.Windows;
   using System.Windows.Controls;
-  using System.Windows.Data;
-  using System.Windows.Documents;
   using System.Windows.Input;
-  using System.Windows.Media;
-  using System.Windows.Media.Imaging;
-  using System.Windows.Navigation;
   using System.Windows.Shapes;
+  using DeepNestSharp.Ui.Behaviors;
+  using DeepNestSharp.Ui.Models;
+  using DeepNestSharp.Ui.ViewModels;
 
   /// <summary>
-  /// Interaction logic for ZoomPreview.xaml
+  /// Interaction logic for ZoomPreview.xaml.
   /// </summary>
   public partial class DrawingContextBoundZoomPreview : UserControl
   {
@@ -46,30 +37,101 @@ using DeepNestSharp.Ui.ViewModels;
       slider.ValueChanged += OnSliderValueChanged;
     }
 
+    private static bool IsScrollModifierPressed
+    {
+      get
+      {
+        return Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
+      }
+    }
+
+    private static bool IsDragModifierPressed
+    {
+      get
+      {
+        return Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
+      }
+    }
+
+    private static void BringToFront(Canvas parent, Polygon polygonToMove)
+    {
+      try
+      {
+        int currentIndex = Panel.GetZIndex(polygonToMove);
+        int zIndex = 0;
+        int maxZ = 0;
+        for (int i = 0; i < parent.Children.Count; i++)
+        {
+          if (parent.Children[i] is Polygon child &&
+              parent.Children[i] != polygonToMove)
+          {
+            zIndex = Panel.GetZIndex(child);
+            maxZ = Math.Max(maxZ, zIndex);
+            if (zIndex > currentIndex)
+            {
+              Panel.SetZIndex(child, zIndex - 1);
+            }
+          }
+        }
+
+        Panel.SetZIndex(polygonToMove, maxZ);
+      }
+      catch (Exception ex)
+      {
+        System.Diagnostics.Debug.Print($"{ex.Message}/n{ex.StackTrace}");
+      }
+    }
+
     private void OnMouseMove(object sender, MouseEventArgs e)
     {
-      if (lastDragPoint.HasValue)
+      if (IsScrollModifierPressed)
       {
-        Point posNow = e.GetPosition(scrollViewer);
+        if (lastDragPoint.HasValue)
+        {
+          Point posNow = e.GetPosition(scrollViewer);
 
-        double dX = posNow.X - lastDragPoint.Value.X;
-        double dY = posNow.Y - lastDragPoint.Value.Y;
+          double dX = posNow.X - lastDragPoint.Value.X;
+          double dY = posNow.Y - lastDragPoint.Value.Y;
 
-        lastDragPoint = posNow;
+          lastDragPoint = posNow;
 
-        scrollViewer.ScrollToHorizontalOffset(scrollViewer.HorizontalOffset - dX);
-        scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - dY);
+          scrollViewer.ScrollToHorizontalOffset(scrollViewer.HorizontalOffset - dX);
+          scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - dY);
+        }
       }
     }
 
     private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
       var mousePos = e.GetPosition(scrollViewer);
-      if (CanUseScrollbars(ref mousePos))
+      if (IsScrollModifierPressed)
       {
-        scrollViewer.Cursor = Cursors.SizeAll;
-        lastDragPoint = mousePos;
-        Mouse.Capture(scrollViewer);
+        if (CanUseScrollbars(ref mousePos))
+        {
+          scrollViewer.Cursor = Cursors.SizeAll;
+          lastDragPoint = mousePos;
+          Mouse.Capture(scrollViewer);
+        }
+      }
+      else if (DataContext is PreviewViewModel vm &&
+            sender is ScrollViewer senderScrollViewer &&
+            senderScrollViewer.InputHitTest(mousePos) is Polygon polygon &&
+            polygon.GetVisualParent<Canvas>() is Canvas canvas &&
+            polygon.DataContext is ObservablePartPlacement partPlacement)
+      {
+        vm.SelectedPartPlacement = partPlacement;
+        BringToFront(canvas, polygon);
+        if (IsDragModifierPressed)
+        {
+          vm.DragStart = mousePos;
+          scrollViewer.Cursor = Cursors.Hand;
+          partPlacementStartPos = new Point(vm.SelectedPartPlacement.X, vm.SelectedPartPlacement.Y);
+          System.Diagnostics.Debug.Print($"Drag start set@{vm.DragStart?.X},{vm.DragStart?.Y}. {vm.IsDragging}");
+          capturePartPlacement = partPlacement;
+          capturePolygon = polygon;
+          capturePolygon.CaptureMouse();
+          e.Handled = true;
+        }
       }
     }
 
@@ -159,52 +221,13 @@ using DeepNestSharp.Ui.ViewModels;
       }
     }
 
-    private static bool IsDragModifierPressed
-    {
-      get
-      {
-        return Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
-      }
-    }
-
     private void Polygon_MouseUp(object sender, MouseButtonEventArgs e)
     {
       System.Diagnostics.Debug.Print("Polygon_MouseUp");
-      if (sender is Polygon polygon &&
-          polygon.GetVisualParent<ItemsControl>() is ItemsControl itemsControl &&
-          DataContext is PreviewViewModel vm)
+      if (DataContext is PreviewViewModel vm)
       {
-        MouseUpHandler(vm, itemsControl);
-      }
-    }
-
-    private void Polygon_MouseDown(object sender, MouseButtonEventArgs e)
-    {
-      try
-      {
-        if (sender is Polygon polygon &&
-            polygon.GetVisualParent<Grid>() is Grid grid &&
-            DataContext is PreviewViewModel vm &&
-            polygon.DataContext is ObservablePartPlacement partPlacement)
-        {
-          vm.SelectedPartPlacement = partPlacement;
-          if (IsDragModifierPressed)
-          {
-            System.Diagnostics.Debug.WriteLine($"partPlacement:{partPlacement.Id}");
-            vm.DragStart = e.GetPosition(grid);
-            partPlacementStartPos = new Point(vm.SelectedPartPlacement.X, vm.SelectedPartPlacement.Y);
-            System.Diagnostics.Debug.Print($"Drag start set@{vm.DragStart?.X},{vm.DragStart?.Y}. {vm.IsDragging}");
-            capturePartPlacement = partPlacement;
-            capturePolygon = polygon;
-            capturePolygon.CaptureMouse();
-            e.Handled = true;
-          }
-        }
-      }
-      catch (System.Exception ex)
-      {
-        System.Diagnostics.Debug.WriteLine(ex);
-        throw;
+        vm.MousePosition = e.GetPosition(scrollViewer);
+        MouseUpHandler(vm);
       }
     }
 
@@ -214,7 +237,7 @@ using DeepNestSharp.Ui.ViewModels;
           itemsControl.GetChildOfType<Canvas>() is Canvas canvas &&
           DataContext is PreviewViewModel vm)
       {
-        vm.MousePosition = e.GetPosition(itemsControl);
+        vm.MousePosition = e.GetPosition(scrollViewer);
         vm.CanvasPosition = e.GetPosition(canvas);
         if (vm.IsDragging &&
             vm.DragStart != null &&
@@ -223,7 +246,7 @@ using DeepNestSharp.Ui.ViewModels;
           if (IsDragModifierPressed)
           {
             var dragStart = vm.DragStart.Value;
-            vm.DragOffset = new Point((vm.MousePosition.X - dragStart.X) / vm.CanvasScale, (vm.MousePosition.Y - dragStart.Y) / vm.CanvasScale);
+            vm.DragOffset = new Point((vm.MousePosition.X - dragStart.X) / scaleTransform.ScaleX, (vm.MousePosition.Y - dragStart.Y) / scaleTransform.ScaleY);
 
             // System.Diagnostics.Debug.Print($"DragOffset={vm.DragOffset:N2}");
             capturePartPlacement.X = partPlacementStartPos.X + vm.DragOffset.X;
@@ -244,23 +267,14 @@ using DeepNestSharp.Ui.ViewModels;
       }
     }
 
-    private void ItemsControl_MouseUp(object sender, MouseButtonEventArgs e)
-    {
-      System.Diagnostics.Debug.Print("ItemsControl_MouseUp");
-      if (sender is ItemsControl itemsControl &&
-          DataContext is PreviewViewModel vm)
-      {
-        MouseUpHandler(vm, itemsControl);
-      }
-    }
-
-    private void MouseUpHandler(PreviewViewModel vm, ItemsControl itemsControl)
+    private void MouseUpHandler(PreviewViewModel vm)
     {
       System.Diagnostics.Debug.Print("Handle MouseUp");
+      scrollViewer.Cursor = Cursors.Arrow;
       if (vm.IsDragging && IsDragModifierPressed && vm.DragStart.HasValue)
       {
         var dragStart = vm.DragStart.Value;
-        vm.DragOffset = new Point((vm.MousePosition.X - dragStart.X) / vm.CanvasScale, (vm.MousePosition.Y - dragStart.Y) / vm.CanvasScale);
+        vm.DragOffset = new Point((vm.MousePosition.X - dragStart.X) / scaleTransform.ScaleX, (vm.MousePosition.Y - dragStart.Y) / scaleTransform.ScaleY);
         System.Diagnostics.Debug.Print($"Drag commit@{vm.DragOffset.X:N2},{vm.DragOffset.Y:N2}");
         if (capturePartPlacement != null)
         {

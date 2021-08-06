@@ -3,10 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:converters="clr-namespace:DeepNestSharp.Ui.Converters" 
-             xmlns:interactivity="http://schemas.microsoft.com/expression/2010/interactivity" 
-             xmlns:behaviors="clr-namespace:DeepNestSharp.Ui.Behaviors"
-             xmlns:models="clr-namespace:DeepNestSharp.Ui.Models" xmlns:usercontrols="clr-namespace:DeepNestSharp.Ui.UserControls"
+             xmlns:converters="clr-namespace:DeepNestSharp.Ui.Converters"
+             xmlns:usercontrols="clr-namespace:DeepNestSharp.Ui.UserControls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
@@ -26,111 +24,38 @@
       <ColumnDefinition Width="*"/>
     </Grid.ColumnDefinitions>
     <TextBlock Grid.Column="0" Grid.Row="0" Text="{Binding MousePosition, StringFormat=N2}" Width="100" HorizontalAlignment="Center" Margin="5,0" />
-    <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal" Margin="5,0">
-      <CheckBox Content="IsExperimental" IsChecked="{Binding IsExperimental, Mode=TwoWay}" />
-      <TextBlock Text="CanvasPosition=" />
-      <TextBlock Text="{Binding CanvasPosition, StringFormat=N1}" />
-      <TextBlock Text="Offset=" />
-      <TextBlock Text="{Binding CanvasOffset, StringFormat=N1}" />
-      <TextBlock Text="Scale=" Margin="5,0,0,0" />
-      <TextBlock Text="{Binding CanvasScale, Mode=OneWay, StringFormat=N2}" />
-      <!--<Slider Width="100" Value="{Binding CanvasScale, Mode=TwoWay}" Minimum="{Binding CanvasScaleMin, Mode=OneTime}" Maximum="{Binding CanvasScaleMax, Mode=OneTime}" IsEnabled="{Binding IsTransformSet}" />-->
-      <Button Content="Fit All" Command="{Binding FitAllCommand}" Margin="5,0" />
-      <!--<TextBlock Text="ViewPort=" Margin="5,0,0,0" />
+    <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="0" Margin="5,0">
+      <StackPanel Orientation="Horizontal">
+        <CheckBox Content="IsExperimental" IsChecked="{Binding IsExperimental, Mode=TwoWay}" />
+        <TextBlock Text="CanvasPosition=" />
+        <TextBlock Text="{Binding CanvasPosition, StringFormat=N1}" />
+        <TextBlock Text="Offset=" />
+        <TextBlock Text="{Binding CanvasOffset, StringFormat=N1}" />
+        <TextBlock Text="Scale=" Margin="5,0,0,0" />
+        <TextBlock Text="{Binding CanvasScale, Mode=OneWay, StringFormat=N2}" />
+        <!--<Slider Width="100" Value="{Binding CanvasScale, Mode=TwoWay}" Minimum="{Binding CanvasScaleMin, Mode=OneTime}" Maximum="{Binding CanvasScaleMax, Mode=OneTime}" IsEnabled="{Binding IsTransformSet}" />-->
+        <Button Content="Fit All" Command="{Binding FitAllCommand}" Margin="5,0" />
+        <!--<TextBlock Text="ViewPort=" Margin="5,0,0,0" />
       <TextBlock Text="{Binding Viewport, StringFormat=0}" />
       <TextBlock Text="Actual=" Margin="5,0,0,0" />
       <TextBlock Text="{Binding Actual, StringFormat=0}" />-->
-      <TextBlock Text="Extrema=←" Margin="5,0,0,0" />
-      <TextBlock Text="{Binding LowerBound, StringFormat=0}" />
-      <TextBlock Text="↓→" Margin="0" />
-      <TextBlock Text="{Binding UpperBound, StringFormat=0}" />
-      <TextBlock Text="↑" Margin="0" />
-      <TextBlock Text="Width="  Margin="5,0,0,0"/>
-      <TextBlock Text="{Binding WidthBound, StringFormat=N1}" />
-      <TextBlock Text="Height="  Margin="5,0,0,0"/>
-      <TextBlock Text="{Binding HeightBound, StringFormat=N1}" />
+      </StackPanel>
+      <StackPanel Orientation="Horizontal">
+        <TextBlock Text="Extrema=←" Margin="5,0,0,0" />
+        <TextBlock Text="{Binding LowerBound, StringFormat=0}" />
+        <TextBlock Text="↓→" Margin="0" />
+        <TextBlock Text="{Binding UpperBound, StringFormat=0}" />
+        <TextBlock Text="↑" Margin="0" />
+        <TextBlock Text="Width="  Margin="5,0,0,0"/>
+        <TextBlock Text="{Binding WidthBound, StringFormat=N1}" />
+        <TextBlock Text="Height="  Margin="5,0,0,0"/>
+        <TextBlock Text="{Binding HeightBound, StringFormat=N1}" />
+      </StackPanel>
+      <StackPanel Orientation="Horizontal">
+        <TextBlock Text="{Binding DragOffset}" Visibility="{Binding IsDragging, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
+        <TextBlock Text="{Binding HoverPartPlacement.Part.Name}" Margin="5,0"/>
+      </StackPanel>
     </StackPanel>
-    <TextBlock Grid.Column="2" Grid.Row="0" Text="{Binding HoverPartPlacement.Part.Name}" Margin="5,0"/>
-
-    <TextBlock Grid.Column="3" Grid.Row="0" Text="{Binding DragOffset}" Visibility="{Binding IsDragging, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
-    <!--<ScrollViewer Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="4" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-      <ItemsControl ItemsSource="{Binding DrawingContext}"
-                    ScrollViewer.HorizontalScrollBarVisibility="Visible"
-                    ScrollViewer.VerticalScrollBarVisibility="Visible" 
-                    MouseMove="ItemsControl_MouseMove" 
-                    MouseUp="ItemsControl_MouseUp">
-        <ItemsControl.ItemsPanel>
-          <ItemsPanelTemplate>
-            <Canvas Background="Beige" Width="3000" Height="2000" >
-              <interactivity:Interaction.Behaviors>
-                <behaviors:PanZoomOnMouseWheel />
-              </interactivity:Interaction.Behaviors>
-            </Canvas>
-          </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-        <ItemsControl.ItemContainerStyle>
-          <Style TargetType="ContentPresenter">
-            <Setter Property="Canvas.Left" Value="{Binding X}"/>
-            <Setter Property="Canvas.Top" Value="{Binding Y}"/>
-          </Style>
-        </ItemsControl.ItemContainerStyle>
-        <ItemsControl.Resources>
-          <DataTemplate DataType="{x:Type models:ObservablePartPlacement}">
-            <Polygon Points="{Binding Points}" Stroke="Black" 
-                                   MouseDown="Polygon_MouseDown"
-                                   MouseUp="Polygon_MouseUp">
-              <Polygon.Fill>
-                <MultiBinding Converter="{StaticResource IsSelectedToFillColor}">
-                  <Binding />
-                  <Binding Path="DataContext.SelectedPartPlacement" RelativeSource="{RelativeSource AncestorType=UserControl}" Mode="OneWay" />
-                  <Binding Path="DataContext.HoverPartPlacement" RelativeSource="{RelativeSource AncestorType=UserControl}" Mode="OneWay" />
-                </MultiBinding>
-              </Polygon.Fill>
-              <interactivity:Interaction.Behaviors>
-                <behaviors:PolygonMouseHover />
-                <behaviors:PolygonMouseDrag />
-              </interactivity:Interaction.Behaviors>
-            </Polygon>
-          </DataTemplate>
-          <DataTemplate DataType="{x:Type models:ObservableSheetPlacement}">
-            <Polygon Points="{Binding Points}" Fill="White" Stroke="Black" />
-          </DataTemplate>
-          <DataTemplate DataType="{x:Type models:ObservableNfp}">
-            <Polygon Points="{Binding Points}" Fill="Aquamarine" Stroke="Black" StrokeThickness="0.2" />
-          </DataTemplate>
-          <DataTemplate DataType="{x:Type models:ObservableHole}">
-            <Polygon Points="{Binding Points}" Fill="White" Stroke="DeepPink" StrokeThickness="0.1" />
-          </DataTemplate>
-        </ItemsControl.Resources>
-        -->
-    <!--<ItemsControl.Template>
-                    <ControlTemplate TargetType="{x:Type ItemsControl}">
-                        <Border x:Name="Border"
-                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}">
-                            <ScrollViewer Margin="0"
-                                      Focusable="False"
-                                      Padding="{TemplateBinding Padding}"
-                                      SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-                                      HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
-                                      VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
-                                      CanContentScroll="{TemplateBinding ScrollViewer.CanContentScroll}">
-                                <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-                            </ScrollViewer>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="Border" Property="Background" Value="Gray" />
-                                <Setter TargetName="Border" Property="BorderBrush" Value="Silver" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </ItemsControl.Template>-->
-    <!--
-      </ItemsControl>
-    </ScrollViewer>-->
     <usercontrols:DrawingContextBoundZoomPreview 
       Grid.Column="0" 
       Grid.Row="1" 

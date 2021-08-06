@@ -29,7 +29,9 @@
 
     private void AssociatedObject_MouseEnter(object sender, MouseEventArgs e)
     {
-      if (this.AssociatedObject.GetVisualParent<Canvas>() is Canvas canvas)
+      if (this.AssociatedObject.GetVisualParent<Canvas>() is Canvas canvas &&
+          this.mainViewModel != null &&
+          !this.mainViewModel.PreviewViewModel.IsDragging)
       {
         canvas.Focus();
         if (this.mainViewModel != null)
@@ -42,7 +44,8 @@
 
     private void AssociatedObject_MouseLeave(object sender, MouseEventArgs e)
     {
-      if (this.mainViewModel != null)
+      if (this.mainViewModel != null &&
+          !this.mainViewModel.PreviewViewModel.IsDragging)
       {
         mainViewModel.PreviewViewModel.HoverPartPlacement = null;
       }

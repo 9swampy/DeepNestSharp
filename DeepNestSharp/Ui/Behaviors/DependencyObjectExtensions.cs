@@ -1,9 +1,6 @@
 ﻿namespace DeepNestSharp.Ui.Behaviors
 {
   using System.Windows;
-  using System.Windows.Controls;
-  using System.Windows.Input;
-  using System.Windows.Interactivity;
   using System.Windows.Media;
 
   public static class DependencyObjectExtensions
@@ -14,6 +11,17 @@
       while (element != null && !(element is T))
       {
         element = VisualTreeHelper.GetParent(element);
+      }
+
+      return (T)element;
+    }
+
+    public static T GetLogicalParent<T>(this DependencyObject element)
+        where T : DependencyObject
+    {
+      while (element != null && !(element is T))
+      {
+        element = LogicalTreeHelper.GetParent(element);
       }
 
       return (T)element;

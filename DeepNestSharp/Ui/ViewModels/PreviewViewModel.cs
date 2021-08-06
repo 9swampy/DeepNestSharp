@@ -7,7 +7,6 @@
   using System.Windows.Controls;
   using System.Windows.Input;
   using System.Windows.Media;
-  using System.Windows.Shapes;
   using DeepNestLib;
   using DeepNestLib.Placement;
   using DeepNestSharp.Ui.Docking;
@@ -306,7 +305,7 @@
 
     internal void RaiseDrawingContext()
     {
-      System.Diagnostics.Debug.Print("Force RaiseDrawingContext");
+      // System.Diagnostics.Debug.Print("Force RaiseDrawingContext");
       OnPropertyChanged(nameof(DrawingContext));
       lastSheetPlacementViewModel?.RaiseDrawingContext();
     }
