@@ -1,6 +1,7 @@
 ﻿namespace DeepNestSharp.Ui.UserControls
 {
   using System;
+  using System.Diagnostics;
   using System.Windows;
   using System.Windows.Controls;
   using System.Windows.Input;
@@ -8,6 +9,7 @@
   using DeepNestSharp.Ui.Behaviors;
   using DeepNestSharp.Ui.Models;
   using DeepNestSharp.Ui.ViewModels;
+  using Microsoft.Toolkit.Mvvm.Input;
 
   /// <summary>
   /// Interaction logic for ZoomPreview.xaml.

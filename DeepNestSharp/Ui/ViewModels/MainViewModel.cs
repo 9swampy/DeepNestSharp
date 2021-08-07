@@ -289,7 +289,7 @@
 
     public void LoadPart(string fileName)
     {
-      var loaded = new PartViewModel(this, fileName);
+      var loaded = new PartEditorViewModel(this, fileName);
       this.files.Add(loaded);
       this.ActiveDocument = loaded;
     }

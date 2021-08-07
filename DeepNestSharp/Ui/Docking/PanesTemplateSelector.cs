@@ -115,7 +115,7 @@
           return SettingsEditorTemplate;
         }
       }
-      else if (item is PartViewModel)
+      else if (item is PartEditorViewModel)
       {
         if (PartEditorTemplate == null)
         {

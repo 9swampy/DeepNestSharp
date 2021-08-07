@@ -5,25 +5,25 @@
   using DeepNestSharp.Ui.Docking;
   using DeepNestSharp.Ui.Models;
 
-  public class PartViewModel : FileViewModel
+  public class PartEditorViewModel : FileViewModel
   {
     private INfp? part;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="PartViewModel"/> class.
+    /// Initializes a new instance of the <see cref="PartEditorViewModel"/> class.
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
-    public PartViewModel(MainViewModel mainViewModel)
+    public PartEditorViewModel(MainViewModel mainViewModel)
       : base(mainViewModel)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="PartViewModel"/> class.
+    /// Initializes a new instance of the <see cref="PartEditorViewModel"/> class.
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
     /// <param name="filePath">Path to the file to open.</param>
-    public PartViewModel(MainViewModel mainViewModel, string filePath)
+    public PartEditorViewModel(MainViewModel mainViewModel, string filePath)
       : base(mainViewModel, filePath)
     {
     }
@@ -45,7 +45,8 @@
 
     protected override void LoadContent()
     {
-      this.Part = new ObservableNfp(DxfParser.LoadDxfFile(this.FilePath).ToNfp());
+      var part = DxfParser.LoadDxfFile(this.FilePath).ToNfp();
+      this.Part =new ObservableNfp( Background.ShiftPolygon(part, -part?.MinX ?? 0, -part?.MinY ?? 0));
     }
 
     protected override void NotifyContentUpdated()

@@ -3,6 +3,7 @@
   using System;
   using System.Collections.ObjectModel;
   using System.ComponentModel;
+  using System.Linq;
   using System.Windows;
   using System.Windows.Controls;
   using System.Windows.Input;
@@ -160,18 +161,7 @@
       get => canvasScale;
       set
       {
-        if (this.Transform is MatrixTransform matrixTransform)
-        {
-          var scale = value / matrixTransform.Matrix.M11;
-          var mat = matrixTransform.Matrix;
-          mat.Scale(scale, scale);
-          matrixTransform.Matrix = mat;
-          SetProperty(ref canvasScale, value, nameof(CanvasScale));
-        }
-        else
-        {
-          throw new NotSupportedException($"Only {nameof(MatrixTransform)} is supported.");
-        }
+        SetProperty(ref canvasScale, value, nameof(CanvasScale));
       }
     }
 
@@ -349,7 +339,7 @@
             Set(detailLoadInfo);
           }
         }
-        else if (mainViewModel.ActiveDocument is PartViewModel partViewModel)
+        else if (mainViewModel.ActiveDocument is PartEditorViewModel partViewModel)
         {
           if (partViewModel.Part is ObservableNfp nfp)
           {
@@ -378,33 +368,9 @@
 
     private void OnFitAll()
     {
-      if (this.Actual.HasValue)
-      {
-        var maxX = DrawingContext.Extremum(MinMax.Max, XY.X);
-        var minX = DrawingContext.Extremum(MinMax.Min, XY.X);
-        var maxY = DrawingContext.Extremum(MinMax.Max, XY.Y);
-        var minY = DrawingContext.Extremum(MinMax.Min, XY.Y);
-
-        var width = this.Actual.Value.X * .9;
-        var height = this.Actual.Value.Y * .9;
-
-        var deltaX = maxX - minX;
-        var scaleX = width / deltaX;
-        var deltaY = maxY - minY;
-        var scaleY = height / deltaY;
-
-        // var oz = this.CanvasScale;
-        // var sz1 = new System.Drawing.Size((int)(deltaX * scaleX), (int)(deltaY * scaleX));
-        // var sz2 = new System.Drawing.Size((int)(deltaX * scaleY), (int)(deltaY * scaleY));
-        this.CanvasScale = LimitAbsoluteScale(Math.Min(scaleX, scaleY));
-
-        var x = (deltaX / 2) + minX;
-        var y = (deltaY / 2) + minY;
-
-        this.CanvasOffset = new Point(0, 0);
-
-        // this.CanvasOffset = new Point((Canvas.Width / 2F / this.CanvasScale) - x, -((Canvas.Height / 2F / this.CanvasScale) + y));
-      }
+      CanvasScale = Math.Min(
+        (Actual?.X) / (ZoomDrawingContext.Extremum(MinMax.Max, XY.X) - ZoomDrawingContext.Extremum(MinMax.Min, XY.X)) ?? 5,
+        (Actual?.Y) / (ZoomDrawingContext.Extremum(MinMax.Max, XY.Y) - ZoomDrawingContext.Extremum(MinMax.Min, XY.Y)) ?? 5);
     }
 
     private void PreviewViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -427,7 +393,8 @@
     private void SheetPlacementViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
       if (sender == mainViewModel.ActiveDocument &&
-          e.PropertyName == "SelectedItem" &&
+          (e.PropertyName == nameof(SheetPlacementViewModel.SelectedItem) ||
+           e.PropertyName == nameof(SheetPlacementViewModel.SheetPlacement)) &&
           sender is SheetPlacementViewModel sheetPlacementViewModel &&
           sheetPlacementViewModel.SheetPlacement is ObservableSheetPlacement sheetPlacement)
       {

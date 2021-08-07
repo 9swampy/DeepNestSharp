@@ -1,6 +1,7 @@
 ﻿namespace DeepNestSharp.Ui.Models
 {
   using System.Collections.Generic;
+  using System.Linq;
   using DeepNestLib;
   using DeepNestLib.NestProject;
   using DeepNestSharp.Ui.ViewModels;
@@ -90,6 +91,8 @@
       get => this.item.Id;
       set => SetProperty(nameof(Id), () => this.item.Id, v => this.item.Id = v, value);
     }
+
+    public bool IsExact => !this.item.Points.Any(o => !o.Exact);
 
     public bool IsPriority
     {

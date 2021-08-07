@@ -207,6 +207,9 @@
       }
     }
 
+    [JsonIgnore]
+    public bool IsExact => !this.Points.Any(o => !o.Exact);
+
     public bool IsPriority { get; set; }
 
     public AnglesEnum StrictAngle { get; set; }

@@ -70,6 +70,15 @@
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
+          <GridViewColumn Width="85">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <DockPanel >
+                  <Button Command="{Binding LoadExactCommand}" Content="Load Exact" />
+                </DockPanel>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
         </GridView>
       </ListView.View>
     </ListView>

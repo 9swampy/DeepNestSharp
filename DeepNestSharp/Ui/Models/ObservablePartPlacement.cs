@@ -14,6 +14,7 @@
     private readonly double originalRotation;
     private System.Windows.Media.PointCollection? points;
     private RelayCommand? resetCommand;
+    private RelayCommand? loadExactCommand;
 
     public event EventHandler RenderChildren;
 
@@ -95,6 +96,19 @@
       }
     }
 
+    public ICommand LoadExactCommand
+    {
+      get
+      {
+        if (loadExactCommand == null)
+        {
+          loadExactCommand = new RelayCommand(OnLoadExact, () => !IsExact);
+        }
+
+        return loadExactCommand;
+      }
+    }
+
     public double X
     {
       get => partPlacement.X;
@@ -153,6 +167,8 @@
       set => partPlacement.Rotation = value;
     }
 
+    public bool IsExact => Part.IsExact;
+
     private void ObservablePartPlacement_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
       if (e.PropertyName == nameof(IsDirty))
@@ -166,6 +182,19 @@
       this.X = originalPosition.X;
       this.Y = originalPosition.Y;
       this.Rotation = originalRotation;
+    }
+
+    private void OnLoadExact()
+    {
+      var raw = DxfParser.LoadDxfFile(this.Part.Name);
+      INfp loadedNfp;
+      if (raw.TryConvertToNfp(this.Part.Source, out loadedNfp))
+      {
+        this.Part.ReplacePoints(loadedNfp.Points);
+        OnPropertyChanged(nameof(Points));
+        OnPropertyChanged(nameof(IsExact));
+        loadExactCommand?.NotifyCanExecuteChanged();
+      }
     }
   }
 }

@@ -35,12 +35,22 @@
       foreach (var partPlacement in item.PartPlacements)
       {
         var obsPart = new ObservablePartPlacement(partPlacement);
+        obsPart.PropertyChanged += this.ObsPart_PropertyChanged;
         this.observablePartPlacements.Add(obsPart);
       }
 
       OnPropertyChanged(nameof(PartPlacements));
       OnPropertyChanged(nameof(IsSet));
       OnPropertyChanged(nameof(Sheet));
+    }
+
+    private void ObsPart_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+      if (e.PropertyName == nameof(ObservablePartPlacement.Points))
+      {
+        Set(item);
+        OnPropertyChanged(nameof(PartPlacements));
+      }
     }
 
     public OriginalFitnessSheet Fitness => item.Fitness;

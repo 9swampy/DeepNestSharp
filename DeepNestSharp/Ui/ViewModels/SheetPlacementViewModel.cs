@@ -2,6 +2,7 @@
 {
   using System;
   using System.IO;
+  using System.Linq;
   using System.Windows.Input;
   using DeepNestLib.Placement;
   using DeepNestSharp.Ui.Docking;
@@ -77,9 +78,27 @@
 
     public override string TextContent => this.SheetPlacement.ToJson();
 
+    internal void RaiseDrawingContext()
+    {
+      // This makes the drag render holes correctly but seriously kills the drag.
+      OnPropertyChanged(nameof(SelectedItem));
+    }
+
     protected override void LoadContent()
     {
-      this.SheetPlacement = new ObservableSheetPlacement(DeepNestLib.Placement.SheetPlacement.LoadFromFile(this.FilePath));
+      var sheetPlacement = new ObservableSheetPlacement(DeepNestLib.Placement.SheetPlacement.LoadFromFile(this.FilePath));
+      foreach (var pp in sheetPlacement.PartPlacements)
+      {
+        pp.Part.Points.First().Exact = false;
+      }
+
+      sheetPlacement.PropertyChanged += this.SheetPlacement_PropertyChanged;
+      this.SheetPlacement = sheetPlacement;
+    }
+
+    private void SheetPlacement_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+      NotifyContentUpdated();
     }
 
     protected override void NotifyContentUpdated()
@@ -90,12 +109,6 @@
     private void OnLoadPartFile()
     {
       this.MainViewModel.LoadPart(SelectedItem.Part.Name);
-    }
-
-    internal void RaiseDrawingContext()
-    {      
-      // This makes the drag render holes correctly but seriously kills the drag.
-      OnPropertyChanged(nameof(SelectedItem));
     }
   }
 }

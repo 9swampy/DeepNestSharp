@@ -15,6 +15,8 @@
 
     int Id { get; set; }
 
+    bool IsExact { get; }
+
     bool IsPriority { get; set; }
 
     int Length { get; }
