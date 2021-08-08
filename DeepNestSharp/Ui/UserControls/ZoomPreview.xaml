@@ -70,7 +70,7 @@
               <DataTemplate DataType="{x:Type domainModels:ObservableNfp}">
                 <Polygon Points="{Binding Converter={StaticResource PointsConverter}}" Fill="Aquamarine" Stroke="Black" StrokeThickness="0.2" />
               </DataTemplate>
-              <DataTemplate DataType="{x:Type models:ObservableHole}">
+              <DataTemplate DataType="{x:Type domainModels:ObservableHole}">
                 <Polygon Points="{Binding Converter={StaticResource PointsConverter}}" Fill="White" Stroke="DeepPink" StrokeThickness="0.1" />
               </DataTemplate>
             </ItemsControl.Resources>

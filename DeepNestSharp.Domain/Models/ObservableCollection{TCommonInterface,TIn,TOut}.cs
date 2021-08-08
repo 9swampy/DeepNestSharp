@@ -51,14 +51,14 @@ namespace DeepNestSharp.Domain.Models
       this.factory = factory;
       foreach (var item in items.ToList())
       {
-        this.Add(factory((TIn)item));
+        base.Add(factory((TIn)item));
       }
     }
 
     public void Add(TIn item)
     {
       this.ItemsWrapped.Add(item);
-      this.Add(factory(item));
+      base.Add(factory(item));
     }
 
     public int IndexOf(TCommonInterface item)
@@ -88,11 +88,6 @@ namespace DeepNestSharp.Domain.Models
       Add((TIn)item);
     }
 
-    private void Add(TOut item)
-    {
-      base.Add(item);
-    }
-
     public bool Contains(TCommonInterface item)
     {
       if (item is TIn tIn)
@@ -116,7 +111,7 @@ namespace DeepNestSharp.Domain.Models
     {
       if (item is TIn tIn)
       {
-        var tOut = base.Items.FirstOrDefault(o => o.Item == tIn);
+        var tOut = Items.FirstOrDefault(o => o.Item == tIn);
         return this.Remove(tOut);
       }
       else if (item is TOut tOut)
@@ -130,7 +125,7 @@ namespace DeepNestSharp.Domain.Models
 
     IEnumerator<TCommonInterface> IEnumerable<TCommonInterface>.GetEnumerator()
     {
-      return base.GetEnumerator();
+      return GetEnumerator();
     }
   }
 }

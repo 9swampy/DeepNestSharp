@@ -7,7 +7,7 @@
   {
     public abstract bool IsDirty { get; }
 
-    protected void SetProperty<T>(string? propertyName, Func<T> getProp, Action<T> setProp, T value)
+    protected void SetProperty<T>(string propertyName, Func<T> getProp, Action<T> setProp, T value)
     {
       try
       {

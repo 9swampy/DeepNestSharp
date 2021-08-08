@@ -1,6 +1,5 @@
 ﻿namespace DeepNestSharp.Domain.Models
 {
-  using System;
   using System.Threading.Tasks;
   using System.Windows.Input;
   using DeepNestLib;
@@ -12,8 +11,8 @@
     private readonly IPartPlacement partPlacement;
     private readonly IPointXY originalPosition;
     private readonly double originalRotation;
-    private RelayCommand? resetCommand;
-    private IAsyncRelayCommand? loadExactCommand;
+    private RelayCommand resetCommand;
+    private IAsyncRelayCommand loadExactCommand;
 
     public ObservablePartPlacement(IPartPlacement partPlacement)
     {
@@ -145,7 +144,7 @@
     public bool IsExact => Part.IsExact;
 
     /// <inheritdoc/>
-    private void ObservablePartPlacement_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void ObservablePartPlacement_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
       if (e.PropertyName == nameof(IsDirty))
       {

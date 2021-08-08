@@ -1,10 +1,8 @@
-﻿namespace DeepNestSharp.Ui.Models
+﻿namespace DeepNestSharp.Domain.Models
 {
   using DeepNestLib;
   using DeepNestLib.NestProject;
-  using DeepNestSharp.Domain.Models;
   using System.ComponentModel;
-  using System.Windows.Shapes;
 
   public class ObservableSvgNestConfig : ObservablePropertyObject, ISvgNestConfig
   {

@@ -2,14 +2,11 @@
 {
   using System.Collections.Generic;
   using System.Collections.ObjectModel;
-  using System.Linq;
-  using System.Windows.Input;
   using DeepNestLib;
   using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain.Models;
   using Microsoft.Toolkit.Mvvm.ComponentModel;
-  using Microsoft.Toolkit.Mvvm.Input;
 
   public class ObservableSheetPlacement : ObservableObject, ISheetPlacement
   {
