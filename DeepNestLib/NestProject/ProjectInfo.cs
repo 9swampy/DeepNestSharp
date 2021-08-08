@@ -12,10 +12,10 @@ namespace DeepNestLib.NestProject
     public const string FileDialogFilter = "DeepNest Projects (*.dnest)|*.dnest|Json (*.json)|*.json|All files (*.*)|*.*";
 
     [JsonInclude]
-    public IList<IDetailLoadInfo> DetailLoadInfos { get; private set; } = new List<IDetailLoadInfo>();
+    public IList<IDetailLoadInfo, DetailLoadInfo> DetailLoadInfos { get; private set; } = new WrappableList<IDetailLoadInfo, DetailLoadInfo>();
 
     [JsonInclude]
-    public IList<ISheetLoadInfo> SheetLoadInfos { get; private set; } = new List<ISheetLoadInfo>() { new SheetLoadInfo() };
+    public IList<ISheetLoadInfo, SheetLoadInfo> SheetLoadInfos { get; private set; } = new WrappableList<ISheetLoadInfo, SheetLoadInfo>() { new SheetLoadInfo() };
 
     [JsonInclude]
     public ISvgNestConfig Config => SvgNest.Config;
@@ -28,6 +28,8 @@ namespace DeepNestLib.NestProject
         {
           var options = new JsonSerializerOptions();
           options.Converters.Add(new DetailLoadInfoJsonConverter());
+          options.Converters.Add(new WrappableListDetailLoadInfoJsonConverter());
+          options.Converters.Add(new WrappableListJsonConverter<ISheetLoadInfo, SheetLoadInfo>());
           options.Converters.Add(new SheetLoadInfoJsonConverter());
           options.Converters.Add(new SvgNestConfigJsonConverter());
           return JsonSerializer.Deserialize<ProjectInfo>(json, options);
@@ -35,7 +37,7 @@ namespace DeepNestLib.NestProject
 
         return new ProjectInfo();
       }
-      catch (Exception)
+      catch (Exception ex)
       {
         return new ProjectInfo();
       }

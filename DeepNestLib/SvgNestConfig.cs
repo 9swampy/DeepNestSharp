@@ -13,36 +13,37 @@
     public const int ParallelNestsMin = 1;
     public const int ParallelNestsMax = 30;
 
+    /// <inheritdoc/>
     public double Scale { get; set; } = 25;
 
+    /// <inheritdoc/>
     public double ClipperScale { get; set; } = 10000000;
 
+    /// <inheritdoc/>
     public bool ExploreConcave { get; set; } = false;
 
+    /// <inheritdoc/>
     public int Rotations { get; set; } = 4;
 
+    /// <inheritdoc/>
     public double SheetSpacing { get; set; } = 0;
 
+    /// <inheritdoc/>
     public bool UseHoles { get; set; } = false;
 
-    /// <summary>
-    /// Max bound for bezier->line segment conversion, in native SVG units.
-    /// </summary>
+    /// <inheritdoc/>
     public double Tolerance { get; set; } = 2;
 
-    /// <summary>
-    /// Fudge factor for browser inaccuracy in SVG unit handling.
-    /// </summary>
+    /// <inheritdoc/>
     public double ToleranceSvg { get; set; } = 0.005;
 
+    /// <inheritdoc/>
     public double TimeRatio { get; set; } = 0.5;
 
+    /// <inheritdoc/>
     public bool MergeLines { get; set; } = false;
 
-    /// <summary>
-    /// Port feature; don't exist in the original DeepNest project.Disabled in the UI because it's not a part of the cache key so
-    /// doesn't make sense to change during the litetime of the application.
-    /// </summary>
+    /// <inheritdoc/>
     public bool ClipByHull
     {
       get
@@ -58,6 +59,7 @@
       }
     }
 
+    /// <inheritdoc/>
     public double CurveTolerance
     {
       get
@@ -73,6 +75,7 @@
       }
     }
 
+    /// <inheritdoc/>
     public int SaveAsFileTypeIndex
     {
       get
@@ -88,6 +91,7 @@
       }
     }
 
+    /// <inheritdoc/>
     public int SheetWidth
     {
       get
@@ -103,6 +107,7 @@
       }
     }
 
+    /// <inheritdoc/>
     public int SheetHeight
     {
       get
@@ -118,6 +123,7 @@
       }
     }
 
+    /// <inheritdoc/>
     public int SheetQuantity
     {
       get
@@ -133,6 +139,7 @@
       }
     }
 
+    /// <inheritdoc/>
     public PlacementTypeEnum PlacementType
     {
       get
@@ -148,6 +155,7 @@
       }
     }
 
+    /// <inheritdoc/>
     public bool Simplify
     {
       get
@@ -163,6 +171,7 @@
       }
     }
 
+    /// <inheritdoc/>
     public bool OffsetTreePhase
     {
       get
@@ -178,6 +187,7 @@
       }
     }
 
+    /// <inheritdoc/>
     public double Spacing
     {
       get
@@ -193,13 +203,22 @@
       }
     }
 
+    /// <inheritdoc/>
     public int PopulationSize
     {
       get
       {
         var result = (int)Properties.Settings.Default["PopulationSize"];
-        if (result < PopulationMin) return PopulationMin;
-        if (result > PopulationMax) return PopulationMax;
+        if (result < PopulationMin)
+        {
+          return PopulationMin;
+        }
+
+        if (result > PopulationMax)
+        {
+          return PopulationMax;
+        }
+
         return result;
       }
 
@@ -211,13 +230,22 @@
       }
     }
 
+    /// <inheritdoc/>
     public int MutationRate
     {
       get
       {
         var result = (int)Properties.Settings.Default["MutationRate"];
-        if (result < MutationRateMin) return MutationRateMin;
-        if (result > MutationRateMax) return MutationRateMax;
+        if (result < MutationRateMin)
+        {
+          return MutationRateMin;
+        }
+
+        if (result > MutationRateMax)
+        {
+          return MutationRateMax;
+        }
+
         return result;
       }
 
@@ -229,13 +257,22 @@
       }
     }
 
+    /// <inheritdoc/>
     public int Multiplier
     {
       get
       {
         var result = (int)Properties.Settings.Default["Multiplier"];
-        if (result < MutationRateMin) return MultiplierMin;
-        if (result > MutationRateMax) return MultiplierMax;
+        if (result < MutationRateMin)
+        {
+          return MultiplierMin;
+        }
+
+        if (result > MutationRateMax)
+        {
+          return MultiplierMax;
+        }
+
         return result;
       }
 
@@ -247,6 +284,7 @@
       }
     }
 
+    /// <inheritdoc/>
     public bool DrawSimplification
     {
       get
@@ -262,6 +300,7 @@
       }
     }
 
+    /// <inheritdoc/>
     public AnglesEnum StrictAngles
     {
       get
@@ -284,6 +323,7 @@
       }
     }
 
+    /// <inheritdoc/>
     public bool UseParallel
     {
       get
@@ -299,13 +339,22 @@
       }
     }
 
+    /// <inheritdoc/>
     public int ParallelNests
     {
       get
       {
         var result = (int)Properties.Settings.Default["ParallelNests"];
-        if (result < ParallelNestsMin) return ParallelNestsMin;
-        if (result > ParallelNestsMax) return ParallelNestsMax;
+        if (result < ParallelNestsMin)
+        {
+          return ParallelNestsMin;
+        }
+
+        if (result > ParallelNestsMax)
+        {
+          return ParallelNestsMax;
+        }
+
         return result;
       }
 
@@ -317,6 +366,7 @@
       }
     }
 
+    /// <inheritdoc/>
     public bool ShowPartPositions
     {
       get

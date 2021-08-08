@@ -1151,7 +1151,7 @@
 
         if (path.Extension == ".dxf")
         {
-          det = DxfParser.LoadDxfFile(path.FullName);
+          det = DxfParser.LoadDxfFile(path.FullName).Result;
         }
 
         preview = det;
@@ -1268,7 +1268,6 @@
             var det = new DetailLoadInfo()
             {
               Quantity = 1,
-              Name = new FileInfo(ofd.FileNames[i]).Name,
               Path = ofd.FileNames[i],
               IsIncluded = true,
               IsPriority = false,

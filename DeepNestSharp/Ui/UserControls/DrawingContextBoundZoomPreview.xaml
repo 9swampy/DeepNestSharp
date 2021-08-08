@@ -52,7 +52,7 @@
             </ItemsControl.ItemContainerStyle>
             <ItemsControl.Resources>
               <DataTemplate DataType="{x:Type models:ObservablePartPlacement}">
-                <Polygon Points="{Binding Points}" Stroke="Black" 
+                <Polygon Points="{Binding Points}" Stroke="Black" StrokeThickness="0.2"
                                    MouseUp="Polygon_MouseUp">
                   <Polygon.Fill>
                     <MultiBinding Converter="{StaticResource IsSelectedToFillColor}">
@@ -68,13 +68,13 @@
                 </Polygon>
               </DataTemplate>
               <DataTemplate DataType="{x:Type models:ObservableSheetPlacement}">
-                <Polygon Points="{Binding Points}" Fill="White" Stroke="Black" />
+                <Polygon Points="{Binding Points}" Fill="White" Stroke="Black" StrokeThickness="0.2" />
               </DataTemplate>
               <DataTemplate DataType="{x:Type models:ObservableNfp}">
                 <Polygon Points="{Binding Points}" Fill="Aquamarine" Stroke="Black" StrokeThickness="0.2" />
               </DataTemplate>
               <DataTemplate DataType="{x:Type models:ObservableHole}">
-                <Polygon Points="{Binding Points}" Fill="White" Stroke="DeepPink" StrokeThickness="0.1" />
+                <Polygon Points="{Binding Points}" Fill="White" Stroke="DeepPink" StrokeThickness="0.2" />
               </DataTemplate>
             </ItemsControl.Resources>
           </ItemsControl>

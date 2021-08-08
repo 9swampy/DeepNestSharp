@@ -7,6 +7,7 @@
   using System.Linq;
   using System.Reflection;
   using System.Threading;
+  using System.Threading.Tasks;
   using IxMilia.Dxf;
   using IxMilia.Dxf.Entities;
 
@@ -27,34 +28,33 @@
 
     public static RawDetail LoadDxfStream(string name, Stream inputStream)
     {
-        DxfFile dxffile = DxfFile.Load(inputStream);
-        IEnumerable<DxfEntity> entities = dxffile.Entities.ToArray();
+      DxfFile dxffile = DxfFile.Load(inputStream);
+      IEnumerable<DxfEntity> entities = dxffile.Entities.ToArray();
       return ConvertDxfToRawDetail(name, entities);
-      }
+    }
 
-    public static RawDetail LoadDxfFile(string path)
+    public async static Task<RawDetail> LoadDxfFile(string path)
     {
       FileInfo fi = new FileInfo(path);
       DxfFile dxffile;
-      lock (loadLock)
+      for (int i = 1; i <= NumberOfRetries; ++i)
       {
-        for (int i = 1; i <= NumberOfRetries; ++i)
+        try
         {
-          try
+          lock (loadLock)
           {
             dxffile = DxfFile.Load(fi.FullName);
             IEnumerable<DxfEntity> entities = dxffile.Entities.ToArray();
-            Thread.Sleep(DelayOnRetry);
             return ConvertDxfToRawDetail(fi.FullName, entities);
           }
-          catch (IOException) when (i <= NumberOfRetries)
-          {
-            Thread.Sleep(DelayOnRetry);
-          }
-          catch (IOException)
-          {
-            throw;
-          }
+        }
+        catch (IOException) when (i <= NumberOfRetries)
+        {
+          await Task.Delay(DelayOnRetry);
+        }
+        catch (IOException)
+        {
+          throw;
         }
       }
 
@@ -508,5 +508,5 @@
       var y1 = (double)((x * Math.Sin(angle)) + (y * Math.Cos(angle)));
       return new DxfPoint(x1, y1, pt.Z);
     }
-}
+  }
 }

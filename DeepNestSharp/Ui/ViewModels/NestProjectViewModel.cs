@@ -1,24 +1,33 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
+  using System;
+  using System.Threading.Tasks;
   using System.Windows.Input;
+  using DeepNestLib;
   using DeepNestLib.NestProject;
+  using DeepNestSharp.Domain;
   using DeepNestSharp.Ui.Docking;
   using DeepNestSharp.Ui.Models;
   using Microsoft.Toolkit.Mvvm.Input;
 
   public class NestProjectViewModel : FileViewModel, INestProjectViewModel
   {
+    private readonly ObservableProjectInfo observableProjectInfo = new ObservableProjectInfo(new ProjectInfo());
+
     private int selectedDetailLoadInfoIndex;
     private IDetailLoadInfo? selectedDetailLoadInfo;
-    private RelayCommand? executeNestCommand;
+    private RelayCommand executeNestCommand;
+    private AsyncRelayCommand addPartCommand;
+    private IFileIoService fileIoService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NestProjectViewModel"/> class.
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
-    public NestProjectViewModel(MainViewModel mainViewModel)
+    public NestProjectViewModel(MainViewModel mainViewModel, IFileIoService fileIoService)
       : base(mainViewModel)
     {
+      Initialise(mainViewModel, fileIoService);
     }
 
     /// <summary>
@@ -26,26 +35,17 @@
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
     /// <param name="filePath">Path to the file to open.</param>
-    public NestProjectViewModel(MainViewModel mainViewModel, string filePath)
+    public NestProjectViewModel(MainViewModel mainViewModel, string filePath, IFileIoService fileIoService)
       : base(mainViewModel, filePath)
     {
-      mainViewModel.NestMonitorViewModel.PropertyChanged += this.NestMonitorViewModel_PropertyChanged;
+      Initialise(mainViewModel, fileIoService);
     }
 
-    public ICommand ExecuteNestCommand
-    {
-      get
-      {
-        if (executeNestCommand == null)
-        {
-          executeNestCommand = new RelayCommand(OnExecuteNest, () => !MainViewModel.NestMonitorViewModel.IsRunning);
-        }
+    public ICommand ExecuteNestCommand => executeNestCommand;
 
-        return executeNestCommand;
-      }
-    }
+    public IAsyncRelayCommand AddPartCommand => addPartCommand;
 
-    public IProjectInfo ProjectInfo { get; } = new ObservableProjectInfo(new ProjectInfo());
+    public IProjectInfo ProjectInfo => observableProjectInfo;
 
     public IDetailLoadInfo SelectedDetailLoadInfo
     {
@@ -59,6 +59,14 @@
     {
       get => selectedDetailLoadInfoIndex;
       set => SetProperty(ref selectedDetailLoadInfoIndex, value);
+    }
+
+    private void Initialise(MainViewModel mainViewModel, IFileIoService fileIoService)
+    {
+      executeNestCommand = new RelayCommand(OnExecuteNest, () => !MainViewModel.NestMonitorViewModel.IsRunning);
+      addPartCommand = new AsyncRelayCommand(OnAddPartAsync);
+      mainViewModel.NestMonitorViewModel.PropertyChanged += this.NestMonitorViewModel_PropertyChanged;
+      this.fileIoService = fileIoService;
     }
 
     protected override void LoadContent()
@@ -83,6 +91,22 @@
       if (e.PropertyName == $"{nameof(NestMonitorViewModel.IsRunning)}")
       {
         MainViewModel.DispatcherService.Invoke(() => executeNestCommand?.NotifyCanExecuteChanged());
+      }
+    }
+
+    private async Task OnAddPartAsync()
+    {
+      var filePath = this.fileIoService.GetFilePath(NFP.FileDialogFilter);
+      if (!string.IsNullOrWhiteSpace(filePath) && this.fileIoService.Exists(filePath))
+      {
+        var newPart = new DetailLoadInfo()
+        {
+          Path = filePath,
+        };
+
+        observableProjectInfo.DetailLoadInfos.Add(newPart);
+        OnPropertyChanged(nameof(ProjectInfo));
+        this.IsDirty = true;
       }
     }
 

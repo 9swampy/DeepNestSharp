@@ -1,7 +1,6 @@
 ﻿namespace DeepNestSharp.Ui.Models
 {
-  using System.Collections.Generic;
-  using System.Collections.ObjectModel;
+  using System;
   using DeepNestLib;
   using DeepNestLib.NestProject;
   using Microsoft.Toolkit.Mvvm.ComponentModel;
@@ -9,8 +8,8 @@
   public class ObservableProjectInfo : ObservableObject, IProjectInfo
   {
     private readonly IProjectInfo projectInfo;
-    private ObservableCollection<IDetailLoadInfo>? detailLoadInfos;
-    private ObservableCollection<ISheetLoadInfo>? sheetLoadInfos;
+    private ObservableCollection<IDetailLoadInfo, DetailLoadInfo, ObservableDetailLoadInfo>? detailLoadInfos;
+    private ObservableCollection<ISheetLoadInfo, SheetLoadInfo, ObservableSheetLoadInfo>? sheetLoadInfos;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ObservableProjectInfo"/> class.
@@ -18,34 +17,26 @@
     /// <param name="projectInfo">The ProjectInfo to wrap.</param>
     public ObservableProjectInfo(IProjectInfo projectInfo) => this.projectInfo = projectInfo;
 
-    public IList<IDetailLoadInfo> DetailLoadInfos
+    public IList<IDetailLoadInfo, DetailLoadInfo> DetailLoadInfos
     {
       get
       {
         if (this.detailLoadInfos == null)
         {
-          detailLoadInfos = new ObservableCollection<IDetailLoadInfo>();
-          foreach (var detailLoadInfo in this.projectInfo.DetailLoadInfos)
-          {
-            detailLoadInfos.Add(new ObservableDetailLoadInfo(detailLoadInfo));
-          }
+          this.detailLoadInfos = new ObservableCollection<IDetailLoadInfo, DetailLoadInfo, ObservableDetailLoadInfo>(this.projectInfo.DetailLoadInfos, x => new ObservableDetailLoadInfo(x));
         }
 
         return this.detailLoadInfos;
       }
     }
 
-    public IList<ISheetLoadInfo> SheetLoadInfos
+    public IList<ISheetLoadInfo, SheetLoadInfo> SheetLoadInfos
     {
       get
       {
         if (this.sheetLoadInfos == null)
         {
-          sheetLoadInfos = new ObservableCollection<ISheetLoadInfo>();
-          foreach (var sheetLoadInfo in this.projectInfo.SheetLoadInfos)
-          {
-            sheetLoadInfos.Add(sheetLoadInfo);
-          }
+          sheetLoadInfos = new ObservableCollection<ISheetLoadInfo, SheetLoadInfo, ObservableSheetLoadInfo>(this.projectInfo.SheetLoadInfos, x => new ObservableSheetLoadInfo(x));
         }
 
         return this.sheetLoadInfos;

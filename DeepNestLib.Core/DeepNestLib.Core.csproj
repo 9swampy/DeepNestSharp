@@ -64,12 +64,14 @@
     <Compile Include="..\DeepNestLib\NestProject\DetailLoadInfo.cs" Link="NestProject\DetailLoadInfo.cs" />
     <Compile Include="..\DeepNestLib\NestProject\DetailLoadInfoJsonConverter.cs" Link="NestProject\DetailLoadInfoJsonConverter.cs" />
     <Compile Include="..\DeepNestLib\NestProject\IDetailLoadInfo.cs" Link="NestProject\IDetailLoadInfo.cs" />
+    <Compile Include="..\DeepNestLib\NestProject\IList{TCommonInterface,TConcrete}.cs" Link="NestProject\IList{TCommonInterface,TConcrete}.cs" />
     <Compile Include="..\DeepNestLib\NestProject\IProjectInfo.cs" Link="NestProject\IProjectInfo.cs" />
     <Compile Include="..\DeepNestLib\NestProject\ISheetLoadInfo.cs" Link="NestProject\ISheetLoadInfo.cs" />
     <Compile Include="..\DeepNestLib\NestProject\ProjectInfo.cs" Link="NestProject\ProjectInfo.cs" />
     <Compile Include="..\DeepNestLib\NestProject\SheetLoadInfo.cs" Link="NestProject\SheetLoadInfo.cs" />
     <Compile Include="..\DeepNestLib\NestProject\SheetLoadInfoJsonConverter.cs" Link="NestProject\SheetLoadInfoJsonConverter.cs" />
     <Compile Include="..\DeepNestLib\NestProject\SvgNestConfigJsonConverter.cs" Link="NestProject\SvgNestConfigJsonConverter.cs" />
+    <Compile Include="..\DeepNestLib\NestProject\WrappableList{TCommonInterface,TConcrete}.cs" Link="NestProject\WrappableList{TCommonInterface,TConcrete}.cs" />
     <Compile Include="..\DeepNestLib\NestState.cs" Link="NestState.cs" />
     <Compile Include="..\DeepNestLib\NFP.cs" Link="NFP.cs" />
     <Compile Include="..\DeepNestLib\NfpExtensions.cs" Link="NfpExtensions.cs" />

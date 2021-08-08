@@ -1,4 +1,4 @@
-﻿namespace DeepNestSharp.Ui.ViewModels
+﻿namespace DeepNestSharp.Domain
 {
   using System;
   using System.Collections.ObjectModel;
@@ -21,7 +21,7 @@
           accessor = y => y.MinY;
         }
 
-        return MinimumXY(drawingContext, accessor);
+        return drawingContext.MinimumXY(accessor);
       }
       else if (xy == XY.X)
       {
@@ -32,7 +32,7 @@
         accessor = y => y.MaxY;
       }
 
-      return MaximumXY(drawingContext, accessor);
+      return drawingContext.MaximumXY(accessor);
     }
 
     private static double MaximumXY(this ObservableCollection<object> drawingContext, Func<IMinMaxXY, double> accessor)

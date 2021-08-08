@@ -1,7 +1,6 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
   using System;
-  using System.Collections.ObjectModel;
   using System.Diagnostics;
   using System.Runtime.CompilerServices;
   using System.Text;
@@ -9,9 +8,9 @@
   using System.Windows.Input;
   using DeepNestLib;
   using DeepNestLib.Placement;
+  using DeepNestSharp.Domain;
   using DeepNestSharp.Ui.Docking;
   using Microsoft.Toolkit.Mvvm.Input;
-  using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
   public class NestMonitorViewModel : ToolViewModel
   {
@@ -19,7 +18,6 @@
 
     private readonly MainViewModel mainViewModel;
     private readonly IMessageService messageService;
-    private readonly ISvgNestConfig config;
     private readonly IProgressDisplayer progressDisplayer;
     private INestProjectViewModel? nestProjectViewModel;
     private bool isRunning;
@@ -39,12 +37,11 @@
     private RelayCommand? restartNestCommand;
     private RelayCommand? loadSheetPlacementCommand;
 
-    public NestMonitorViewModel(MainViewModel mainViewModel, IMessageService messageService, ISvgNestConfig config)
+    public NestMonitorViewModel(MainViewModel mainViewModel, IMessageService messageService)
       : base("Monitor")
     {
       this.mainViewModel = mainViewModel;
       this.messageService = messageService;
-      this.config = config;
       this.progressDisplayer = new ProgressDisplayer(this, messageService, mainViewModel.DispatcherService);
     }
 
@@ -189,7 +186,7 @@
         {
           if (this.context == null)
           {
-            this.context = new NestingContext(messageService, progressDisplayer, new NestState(config, mainViewModel.DispatcherService));
+            this.context = new NestingContext(messageService, progressDisplayer, new NestState(mainViewModel.SvgNestConfigViewModel.SvgNestConfig, mainViewModel.DispatcherService));
           }
         }
 

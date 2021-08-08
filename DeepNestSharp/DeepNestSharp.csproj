@@ -58,6 +58,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DeepNestLib.Core\DeepNestLib.Core.csproj" />
+    <ProjectReference Include="..\DeepNestSharp.Domain\DeepNestSharp.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

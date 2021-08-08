@@ -13,24 +13,6 @@
     public const string FileDialogFilter = "AutoCad Drawing Exchange Format (*.dxf)|*.dxf|All files (*.*)|*.*";
     private double rotation;
 
-    public bool Fitted
-    {
-      get { return this.Sheet != null; }
-    }
-
-    public INfp Sheet { get; set; }
-
-    public override string ToString()
-    {
-      var pointStr = (this.points != null) ? this.points.Count() + string.Empty : "null";
-      return $"{this.GetType().Name}: id:{this.Id}; src:{this.Source}; rot:{this.Rotation}°@{this.X:0.###},{this.Y:0.###}; points:{pointStr} - {this.Name}";
-    }
-
-    public string ToShortString()
-    {
-      return $"{this.GetType().Name}: i:{this.Id};s:{this.Source};r:{this.Rotation}°@{this.X:0.###},{this.Y:0.###}";
-    }
-
     public NFP(IList<INfp> children)
         : this()
     {
@@ -48,42 +30,44 @@
     {
     }
 
+    /// <inheritdoc />
+    public bool Fitted
+    {
+      get { return this.Sheet != null; }
+    }
+
+    /// <inheritdoc />
+    public INfp Sheet { get; set; }
+
+    /// <inheritdoc />
     public string Name { get; set; } = string.Empty;
 
-    public void AddPoint(SvgPoint point)
-    {
-      int i = this.points.Length;
-      Array.Resize(ref this.points, i + 1);
-      this.points[i] = point;
-    }
-
-    /// <summary>
-    /// Reverses the sequence of points.
-    /// </summary>
-    public void Reverse()
-    {
-      this.points.Reverse();
-    }
-
     [JsonConverter(typeof(DoublePrecisionConverter))]
+    /// <inheritdoc />
     public double X { get; set; }
 
     [JsonIgnore]
+    /// <inheritdoc />
     public double MaxX => points.Max(p => p.X);
 
     [JsonIgnore]
+    /// <inheritdoc />
     public double MinX => points.Min(p => p.X);
 
     [JsonConverter(typeof(DoublePrecisionConverter))]
+    /// <inheritdoc />
     public double Y { get; set; }
 
     [JsonIgnore]
+    /// <inheritdoc />
     public double MaxY => points.Max(p => p.Y);
 
     [JsonIgnore]
+    /// <inheritdoc />
     public double MinY => points.Min(p => p.Y);
 
     [JsonIgnore]
+    /// <inheritdoc />
     public double WidthCalculated
     {
       get
@@ -101,6 +85,7 @@
     }
 
     [JsonIgnore]
+    /// <inheritdoc />
     public double HeightCalculated
     {
       get
@@ -116,17 +101,11 @@
       }
     }
 
-    public SvgPoint this[int ind]
-    {
-      get
-      {
-        return this.points[ind];
-      }
-    }
-
+    /// <inheritdoc />
     public IList<INfp> Children { get; set; } = new List<INfp>();
 
     [JsonIgnore]
+    /// <inheritdoc />
     public int Length
     {
       get
@@ -135,19 +114,25 @@
       }
     }
 
+    /// <inheritdoc />
     public int Id { get; set; }
 
     [JsonConverter(typeof(DoublePrecisionConverter))]
+    /// <inheritdoc />
     public double? Offsetx { get; set; }
 
     [JsonConverter(typeof(DoublePrecisionConverter))]
+    /// <inheritdoc />
     public double? Offsety { get; set; }
 
+    /// <inheritdoc />
     public int Source { get; set; } = -1;
 
+    /// <inheritdoc />
     public int PlacementOrder { get; set; } = -1;
 
     [JsonConverter(typeof(DoublePrecisionConverter))]
+    /// <inheritdoc />
     public double Rotation
     {
       get
@@ -161,6 +146,7 @@
       }
     }
 
+    /// <inheritdoc />
     public SvgPoint[] Points
     {
       get
@@ -174,14 +160,7 @@
       }
     }
 
-    public void ReplacePoints(IEnumerable<SvgPoint> points)
-    {
-      this.points = points.ToArray();
-    }
-
-    /// <summary>
-    /// The gross outer area, not discounting for any holes.
-    /// </summary>
+    /// <inheritdoc />
     [JsonIgnore]
     public double Area
     {
@@ -208,17 +187,71 @@
     }
 
     [JsonIgnore]
+    /// <inheritdoc />
     public bool IsExact => !this.Points.Any(o => !o.Exact);
 
+    /// <inheritdoc />
     public bool IsPriority { get; set; }
 
+    /// <inheritdoc />
     public AnglesEnum StrictAngle { get; set; }
 
+    /// <inheritdoc />
+    public SvgPoint this[int ind]
+    {
+      get
+      {
+        return this.points[ind];
+      }
+    }
+
+    /// <summary>
+    /// Creates a new <see cref="NFP"/> from the json supplied.
+    /// </summary>
+    /// <param name="json">Serialised representation of the NFP to create.</param>
+    /// <returns>New <see cref="NFP"/>.</returns>
+    public static NFP FromJson(string json)
+    {
+      return JsonSerializer.Deserialize<NFP>(json);
+    }
+
+    /// <inheritdoc />
+    public void AddPoint(SvgPoint point)
+    {
+      int i = this.points.Length;
+      Array.Resize(ref this.points, i + 1);
+      this.points[i] = point;
+    }
+
+    /// <inheritdoc />
+    public void Reverse()
+    {
+      this.points.Reverse();
+    }
+
+    /// <inheritdoc />
     void IHiddenNfp.Push(SvgPoint svgPoint)
     {
       this.points = this.points.Append(svgPoint).ToArray();
     }
 
+    /// <inheritdoc />
+    public void ReplacePoints(IEnumerable<SvgPoint> points)
+    {
+      this.points = points.ToArray();
+    }
+
+    /// <inheritdoc />
+    public void ReplacePoints(INfp replacementNfp)
+    {
+      this.points = replacementNfp.Points.ToArray();
+      for (int i = 0; i < this.Children.Count; i++)
+      {
+        this.Children[i].ReplacePoints(replacementNfp.Children[i]);
+      }
+    }
+
+    /// <inheritdoc />
     public INfp Slice(int v)
     {
       var ret = new NFP();
@@ -232,11 +265,26 @@
       return ret;
     }
 
+    /// <inheritdoc />
     public string Stringify()
     {
       throw new NotImplementedException();
     }
 
+    /// <inheritdoc />
+    public override string ToString()
+    {
+      var pointStr = (this.points != null) ? this.points.Count() + string.Empty : "null";
+      return $"{this.GetType().Name}: id:{this.Id}; src:{this.Source}; rot:{this.Rotation}°@{this.X:0.###},{this.Y:0.###}; points:{pointStr} - {this.Name}";
+    }
+
+    /// <inheritdoc />
+    public string ToShortString()
+    {
+      return $"{this.GetType().Name}: i:{this.Id};s:{this.Source};r:{this.Rotation}°@{this.X:0.###},{this.Y:0.###}";
+    }
+
+    /// <inheritdoc />
     public NFP Clone()
     {
       NFP result = new NFP();
@@ -263,11 +311,7 @@
       return result;
     }
 
-    /// <summary>
-    /// Clones but only the top level points; no children.
-    /// </summary>
-    /// <param name="p"></param>
-    /// <returns></returns>
+    /// <inheritdoc />
     public INfp CloneTop()
     {
       var newp = new NFP();
@@ -281,10 +325,7 @@
       return newp;
     }
 
-    /// <summary>
-    /// Clone but only copy exact points.
-    /// </summary>
-    /// <returns>Clone but only copy exact points.</returns>
+    /// <inheritdoc />
     public NFP CloneExact()
     {
       NFP clone = new NFP();
@@ -309,6 +350,7 @@
       return clone;
     }
 
+    /// <inheritdoc/>
     public NFP Rotate(double degrees)
     {
       var angle = degrees * Math.PI / 180;
@@ -326,7 +368,9 @@
       NFP rotated = this.Clone();
       rotated.Rotation = 0;
       rotated.ReplacePoints(pp);
+
       // rotated.Rotation += degrees;
+
       // rotated.Rotation = rotated.Rotation % 360f;
 
       if (this.Children != null && this.Children.Count > 0)
@@ -340,6 +384,7 @@
       return rotated;
     }
 
+    /// <inheritdoc />
     public NFP CloneTree()
     {
       NFP newtree = new NFP();
@@ -354,7 +399,7 @@
       newtree.IsPriority = this.IsPriority;
       newtree.StrictAngle = this.StrictAngle;
       newtree.Name = this.Name;
-      // jwb added the properties
+
       if (this.Children != null && this.Children.Count > 0)
       {
         foreach (var c in this.Children)
@@ -366,6 +411,7 @@
       return newtree;
     }
 
+    /// <inheritdoc />
     public NFP GetHull()
     {
       // convert to hulljs format
@@ -398,16 +444,13 @@
       }
     }
 
+    /// <inheritdoc />
     public string ToJson()
     {
       return JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
     }
 
-    public static NFP FromJson(string json)
-    {
-      return JsonSerializer.Deserialize<NFP>(json);
-    }
-
+    /// <inheritdoc />
     public string ToOpenScadPolygon()
     {
       var resultBuilder = new StringBuilder("polygon ([");

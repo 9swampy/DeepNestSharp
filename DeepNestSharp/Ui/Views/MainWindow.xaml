@@ -37,6 +37,7 @@
         </ItemsPanelTemplate>
       </Menu.ItemsPanel>
       <MenuItem Header="File">
+        <MenuItem Header="New Project" Command="{Binding CreateNestProject}" />
         <MenuItem Header="Load Project" Command="{Binding ExecuteLoadNestProject}" />
         <MenuItem Header="Load SheetPlacement" Command="{Binding ExecuteLoadSheetPlacement}" />
         <MenuItem Header="Save" Command="{Binding ExecuteActiveDocumentSave}" />
@@ -75,11 +76,6 @@
               <userControls:SheetPlacementEditor />
             </DataTemplate>
           </docking:PanesTemplateSelector.SheetPlacementEditorTemplate>
-          <!--<docking:PanesTemplateSelector.SheetPlacementPreviewEditorTemplate>
-            <DataTemplate>
-              <userControls:SheetPlacementPreviewEditor />
-            </DataTemplate>
-          </docking:PanesTemplateSelector.SheetPlacementPreviewEditorTemplate>-->
           <docking:PanesTemplateSelector.PreviewTemplate>
             <DataTemplate>
               <userControls:Preview />

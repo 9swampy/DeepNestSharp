@@ -13,42 +13,47 @@
   using AvalonDock.Themes;
   using DeepNestLib;
   using DeepNestLib.NestProject;
+  using DeepNestSharp.Domain;
   using DeepNestSharp.Ui.Docking;
-  using DeepNestSharp.Ui.Models;
   using Microsoft.Toolkit.Mvvm.ComponentModel;
   using Microsoft.Toolkit.Mvvm.Input;
   using Microsoft.Win32;
 
   public class MainViewModel : ObservableRecipient
   {
-    private int selectedPartIndex;
-    private ObservablePartPlacement? selectedPartItem;
+    private readonly IFileIoService fileIoService;
+    private readonly ObservableCollection<FileViewModel> files;
+    private readonly RelayCommand loadLayoutCommand;
+    private readonly RelayCommand saveLayoutCommand;
+    private readonly RelayCommand exitCommand;
+    private readonly RelayCommand loadNestProjectCommand;
+    private readonly RelayCommand loadSheetPlacementCommand;
+    private readonly RelayCommand activeDocumentSaveCommand;
+    private readonly RelayCommand activeDocumentSaveAsCommand;
+    private readonly RelayCommand createNestProjectCommand;
+
     private ToolViewModel[] tools;
 
-    private ObservableCollection<FileViewModel> files = new ObservableCollection<FileViewModel>();
-    private ReadOnlyObservableCollection<FileViewModel>? readonlyFiles;
-
     private PreviewViewModel? previewViewModel;
-    private SvgNestConfigViewModel? svgNestConfigViewModel;
     private Tuple<string, Theme>? selectedTheme;
     private FileViewModel? activeDocument;
     private PropertiesViewModel? propertiesViewModel;
     private NestMonitorViewModel? nestMonitorViewModel;
 
-    private RelayCommand? loadLayoutCommand;
-    private RelayCommand? saveLayoutCommand;
-    private RelayCommand? exitCommand;
-    private RelayCommand? executeLoadNestProject;
-    private RelayCommand? executeLoadSheetPlacement;
-    private RelayCommand? executeActiveDocumentSave;
-    private RelayCommand? executeActiveDocumentSaveAs;
-
-    public MainViewModel(IDispatcherService dispatcherService, ISvgNestConfig config)
+    public MainViewModel(IDispatcherService dispatcherService, ISvgNestConfig config, IFileIoService fileIoService)
     {
-      executeLoadNestProject = new RelayCommand(LoadNestProject);
-      executeLoadSheetPlacement = new RelayCommand(LoadSheetPlacement);
-      executeActiveDocumentSave = new RelayCommand(() => Save(this.ActiveDocument, false), () => this.ActiveDocument?.IsDirty ?? false);
-      executeActiveDocumentSaveAs = new RelayCommand(() => Save(this.ActiveDocument, true), () => true);
+      SvgNestConfigViewModel = new SvgNestConfigViewModel(config);
+
+      createNestProjectCommand = new RelayCommand(ExecuteCreateNestProject);
+      loadNestProjectCommand = new RelayCommand(LoadNestProject);
+      loadSheetPlacementCommand = new RelayCommand(LoadSheetPlacement);
+      activeDocumentSaveCommand = new RelayCommand(() => Save(this.ActiveDocument, false), () => this.ActiveDocument?.IsDirty ?? false);
+      activeDocumentSaveAsCommand = new RelayCommand(() => Save(this.ActiveDocument, true), () => true);
+      exitCommand = new RelayCommand(OnExit, CanExit);
+      saveLayoutCommand = new RelayCommand(OnSaveLayout, CanSaveLayout);
+      loadLayoutCommand = new RelayCommand(OnLoadLayout, CanLoadLayout);
+      files = new ObservableCollection<FileViewModel>();
+      Files = new ReadOnlyObservableCollection<FileViewModel>(files);
 
       this.Themes = new List<Tuple<string, Theme>>
       {
@@ -66,7 +71,7 @@
 
       this.SelectedTheme = Themes.First();
       this.DispatcherService = dispatcherService;
-      this.Config = config;
+      this.fileIoService = fileIoService;
 
       this.ActiveDocumentChanged += this.MainViewModel_ActiveDocumentChanged;
     }
@@ -99,18 +104,7 @@
       }
     }
 
-    public ReadOnlyObservableCollection<FileViewModel> Files
-    {
-      get
-      {
-        if (readonlyFiles == null)
-        {
-          readonlyFiles = new ReadOnlyObservableCollection<FileViewModel>(files);
-        }
-
-        return readonlyFiles;
-      }
-    }
+    public ReadOnlyObservableCollection<FileViewModel> Files { get; }
 
     public NestMonitorViewModel NestMonitorViewModel
     {
@@ -118,7 +112,7 @@
       {
         if (nestMonitorViewModel == null)
         {
-          nestMonitorViewModel = new NestMonitorViewModel(this, new MessageBoxService(), Config);
+          nestMonitorViewModel = new NestMonitorViewModel(this, new MessageBoxService());
         }
 
         return nestMonitorViewModel;
@@ -151,87 +145,23 @@
       }
     }
 
-    public SvgNestConfigViewModel SvgNestConfigViewModel
-    {
-      get
-      {
-        if (svgNestConfigViewModel == null)
-        {
-          svgNestConfigViewModel = new SvgNestConfigViewModel(this);
-        }
+    public SvgNestConfigViewModel SvgNestConfigViewModel { get; }
 
-        return svgNestConfigViewModel;
-      }
-    }
+    public ICommand ExecuteLoadSheetPlacement => loadSheetPlacementCommand;
 
-    public int SelectedPartIndex
-    {
-      get => selectedPartIndex;
-      set
-      {
-        selectedPartIndex = value;
-        OnPropertyChanged(nameof(SelectedPartIndex));
-      }
-    }
+    public ICommand CreateNestProject => createNestProjectCommand;
 
-    public ObservablePartPlacement? SelectedPartItem
-    {
-      get => selectedPartItem;
-      set
-      {
-        selectedPartItem = value;
-        OnPropertyChanged(nameof(SelectedPartItem));
-      }
-    }
+    public ICommand ExecuteLoadNestProject => loadNestProjectCommand;
 
-    public ICommand? ExecuteLoadSheetPlacement => executeLoadSheetPlacement;
+    public ICommand ExecuteActiveDocumentSave => activeDocumentSaveCommand;
 
-    public ICommand? ExecuteLoadNestProject => executeLoadNestProject;
+    public ICommand ExecuteActiveDocumentSaveAs => activeDocumentSaveAsCommand;
 
-    public ICommand? ExecuteActiveDocumentSave => executeActiveDocumentSave;
+    public ICommand ExitCommand => exitCommand;
 
-    public ICommand? ExecuteActiveDocumentSaveAs => executeActiveDocumentSaveAs;
+    public ICommand LoadLayoutCommand => loadLayoutCommand;
 
-    public ICommand? ExitCommand
-    {
-      get
-      {
-        if (exitCommand == null)
-        {
-          exitCommand = new RelayCommand(OnExit, CanExit);
-        }
-
-        return exitCommand;
-      }
-    }
-
-    public ICommand LoadLayoutCommand
-    {
-      get
-      {
-        if (loadLayoutCommand == null)
-        {
-          loadLayoutCommand = new RelayCommand(OnLoadLayout, CanLoadLayout);
-        }
-
-        return loadLayoutCommand;
-      }
-    }
-
-    public ICommand SaveLayoutCommand
-    {
-      get
-      {
-        if (saveLayoutCommand == null)
-        {
-          saveLayoutCommand = new RelayCommand(OnSaveLayout, CanSaveLayout);
-        }
-
-        return saveLayoutCommand;
-      }
-    }
-
-    public ObservableSheetPlacement SheetPlacement { get; } = new ObservableSheetPlacement();
+    public ICommand SaveLayoutCommand => saveLayoutCommand;
 
     public FileViewModel? ActiveDocument
     {
@@ -251,8 +181,6 @@
 
     public IDispatcherService DispatcherService { get; }
 
-    public ISvgNestConfig Config { get; }
-
     public void LoadNestProject()
     {
       var openFileDialog = new OpenFileDialog
@@ -268,7 +196,7 @@
 
     public void LoadNestProject(string fileName)
     {
-      var loaded = new NestProjectViewModel(this, fileName);
+      var loaded = new NestProjectViewModel(this, fileName, fileIoService);
       loaded.PropertyChanged += this.NestProjectViewModel_PropertyChanged;
       this.files.Add(loaded);
       this.ActiveDocument = loaded;
@@ -276,14 +204,10 @@
 
     public void LoadPart()
     {
-      var openFileDialog = new OpenFileDialog()
+      var filePath = fileIoService.GetFilePath(NFP.FileDialogFilter);
+      if (!string.IsNullOrWhiteSpace(filePath))
       {
-        Filter = DeepNestLib.NFP.FileDialogFilter,
-      };
-
-      if (openFileDialog.ShowDialog() == true)
-      {
-        LoadPart(openFileDialog.FileName);
+        LoadPart(filePath);
       }
     }
 
@@ -318,7 +242,7 @@
     {
       if (fileToClose.IsDirty)
       {
-        var res = MessageBox.Show(string.Format("Save changes for file '{0}'?", fileToClose.FileName), "AvalonDock Test App", MessageBoxButton.YesNoCancel);
+        var res = MessageBox.Show(string.Format("Save changes for file '{0}'?", fileToClose.FileName), "DeepNestSharp", MessageBoxButton.YesNoCancel);
         if (res == MessageBoxResult.Cancel)
         {
           return;
@@ -358,6 +282,13 @@
           ActiveDocument.IsDirty = false;
         }
       }
+    }
+
+    private void ExecuteCreateNestProject()
+    {
+      var newFile = new NestProjectViewModel(this, fileIoService);
+      this.files.Add(newFile);
+      this.ActiveDocument = newFile;
     }
 
     private static IEnumerable<LayoutContent> GatherLayoutContent(ILayoutElement le)
@@ -449,16 +380,16 @@
 
     private void MainViewModel_ActiveDocumentChanged(object? sender, EventArgs e)
     {
-      this.executeActiveDocumentSave?.NotifyCanExecuteChanged();
-      this.executeActiveDocumentSaveAs?.NotifyCanExecuteChanged();
+      this.activeDocumentSaveCommand?.NotifyCanExecuteChanged();
+      this.activeDocumentSaveAsCommand?.NotifyCanExecuteChanged();
     }
 
     private void NestProjectViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
       if (e.PropertyName == $"{nameof(FileViewModel.IsDirty)}")
       {
-        executeActiveDocumentSave?.NotifyCanExecuteChanged();
-        executeActiveDocumentSaveAs?.NotifyCanExecuteChanged();
+        activeDocumentSaveCommand?.NotifyCanExecuteChanged();
+        activeDocumentSaveAsCommand?.NotifyCanExecuteChanged();
       }
     }
 
@@ -466,11 +397,6 @@
     {
       var layoutSerializer = new XmlLayoutSerializer(DockManager);
       layoutSerializer.Serialize(@".\AvalonDock.Layout.config");
-    }
-
-    private void SaveSheetPlacement()
-    {
-      throw new NotImplementedException();
     }
   }
 }

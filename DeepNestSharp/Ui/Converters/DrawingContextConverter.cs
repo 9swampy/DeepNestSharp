@@ -43,7 +43,7 @@
         foreach (var detailLoadInfo in nestProjectViewModel.ProjectInfo.DetailLoadInfos)
         {
           if (new FileInfo(detailLoadInfo.Path).Exists &&
-             DxfParser.LoadDxfFile(detailLoadInfo.Path).ToNfp() is INfp loadedNfp)
+             DxfParser.LoadDxfFile(detailLoadInfo.Path).Result.ToNfp() is INfp loadedNfp)
           {
             var shiftedPart = Background.ShiftPolygon(loadedNfp, -loadedNfp.MinX, -loadedNfp.MinY);
             resultProject.Add(new ZoomPreviewDrawingContext().For(shiftedPart));

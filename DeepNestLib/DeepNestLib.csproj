@@ -171,6 +171,7 @@
     <Compile Include="NestProject\DetailLoadInfo.cs" />
     <Compile Include="NestProject\DetailLoadInfoJsonConverter.cs" />
     <Compile Include="NestProject\IDetailLoadInfo.cs" />
+    <Compile Include="NestProject\IList{TCommonInterface,TConcrete}.cs" />
     <Compile Include="NestProject\IProjectInfo.cs" />
     <Compile Include="NestProject\ISheetLoadInfo.cs" />
     <Compile Include="NestProject\ProjectInfo.cs" />
@@ -217,6 +218,7 @@
     <Compile Include="NestItem.cs" />
     <Compile Include="NestProject\SheetLoadInfoJsonConverter.cs" />
     <Compile Include="NestProject\SvgNestConfigJsonConverter.cs" />
+    <Compile Include="NestProject\WrappableList{TCommonInterface,TConcrete}.cs" />
     <Compile Include="NestState.cs" />
     <Compile Include="NFP.cs" />
     <Compile Include="NfpExtensions.cs" />

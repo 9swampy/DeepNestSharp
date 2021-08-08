@@ -1,9 +1,10 @@
 ﻿namespace DeepNestSharp
 {
   using System;
-using System.Threading;
+  using System.Threading;
   using System.Windows;
   using DeepNestLib;
+  using DeepNestSharp.Domain;
   using DeepNestSharp.Ui.Services;
   using DeepNestSharp.Ui.ViewModels;
   using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +23,7 @@ using System.Threading;
            .ConfigureServices((hostContext, services) =>
            {
              services.AddScoped<ISettingsService, SettingsService>();
+             services.AddScoped<IFileIoService, FileIoService>();
              services.AddTransient<INestProjectViewModel, NestProjectViewModel>();
              services.AddSingleton(SvgNest.Config);
              services.AddSingleton<IDispatcherService>(new DispatcherService(this.Dispatcher));

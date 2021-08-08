@@ -10,6 +10,7 @@
   using System.Windows.Media;
   using DeepNestLib;
   using DeepNestLib.Placement;
+  using DeepNestSharp.Domain;
   using DeepNestSharp.Ui.Docking;
   using DeepNestSharp.Ui.Models;
   using Microsoft.Toolkit.Mvvm.Input;
@@ -424,7 +425,7 @@
     private void Set(ObservableDetailLoadInfo item)
     {
       ResetDrawingContext();
-      var polygon = item.Load();
+      var polygon = item.LoadAsync().Result;
       var shiftedPart = Background.ShiftPolygon(polygon, -polygon.MinX, -polygon.MinY);
       Set(new ObservableNfp(shiftedPart));
     }

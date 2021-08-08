@@ -45,7 +45,7 @@
 
     protected override void LoadContent()
     {
-      var part = DxfParser.LoadDxfFile(this.FilePath).ToNfp();
+      var part = DxfParser.LoadDxfFile(this.FilePath).Result.ToNfp();
       this.Part =new ObservableNfp( Background.ShiftPolygon(part, -part?.MinX ?? 0, -part?.MinY ?? 0));
     }
 

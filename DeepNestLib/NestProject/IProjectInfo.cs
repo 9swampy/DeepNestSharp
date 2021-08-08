@@ -6,9 +6,9 @@
   {
     ISvgNestConfig Config { get; }
 
-    IList<IDetailLoadInfo> DetailLoadInfos { get; }
+    IList<IDetailLoadInfo, DetailLoadInfo> DetailLoadInfos { get; }
 
-    IList<ISheetLoadInfo> SheetLoadInfos { get; }
+    IList<ISheetLoadInfo, SheetLoadInfo> SheetLoadInfos { get; }
 
     void Load(string filePath);
 

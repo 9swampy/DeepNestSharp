@@ -1,4 +1,4 @@
-﻿namespace DeepNestSharp.Ui.Services
+﻿namespace DeepNestSharp.Domain
 {
   using System.Diagnostics.Contracts;
 

@@ -11,7 +11,6 @@
     private static ImageSourceConverter imageSourceConverter = new ImageSourceConverter();
 
     private string? filePath;
-    private string textContent = string.Empty;
     private bool isDirty = false;
     private RelayCommand? saveCommand;
     private RelayCommand? saveAsCommand;
@@ -29,6 +28,7 @@
       this.MainViewModel = mainViewModel;
       FilePath = filePath;
       Title = FileName;
+      IsDirty = false;
 
       // Set the icon only for open documents (just a test)
       // IconSource = imageSourceConverter.ConvertFromInvariantString(@"pack://application:,,/Images/document.png") as ImageSource;

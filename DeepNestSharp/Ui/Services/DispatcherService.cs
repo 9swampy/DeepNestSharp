@@ -1,10 +1,8 @@
 ﻿namespace DeepNestSharp.Ui.Services
 {
   using System;
-  using System.Threading;
   using System.Windows.Threading;
   using DeepNestLib;
-  using Microsoft.VisualStudio.Threading;
 
   public class DispatcherService : IDispatcherService
   {

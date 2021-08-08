@@ -1,6 +1,7 @@
 ﻿namespace DeepNestSharp.Ui.Models
 {
   using System;
+  using System.Threading.Tasks;
   using System.Windows;
   using System.Windows.Input;
   using DeepNestLib;
@@ -14,7 +15,7 @@
     private readonly double originalRotation;
     private System.Windows.Media.PointCollection? points;
     private RelayCommand? resetCommand;
-    private RelayCommand? loadExactCommand;
+    private IAsyncRelayCommand? loadExactCommand;
 
     public event EventHandler RenderChildren;
 
@@ -96,13 +97,13 @@
       }
     }
 
-    public ICommand LoadExactCommand
+    public IAsyncRelayCommand LoadExactCommand
     {
       get
       {
         if (loadExactCommand == null)
         {
-          loadExactCommand = new RelayCommand(OnLoadExact, () => !IsExact);
+          loadExactCommand = new AsyncRelayCommand(OnLoadExact, () => !IsExact);
         }
 
         return loadExactCommand;
@@ -184,13 +185,14 @@
       this.Rotation = originalRotation;
     }
 
-    private void OnLoadExact()
+    private async Task OnLoadExact()
     {
-      var raw = DxfParser.LoadDxfFile(this.Part.Name);
+      var raw = await DxfParser.LoadDxfFile(this.Part.Name);
       INfp loadedNfp;
       if (raw.TryConvertToNfp(this.Part.Source, out loadedNfp))
       {
-        this.Part.ReplacePoints(loadedNfp.Points);
+        loadedNfp = loadedNfp.Rotate(this.Part.Rotation);
+        this.Part.ReplacePoints(loadedNfp);
         OnPropertyChanged(nameof(Points));
         OnPropertyChanged(nameof(IsExact));
         loadExactCommand?.NotifyCanExecuteChanged();

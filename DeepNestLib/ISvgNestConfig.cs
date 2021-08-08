@@ -51,7 +51,14 @@
 
     double TimeRatio { get; set; }
 
+    /// <summary>
+    /// Gets or sets max bound for bezier->line segment conversion, in native SVG units.
+    /// </summary>
     double Tolerance { get; set; }
+
+    /// <summary>
+    /// Fudge factor for browser inaccuracy in SVG unit handling.
+    /// </summary>
 
     double ToleranceSvg { get; set; }
 

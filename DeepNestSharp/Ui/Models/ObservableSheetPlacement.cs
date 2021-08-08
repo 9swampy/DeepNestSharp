@@ -2,10 +2,13 @@
 {
   using System.Collections.Generic;
   using System.Collections.ObjectModel;
+  using System.Linq;
+  using System.Windows.Input;
   using DeepNestLib;
   using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
   using Microsoft.Toolkit.Mvvm.ComponentModel;
+  using Microsoft.Toolkit.Mvvm.Input;
 
   public class ObservableSheetPlacement : ObservableObject, ISheetPlacement
   {
@@ -57,19 +60,19 @@
 
     public INfp Hull => item.Hull;
 
-    public double MaxX => this.item.MaxX;
+    public double MaxX => this.item?.MaxX ?? MinX;
 
-    public double MaxY => this.item.MaxY;
+    public double MaxY => this.item?.MaxY ?? MinY;
 
-    public double MaterialUtilization => item.MaterialUtilization;
+    public double MaterialUtilization => item?.MaterialUtilization ?? 0;
 
-    public double MinX => this.item.MinX;
+    public double MinX => this.item?.MinX ?? 0;
 
-    public double MinY => this.item.MinY;
+    public double MinY => this.item?.MinY ?? 0;
 
     public IReadOnlyList<IPartPlacement> PartPlacements => this.observablePartPlacements;
 
-    public PlacementTypeEnum PlacementType => item.PlacementType;
+    public PlacementTypeEnum PlacementType => item?.PlacementType ?? PlacementTypeEnum.Gravity;
 
     public System.Windows.Media.PointCollection Points
     {

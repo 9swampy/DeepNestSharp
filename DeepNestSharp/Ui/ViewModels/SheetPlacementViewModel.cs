@@ -1,10 +1,13 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
   using System;
+  using System.Diagnostics;
   using System.IO;
   using System.Linq;
+  using System.Threading.Tasks;
   using System.Windows.Input;
   using DeepNestLib.Placement;
+  using DeepNestSharp.Domain;
   using DeepNestSharp.Ui.Docking;
   using DeepNestSharp.Ui.Models;
   using Microsoft.Toolkit.Mvvm.Input;
@@ -15,6 +18,7 @@
     private IPartPlacement selectedItem;
     private ISheetPlacement sheetPlacement;
     private RelayCommand? loadPartFileCommand = null;
+    private AsyncRelayCommand? loadAllExactCommand = null;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SheetPlacementViewModel"/> class.
@@ -35,6 +39,20 @@
     {
     }
 
+    public ICommand LoadAllExactCommand
+    {
+      get
+      {
+        if (loadAllExactCommand == null)
+        {
+          loadAllExactCommand = new AsyncRelayCommand(OnLoadAllExact, () => this.SheetPlacement.PartPlacements.Any(p => !p.Part.IsExact));
+          this.IsDirty = false;
+        }
+
+        return loadAllExactCommand;
+      }
+    }
+
     public ICommand LoadPartFileCommand
     {
       get
@@ -42,6 +60,7 @@
         if (loadPartFileCommand == null)
         {
           loadPartFileCommand = new RelayCommand(OnLoadPartFile, () => new FileInfo(this.SelectedItem.Part.Name).Exists);
+          this.IsDirty = false;
         }
 
         return loadPartFileCommand;
@@ -87,6 +106,7 @@
     protected override void LoadContent()
     {
       var sheetPlacement = new ObservableSheetPlacement(DeepNestLib.Placement.SheetPlacement.LoadFromFile(this.FilePath));
+      Debug.Print("Force Exact=false on SheetPlacement load.");
       foreach (var pp in sheetPlacement.PartPlacements)
       {
         pp.Part.Points.First().Exact = false;
@@ -104,6 +124,21 @@
     protected override void NotifyContentUpdated()
     {
       OnPropertyChanged(nameof(SheetPlacement));
+      OnPropertyChanged(nameof(IsDirty));
+    }
+
+    private async Task OnLoadAllExact()
+    {
+      Mouse.OverrideCursor = Cursors.Wait;
+      var partPlacementList = this.sheetPlacement.PartPlacements.Cast<ObservablePartPlacement>().ToList();
+      foreach (var pp in partPlacementList)
+      {
+        await pp.LoadExactCommand.ExecuteAsync(null);
+      }
+
+      NotifyContentUpdated();
+      loadAllExactCommand?.NotifyCanExecuteChanged();
+      Mouse.OverrideCursor = null;
     }
 
     private void OnLoadPartFile()

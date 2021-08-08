@@ -72,7 +72,7 @@
 
       if (f.Extension == ".dxf")
       {
-        det = DxfParser.LoadDxfFile(f.FullName);
+        det = DxfParser.LoadDxfFile(f.FullName).Result;
       }
 
       return det;

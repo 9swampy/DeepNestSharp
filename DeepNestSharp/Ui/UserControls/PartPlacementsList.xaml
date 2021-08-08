@@ -12,7 +12,13 @@
     </DataTemplate>
   </UserControl.Resources>-->
   <Grid>
-    <ListView ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+    <Button Grid.Row="0" HorizontalAlignment="Right" Content="Load All Exact" Command="{Binding LoadAllExactCommand}" />
+    <ListView Grid.Row="1"
+              ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=UserControl}}" 
               SelectedItem="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=UserControl}}" 
               SelectedIndex="{Binding SelectedIndex, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}">
       <ListView.Resources>

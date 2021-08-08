@@ -16,12 +16,6 @@
       set;
     }
 
-    public DataTemplate? SheetPlacementPreviewEditorTemplate
-    {
-      get;
-      set;
-    }
-
     public DataTemplate? PreviewTemplate
     {
       get;

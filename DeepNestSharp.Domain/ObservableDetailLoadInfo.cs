@@ -3,6 +3,7 @@
   using System;
   using System.Collections.Generic;
   using System.Linq;
+  using System.Threading.Tasks;
   using DeepNestLib;
   using DeepNestLib.NestProject;
 
@@ -41,7 +42,6 @@
     public string Name
     {
       get => detailLoadInfo.Name;
-      set => SetProperty(nameof(Name), () => detailLoadInfo.Name, v => detailLoadInfo.Name = v, value);
     }
 
     public string Path
@@ -62,9 +62,9 @@
       set => SetProperty(nameof(StrictAngle), () => detailLoadInfo.StrictAngle, v => detailLoadInfo.StrictAngle = v, value);
     }
 
-    internal INfp Load()
+    public async Task<INfp> LoadAsync()
     {
-      var raw = DxfParser.LoadDxfFile(detailLoadInfo.Path);
+      var raw = await DxfParser.LoadDxfFile(detailLoadInfo.Path);
       return raw.ToNfp();
     }
   }

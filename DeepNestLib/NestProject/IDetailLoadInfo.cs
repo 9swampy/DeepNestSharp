@@ -8,8 +8,14 @@
 
     bool IsPriority { get; set; }
 
-    string Name { get; set; }
+    /// <summary>
+    /// Gets the name of the file (excluding path).
+    /// </summary>
+    string Name { get; }
 
+    /// <summary>
+    /// Gets or sets the full name of the file (including path).
+    /// </summary>
     string Path { get; set; }
 
     int Quantity { get; set; }
