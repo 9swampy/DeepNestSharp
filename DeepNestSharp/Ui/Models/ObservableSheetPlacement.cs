@@ -7,6 +7,7 @@
   using DeepNestLib;
   using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
+  using DeepNestSharp.Domain.Models;
   using Microsoft.Toolkit.Mvvm.ComponentModel;
   using Microsoft.Toolkit.Mvvm.Input;
 

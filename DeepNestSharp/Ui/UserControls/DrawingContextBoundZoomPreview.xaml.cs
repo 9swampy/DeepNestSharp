@@ -6,6 +6,7 @@
   using System.Windows.Controls;
   using System.Windows.Input;
   using System.Windows.Shapes;
+  using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Ui.Behaviors;
   using DeepNestSharp.Ui.Models;
   using DeepNestSharp.Ui.ViewModels;

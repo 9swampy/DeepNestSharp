@@ -1,4 +1,4 @@
-﻿namespace DeepNestSharp.Ui.Models
+﻿namespace DeepNestSharp.Domain.Models
 {
   public interface IWrapper<TCommonInterface, TIn>
     where TIn : class, TCommonInterface

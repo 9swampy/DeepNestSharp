@@ -13,6 +13,7 @@
   using DeepNestLib.Placement;
   using DeepNestSharp.Ui.Docking;
   using DeepNestSharp.Ui.Models;
+  using DeepNestSharp.Domain.Models;
 
   public class PropertiesViewModel : ToolViewModel
   {

@@ -1,12 +1,8 @@
 ﻿namespace DeepNestSharp.Ui.Behaviors
 {
   using System.Windows;
-  using System.Windows.Controls;
-  using System.Windows.Input;
   using System.Windows.Interactivity;
-  using System.Windows.Shapes;
-  using DeepNestLib.Placement;
-  using DeepNestSharp.Ui.Models;
+  using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Ui.ViewModels;
 
   public class PolygonMouseDrag : Behavior<FrameworkElement>

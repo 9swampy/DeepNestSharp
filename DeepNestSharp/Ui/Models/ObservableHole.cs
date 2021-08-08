@@ -11,12 +11,7 @@
     /// </summary>
     /// <param name="partPlacement"></param>
     /// <param name="child"></param>
-    public ObservableHole(ObservablePartPlacement partPlacement, INfp child)
-      : this(child)
-    {
-    }
-
-    internal ObservableHole(INfp child)
+    public ObservableHole(INfp child)
       : base(child)
     {
     }

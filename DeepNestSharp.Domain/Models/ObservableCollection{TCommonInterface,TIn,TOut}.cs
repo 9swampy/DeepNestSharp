@@ -1,6 +1,6 @@
 ﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("DeepNestSharp.CiTests")]
 
-namespace DeepNestSharp.Ui.Models
+namespace DeepNestSharp.Domain.Models
 {
   using DeepNestLib.NestProject;
   using System;

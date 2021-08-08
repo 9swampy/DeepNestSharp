@@ -1,4 +1,4 @@
-﻿namespace DeepNestSharp.Ui.Models
+﻿namespace DeepNestSharp.Domain.Models
 {
   using System;
   using Microsoft.Toolkit.Mvvm.ComponentModel;

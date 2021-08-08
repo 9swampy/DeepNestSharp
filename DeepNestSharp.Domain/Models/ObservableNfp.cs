@@ -4,8 +4,7 @@
   using System.Linq;
   using DeepNestLib;
   using DeepNestLib.NestProject;
-  using DeepNestSharp.Ui.Models;
-
+  
   public class ObservableNfp : ObservablePropertyObject, INfp
   {
     private readonly INfp item;

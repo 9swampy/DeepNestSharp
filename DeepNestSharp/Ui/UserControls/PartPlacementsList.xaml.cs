@@ -5,6 +5,7 @@
   using System.Windows;
   using System.Windows.Controls;
   using DeepNestLib.Placement;
+  using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Ui.Models;
   using DeepNestSharp.Ui.ViewModels;
 

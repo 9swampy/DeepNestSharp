@@ -41,7 +41,7 @@
         this.Add(partPlacement);
         foreach (var child in part.Children)
         {
-          AppendChild(new ObservableHole((ObservablePartPlacement)partPlacement, Background.ShiftPolygon(child, partPlacement)));
+          AppendChild(new ObservableHole(Background.ShiftPolygon(child, partPlacement)));
         }
       }
 

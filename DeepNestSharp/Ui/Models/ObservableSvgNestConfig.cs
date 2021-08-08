@@ -2,6 +2,7 @@
 {
   using DeepNestLib;
   using DeepNestLib.NestProject;
+  using DeepNestSharp.Domain.Models;
   using System.ComponentModel;
   using System.Windows.Shapes;
 

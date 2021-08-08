@@ -416,7 +416,7 @@
         this.DrawingContext.Add(partPlacement);
         foreach (var child in part.Children)
         {
-          Set(new ObservableHole((ObservablePartPlacement)partPlacement, Background.ShiftPolygon(child, partPlacement)));
+          Set(new ObservableHole(Background.ShiftPolygon(child, partPlacement)));
         }
       }
 

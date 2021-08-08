@@ -3,6 +3,7 @@
   using System;
   using DeepNestLib;
   using DeepNestLib.NestProject;
+  using DeepNestSharp.Domain.Models;
   using Microsoft.Toolkit.Mvvm.ComponentModel;
 
   public class ObservableProjectInfo : ObservableObject, IProjectInfo

@@ -3,7 +3,7 @@
   using System;
   using System.Collections.Generic;
   using DeepNestLib.NestProject;
-  using DeepNestSharp.Ui.Models;
+  using DeepNestSharp.Domain.Models;
   using FakeItEasy;
   using FluentAssertions;
   using Xunit;

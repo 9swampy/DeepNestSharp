@@ -45,7 +45,7 @@
               </Style>
             </ItemsControl.ItemContainerStyle>
             <ItemsControl.Resources>
-              <DataTemplate DataType="{x:Type models:ObservablePartPlacement}">
+              <DataTemplate DataType="{x:Type domainModels:ObservablePartPlacement}">
                 <Polygon Points="{Binding Converter={StaticResource PointsConverter}}" Stroke="Black">
                   <!--<DataTemplate DataType="{x:Type models:ObservablePartPlacement}">
                     <Polygon Points="{Binding Points}" Stroke="Black" 
