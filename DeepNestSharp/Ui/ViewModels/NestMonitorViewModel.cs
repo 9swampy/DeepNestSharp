@@ -236,7 +236,10 @@
 
     private void OnLoadNestResult(INestResult? nestResult)
     {
-      throw new NotImplementedException();
+      if (nestResult != null)
+      {
+        mainViewModel.LoadNestResult(nestResult);
+      }
     }
 
     private void OnContinueNest()

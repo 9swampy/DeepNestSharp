@@ -34,6 +34,12 @@
       set;
     }
 
+    public DataTemplate? NestResultEditorTemplate
+    {
+      get;
+      set;
+    }
+
     public DataTemplate? SettingsEditorTemplate
     {
       get;
@@ -74,6 +80,17 @@
         else
         {
           return NestProjectEditorTemplate;
+        }
+      }
+      else if (item is NestResultViewModel)
+      {
+        if (NestResultEditorTemplate == null)
+        {
+          throw new System.InvalidOperationException($"{nameof(NestResultEditorTemplate)} not set.");
+        }
+        else
+        {
+          return NestResultEditorTemplate;
         }
       }
       else if (item is SheetPlacementViewModel)

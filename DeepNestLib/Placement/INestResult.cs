@@ -38,5 +38,7 @@
     double TotalPartsArea { get; }
 
     DateTime CreatedAt { get; }
+
+    string ToJson();
   }
 }

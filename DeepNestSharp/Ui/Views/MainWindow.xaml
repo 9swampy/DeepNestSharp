@@ -91,6 +91,11 @@
               <userControls:NestProjectEditor />
             </DataTemplate>
           </docking:PanesTemplateSelector.NestProjectEditorTemplate>
+          <docking:PanesTemplateSelector.NestResultEditorTemplate>
+            <DataTemplate>
+              <userControls:NestResultEditor />
+            </DataTemplate>
+          </docking:PanesTemplateSelector.NestResultEditorTemplate>
           <docking:PanesTemplateSelector.SettingsEditorTemplate>
             <DataTemplate>
               <userControls:SvgNestConfigEditor />

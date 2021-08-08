@@ -1,7 +1,6 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
   using DeepNestLib;
-  using DeepNestLib.Placement;
   using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Ui.Docking;
 
@@ -48,12 +47,12 @@
     protected override void LoadContent()
     {
       var part = DxfParser.LoadDxfFile(this.FilePath).Result.ToNfp();
-      this.Part =new ObservableNfp( Background.ShiftPolygon(part, -part?.MinX ?? 0, -part?.MinY ?? 0));
+      this.Part = new ObservableNfp(Background.ShiftPolygon(part, -part?.MinX ?? 0, -part?.MinY ?? 0));
     }
 
     protected override void NotifyContentUpdated()
     {
-      OnPropertyChanged(nameof(SheetPlacement));
+      OnPropertyChanged(nameof(Part));
     }
 
     protected override void SaveState()

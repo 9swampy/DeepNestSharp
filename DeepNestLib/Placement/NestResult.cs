@@ -3,10 +3,14 @@
   using System;
   using System.Collections.Generic;
   using System.Linq;
+  using System.Text.Json;
   using DeepNestLib.GeneticAlgorithm;
+  using DeepNestLib.IO;
 
-  public class NestResult : INestResult
+  public class NestResult : Saveable, INestResult
   {
+    public const string FileDialogFilter = "DeepNest Result (*.dnr)|*.dnr|Json (*.json)|*.json|All files (*.*)|*.*";
+
     private readonly OriginalFitness fitness;
 
     public NestResult(
@@ -78,6 +82,14 @@
 
     internal int index { get; set; }
 
+    public static NestResult FromJson(string json)
+    {
+      var options = new JsonSerializerOptions();
+      options.Converters.Add(new NfpJsonConverter());
+      options.Converters.Add(new PartPlacementJsonConverter());
+      return JsonSerializer.Deserialize<NestResult>(json, options);
+    }
+
     public PlacementTypeEnum PlacementType { get; }
 
     public long PlacePartTime { get; }
@@ -97,6 +109,14 @@
     public override string ToString()
     {
       return $"{fitness.Evaluate()}=SumB{this.SheetPlacementFitness.Bounds:N0}+SumS{this.SheetPlacementFitness.Sheets:N0}+SumU{this.SheetPlacementFitness.MaterialWasted:N0}+U{this.fitness.Unplaced:N0}";
+    }
+
+    public override string ToJson()
+    {
+      var options = new JsonSerializerOptions();
+      options.Converters.Add(new NfpJsonConverter());
+      options.Converters.Add(new PartPlacementJsonConverter());
+      return JsonSerializer.Serialize(this, options);
     }
   }
 }

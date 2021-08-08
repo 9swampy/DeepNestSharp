@@ -13,6 +13,7 @@
   using AvalonDock.Themes;
   using DeepNestLib;
   using DeepNestLib.NestProject;
+  using DeepNestLib.Placement;
   using DeepNestSharp.Domain;
   using DeepNestSharp.Ui.Docking;
   using Microsoft.Toolkit.Mvvm.ComponentModel;
@@ -193,6 +194,13 @@
     {
       var loaded = new NestProjectViewModel(this, fileName, fileIoService);
       loaded.PropertyChanged += this.NestProjectViewModel_PropertyChanged;
+      this.files.Add(loaded);
+      this.ActiveDocument = loaded;
+    }
+
+    public void LoadNestResult(INestResult nestResult)
+    {
+      var loaded = new NestResultViewModel(this, nestResult);
       this.files.Add(loaded);
       this.ActiveDocument = loaded;
     }
