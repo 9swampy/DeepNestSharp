@@ -1,5 +1,6 @@
 ﻿namespace DeepNestSharp.Ui.Models
 {
+  using System;
   using System.Collections.Generic;
   using System.Collections.ObjectModel;
   using DeepNestLib;
@@ -106,6 +107,12 @@
     public string ToJson()
     {
       return this.item.ToJson();
+    }
+
+    internal void SaveState()
+    {
+      /*Havn't coded yet... but let's not throw just continue IsDirty.
+      observablePartPlacements[0].SaveState();*/
     }
   }
 }

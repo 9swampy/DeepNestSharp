@@ -17,7 +17,7 @@
   {
     private int selectedIndex;
     private IPartPlacement selectedItem;
-    private ISheetPlacement sheetPlacement;
+    private ObservableSheetPlacement observableSheetPlacement;
     private RelayCommand? loadPartFileCommand = null;
     private AsyncRelayCommand? loadAllExactCommand = null;
 
@@ -70,11 +70,7 @@
       }
     }
 
-    public ISheetPlacement SheetPlacement
-    {
-      get => sheetPlacement;
-      set => SetProperty(ref sheetPlacement, value);
-    }
+    public ISheetPlacement SheetPlacement => observableSheetPlacement;
 
     public int SelectedIndex
     {
@@ -116,7 +112,8 @@
       }
 
       sheetPlacement.PropertyChanged += this.SheetPlacement_PropertyChanged;
-      this.SheetPlacement = sheetPlacement;
+      this.observableSheetPlacement = sheetPlacement;
+      OnPropertyChanged(nameof(SheetPlacement));
     }
 
     private void SheetPlacement_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -133,7 +130,7 @@
     private async Task OnLoadAllExact()
     {
       Mouse.OverrideCursor = Cursors.Wait;
-      var partPlacementList = this.sheetPlacement.PartPlacements.Cast<ObservablePartPlacement>().ToList();
+      var partPlacementList = this.observableSheetPlacement.PartPlacements.Cast<ObservablePartPlacement>().ToList();
       foreach (var pp in partPlacementList)
       {
         await pp.LoadExactCommand.ExecuteAsync(null);
@@ -151,7 +148,7 @@
 
     protected override void SaveState()
     {
-      throw new NotImplementedException();
+      this.observableSheetPlacement.SaveState();
     }
   }
 }

@@ -32,10 +32,11 @@
     private int selectedIndex;
     private INestResult? selectedItem;
 
-    private RelayCommand? stopNestCommand;
-    private RelayCommand? continueNestCommand;
-    private RelayCommand? restartNestCommand;
-    private RelayCommand? loadSheetPlacementCommand;
+    private RelayCommand stopNestCommand;
+    private RelayCommand continueNestCommand;
+    private RelayCommand restartNestCommand;
+    private RelayCommand loadSheetPlacementCommand;
+    private RelayCommand<INestResult> loadNestResultCommand;
 
     public NestMonitorViewModel(MainViewModel mainViewModel, IMessageService messageService)
       : base("Monitor")
@@ -43,20 +44,15 @@
       this.mainViewModel = mainViewModel;
       this.messageService = messageService;
       this.progressDisplayer = new ProgressDisplayer(this, messageService, mainViewModel.DispatcherService);
+
+      loadSheetPlacementCommand = new RelayCommand(OnLoadSheetPlacement, () => false);
+      loadNestResultCommand = new RelayCommand<INestResult>(OnLoadNestResult, x => true);
+      restartNestCommand = new RelayCommand(OnRestartNest, () => false);
+      continueNestCommand = new RelayCommand(OnContinueNest, () => false);
+      stopNestCommand = new RelayCommand(OnStopNest, () => IsRunning && !IsStopping);
     }
 
-    public ICommand ContinueNestCommand
-    {
-      get
-      {
-        if (continueNestCommand == null)
-        {
-          continueNestCommand = new RelayCommand(OnContinueNest, () => false);
-        }
-
-        return continueNestCommand;
-      }
-    }
+    public ICommand ContinueNestCommand => continueNestCommand;
 
     public bool IsRunning
     {
@@ -86,18 +82,15 @@
       }
     }
 
-    public ICommand LoadSheetPlacementCommand
+    public string LastLogMessage
     {
-      get
-      {
-        if (loadSheetPlacementCommand == null)
-        {
-          loadSheetPlacementCommand = new RelayCommand(OnLoadSheetPlacement, () => false);
-        }
-
-        return loadSheetPlacementCommand;
-      }
+      get => lastLogMessage;
+      internal set => SetProperty(ref lastLogMessage, value);
     }
+
+    public ICommand LoadSheetPlacementCommand => loadSheetPlacementCommand;
+
+    public ICommand LoadNestResultCommand => loadNestResultCommand;
 
     public string MessageLog
     {
@@ -109,39 +102,11 @@
 
     public StringBuilder MessageLogBuilder { get; } = new StringBuilder();
 
+    public ICommand RestartNestCommand => restartNestCommand;
+
     public NestState State => Context.State;
 
-    public ICommand RestartNestCommand
-    {
-      get
-      {
-        if (restartNestCommand == null)
-        {
-          restartNestCommand = new RelayCommand(OnRestartNest, () => false);
-        }
-
-        return restartNestCommand;
-      }
-    }
-
-    public ICommand StopNestCommand
-    {
-      get
-      {
-        if (stopNestCommand == null)
-        {
-          stopNestCommand = new RelayCommand(OnStopNest, () => IsRunning && !IsStopping);
-        }
-
-        return stopNestCommand;
-      }
-    }
-
-    public string LastLogMessage
-    {
-      get => lastLogMessage;
-      internal set => SetProperty(ref lastLogMessage, value);
-    }
+    public ICommand StopNestCommand => stopNestCommand;
 
     public int SelectedIndex
     {
@@ -245,6 +210,7 @@
       lock (syncLock)
       {
         this.IsStopping = true;
+        this.context?.StopNest();
         this.nestWorkerTask?.Wait(5000);
       }
     }
@@ -268,6 +234,11 @@
       }
     }
 
+    private void OnLoadNestResult(INestResult? nestResult)
+    {
+      throw new NotImplementedException();
+    }
+
     private void OnContinueNest()
     {
       throw new NotImplementedException();
@@ -285,6 +256,7 @@
 
     private void OnStopNest()
     {
+      Mouse.OverrideCursor = Cursors.Wait;
       this.Stop();
     }
 
@@ -301,7 +273,7 @@
       {
         try
         {
-          System.Diagnostics.Debug.Print("Start-Execute");
+          Debug.Print("Start-Execute");
           nestMonitorViewModel.Context.StartNest();
           nestMonitorViewModel.progressDisplayer.UpdateNestsList();
           while (!nestMonitorViewModel.IsStopping)
@@ -326,19 +298,24 @@
             }
           }
 
-          System.Diagnostics.Debug.Print("Exit-Execute");
+          Debug.Print("Exit-Execute");
         }
         catch (Exception ex)
         {
           this.nestMonitorViewModel.State.SetIsErrored();
-          System.Diagnostics.Debug.Print("Error-Execute");
-          System.Diagnostics.Debug.Print(ex.Message);
-          System.Diagnostics.Debug.Print(ex.StackTrace);
+          Debug.Print("Error-Execute");
+          Debug.Print(ex.Message);
+          Debug.Print(ex.StackTrace);
         }
         finally
         {
-          nestMonitorViewModel.IsStopping = false;
-          System.Diagnostics.Debug.Print("Finally-Execute");
+          nestMonitorViewModel.mainViewModel.DispatcherService.Invoke(() =>
+          {
+            Mouse.OverrideCursor = null;
+            nestMonitorViewModel.IsStopping = false;
+          });
+
+          Debug.Print("Finally-Execute");
         }
       }
 
