@@ -1,7 +1,5 @@
 ﻿namespace DeepNestLib.NestProject
 {
-  using System.Collections.Generic;
-
   public interface IProjectInfo
   {
     ISvgNestConfig Config { get; }

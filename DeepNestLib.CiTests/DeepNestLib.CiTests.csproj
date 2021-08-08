@@ -181,6 +181,7 @@
     <Compile Include="PerfectFitnessFixture.cs" />
     <Compile Include="OuterFitPolygonFixture.cs" />
     <Compile Include="Placement\NfpJsonFixture.cs" />
+    <Compile Include="NestProject\ProjectInfoSerializationFixture.cs" />
     <Compile Include="Placement\SheetPlacementJsonFixture.cs" />
     <Compile Include="PmapWorkerFixtureSetup.cs" />
     <Compile Include="PmapWorkerPmapDeepNestFixture.cs" />

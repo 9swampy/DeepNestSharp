@@ -7,15 +7,15 @@
   using DeepNestLib;
   using DeepNestLib.NestProject;
 
-  public class ObservableDetailLoadInfo : ObservablePropertyObject, IDetailLoadInfo
+  public class ObservableDetailLoadInfo : ObservablePropertyObject, IWrapper<IDetailLoadInfo, DetailLoadInfo>, IDetailLoadInfo
   {
-    private readonly IDetailLoadInfo detailLoadInfo;
+    private readonly DetailLoadInfo detailLoadInfo;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ObservableDetailLoadInfo"/> class.
     /// </summary>
     /// <param name="sheetLoadInfo">The ProjectInfo to wrap.</param>
-    public ObservableDetailLoadInfo(IDetailLoadInfo detailLoadInfo) => this.detailLoadInfo = detailLoadInfo;
+    public ObservableDetailLoadInfo(DetailLoadInfo detailLoadInfo) => this.detailLoadInfo = detailLoadInfo;
 
     public IList<AnglesEnum> AnglesList => Enum.GetValues(typeof(AnglesEnum)).OfType<AnglesEnum>().ToList();
 
@@ -61,6 +61,8 @@
       get => detailLoadInfo.StrictAngle;
       set => SetProperty(nameof(StrictAngle), () => detailLoadInfo.StrictAngle, v => detailLoadInfo.StrictAngle = v, value);
     }
+
+    public DetailLoadInfo Item => detailLoadInfo;
 
     public async Task<INfp> LoadAsync()
     {

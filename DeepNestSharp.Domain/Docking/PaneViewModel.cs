@@ -1,6 +1,6 @@
 ﻿namespace DeepNestSharp.Ui.Docking
 {
-  using System.Windows.Media;
+  //using System.Windows.Media;
   using Microsoft.Toolkit.Mvvm.ComponentModel;
 
   public class PaneViewModel : ObservableRecipient
@@ -26,7 +26,7 @@
       }
     }
 
-    public ImageSource IconSource { get; protected set; }
+    //public ImageSource IconSource { get; protected set; }
 
     public string ContentId
     {

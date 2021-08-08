@@ -3,15 +3,15 @@
   using DeepNestLib;
   using DeepNestLib.NestProject;
 
-  public class ObservableSheetLoadInfo : ObservablePropertyObject, ISheetLoadInfo
+  public class ObservableSheetLoadInfo : ObservablePropertyObject, IWrapper<ISheetLoadInfo, SheetLoadInfo>, ISheetLoadInfo
   {
-    private readonly ISheetLoadInfo sheetLoadInfo;
+    private readonly SheetLoadInfo sheetLoadInfo;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ObservableSheetLoadInfo"/> class.
     /// </summary>
     /// <param name="sheetLoadInfo">The ProjectInfo to wrap.</param>
-    public ObservableSheetLoadInfo(ISheetLoadInfo sheetLoadInfo) => this.sheetLoadInfo = sheetLoadInfo;
+    public ObservableSheetLoadInfo(SheetLoadInfo sheetLoadInfo) => this.sheetLoadInfo = sheetLoadInfo;
 
     public int Height
     {
@@ -32,5 +32,7 @@
       get => sheetLoadInfo.Width;
       set => SetProperty(nameof(Width), () => sheetLoadInfo.Width, v => sheetLoadInfo.Width = v, value);
     }
+
+    public SheetLoadInfo Item => this.sheetLoadInfo;
   }
 }

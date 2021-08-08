@@ -41,9 +41,11 @@
       Initialise(mainViewModel, fileIoService);
     }
 
+    public IAsyncRelayCommand AddPartCommand => addPartCommand;
+
     public ICommand ExecuteNestCommand => executeNestCommand;
 
-    public IAsyncRelayCommand AddPartCommand => addPartCommand;
+    public override string FileDialogFilter => DeepNestLib.NestProject.ProjectInfo.FileDialogFilter;
 
     public IProjectInfo ProjectInfo => observableProjectInfo;
 
@@ -60,6 +62,8 @@
       get => selectedDetailLoadInfoIndex;
       set => SetProperty(ref selectedDetailLoadInfoIndex, value);
     }
+
+    public override string TextContent { get => this.ProjectInfo.ToJson(); }
 
     private void Initialise(MainViewModel mainViewModel, IFileIoService fileIoService)
     {
@@ -96,7 +100,7 @@
 
     private async Task OnAddPartAsync()
     {
-      var filePath = this.fileIoService.GetFilePath(NFP.FileDialogFilter);
+      var filePath = this.fileIoService.GetOpenFilePath(NFP.FileDialogFilter);
       if (!string.IsNullOrWhiteSpace(filePath) && this.fileIoService.Exists(filePath))
       {
         var newPart = new DetailLoadInfo()
@@ -115,7 +119,5 @@
       MainViewModel.NestMonitorViewModel.IsActive = true;
       MainViewModel.NestMonitorViewModel.TryStart(this);
     }
-
-    public override string TextContent { get => this.ProjectInfo.ToJson(); }
   }
 }

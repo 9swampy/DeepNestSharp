@@ -39,6 +39,8 @@
     {
     }
 
+    public override string FileDialogFilter => DeepNestLib.Placement.SheetPlacement.FileDialogFilter;
+
     public ICommand LoadAllExactCommand
     {
       get

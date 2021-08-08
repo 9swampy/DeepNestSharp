@@ -17,7 +17,6 @@
   using DeepNestSharp.Ui.Docking;
   using Microsoft.Toolkit.Mvvm.ComponentModel;
   using Microsoft.Toolkit.Mvvm.Input;
-  using Microsoft.Win32;
 
   public class MainViewModel : ObservableRecipient
   {
@@ -183,14 +182,10 @@
 
     public void LoadNestProject()
     {
-      var openFileDialog = new OpenFileDialog
+      var filePath = fileIoService.GetOpenFilePath(ProjectInfo.FileDialogFilter);
+      if (!string.IsNullOrWhiteSpace(filePath) && fileIoService.Exists(filePath))
       {
-        Filter = ProjectInfo.FileDialogFilter,
-      };
-
-      if (openFileDialog.ShowDialog() == true)
-      {
-        LoadNestProject(openFileDialog.FileName);
+        LoadNestProject(filePath);
       }
     }
 
@@ -204,7 +199,7 @@
 
     public void LoadPart()
     {
-      var filePath = fileIoService.GetFilePath(NFP.FileDialogFilter);
+      var filePath = fileIoService.GetOpenFilePath(NFP.FileDialogFilter);
       if (!string.IsNullOrWhiteSpace(filePath))
       {
         LoadPart(filePath);
@@ -220,14 +215,10 @@
 
     public void LoadSheetPlacement()
     {
-      var openFileDialog = new OpenFileDialog()
+      var filePath = fileIoService.GetOpenFilePath(DeepNestLib.Placement.SheetPlacement.FileDialogFilter);
+      if (!string.IsNullOrWhiteSpace(filePath) && fileIoService.Exists(filePath))
       {
-        Filter = DeepNestLib.Placement.SheetPlacement.FileDialogFilter,
-      };
-
-      if (openFileDialog.ShowDialog() == true)
-      {
-        LoadSheetPlacement(openFileDialog.FileName);
+        LoadSheetPlacement(filePath);
       }
     }
 
@@ -263,15 +254,14 @@
       {
         if (fileToSave.FilePath == null || saveAsFlag)
         {
-          var dlg = new SaveFileDialog();
-          var response = dlg.ShowDialog();
-          if (response.HasValue && response.Value)
+          var filePath = fileIoService.GetSaveFilePath(fileToSave.FileDialogFilter);
+          if (!string.IsNullOrWhiteSpace(filePath) && fileIoService.Exists(filePath))
           {
-            fileToSave.FilePath = dlg.FileName;
+            fileToSave.FilePath = filePath;
           }
         }
 
-        if (fileToSave?.FilePath == null)
+        if (string.IsNullOrEmpty(fileToSave?.FilePath))
         {
           return;
         }

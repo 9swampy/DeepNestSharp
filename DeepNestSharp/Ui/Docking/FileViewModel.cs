@@ -46,7 +46,28 @@
     }
 
     /// <summary>
-    /// Full path to file.
+    /// Gets the filter to apply to Open/Save file dialogs.
+    /// </summary>
+    public abstract string FileDialogFilter { get; }
+
+    /// <summary>
+    /// Gets the name of the file, excluding path.
+    /// </summary>
+    public string FileName
+    {
+      get
+      {
+        if (string.IsNullOrWhiteSpace(FilePath))
+        {
+          return $"New{FileTypeName}" + (IsDirty ? "*" : string.Empty);
+        }
+
+        return Path.GetFileName(FilePath) + (IsDirty ? "*" : string.Empty);
+      }
+    }
+
+    /// <summary>
+    /// Gets or sets the full path to file (path and file name).
     /// </summary>
     public string FilePath
     {
@@ -70,23 +91,12 @@
       }
     }
 
-    protected MainViewModel MainViewModel { get; }
-
     /// <summary>
-    /// Gets the name of the file, excluding path.
+    /// Gets the default name for a new file of this type.
     /// </summary>
-    public string FileName
-    {
-      get
-      {
-        if (FilePath == null)
-        {
-          return "Noname" + (IsDirty ? "*" : string.Empty);
-        }
+    public string FileTypeName => GetType().Name.Replace("ViewModel", string.Empty);
 
-        return Path.GetFileName(FilePath) + (IsDirty ? "*" : string.Empty);
-      }
-    }
+    protected MainViewModel MainViewModel { get; }
 
     public abstract string TextContent { get; }
 

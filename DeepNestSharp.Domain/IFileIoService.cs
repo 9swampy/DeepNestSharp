@@ -2,8 +2,10 @@
 {
   public interface IFileIoService
   {
-    string GetFilePath(string filter);
+    string GetOpenFilePath(string filter);
 
     bool Exists(string filePath);
+
+    string GetSaveFilePath(string fileDialogFilter);
   }
 }

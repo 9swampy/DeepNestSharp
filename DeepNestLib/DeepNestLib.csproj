@@ -218,6 +218,7 @@
     <Compile Include="NestItem.cs" />
     <Compile Include="NestProject\SheetLoadInfoJsonConverter.cs" />
     <Compile Include="NestProject\SvgNestConfigJsonConverter.cs" />
+    <Compile Include="NestProject\WrappableListJsonConverter{TCommonInterface,TConcrete}.cs" />
     <Compile Include="NestProject\WrappableList{TCommonInterface,TConcrete}.cs" />
     <Compile Include="NestState.cs" />
     <Compile Include="NFP.cs" />

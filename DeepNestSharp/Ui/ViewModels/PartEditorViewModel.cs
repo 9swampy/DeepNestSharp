@@ -41,6 +41,8 @@
       }
     }
 
+    public override string FileDialogFilter => NFP.FileDialogFilter;
+
     public override string TextContent => this.Part?.ToJson() ?? string.Empty;
 
     protected override void LoadContent()

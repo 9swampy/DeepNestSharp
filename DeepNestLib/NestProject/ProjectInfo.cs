@@ -28,7 +28,7 @@ namespace DeepNestLib.NestProject
         {
           var options = new JsonSerializerOptions();
           options.Converters.Add(new DetailLoadInfoJsonConverter());
-          options.Converters.Add(new WrappableListDetailLoadInfoJsonConverter());
+          options.Converters.Add(new WrappableListJsonConverter<IDetailLoadInfo, DetailLoadInfo>());
           options.Converters.Add(new WrappableListJsonConverter<ISheetLoadInfo, SheetLoadInfo>());
           options.Converters.Add(new SheetLoadInfoJsonConverter());
           options.Converters.Add(new SvgNestConfigJsonConverter());
@@ -69,6 +69,8 @@ namespace DeepNestLib.NestProject
     {
       var options = new JsonSerializerOptions();
       options.Converters.Add(new DetailLoadInfoJsonConverter());
+      options.Converters.Add(new WrappableListJsonConverter<IDetailLoadInfo, DetailLoadInfo>());
+      options.Converters.Add(new WrappableListJsonConverter<ISheetLoadInfo, SheetLoadInfo>());
       options.Converters.Add(new SheetLoadInfoJsonConverter());
       options.Converters.Add(new SvgNestConfigJsonConverter());
       return JsonSerializer.Serialize(this, options);

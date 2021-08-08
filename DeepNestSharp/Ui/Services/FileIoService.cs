@@ -3,6 +3,7 @@
   using System.IO;
   using DeepNestSharp.Domain;
   using Microsoft.Win32;
+  using static System.Net.WebRequestMethods;
 
   public class FileIoService : IFileIoService
   {
@@ -12,7 +13,7 @@
       return fileInfo.Exists;
     }
 
-    public string GetFilePath(string filter)
+    public string GetOpenFilePath(string filter)
     {
       OpenFileDialog openFileDialog = new OpenFileDialog()
       {
@@ -22,6 +23,22 @@
       if (openFileDialog.ShowDialog() == true)
       {
         return openFileDialog.FileName;
+      }
+
+      return string.Empty;
+    }
+
+    public string GetSaveFilePath(string fileDialogFilter)
+    {
+      var dlg = new SaveFileDialog()
+      {
+        Filter = fileDialogFilter,
+      };
+
+      var response = dlg.ShowDialog();
+      if (response.HasValue && response.Value)
+      {
+        return dlg.FileName;
       }
 
       return string.Empty;

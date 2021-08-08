@@ -71,6 +71,7 @@
     <Compile Include="..\DeepNestLib\NestProject\SheetLoadInfo.cs" Link="NestProject\SheetLoadInfo.cs" />
     <Compile Include="..\DeepNestLib\NestProject\SheetLoadInfoJsonConverter.cs" Link="NestProject\SheetLoadInfoJsonConverter.cs" />
     <Compile Include="..\DeepNestLib\NestProject\SvgNestConfigJsonConverter.cs" Link="NestProject\SvgNestConfigJsonConverter.cs" />
+    <Compile Include="..\DeepNestLib\NestProject\WrappableListJsonConverter{TCommonInterface,TConcrete}.cs" Link="NestProject\WrappableListJsonConverter{TCommonInterface,TConcrete}.cs" />
     <Compile Include="..\DeepNestLib\NestProject\WrappableList{TCommonInterface,TConcrete}.cs" Link="NestProject\WrappableList{TCommonInterface,TConcrete}.cs" />
     <Compile Include="..\DeepNestLib\NestState.cs" Link="NestState.cs" />
     <Compile Include="..\DeepNestLib\NFP.cs" Link="NFP.cs" />

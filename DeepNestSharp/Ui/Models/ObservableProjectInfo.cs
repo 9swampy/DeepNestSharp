@@ -7,7 +7,7 @@
 
   public class ObservableProjectInfo : ObservableObject, IProjectInfo
   {
-    private readonly IProjectInfo projectInfo;
+    private readonly IProjectInfo wrappedProjectInfo;
     private ObservableCollection<IDetailLoadInfo, DetailLoadInfo, ObservableDetailLoadInfo>? detailLoadInfos;
     private ObservableCollection<ISheetLoadInfo, SheetLoadInfo, ObservableSheetLoadInfo>? sheetLoadInfos;
 
@@ -15,15 +15,15 @@
     /// Initializes a new instance of the <see cref="ObservableProjectInfo"/> class.
     /// </summary>
     /// <param name="projectInfo">The ProjectInfo to wrap.</param>
-    public ObservableProjectInfo(IProjectInfo projectInfo) => this.projectInfo = projectInfo;
+    public ObservableProjectInfo(IProjectInfo projectInfo) => this.wrappedProjectInfo = projectInfo;
 
     public IList<IDetailLoadInfo, DetailLoadInfo> DetailLoadInfos
     {
       get
       {
-        if (this.detailLoadInfos == null)
+        if (this.detailLoadInfos == null || this.detailLoadInfos.Count == 0)
         {
-          this.detailLoadInfos = new ObservableCollection<IDetailLoadInfo, DetailLoadInfo, ObservableDetailLoadInfo>(this.projectInfo.DetailLoadInfos, x => new ObservableDetailLoadInfo(x));
+          this.detailLoadInfos = new ObservableCollection<IDetailLoadInfo, DetailLoadInfo, ObservableDetailLoadInfo>(this.wrappedProjectInfo.DetailLoadInfos, x => new ObservableDetailLoadInfo(x));
         }
 
         return this.detailLoadInfos;
@@ -34,9 +34,9 @@
     {
       get
       {
-        if (this.sheetLoadInfos == null)
+        if (this.sheetLoadInfos == null || this.sheetLoadInfos.Count == 0)
         {
-          sheetLoadInfos = new ObservableCollection<ISheetLoadInfo, SheetLoadInfo, ObservableSheetLoadInfo>(this.projectInfo.SheetLoadInfos, x => new ObservableSheetLoadInfo(x));
+          sheetLoadInfos = new ObservableCollection<ISheetLoadInfo, SheetLoadInfo, ObservableSheetLoadInfo>(this.wrappedProjectInfo.SheetLoadInfos, x => new ObservableSheetLoadInfo(x));
         }
 
         return this.sheetLoadInfos;
@@ -47,19 +47,21 @@
 
     public void Load(string filePath)
     {
-      projectInfo.Load(filePath);
+      wrappedProjectInfo.Load(filePath);
+      this.DetailLoadInfos.Clear();
+      this.SheetLoadInfos.Clear();
       OnPropertyChanged(nameof(DetailLoadInfos));
       OnPropertyChanged(nameof(SheetLoadInfos));
     }
 
     public void Load(ProjectInfo source)
     {
-      projectInfo.Load(source);
+      wrappedProjectInfo.Load(source);
     }
 
     public string ToJson()
     {
-      return projectInfo.ToJson();
+      return wrappedProjectInfo.ToJson();
     }
   }
 }
