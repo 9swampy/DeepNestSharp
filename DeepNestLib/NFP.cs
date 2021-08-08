@@ -406,9 +406,22 @@
     }
 
     /// <inheritdoc />
-    public NFP CloneTree()
+    public INfp CloneTree()
     {
-      NFP newtree = new NFP();
+      INfp newtree;
+      if (this is Sheet sheet)
+      {
+        newtree = new Sheet()
+        {
+          Width = sheet.Width,
+          Height = sheet.Height,
+        };
+      }
+      else
+      {
+        newtree = new NFP();
+      }
+
       foreach (var t in this.Points)
       {
         newtree.AddPoint(new SvgPoint(t.X, t.Y) { Exact = t.Exact });

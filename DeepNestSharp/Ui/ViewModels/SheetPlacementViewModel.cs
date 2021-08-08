@@ -11,13 +11,14 @@
   using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Ui.Docking;
   using DeepNestSharp.Ui.Models;
+  using Light.GuardClauses;
   using Microsoft.Toolkit.Mvvm.Input;
 
   public class SheetPlacementViewModel : FileViewModel, ISheetPlacementViewModel
   {
     private int selectedIndex;
-    private IPartPlacement selectedItem;
-    private ObservableSheetPlacement observableSheetPlacement;
+    private IPartPlacement? selectedItem;
+    private ObservableSheetPlacement? observableSheetPlacement;
     private RelayCommand? loadPartFileCommand = null;
     private AsyncRelayCommand? loadAllExactCommand = null;
 
@@ -28,6 +29,25 @@
     public SheetPlacementViewModel(MainViewModel mainViewModel)
       : base(mainViewModel)
     {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SheetPlacementViewModel"/> class.
+    /// </summary>
+    /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
+    public SheetPlacementViewModel(MainViewModel mainViewModel, ISheetPlacement sheetPlacement)
+      : this(mainViewModel)
+    {
+      if (sheetPlacement is ObservableSheetPlacement observableSheetPlacement)
+      {
+        this.observableSheetPlacement = observableSheetPlacement;
+      }
+      else
+      {
+        this.observableSheetPlacement = new ObservableSheetPlacement((SheetPlacement)sheetPlacement);
+      }
+
+      this.observableSheetPlacement.PropertyChanged += this.SheetPlacement_PropertyChanged;
     }
 
     /// <summary>

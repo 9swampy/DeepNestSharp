@@ -18,4 +18,15 @@
 
     void InitialiseUiForStartNest();
   }
+
+  public class ProgressDisplayerHelper
+  {
+    public static double CalculatePercentageComplete(int placedParts, int currentPopulation, int populationSize, int totalPartsToPlace)
+    {
+      double progressPopulation = 0.66f * ((double)currentPopulation / (double)populationSize);
+      double progressPlacements = 0.34f * ((double)placedParts / (double)totalPartsToPlace);
+      var percentageComplete = progressPopulation + progressPlacements;
+      return percentageComplete;
+    }
+  }
 }

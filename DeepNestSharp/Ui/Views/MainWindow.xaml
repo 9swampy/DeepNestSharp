@@ -37,11 +37,13 @@
         </ItemsPanelTemplate>
       </Menu.ItemsPanel>
       <MenuItem Header="File">
-        <MenuItem Header="New Project" Command="{Binding CreateNestProject}" />
-        <MenuItem Header="Load Project" Command="{Binding ExecuteLoadNestProject}" />
-        <MenuItem Header="Load SheetPlacement" Command="{Binding ExecuteLoadSheetPlacement}" />
-        <MenuItem Header="Save" Command="{Binding ExecuteActiveDocumentSave}" />
-        <MenuItem Header="Save As" Command="{Binding ExecuteActiveDocumentSaveAs}" />
+        <MenuItem Header="New Project" Command="{Binding CreateNestProjectCommand}" />
+        <MenuItem Header="Load Project" Command="{Binding LoadNestProjectCommand}" />
+        <MenuItem Header="Load Result" Command="{Binding LoadNestResultCommand}" />
+        <MenuItem Header="Load Sheet" Command="{Binding LoadSheetPlacementCommand}" />
+        <Separator />
+        <MenuItem Header="Save" Command="{Binding ActiveDocumentSaveCommand}" />
+        <MenuItem Header="Save As" Command="{Binding ActiveDocumentSaveAsCommand}" />
         <Separator />
         <MenuItem Header="Load Layout" Command="{Binding LoadLayoutCommand}" />
         <MenuItem Header="Save Layout" Command="{Binding SaveLayoutCommand}" />

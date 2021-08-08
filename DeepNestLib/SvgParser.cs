@@ -1,5 +1,6 @@
 ﻿namespace DeepNestLib
 {
+  using DeepNestLib.Placement;
   using System;
   using System.Collections.Generic;
   using System.Drawing;
@@ -10,7 +11,19 @@
   using System.Text;
   using System.Xml.Linq;
 
-  public class SvgParser : IExport
+  public abstract class ParserBase : IExport
+  {
+    public abstract string SaveFileDialogFilter { get; }
+
+    public void Export(string path, ISheetPlacement sheetPlacement)
+    {
+      this.Export(path, sheetPlacement.PartPlacements.Select(o => o.Part), new ISheet[] { sheetPlacement.Sheet });
+    }
+
+    public abstract void Export(string path, IEnumerable<INfp> polygons, IEnumerable<ISheet> sheets);
+  }
+
+  public class SvgParser : ParserBase
   {
     public SvgParser(ISvgNestConfig config)
     {
@@ -97,7 +110,7 @@
       return s;
     }
 
-    public void Export(string path, IEnumerable<INfp> polygons, IEnumerable<INfp> sheets)
+    public override void Export(string path, IEnumerable<INfp> polygons, IEnumerable<ISheet> sheets)
     {
       StringBuilder sb = new StringBuilder();
       sb.AppendLine("	<svg version=\"1.1\" id=\"svg2\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"   xml:space=\"preserve\">");
@@ -175,7 +188,7 @@
 
     public ISvgNestConfig Config { get; }
 
-    public string SaveFileDialogFilter => "Svg files (*.svg)|*.svg";
+    public override string SaveFileDialogFilter => "Svg files (*.svg)|*.svg";
 
     // return a polygon from the given SVG element in the form of an array of points
     public NFP polygonify(XElement element)

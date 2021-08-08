@@ -37,6 +37,11 @@
 
     private static double MaximumXY(this ObservableCollection<object> drawingContext, Func<IMinMaxXY, double> accessor)
     {
+      if (drawingContext.Count == 0)
+      {
+        return 1;
+      }
+
       return drawingContext.Max(o =>
       {
         if (o is IMinMaxXY item)
@@ -50,6 +55,11 @@
 
     private static double MinimumXY(this ObservableCollection<object> drawingContext, Func<IMinMaxXY, double> accessor)
     {
+      if (drawingContext.Count == 0)
+      {
+        return 1;
+      }
+
       return drawingContext.Min(o =>
       {
         if (o is IMinMaxXY item)

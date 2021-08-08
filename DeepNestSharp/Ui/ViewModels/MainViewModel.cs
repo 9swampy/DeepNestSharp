@@ -22,15 +22,17 @@
   public class MainViewModel : ObservableRecipient
   {
     private readonly IFileIoService fileIoService;
+    private readonly IMessageService messageService;
     private readonly ObservableCollection<FileViewModel> files;
-    private readonly RelayCommand loadLayoutCommand;
-    private readonly RelayCommand saveLayoutCommand;
-    private readonly RelayCommand exitCommand;
-    private readonly RelayCommand loadNestProjectCommand;
-    private readonly RelayCommand loadSheetPlacementCommand;
-    private readonly RelayCommand activeDocumentSaveCommand;
-    private readonly RelayCommand activeDocumentSaveAsCommand;
-    private readonly RelayCommand createNestProjectCommand;
+    private RelayCommand loadLayoutCommand;
+    private RelayCommand saveLayoutCommand;
+    private RelayCommand exitCommand;
+    private RelayCommand loadNestProjectCommand;
+    private RelayCommand loadSheetPlacementCommand;
+    private RelayCommand loadNestResultCommand;
+    private RelayCommand activeDocumentSaveCommand;
+    private RelayCommand activeDocumentSaveAsCommand;
+    private RelayCommand createNestProjectCommand;
 
     private ToolViewModel[] tools;
 
@@ -40,18 +42,10 @@
     private PropertiesViewModel? propertiesViewModel;
     private NestMonitorViewModel? nestMonitorViewModel;
 
-    public MainViewModel(IDispatcherService dispatcherService, ISvgNestConfig config, IFileIoService fileIoService)
+    public MainViewModel(IMessageService messageService, IDispatcherService dispatcherService, ISvgNestConfig config, IFileIoService fileIoService)
     {
       SvgNestConfigViewModel = new SvgNestConfigViewModel(config);
 
-      createNestProjectCommand = new RelayCommand(ExecuteCreateNestProject);
-      loadNestProjectCommand = new RelayCommand(LoadNestProject);
-      loadSheetPlacementCommand = new RelayCommand(LoadSheetPlacement);
-      activeDocumentSaveCommand = new RelayCommand(() => Save(this.ActiveDocument, false), () => this.ActiveDocument?.IsDirty ?? false);
-      activeDocumentSaveAsCommand = new RelayCommand(() => Save(this.ActiveDocument, true), () => true);
-      exitCommand = new RelayCommand(OnExit, CanExit);
-      saveLayoutCommand = new RelayCommand(OnSaveLayout, CanSaveLayout);
-      loadLayoutCommand = new RelayCommand(OnLoadLayout, CanLoadLayout);
       files = new ObservableCollection<FileViewModel>();
       Files = new ReadOnlyObservableCollection<FileViewModel>(files);
 
@@ -70,6 +64,7 @@
       };
 
       this.SelectedTheme = Themes.First();
+      this.messageService = messageService;
       this.DispatcherService = dispatcherService;
       this.fileIoService = fileIoService;
 
@@ -147,21 +142,23 @@
 
     public SvgNestConfigViewModel SvgNestConfigViewModel { get; }
 
-    public ICommand ExecuteLoadSheetPlacement => loadSheetPlacementCommand;
+    public ICommand LoadSheetPlacementCommand => loadSheetPlacementCommand ?? (loadSheetPlacementCommand = new RelayCommand(OnLoadSheetPlacement));
 
-    public ICommand CreateNestProject => createNestProjectCommand;
+    public ICommand LoadNestResultCommand => loadNestResultCommand ?? (loadNestResultCommand = new RelayCommand(OnLoadNestResult));
 
-    public ICommand ExecuteLoadNestProject => loadNestProjectCommand;
+    public ICommand CreateNestProjectCommand => createNestProjectCommand ?? (createNestProjectCommand = new RelayCommand(OnCreateNestProject));
 
-    public ICommand ExecuteActiveDocumentSave => activeDocumentSaveCommand;
+    public ICommand LoadNestProjectCommand => loadNestProjectCommand ?? (loadNestProjectCommand = new RelayCommand(OnLoadNestProject));
 
-    public ICommand ExecuteActiveDocumentSaveAs => activeDocumentSaveAsCommand;
+    public ICommand ActiveDocumentSaveCommand => activeDocumentSaveCommand ?? (activeDocumentSaveCommand = new RelayCommand(() => Save(this.ActiveDocument, false), () => this.ActiveDocument?.IsDirty ?? false));
 
-    public ICommand ExitCommand => exitCommand;
+    public ICommand ActiveDocumentSaveAsCommand => activeDocumentSaveAsCommand ?? (activeDocumentSaveAsCommand = new RelayCommand(() => Save(this.ActiveDocument, true), () => true));
 
-    public ICommand LoadLayoutCommand => loadLayoutCommand;
+    public ICommand ExitCommand => exitCommand ?? (exitCommand = new RelayCommand(OnExit, CanExit));
 
-    public ICommand SaveLayoutCommand => saveLayoutCommand;
+    public ICommand LoadLayoutCommand => loadLayoutCommand ?? (saveLayoutCommand = new RelayCommand(OnSaveLayout, CanSaveLayout));
+
+    public ICommand SaveLayoutCommand => saveLayoutCommand ?? (loadLayoutCommand = new RelayCommand(OnLoadLayout, CanLoadLayout));
 
     public FileViewModel? ActiveDocument
     {
@@ -181,16 +178,16 @@
 
     public IDispatcherService DispatcherService { get; }
 
-    public void LoadNestProject()
+    public void OnLoadNestProject()
     {
       var filePath = fileIoService.GetOpenFilePath(ProjectInfo.FileDialogFilter);
       if (!string.IsNullOrWhiteSpace(filePath) && fileIoService.Exists(filePath))
       {
-        LoadNestProject(filePath);
+        OnLoadNestProject(filePath);
       }
     }
 
-    public void LoadNestProject(string fileName)
+    public void OnLoadNestProject(string fileName)
     {
       var loaded = new NestProjectViewModel(this, fileName, fileIoService);
       loaded.PropertyChanged += this.NestProjectViewModel_PropertyChanged;
@@ -198,9 +195,25 @@
       this.ActiveDocument = loaded;
     }
 
-    public void LoadNestResult(INestResult nestResult)
+    private void OnLoadNestResult()
+    {
+      var filePath = fileIoService.GetOpenFilePath(NestResult.FileDialogFilter);
+      if (!string.IsNullOrWhiteSpace(filePath) && fileIoService.Exists(filePath))
+      {
+        LoadNestResult(filePath);
+      }
+    }
+
+    public void OnLoadNestResult(INestResult nestResult)
     {
       var loaded = new NestResultViewModel(this, nestResult);
+      this.files.Add(loaded);
+      this.ActiveDocument = loaded;
+    }
+
+    public void LoadNestResult(string fileName)
+    {
+      var loaded = new NestResultViewModel(this, fileName);
       this.files.Add(loaded);
       this.ActiveDocument = loaded;
     }
@@ -221,9 +234,9 @@
       this.ActiveDocument = loaded;
     }
 
-    public void LoadSheetPlacement()
+    public void OnLoadSheetPlacement()
     {
-      var filePath = fileIoService.GetOpenFilePath(DeepNestLib.Placement.SheetPlacement.FileDialogFilter);
+      var filePath = fileIoService.GetOpenFilePath(SheetPlacement.FileDialogFilter);
       if (!string.IsNullOrWhiteSpace(filePath) && fileIoService.Exists(filePath))
       {
         LoadSheetPlacement(filePath);
@@ -233,6 +246,13 @@
     public void LoadSheetPlacement(string fileName)
     {
       var loaded = new SheetPlacementViewModel(this, fileName);
+      this.files.Add(loaded);
+      this.ActiveDocument = loaded;
+    }
+
+    public void LoadSheetPlacement(ISheetPlacement sheetPlacement)
+    {
+      var loaded = new SheetPlacementViewModel(this, sheetPlacement);
       this.files.Add(loaded);
       this.ActiveDocument = loaded;
     }
@@ -254,6 +274,29 @@
       }
 
       files.Remove(fileToClose);
+    }
+
+    internal void ExportSheetPlacement(ISheetPlacement? sheetPlacement)
+    {
+      if (sheetPlacement == null)
+      {
+        return;
+      }
+
+      var parts = sheetPlacement.PartPlacements.Select(o => o.Part).ToList();
+      if (parts.ContainsDxfs() && parts.ContainsSvgs())
+      {
+        messageService.DisplayMessageBox("It's not possible to export when your parts were a mix of Svg's and Dxf's.", "DeepNestPort: Not Implemented", MessageBoxIcon.Information);
+      }
+      else
+      {
+        IExport exporter = ExporterFactory.GetExporter(parts, SvgNestConfigViewModel.SvgNestConfig);
+        var filePath = fileIoService.GetSaveFilePath(exporter.SaveFileDialogFilter);
+        if (!string.IsNullOrWhiteSpace(filePath))
+        {
+          exporter.Export(filePath, sheetPlacement);
+        }
+      }
     }
 
     internal void Save(FileViewModel? fileToSave, bool saveAsFlag = false)
@@ -282,7 +325,7 @@
       }
     }
 
-    private void ExecuteCreateNestProject()
+    private void OnCreateNestProject()
     {
       var newFile = new NestProjectViewModel(this, fileIoService);
       this.files.Add(newFile);

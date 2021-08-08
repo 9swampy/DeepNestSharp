@@ -24,7 +24,7 @@
       270,
     };
 
-    public Procreant(NFP[] adam, ISvgNestConfig config)
+    public Procreant(INfp[] adam, ISvgNestConfig config)
     {
       Config = config;
 
@@ -55,29 +55,26 @@
       }
     }
 
-    public Procreant(NestItem[] parts, ISvgNestConfig config)
+    public Procreant(NestItem<INfp>[] parts, ISvgNestConfig config)
       : this(CreateAdam(parts), config)
     {
     }
 
-    private static NFP[] CreateAdam(NestItem[] parts)
+    private static INfp[] CreateAdam(NestItem<INfp>[] parts)
     {
-      List<NFP> adam = new List<NFP>();
+      List<INfp> adam = new List<INfp>();
       var id = 0;
       for (int i = 0; i < parts.Count(); i++)
       {
         var part = parts[i];
-        if (!part.IsSheet)
+        for (int j = 0; j < part.Quantity; j++)
         {
-          for (int j = 0; j < part.Quantity; j++)
-          {
-            var poly = part.Polygon.CloneTree(); // deep copy
-            poly.Id = id; // id is the unique id of all parts that will be nested, including cloned duplicates
-            poly.Source = i; // source is the id of each unique part from the main part list
+          var poly = part.Polygon.CloneTree(); // deep copy
+          poly.Id = id; // id is the unique id of all parts that will be nested, including cloned duplicates
+          poly.Source = i; // source is the id of each unique part from the main part list
 
-            adam.Add(poly);
-            id++;
-          }
+          adam.Add(poly);
+          id++;
         }
       }
 
@@ -207,10 +204,10 @@
     {
       var cutpoint = (int)Math.Round(Math.Min(Math.Max(r.NextDouble(), 0.1), 0.9) * (male.Parts.Count - 1));
 
-      var gene1 = new List<NFP>(male.Parts.Take(cutpoint).ToArray());
+      var gene1 = new List<INfp>(male.Parts.Take(cutpoint).ToArray());
       var rot1 = new List<double>(male.Rotation.Take(cutpoint).ToArray());
 
-      var gene2 = new List<NFP>(female.Parts.Take(cutpoint).ToArray());
+      var gene2 = new List<INfp>(female.Parts.Take(cutpoint).ToArray());
       var rot2 = new List<double>(female.Rotation.Take(cutpoint).ToArray());
 
       var i = 0;

@@ -7,16 +7,46 @@
   {
     IList<INfp> Children { get; set; }
 
+    int Id { get; set; }
+
+    /// <summary>
+    /// Gets whether every point in the polygon is exact, true to the original import.
+    /// </summary>
+    bool IsExact { get; }
+
+    string Name { get; set; }
+
     SvgPoint[] Points { get; }
+
+    double Rotation { get; set; }
+
+    int Source { get; set; }
 
     SvgPoint this[int ind] { get; }
 
     void AddPoint(SvgPoint point);
-
-    double Rotation { get; set; }
   }
 
-  public interface INfp : IMinMaxXY, IPolygon
+  public interface IPlacement
+  {
+    bool IsPriority { get; set; }
+
+    double? Offsetx { get; set; }
+
+    double? Offsety { get; set; }
+
+    int PlacementOrder { get; set; }
+
+    INfp Sheet { get; set; }
+
+    AnglesEnum StrictAngle { get; set; }
+
+    double X { get; set; }
+
+    double Y { get; set; }
+  }
+
+  public interface INfp : IMinMaxXY, IPolygon, IPlacement
   {
     /// <summary>
     /// The gross outer area, not discounting for any holes.
@@ -30,39 +60,12 @@
     /// </summary>
     double HeightCalculated { get; }
 
-    int Id { get; set; }
-
-    /// <summary>
-    /// Gets whether every point in the polygon is exact, true to the original import.
-    /// </summary>
-    bool IsExact { get; }
-
-    bool IsPriority { get; set; }
-
     /// <summary>
     /// Gets the length of the Points collection.
     /// </summary>
     int Length { get; }
 
-    string Name { get; set; }
-
-    double? Offsetx { get; set; }
-
-    double? Offsety { get; set; }
-
-    int PlacementOrder { get; set; }
-
-    INfp Sheet { get; set; }
-
-    int Source { get; set; }
-
-    AnglesEnum StrictAngle { get; set; }
-
     double WidthCalculated { get; }
-
-    double X { get; set; }
-
-    double Y { get; set; }
 
     NFP Clone();
 
@@ -72,7 +75,7 @@
     /// <returns>A clone.</returns>
     NFP CloneExact();
 
-    NFP CloneTree();
+    INfp CloneTree();
 
     /// <summary>
     /// Clones but only the top level points; no children.

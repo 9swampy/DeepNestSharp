@@ -41,7 +41,7 @@
     {
       get
       {
-        return nestResult.UsedSheets.Sheets;
+        return ((SheetPlacementCollection)nestResult.UsedSheets).Sheets;
       }
     }
 
@@ -52,7 +52,7 @@
     {
       get
       {
-        return nestResult.UsedSheets.MaterialUtilization;
+        return ((SheetPlacementCollection)nestResult.UsedSheets).MaterialUtilization;
       }
     }
 
@@ -63,7 +63,7 @@
     {
       get
       {
-        return nestResult.UsedSheets.MaterialWasted;
+        return ((SheetPlacementCollection)nestResult.UsedSheets).MaterialWasted;
       }
     }
 
@@ -74,7 +74,7 @@
     {
       get
       {
-        return nestResult.UsedSheets.Bounds;
+        return ((SheetPlacementCollection)nestResult.UsedSheets).Bounds;
       }
     }
 

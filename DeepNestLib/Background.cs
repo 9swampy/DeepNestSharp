@@ -96,7 +96,7 @@
       return clipperNfp.ToArray();
     }
 
-    public NFP GetPart(int source, NFP[] parts)
+    public INfp GetPart(int source, INfp[] parts)
     {
       for (var k = 0; k < parts.Length; k++)
       {
@@ -1084,7 +1084,7 @@
       return false;
     }
 
-    private void SyncPlaceParts(NFP[] parts, ISheet[] sheets, ISvgNestConfig config, int index)
+    private void SyncPlaceParts(INfp[] parts, ISheet[] sheets, ISvgNestConfig config, int index)
     {
       var nestResult = PlaceParts(sheets, parts, config);
       if (nestResult != null)
@@ -1094,7 +1094,7 @@
       }
     }
 
-    private void ThenIterate(NfpPair processed, NFP[] parts, double clipperScale)
+    private void ThenIterate(NfpPair processed, INfp[] parts, double clipperScale)
     {
       // returned data only contains outer nfp, we have to account for any holes separately in the synchronous portion
       // this is because the c++ addon which can process interior nfps cannot run in the worker thread
@@ -1146,7 +1146,7 @@
       window.Insert(doc);
     }
 
-    private void ThenDeepNest(NfpPair[] nfpPairs, NFP[] parts, ISheet[] sheets, ISvgNestConfig config, int index)
+    private void ThenDeepNest(NfpPair[] nfpPairs, INfp[] parts, ISheet[] sheets, ISvgNestConfig config, int index)
     {
       if (config.UseParallel)
       {

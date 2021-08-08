@@ -9,29 +9,32 @@
   using DeepNestSharp.Domain.Models;
   using Microsoft.Toolkit.Mvvm.ComponentModel;
 
-  public class ObservableSheetPlacement : ObservableObject, ISheetPlacement
+  public class ObservableSheetPlacement : ObservableObject, ISheetPlacement, IWrapper<ISheetPlacement, SheetPlacement>
   {
+    private readonly SheetPlacement sheetPlacement;
     private readonly ObservableCollection<ObservablePartPlacement> observablePartPlacements;
     private System.Windows.Media.PointCollection points;
-    private ISheetPlacement? item;
 
-    public ObservableSheetPlacement()
+    private ObservableSheetPlacement()
     {
       this.observablePartPlacements = new ObservableCollection<ObservablePartPlacement>();
     }
 
-    public ObservableSheetPlacement(ISheetPlacement item)
-      : this() => this.Set(item);
+    public ObservableSheetPlacement(SheetPlacement sheetPlacement)
+      : this()
+    {
+      this.sheetPlacement = sheetPlacement;
+      this.Set(sheetPlacement);
+    }
 
     public double X => this.Sheet.X;
 
     public double Y => this.Sheet.Y;
 
-    public bool IsSet => this.item != null;
+    public bool IsSet => this.sheetPlacement != null;
 
     private void Set(ISheetPlacement item)
     {
-      this.item = item;
       this.observablePartPlacements.Clear();
       this.points?.Clear();
       foreach (var partPlacement in item.PartPlacements)
@@ -52,28 +55,28 @@
           !obsPart.IsDragging &&
           (e.PropertyName == nameof(ObservablePartPlacement.X) || e.PropertyName == nameof(ObservablePartPlacement.Y)))
       {
-        Set(item);
+        Set(sheetPlacement);
         OnPropertyChanged(nameof(PartPlacements));
       }
     }
 
-    public OriginalFitnessSheet Fitness => item.Fitness;
+    public OriginalFitnessSheet Fitness => sheetPlacement.Fitness;
 
-    public INfp Hull => item.Hull;
+    public INfp Hull => sheetPlacement.Hull;
 
-    public double MaxX => this.item?.MaxX ?? MinX;
+    public double MaxX => this.sheetPlacement?.MaxX ?? MinX;
 
-    public double MaxY => this.item?.MaxY ?? MinY;
+    public double MaxY => this.sheetPlacement?.MaxY ?? MinY;
 
-    public double MaterialUtilization => item?.MaterialUtilization ?? 0;
+    public double MaterialUtilization => sheetPlacement?.MaterialUtilization ?? 0;
 
-    public double MinX => this.item?.MinX ?? 0;
+    public double MinX => this.sheetPlacement?.MinX ?? 0;
 
-    public double MinY => this.item?.MinY ?? 0;
+    public double MinY => this.sheetPlacement?.MinY ?? 0;
 
     public IReadOnlyList<IPartPlacement> PartPlacements => this.observablePartPlacements;
 
-    public PlacementTypeEnum PlacementType => item?.PlacementType ?? PlacementTypeEnum.Gravity;
+    public PlacementTypeEnum PlacementType => sheetPlacement?.PlacementType ?? PlacementTypeEnum.Gravity;
 
     public System.Windows.Media.PointCollection Points
     {
@@ -92,21 +95,25 @@
       }
     }
 
-    public PolygonBounds RectBounds => item.RectBounds;
+    public PolygonBounds RectBounds => sheetPlacement.RectBounds;
 
-    public ISheet Sheet => item?.Sheet;
+    public ISheet Sheet => sheetPlacement?.Sheet;
 
-    public int SheetId => item.SheetId;
+    public int SheetId => sheetPlacement.SheetId;
 
-    public int SheetSource => item.SheetSource;
+    public int SheetSource => sheetPlacement.SheetSource;
 
-    public INfp Simplify => item.Simplify;
+    public INfp Simplify => sheetPlacement.Simplify;
 
-    public double TotalPartsArea => item.TotalPartsArea;
+    public double TotalPartsArea => sheetPlacement.TotalPartsArea;
+
+    public bool IsDirty => true;
+
+    public SheetPlacement Item => sheetPlacement;
 
     public string ToJson()
     {
-      return this.item.ToJson();
+      return this.sheetPlacement.ToJson();
     }
 
     internal void SaveState()

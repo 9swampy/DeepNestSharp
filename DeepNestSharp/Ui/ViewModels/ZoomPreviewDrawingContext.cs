@@ -20,7 +20,7 @@
 
     public ZoomPreviewDrawingContext For(ISheetPlacement sheetPlacement)
     {
-      Set(new ObservableSheetPlacement(sheetPlacement));
+      Set(new ObservableSheetPlacement((SheetPlacement)sheetPlacement));
       return this;
     }
 

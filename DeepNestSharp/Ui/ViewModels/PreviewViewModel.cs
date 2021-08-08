@@ -20,6 +20,8 @@
     private const double Gap = 10;
     private readonly MainViewModel mainViewModel;
     private SheetPlacementViewModel? lastSheetPlacementViewModel;
+    private NestResultViewModel? lastNestResultViewModel;
+    private NestProjectViewModel? lastNestProjectViewModel;
     private IPartPlacement? hoverPartPlacement;
     private Point mousePosition;
     private Point dragOffset;
@@ -302,23 +304,24 @@
       lastSheetPlacementViewModel?.RaiseDrawingContext();
     }
 
-    private void LastSheetPlacementViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-      if (sender == mainViewModel.ActiveDocument &&
-          e.PropertyName == "SelectedItem" &&
-          sender is SheetPlacementViewModel sheetPlacementViewModel &&
-          sheetPlacementViewModel.SheetPlacement is ObservableSheetPlacement sheetPlacement)
-      {
-        Set(sheetPlacement);
-      }
-    }
-
     private void InitialiseDrawingContext(object? sender)
     {
       if (lastSheetPlacementViewModel != null)
       {
-        lastSheetPlacementViewModel.PropertyChanged -= this.LastSheetPlacementViewModel_PropertyChanged;
+        lastSheetPlacementViewModel.PropertyChanged -= this.ActiveViewModel_PropertyChanged;
         lastSheetPlacementViewModel = null;
+      }
+
+      if (lastNestResultViewModel != null)
+      {
+        lastNestResultViewModel.PropertyChanged -= this.ActiveViewModel_PropertyChanged;
+        lastNestResultViewModel = null;
+      }
+
+      if (lastNestProjectViewModel != null)
+      {
+        lastNestProjectViewModel.PropertyChanged -= this.ActiveViewModel_PropertyChanged;
+        lastNestProjectViewModel = null;
       }
 
       if (sender is MainViewModel mainViewModel)
@@ -329,13 +332,13 @@
             sheetPlacementViewModel.SheetPlacement is ObservableSheetPlacement sheetPlacement)
         {
           lastSheetPlacementViewModel = sheetPlacementViewModel;
-          lastSheetPlacementViewModel.PropertyChanged += this.LastSheetPlacementViewModel_PropertyChanged;
-          sheetPlacementViewModel.PropertyChanged += SheetPlacementViewModel_PropertyChanged;
+          lastSheetPlacementViewModel.PropertyChanged += this.ActiveViewModel_PropertyChanged;
           Set(sheetPlacement);
         }
         else if (mainViewModel.ActiveDocument is NestProjectViewModel nestProjectViewModel)
         {
-          nestProjectViewModel.PropertyChanged += NestProjectViewModel_PropertyChanged;
+          lastNestProjectViewModel = nestProjectViewModel;
+          nestProjectViewModel.PropertyChanged += ActiveViewModel_PropertyChanged;
           if (nestProjectViewModel.SelectedDetailLoadInfo is ObservableDetailLoadInfo detailLoadInfo)
           {
             Set(detailLoadInfo);
@@ -348,6 +351,15 @@
             Set(nfp);
           }
         }
+        else if (mainViewModel.ActiveDocument is NestResultViewModel nestResultViewModel)
+        {
+          lastNestResultViewModel = nestResultViewModel;
+          lastNestResultViewModel.PropertyChanged += this.ActiveViewModel_PropertyChanged;
+          if (nestResultViewModel.SelectedItem is ObservableSheetPlacement nestResultSheetPlacement)
+          {
+            Set(nestResultSheetPlacement);
+          }
+        }
       }
     }
 
@@ -355,17 +367,6 @@
     {
       InitialiseDrawingContext(sender);
       OnPropertyChanged(nameof(ActiveDocument));
-    }
-
-    private void NestProjectViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-      if (sender == mainViewModel.ActiveDocument &&
-          e.PropertyName == "SelectedDetailLoadInfo" &&
-          sender is NestProjectViewModel nestProjectViewModel &&
-          nestProjectViewModel.SelectedDetailLoadInfo is ObservableDetailLoadInfo detailLoadInfo)
-      {
-        Set(detailLoadInfo);
-      }
     }
 
     private void OnFitAll()
@@ -392,15 +393,29 @@
       this.ZoomDrawingContext.Clear();
     }
 
-    private void SheetPlacementViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void ActiveViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-      if (sender == mainViewModel.ActiveDocument &&
-          (e.PropertyName == nameof(SheetPlacementViewModel.SelectedItem) ||
-           e.PropertyName == nameof(SheetPlacementViewModel.SheetPlacement)) &&
-          sender is SheetPlacementViewModel sheetPlacementViewModel &&
-          sheetPlacementViewModel.SheetPlacement is ObservableSheetPlacement sheetPlacement)
+      if (sender == mainViewModel.ActiveDocument)
       {
-        Set(sheetPlacement);
+        if (sender is SheetPlacementViewModel sheetPlacementViewModel &&
+            (e.PropertyName == nameof(SheetPlacementViewModel.SelectedItem) ||
+             e.PropertyName == nameof(SheetPlacementViewModel.SheetPlacement)) &&
+            sheetPlacementViewModel.SheetPlacement is ObservableSheetPlacement sheetPlacement)
+        {
+          Set(sheetPlacement);
+        }
+        else if (sender is NestResultViewModel nestResultViewModel &&
+                 e.PropertyName == nameof(NestResultViewModel.SelectedItem) &&
+                 nestResultViewModel.SelectedItem is ObservableSheetPlacement nestResultSheetPlacement)
+        {
+          Set(nestResultSheetPlacement);
+        }
+        else if (sender is NestProjectViewModel nestProjectViewModel &&
+                 e.PropertyName == nameof(NestProjectViewModel.SelectedDetailLoadInfo) &&
+                 nestProjectViewModel.SelectedDetailLoadInfo is ObservableDetailLoadInfo detailLoadInfo)
+        {
+          Set(detailLoadInfo);
+        }
       }
     }
 

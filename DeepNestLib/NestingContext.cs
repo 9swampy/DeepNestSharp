@@ -58,7 +58,7 @@
     {
       try
       {
-        var lsheets = new List<INfp>();
+        var lsheets = new List<ISheet>();
         var lpoly = new List<INfp>();
 
         int id = 0;
@@ -81,7 +81,7 @@
 
         foreach (var item in Sheets)
         {
-          var clone = new NFP();
+          var clone = new Sheet();
           clone.Id = item.Id;
           clone.Source = item.Source;
           clone.ReplacePoints(item.Points.Select(z => new SvgPoint(z.X, z.Y) { Exact = z.Exact }));
@@ -109,7 +109,6 @@
             {
               OffsetTreeReplace(config, item);
             });
-
           }
           else
           {
@@ -122,30 +121,32 @@
           foreach (var item in lsheets)
           {
             var gap = config.SheetSpacing - (config.Spacing / 2);
-            var sheet = item;
+            INfp sheet = item;
             SvgNest.OffsetTree(ref sheet, -gap, config, true);
           }
         }
 
-        List<NestItem> partsLocal = new List<NestItem>();
-        var p1 = lpoly.GroupBy(z => z.Source).Select(z => new NestItem()
+        var p1 = lpoly.GroupBy(z => z.Source).Select(z => new NestItem<INfp>()
         {
           Polygon = z.First(),
-          IsSheet = false,
           Quantity = z.Count(),
         });
 
-        var p2 = lsheets.GroupBy(z => z.Source).Select(z => new NestItem()
+        var p2 = lsheets.GroupBy(z => z.Source).Select(z => new NestItem<ISheet>()
         {
           Polygon = z.First(),
-          IsSheet = true,
           Quantity = z.Count(),
         });
 
-        partsLocal.AddRange(p1);
-        partsLocal.AddRange(p2);
+        var partsLocal = new List<NestItem<INfp>>(p1);
+        var sheetsLocal = new List<NestItem<ISheet>>(p2);
         int srcc = 0;
         foreach (var item in partsLocal)
+        {
+          item.Polygon.Source = srcc++;
+        }
+
+        foreach (var item in sheetsLocal)
         {
           item.Polygon.Source = srcc++;
         }
@@ -158,7 +159,7 @@
         {
           if (!this.isStopped)
           {
-            Nest.launchWorkers(partsLocal.ToArray(), config);
+            Nest.launchWorkers(partsLocal.ToArray(), sheetsLocal.ToArray(), config);
           }
 
           if (State.TopNestResults != null && State.TopNestResults.Count > 0)

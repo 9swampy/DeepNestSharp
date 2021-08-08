@@ -43,16 +43,12 @@
     {
       this.mainViewModel = mainViewModel;
       this.messageService = messageService;
-      this.progressDisplayer = new ProgressDisplayer(this, messageService, mainViewModel.DispatcherService);
-
-      loadSheetPlacementCommand = new RelayCommand(OnLoadSheetPlacement, () => false);
-      loadNestResultCommand = new RelayCommand<INestResult>(OnLoadNestResult, x => true);
-      restartNestCommand = new RelayCommand(OnRestartNest, () => false);
-      continueNestCommand = new RelayCommand(OnContinueNest, () => false);
-      stopNestCommand = new RelayCommand(OnStopNest, () => IsRunning && !IsStopping);
+      this.progressDisplayer = new ProgressDisplayer(this, messageService, mainViewModel.DispatcherService, mainViewModel);
     }
 
-    public ICommand ContinueNestCommand => continueNestCommand;
+    public ICommand ContinueNestCommand => continueNestCommand ?? (continueNestCommand = new RelayCommand(OnContinueNest, () => false));
+
+    public ZoomPreviewDrawingContext DrawingContext { get; } = new ZoomPreviewDrawingContext();
 
     public bool IsRunning
     {
@@ -88,9 +84,9 @@
       internal set => SetProperty(ref lastLogMessage, value);
     }
 
-    public ICommand LoadSheetPlacementCommand => loadSheetPlacementCommand;
+    public ICommand LoadSheetPlacementCommand => loadSheetPlacementCommand ?? (loadSheetPlacementCommand = new RelayCommand(OnLoadSheetPlacement, () => false));
 
-    public ICommand LoadNestResultCommand => loadNestResultCommand;
+    public ICommand LoadNestResultCommand => loadNestResultCommand ?? (loadNestResultCommand = new RelayCommand<INestResult>(OnLoadNestResult, x => true));
 
     public string MessageLog
     {
@@ -102,11 +98,17 @@
 
     public StringBuilder MessageLogBuilder { get; } = new StringBuilder();
 
-    public ICommand RestartNestCommand => restartNestCommand;
+    public double Progress
+    {
+      get => progress;
+      internal set => SetProperty(ref progress, value);
+    }
+
+    public ICommand RestartNestCommand => restartNestCommand ?? (restartNestCommand = new RelayCommand(OnRestartNest, () => false));
 
     public NestState State => Context.State;
 
-    public ICommand StopNestCommand => stopNestCommand;
+    public ICommand StopNestCommand => stopNestCommand ?? (stopNestCommand = new RelayCommand(OnStopNest, () => IsRunning && !IsStopping));
 
     public int SelectedIndex
     {
@@ -133,15 +135,7 @@
       }
     }
 
-    public ZoomPreviewDrawingContext DrawingContext { get; } = new ZoomPreviewDrawingContext();
-
     public TopNestResultsCollection TopNestResults => Context.State.TopNestResults;
-
-    public double Progress
-    {
-      get => progress;
-      internal set => SetProperty(ref progress, value);
-    }
 
     private NestingContext Context
     {
@@ -238,7 +232,7 @@
     {
       if (nestResult != null)
       {
-        mainViewModel.LoadNestResult(nestResult);
+        mainViewModel.OnLoadNestResult(nestResult);
       }
     }
 

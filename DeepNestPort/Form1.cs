@@ -335,7 +335,7 @@
       }
     }
 
-    private Sheet NewSheet(int w = 3000, int h = 1500)
+    private ISheet NewSheet(int w = 3000, int h = 1500)
     {
       return Sheet.NewSheet(context.Sheets.Count + 1, w, h);
     }
@@ -792,7 +792,7 @@
 
       label11.BackColor = label11.Parent.BackColor;
       label11.ForeColor = label11.Parent.ForeColor;
-      List<Sheet> sh = new List<Sheet>();
+      List<ISheet> sh = new List<ISheet>();
       var src = Context.GetNextSheetSource();
       for (int i = 0; i < cnt; i++)
       {

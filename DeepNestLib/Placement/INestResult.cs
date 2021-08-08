@@ -2,6 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
+  using DeepNestLib.NestProject;
 
   public interface INestResult
   {
@@ -21,9 +22,9 @@
 
     double[] Rotation { get; set; }
 
-    IList<NFP> UnplacedParts { get; }
+    IList<INfp> UnplacedParts { get; }
 
-    SheetPlacementCollection UsedSheets { get; }
+    IList<ISheetPlacement, SheetPlacement> UsedSheets { get; }
 
     int TotalPlacedCount { get; }
 

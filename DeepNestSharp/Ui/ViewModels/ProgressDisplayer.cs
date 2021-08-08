@@ -5,12 +5,14 @@
 
   internal class ProgressDisplayer : IProgressDisplayer
   {
+    private readonly MainViewModel mainViewModel;
     private readonly IMessageService messageService;
     private readonly IDispatcherService dispatcherService;
     private readonly NestMonitorViewModel nestMonitorViewModel;
 
-    public ProgressDisplayer(NestMonitorViewModel nestMonitorViewModel, IMessageService messageService, IDispatcherService dispatcherService)
+    public ProgressDisplayer(NestMonitorViewModel nestMonitorViewModel, IMessageService messageService, IDispatcherService dispatcherService, MainViewModel mainViewModel)
     {
+      this.mainViewModel = mainViewModel;
       this.messageService = messageService;
       this.dispatcherService = dispatcherService;
       this.nestMonitorViewModel = nestMonitorViewModel;
@@ -33,7 +35,7 @@
 
     public void DisplayProgress(int placedParts, int currentPopulation)
     {
-      nestMonitorViewModel.Progress = (double)placedParts / currentPopulation;
+      DisplayProgress(ProgressDisplayerHelper.CalculatePercentageComplete(placedParts, currentPopulation, SvgNest.Config.PopulationSize, nestMonitorViewModel.TopNestResults.Top.TotalPartsCount));
     }
 
     public void DisplayTransientMessage(string message)

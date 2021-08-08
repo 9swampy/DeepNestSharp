@@ -1,18 +1,8 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
-  using DeepNestLib;
-  using DeepNestLib.NestProject;
   using DeepNestSharp.Ui.Docking;
   using DeepNestSharp.Ui.Models;
-  using System;
-  using System.Collections.ObjectModel;
   using System.ComponentModel;
-  using System.Windows;
-  using System.Windows.Media;
-  using DeepNestLib;
-  using DeepNestLib.Placement;
-  using DeepNestSharp.Ui.Docking;
-  using DeepNestSharp.Ui.Models;
   using DeepNestSharp.Domain.Models;
 
   public class PropertiesViewModel : ToolViewModel

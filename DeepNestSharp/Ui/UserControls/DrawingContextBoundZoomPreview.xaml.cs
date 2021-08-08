@@ -124,12 +124,12 @@
       {
         vm.SelectedPartPlacement = partPlacement;
         BringToFront(canvas, polygon);
-        if (IsDragModifierPressed)
+        if (IsDragModifierPressed && vm.MainViewModel.ActiveDocument is SheetPlacementViewModel)
         {
           vm.DragStart = mousePos;
           scrollViewer.Cursor = Cursors.Hand;
           partPlacementStartPos = new Point(vm.SelectedPartPlacement.X, vm.SelectedPartPlacement.Y);
-          System.Diagnostics.Debug.Print($"Drag start set@{vm.DragStart?.X},{vm.DragStart?.Y}. {vm.IsDragging}");
+          Debug.Print($"Drag start set@{vm.DragStart?.X},{vm.DragStart?.Y}. {vm.IsDragging}");
           capturePartPlacement = partPlacement;
           partPlacement.IsDragging = true;
           capturePolygon = polygon;

@@ -1,7 +1,6 @@
 ﻿namespace DeepNestPort
 {
   using System;
-  using System.Windows.Forms;
   using DeepNestLib;
 
   public class ProgressDisplayer : IProgressDisplayer
@@ -19,9 +18,8 @@
 
     public void DisplayProgress(int placedParts, int currentPopulation)
     {
-      double progressPopulation = 0.66f * ((double)currentPopulation / (double)SvgNest.Config.PopulationSize);
-      double progressPlacements = 0.34f * ((double)placedParts / (double)this.form.Context.Polygons.Count);
-      this.form.DisplayProgress(progressPopulation + progressPlacements);
+      var percentageComplete = ProgressDisplayerHelper.CalculatePercentageComplete(placedParts, currentPopulation, SvgNest.Config.PopulationSize, this.form.Context.Polygons.Count);
+      this.form.DisplayProgress(percentageComplete);
     }
 
     public void DisplayProgress(double percentageComplete)

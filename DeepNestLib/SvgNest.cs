@@ -802,6 +802,8 @@
           this.progressDisplayer.DisplayTransientMessage($"New top {this.State.TopNestResults.MaxCapacity} nest found: nesting time = {payload.PlacePartTime}ms");
           this.progressDisplayer?.UpdateNestsList();
         }
+
+        progressDisplayer.DisplayProgress(currentPlacements, State.Population);
       }
     }
 
@@ -809,9 +811,9 @@
     /// Starts next generation if none started or prior finished. Will keep rehitting the outstanding population 
     /// set up for the generation until all have processed.
     /// </summary>
-    /// <param name="parts"></param>
+    /// <param name="partNestItems"></param>
     /// <param name="background"></param>
-    public void launchWorkers(NestItem[] parts, ISvgNestConfig config)
+    public void launchWorkers(NestItem<INfp>[] partNestItems, NestItem<ISheet>[] sheetNestItems, ISvgNestConfig config)
     {
       try
       {
@@ -820,7 +822,7 @@
           if (this.ga == null)
           {
             State.Reset();
-            this.ga = new Procreant(parts, config);
+            this.ga = new Procreant(partNestItems, config);
           }
 
           if (this.ga.IsCurrentGenerationFinished)
@@ -833,28 +835,37 @@
             State.ResetPopulation();
           }
 
-          List<ISheet> sheets = new List<ISheet>();
-          List<int> sheetids = new List<int>();
-          List<int> sheetsources = new List<int>();
-          List<List<INfp>> sheetchildren = new List<List<INfp>>();
+          var sheets = new List<ISheet>();
+          var sheetids = new List<int>();
+          var sheetsources = new List<int>();
+          var sheetchildren = new List<List<INfp>>();
           var sid = 0;
-          for (int i = 0; i < parts.Count(); i++)
+          for (int i = 0; i < sheetNestItems.Count(); i++)
           {
-            if (parts[i].IsSheet)
+            var poly = sheetNestItems[i].Polygon;
+            for (int j = 0; j < sheetNestItems[i].Quantity; j++)
             {
-              var poly = parts[i].Polygon;
-              for (int j = 0; j < parts[i].Quantity; j++)
+              ISheet clone;
+              if (poly is Sheet sheet)
               {
-                var cln = poly.CloneTree();
-                cln.Id = sid; // id is the unique id of all parts that will be nested, including cloned duplicates
-                cln.Source = poly.Source; // source is the id of each unique part from the main part list
-
-                sheets.Add(new Sheet(cln));
-                sheetids.Add(sid);
-                sheetsources.Add(i);
-                sheetchildren.Add(poly.Children.ToList());
-                sid++;
+                clone = (ISheet)poly.CloneTree();
               }
+              else
+              {
+#if DEBUG || NCRUNCH
+                throw new InvalidOperationException("Sheet should have been a sheet; why wasn't it?");
+#endif
+                clone = new Sheet(poly.CloneTree());
+              }
+
+              clone.Id = sid; // id is the unique id of all parts that will be nested, including cloned duplicates
+              clone.Source = poly.Source; // source is the id of each unique part from the main part list
+
+              sheets.Add(new Sheet(clone));
+              sheetids.Add(sid);
+              sheetsources.Add(poly.Source);
+              sheetchildren.Add(poly.Children.ToList());
+              sid++;
             }
           }
 

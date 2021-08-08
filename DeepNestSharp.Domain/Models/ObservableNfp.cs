@@ -169,7 +169,7 @@
     }
 
     /// <inheritdoc/>
-    public NFP CloneTree()
+    public INfp CloneTree()
     {
       return this.item.CloneTree();
     }

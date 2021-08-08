@@ -28,10 +28,21 @@
       this.MainViewModel = mainViewModel;
       FilePath = filePath;
       Title = FileName;
+      LoadFile(filePath);
       IsDirty = false;
 
       // Set the icon only for open documents (just a test)
       // IconSource = imageSourceConverter.ConvertFromInvariantString(@"pack://application:,,/Images/document.png") as ImageSource;
+    }
+
+    private void LoadFile(string filePath)
+    {
+      if (File.Exists(filePath))
+      {
+        LoadContent();
+        ContentId = filePath;
+        NotifyContentUpdated();
+      }
     }
 
     /// <summary>
@@ -77,16 +88,10 @@
         if (filePath != value)
         {
           filePath = value;
+          Title = FileName;
           OnPropertyChanged(nameof(FilePath));
           OnPropertyChanged(nameof(FileName));
           OnPropertyChanged(nameof(Title));
-
-          if (File.Exists(filePath))
-          {
-            LoadContent();
-            ContentId = filePath;
-            NotifyContentUpdated();
-          }
         }
       }
     }
