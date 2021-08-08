@@ -49,7 +49,9 @@
 
     private void ObsPart_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-      if (e.PropertyName == nameof(ObservablePartPlacement.Points))
+      if (sender is ObservablePartPlacement obsPart &&
+          !obsPart.IsDragging &&
+          (e.PropertyName == nameof(ObservablePartPlacement.X) || e.PropertyName == nameof(ObservablePartPlacement.Y)))
       {
         Set(item);
         OnPropertyChanged(nameof(PartPlacements));

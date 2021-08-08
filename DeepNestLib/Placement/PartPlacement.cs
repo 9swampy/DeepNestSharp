@@ -42,6 +42,9 @@
 
     public int Id { get; set; }
 
+    [JsonIgnore]
+    public bool IsDragging { get; set; }
+
     /// <summary>
     /// A hull of the part captured only when not Gravity or BoundingBox (ie. Squeeze).
     /// </summary>

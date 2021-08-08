@@ -1,8 +1,7 @@
-﻿namespace DeepNestSharp.Ui.Models
+﻿namespace DeepNestSharp.Domain.Models
 {
   using System;
   using System.Threading.Tasks;
-  using System.Windows;
   using System.Windows.Input;
   using DeepNestLib;
   using DeepNestLib.Placement;
@@ -11,7 +10,7 @@
   public class ObservablePartPlacement : ObservablePropertyObject, IPartPlacement
   {
     private readonly IPartPlacement partPlacement;
-    private readonly Point originalPosition;
+    private readonly IPointXY originalPosition;
     private readonly double originalRotation;
     private RelayCommand? resetCommand;
     private IAsyncRelayCommand? loadExactCommand;
@@ -19,23 +18,26 @@
     public ObservablePartPlacement(IPartPlacement partPlacement)
     {
       this.partPlacement = partPlacement;
-      this.originalPosition = new Point(partPlacement.X, partPlacement.Y);
+      this.originalPosition = new SvgPoint(partPlacement.X, partPlacement.Y);
       this.originalRotation = partPlacement.Rotation;
       this.PropertyChanged += this.ObservablePartPlacement_PropertyChanged;
     }
 
+    /// <inheritdoc/>
     public bool IsDragging
     {
       get => partPlacement.IsDragging;
       set => SetProperty(nameof(IsDragging), () => partPlacement.IsDragging, v => partPlacement.IsDragging = v, value);
     }
 
+    /// <inheritdoc/>
     public int Source
     {
       get => partPlacement.Source;
       set => SetProperty(nameof(Source), () => partPlacement.Source, v => partPlacement.Source = v, value);
     }
 
+    /// <inheritdoc/>
     public int Id
     {
       get => partPlacement.Id;
@@ -68,30 +70,35 @@
       }
     }
 
+    /// <inheritdoc/>
     public double X
     {
       get => partPlacement.X;
       set => SetProperty(nameof(X), () => partPlacement.X, v => partPlacement.X = v, value);
     }
 
+    /// <inheritdoc/>
     public double Y
     {
       get => partPlacement.Y;
       set => SetProperty(nameof(Y), () => partPlacement.Y, v => partPlacement.Y = v, value);
     }
 
+    /// <inheritdoc/>
     public INfp Hull
     {
       get => partPlacement.Hull;
       set => SetProperty(nameof(Hull), () => partPlacement.Hull, v => partPlacement.Hull = v, value);
     }
 
+    /// <inheritdoc/>
     public INfp HullSheet
     {
       get => partPlacement.HullSheet;
       set => SetProperty(nameof(HullSheet), () => partPlacement.HullSheet, v => partPlacement.HullSheet = v, value);
     }
 
+    /// <inheritdoc/>
     public override bool IsDirty
     {
       get
@@ -102,32 +109,42 @@
       }
     }
 
+    /// <inheritdoc/>
     public double MaxX => this.partPlacement.MaxX;
 
+    /// <inheritdoc/>
     public double MaxY => this.partPlacement.MaxY;
 
+    /// <inheritdoc/>
     public double? MergedLength => partPlacement.MergedLength;
 
+    /// <inheritdoc/>
     public object MergedSegments
     {
       get => partPlacement.MergedSegments;
       set => SetProperty(nameof(MergedSegments), () => partPlacement.MergedSegments, v => partPlacement.MergedSegments = v, value);
     }
 
+    /// <inheritdoc/>
     public double MinX => this.partPlacement.MinX;
 
+    /// <inheritdoc/>
     public double MinY => this.partPlacement.MinY;
 
+    /// <inheritdoc/>
     public INfp Part => partPlacement.Part;
 
+    /// <inheritdoc/>
     public double Rotation
     {
       get => partPlacement.Rotation;
       set => partPlacement.Rotation = value;
     }
 
+    /// <inheritdoc/>
     public bool IsExact => Part.IsExact;
 
+    /// <inheritdoc/>
     private void ObservablePartPlacement_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
       if (e.PropertyName == nameof(IsDirty))
@@ -136,6 +153,7 @@
       }
     }
 
+    /// <inheritdoc/>
     private void OnReset()
     {
       this.X = originalPosition.X;
@@ -143,6 +161,7 @@
       this.Rotation = originalRotation;
     }
 
+    /// <inheritdoc/>
     private async Task OnLoadExact()
     {
       var raw = await DxfParser.LoadDxfFile(this.Part.Name);

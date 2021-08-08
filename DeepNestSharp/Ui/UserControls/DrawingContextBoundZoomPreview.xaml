@@ -5,13 +5,16 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:interactivity="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:converters="clr-namespace:DeepNestSharp.Ui.Converters"
-             xmlns:models="clr-namespace:DeepNestSharp.Ui.Models" xmlns:behaviors="clr-namespace:DeepNestSharp.Ui.Behaviors"
+             xmlns:models="clr-namespace:DeepNestSharp.Ui.Models" 
+             xmlns:behaviors="clr-namespace:DeepNestSharp.Ui.Behaviors"
+             xmlns:domainModels="clr-namespace:DeepNestSharp.Domain.Models;assembly=DeepNestSharp.Domain"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
     <BooleanToVisibilityConverter x:Key="BoolToVis" />
     <converters:IsSelectedToFillColorConverter x:Key="IsSelectedToFillColor" />
     <converters:DrawingContextConverter x:Key="DrawingContextConverter" />
+    <converters:PointsConverter x:Key="PointsConverter" />
   </UserControl.Resources>
   <Grid>
     <Grid.ColumnDefinitions>
@@ -52,7 +55,7 @@
             </ItemsControl.ItemContainerStyle>
             <ItemsControl.Resources>
               <DataTemplate DataType="{x:Type models:ObservablePartPlacement}">
-                <Polygon Points="{Binding Points}" Stroke="Black" StrokeThickness="0.2"
+                <Polygon Points="{Binding Converter={StaticResource PointsConverter}}" Stroke="Black" StrokeThickness="0.2"
                                    MouseUp="Polygon_MouseUp">
                   <Polygon.Fill>
                     <MultiBinding Converter="{StaticResource IsSelectedToFillColor}">
@@ -68,13 +71,13 @@
                 </Polygon>
               </DataTemplate>
               <DataTemplate DataType="{x:Type models:ObservableSheetPlacement}">
-                <Polygon Points="{Binding Points}" Fill="White" Stroke="Black" StrokeThickness="0.2" />
+                <Polygon Points="{Binding Sheet, Converter={StaticResource PointsConverter}}" Fill="White" Stroke="Black" StrokeThickness="0.2" />
               </DataTemplate>
-              <DataTemplate DataType="{x:Type models:ObservableNfp}">
-                <Polygon Points="{Binding Points}" Fill="Aquamarine" Stroke="Black" StrokeThickness="0.2" />
+              <DataTemplate DataType="{x:Type domainModels:ObservableNfp}">
+                <Polygon Points="{Binding Converter={StaticResource PointsConverter}}" Fill="Aquamarine" Stroke="Black" StrokeThickness="0.2" />
               </DataTemplate>
               <DataTemplate DataType="{x:Type models:ObservableHole}">
-                <Polygon Points="{Binding Points}" Fill="White" Stroke="DeepPink" StrokeThickness="0.2" />
+                <Polygon Points="{Binding Converter={StaticResource PointsConverter}}" Fill="White" Stroke="DeepPink" StrokeThickness="0.2" />
               </DataTemplate>
             </ItemsControl.Resources>
           </ItemsControl>

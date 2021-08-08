@@ -44,6 +44,7 @@
     <Compile Include="..\DeepNestLib\InnerFlowResult.cs" Link="InnerFlowResult.cs" />
     <Compile Include="..\DeepNestLib\InrangeItem.cs" Link="InrangeItem.cs" />
     <Compile Include="..\DeepNestLib\IntPointArrayExtensions.cs" Link="IntPointArrayExtensions.cs" />
+    <Compile Include="..\DeepNestLib\IPointXY.cs" Link="IPointXY.cs" />
     <Compile Include="..\DeepNestLib\IProgressDisplayer.cs" Link="IProgressDisplayer.cs" />
     <Compile Include="..\DeepNestLib\IStringify.cs" Link="IStringify.cs" />
     <Compile Include="..\DeepNestLib\ISvgNestConfig.cs" Link="ISvgNestConfig.cs" />

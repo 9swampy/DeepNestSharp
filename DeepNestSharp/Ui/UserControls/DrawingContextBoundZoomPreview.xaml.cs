@@ -130,6 +130,7 @@
           partPlacementStartPos = new Point(vm.SelectedPartPlacement.X, vm.SelectedPartPlacement.Y);
           System.Diagnostics.Debug.Print($"Drag start set@{vm.DragStart?.X},{vm.DragStart?.Y}. {vm.IsDragging}");
           capturePartPlacement = partPlacement;
+          partPlacement.IsDragging = true;
           capturePolygon = polygon;
           capturePolygon.CaptureMouse();
           e.Handled = true;
@@ -261,6 +262,7 @@
             capturePartPlacement.Y = partPlacementStartPos.Y;
             capturePolygon?.ReleaseMouseCapture();
             vm.DragStart = null;
+            capturePartPlacement.IsDragging = false;
           }
 
           vm.RaiseDrawingContext();
@@ -287,6 +289,11 @@
 
       capturePolygon?.ReleaseMouseCapture();
       vm.DragStart = null;
+      if (capturePartPlacement != null)
+      {
+        capturePartPlacement.IsDragging = false;
+      }
+
       vm.RaiseSelectItem();
       vm.RaiseDrawingContext();
       System.Diagnostics.Debug.Print("Force ItemsControl.UpdateTarget");

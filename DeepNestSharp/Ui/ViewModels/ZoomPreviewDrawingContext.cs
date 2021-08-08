@@ -4,6 +4,7 @@
   using System.Collections.ObjectModel;
   using DeepNestLib;
   using DeepNestLib.Placement;
+  using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Ui.Models;
 
   public class ZoomPreviewDrawingContext : ObservableCollection<object>

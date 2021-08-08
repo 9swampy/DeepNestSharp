@@ -130,7 +130,7 @@ namespace DeepNestSharp.Ui.Models
 
     IEnumerator<TCommonInterface> IEnumerable<TCommonInterface>.GetEnumerator()
     {
-      throw new NotImplementedException();
+      return base.GetEnumerator();
     }
   }
 }

@@ -8,6 +8,8 @@
 
     int Id { get; set; }
 
+    bool IsDragging { get; set; }
+
     double? MergedLength { get; }
 
     object MergedSegments { get; set; }

@@ -5,26 +5,26 @@
   using System.IO;
   using System.Windows.Data;
   using DeepNestLib;
-  using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
-  using DeepNestSharp.Ui.Models;
   using DeepNestSharp.Ui.ViewModels;
 
   public class DrawingContextConverter : IValueConverter
   {
     public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
     {
-      return null;
       if (value is ZoomPreviewDrawingContext)
       {
+        throw new InvalidOperationException("Thought this was no longer needed.");
         return value;
       }
       else if (value is IEnumerable<ZoomPreviewDrawingContext>)
       {
+        throw new InvalidOperationException("Thought this was no longer needed.");
         return value;
       }
       else if (value is ISheetPlacement sheetPlacement)
       {
+        throw new InvalidOperationException("Thought this was no longer needed.");
         return new ZoomPreviewDrawingContext().For(sheetPlacement);
       }
       else if (value is SheetPlacementCollection sheetPlacementCollection)
@@ -39,6 +39,7 @@
       }
       else if (value is NestProjectViewModel nestProjectViewModel)
       {
+        throw new InvalidOperationException("Thought this was no longer needed.");
         var resultProject = new List<ZoomPreviewDrawingContext>(nestProjectViewModel.ProjectInfo.DetailLoadInfos.Count);
         foreach (var detailLoadInfo in nestProjectViewModel.ProjectInfo.DetailLoadInfos)
         {

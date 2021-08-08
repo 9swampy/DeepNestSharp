@@ -162,6 +162,7 @@
     <Compile Include="INestingContextState.cs" />
     <Compile Include="INestState.cs" />
     <Compile Include="InnerFlowResult.cs" />
+    <Compile Include="IPointXY.cs" />
     <Compile Include="MessageBoxIcon.cs" />
     <Compile Include="NestExecutionHelper.cs" />
     <Compile Include="NestProject\AnglesEnum.cs" />

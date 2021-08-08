@@ -3,7 +3,7 @@
   using System;
   using System.Text.Json.Serialization;
 
-  public class SvgPoint : IEquatable<SvgPoint>
+  public class SvgPoint : IEquatable<SvgPoint>, IPointXY
   {
     public bool Exact
     {
@@ -36,6 +36,10 @@
 
     [JsonConverter(typeof(DoublePrecisionConverter))]
     public double X { get; internal set; }
+
+    double IPointXY.X => X;
+
+    double IPointXY.Y => Y;
 
     [JsonConverter(typeof(DoublePrecisionConverter))]
     public double Y { get; internal set; }

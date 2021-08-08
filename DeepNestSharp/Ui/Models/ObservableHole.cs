@@ -1,6 +1,7 @@
 ﻿namespace DeepNestSharp.Ui.Models
 {
   using DeepNestLib;
+  using DeepNestSharp.Domain.Models;
 
   public class ObservableHole : ObservableNfp
   {
@@ -13,7 +14,6 @@
     public ObservableHole(ObservablePartPlacement partPlacement, INfp child)
       : this(child)
     {
-      partPlacement.RenderChildren += this.PartPlacement_RenderChildren;
     }
 
     internal ObservableHole(INfp child)
@@ -23,7 +23,6 @@
 
     private void PartPlacement_RenderChildren(object? sender, System.EventArgs e)
     {
-      OnPropertyChanged(nameof(Points));
       OnPropertyChanged(nameof(Y));
       OnPropertyChanged(nameof(X));
     }

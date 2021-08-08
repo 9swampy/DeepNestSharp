@@ -2,6 +2,7 @@
 {
   using DeepNestLib;
   using DeepNestLib.Placement;
+  using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Ui.Docking;
   using DeepNestSharp.Ui.Models;
 

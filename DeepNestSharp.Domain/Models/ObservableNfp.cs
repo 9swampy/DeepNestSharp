@@ -1,16 +1,15 @@
-﻿namespace DeepNestSharp.Ui.Models
+﻿namespace DeepNestSharp.Domain.Models
 {
   using System.Collections.Generic;
   using System.Linq;
   using DeepNestLib;
   using DeepNestLib.NestProject;
-  using DeepNestSharp.Ui.ViewModels;
+  using DeepNestSharp.Ui.Models;
 
   public class ObservableNfp : ObservablePropertyObject, INfp
   {
     private readonly INfp item;
-    private System.Windows.Media.PointCollection points;
-
+    
     public ObservableNfp(INfp nfp)
     {
       this.item = nfp;
@@ -19,61 +18,6 @@
     /// <inheritdoc/>
     public INfp SourceItem => item;
 
-    /// <inheritdoc/>
-    public System.Windows.Media.PointCollection Points
-    {
-      get
-      {
-        if (points == null)
-        {
-          points = new System.Windows.Media.PointCollection();
-          INfp loadedNfp;
-
-          //var fi = new FileInfo(partPlacement.Part.Name);
-          //var baseDir = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
-          //while (!fi.Exists && baseDir != null)
-          //{
-          //  fi = new FileInfo(Path.Join(baseDir.FullName, partPlacement.Part.Name));
-          //  if (fi.Exists)
-          //  {
-          //    break;
-          //  }
-          //  else
-          //  {
-          //    baseDir = baseDir.Parent;
-          //  }
-          //}
-
-          //if (fi.Exists && DxfParser.LoadDxfFile(fi.FullName).TryGetNfp(partPlacement.Part.Source, out loadedNfp))
-          //{
-          //  loadedNfp = loadedNfp.Rotate(partPlacement.Part.Rotation);
-          //  loadedNfp.X = partPlacement.Part.X;
-          //  loadedNfp.Y = partPlacement.Part.Y;
-          //}
-          //else
-          //{
-          loadedNfp = item;
-          //}
-
-          AddToPoints(loadedNfp);
-        }
-
-        return points;
-      }
-    }
-
-    /// <inheritdoc/>
-    private void AddToPoints(INfp loadedNfp)
-    {
-      foreach (var p in loadedNfp.Points)
-      {
-        points.Add(new System.Windows.Point(p.X, p.Y));
-        //foreach (var child in loadedNfp.Children)
-        //{
-        //  AddToPoints(child);
-        //}
-      }
-    }
 
     /// <inheritdoc/>
     public override bool IsDirty => true;
@@ -202,7 +146,7 @@
       set => SetProperty(nameof(Y), () => this.item.Y, v => this.item.Y = v, value);
     }
 
-    public MainViewModel MainViewModel { get; }
+    //public MainViewModel MainViewModel { get; }
 
     /// <inheritdoc/>
     public SvgPoint this[int ind] => this.item[ind];

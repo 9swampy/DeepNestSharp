@@ -11,6 +11,7 @@
   using DeepNestLib;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain;
+  using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Ui.Docking;
   using DeepNestSharp.Ui.Models;
   using Microsoft.Toolkit.Mvvm.Input;
@@ -298,6 +299,7 @@
     {
       // System.Diagnostics.Debug.Print("Force RaiseDrawingContext");
       OnPropertyChanged(nameof(DrawingContext));
+      OnPropertyChanged(nameof(ZoomDrawingContext));
       lastSheetPlacementViewModel?.RaiseDrawingContext();
     }
 
