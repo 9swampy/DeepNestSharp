@@ -41,7 +41,7 @@
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel HorizontalAlignment="Center">
-                  <xctk:IntegerUpDown HorizontalAlignment="Stretch" MinWidth="50" Minimum="0" HorizontalContentAlignment="Right" Text="{Binding Path=Quantity, Mode=OneWay}"/>
+                  <xctk:IntegerUpDown HorizontalAlignment="Stretch" MinWidth="50" Minimum="0" HorizontalContentAlignment="Right" Value="{Binding Path=Quantity, Mode=TwoWay}"/>
                 </DockPanel>
               </DataTemplate>
             </GridViewColumn.CellTemplate>

@@ -3,7 +3,6 @@
   using System.IO;
   using DeepNestSharp.Domain;
   using Microsoft.Win32;
-  using static System.Net.WebRequestMethods;
 
   public class FileIoService : IFileIoService
   {
@@ -28,12 +27,22 @@
       return string.Empty;
     }
 
-    public string GetSaveFilePath(string fileDialogFilter)
+    public string GetSaveFilePath(string fileDialogFilter, string fileName = null, string initialDirectory = null)
     {
       var dlg = new SaveFileDialog()
       {
         Filter = fileDialogFilter,
       };
+
+      if (!string.IsNullOrWhiteSpace(fileName))
+      {
+        dlg.FileName = fileName;
+      }
+
+      if (!string.IsNullOrWhiteSpace(initialDirectory))
+      {
+        dlg.InitialDirectory = initialDirectory;
+      }
 
       var response = dlg.ShowDialog();
       if (response.HasValue && response.Value)

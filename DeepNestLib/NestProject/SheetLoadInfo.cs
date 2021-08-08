@@ -1,8 +1,11 @@
 ﻿namespace DeepNestLib.NestProject
 {
+  using System;
+  using System.Text.Json;
   using DeepNestLib;
+  using DeepNestLib.IO;
 
-  public class SheetLoadInfo : ISheetLoadInfo
+  public class SheetLoadInfo : Saveable, ISheetLoadInfo
   {
     public int Width
     {
@@ -20,6 +23,11 @@
     {
       get { return SvgNest.Config.SheetQuantity; }
       set { SvgNest.Config.SheetQuantity = value; }
+    }
+
+    public override string ToJson()
+    {
+      return JsonSerializer.Serialize(this);
     }
   }
 }

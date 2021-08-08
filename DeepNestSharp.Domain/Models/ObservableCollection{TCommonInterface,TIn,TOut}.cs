@@ -8,15 +8,23 @@ namespace DeepNestSharp.Domain.Models
   using System.Collections.ObjectModel;
   using Light.GuardClauses;
   using System.Linq;
+  using System.ComponentModel;
+  using DeepNestLib.IO;
 
-  public class ObservableCollection<TCommonInterface, TIn, TOut> : ObservableCollection<TOut>, IList<TCommonInterface, TIn>
-    where TIn : class, TCommonInterface
-    where TOut : class, TCommonInterface, IWrapper<TCommonInterface, TIn>
+  public class ObservableCollection<TCommonInterface, TIn, TOut> : ObservableCollection<TOut>, IList<TCommonInterface, TIn>, ISaveable, INotifyPropertyChanged
+    where TIn : class, TCommonInterface, ISaveable
+    where TOut : class, TCommonInterface, IWrapper<TCommonInterface, TIn>, INotifyPropertyChanged
   {
     private readonly Func<TIn, TOut> factory;
-    protected internal IList<TCommonInterface> ItemsWrapped { get; }
+    private bool isCollectionChanged;
+
+    public event EventHandler IsDirtyChanged;
+
+    protected internal IList<TCommonInterface, TIn> ItemsWrapped { get; }
 
     public bool IsReadOnly => false;
+
+    public bool IsDirty => isCollectionChanged || this.ItemsWrapped.Any(o => ((TIn)o).IsDirty);
 
     TCommonInterface IList<TCommonInterface>.this[int index]
     {
@@ -30,7 +38,7 @@ namespace DeepNestSharp.Domain.Models
         }
         else if (value is TIn tIn)
         {
-          base[index] = factory(tIn);
+          base[index] = CreateNotifyingWrapper(tIn);
           this.ItemsWrapped[index] = tIn;
         }
         else
@@ -51,14 +59,15 @@ namespace DeepNestSharp.Domain.Models
       this.factory = factory;
       foreach (var item in items.ToList())
       {
-        base.Add(factory((TIn)item));
+        base.Add(CreateNotifyingWrapper((TIn)item));
       }
     }
 
     public void Add(TIn item)
     {
       this.ItemsWrapped.Add(item);
-      base.Add(factory(item));
+      base.Add(CreateNotifyingWrapper(item));
+      isCollectionChanged = true;
     }
 
     public int IndexOf(TCommonInterface item)
@@ -79,13 +88,15 @@ namespace DeepNestSharp.Domain.Models
     {
       item.MustBeOfType<TIn>();
       ItemsWrapped.Insert(index, item);
-      base.Insert(index, factory((TIn)item));
+      base.Insert(index, CreateNotifyingWrapper((TIn)item));
+      isCollectionChanged = true;
     }
 
     public void Add(TCommonInterface item)
     {
       item.MustBeOfType<TIn>();
       Add((TIn)item);
+      isCollectionChanged = true;
     }
 
     public bool Contains(TCommonInterface item)
@@ -109,23 +120,49 @@ namespace DeepNestSharp.Domain.Models
 
     public bool Remove(TCommonInterface item)
     {
+      bool result = false;
       if (item is TIn tIn)
       {
         var tOut = Items.FirstOrDefault(o => o.Item == tIn);
-        return this.Remove(tOut);
+        result = this.Remove(tOut);
       }
       else if (item is TOut tOut)
       {
         this.ItemsWrapped.Remove(tOut.Item);
-        return base.Remove(tOut);
+        result = base.Remove(tOut);
       }
 
-      return false;
+      if (result)
+      {
+        isCollectionChanged = true;
+      }
+
+      return result;
     }
 
     IEnumerator<TCommonInterface> IEnumerable<TCommonInterface>.GetEnumerator()
     {
       return GetEnumerator();
+    }
+
+    public void SaveState()
+    {
+      foreach (var item in ItemsWrapped.Cast<ISaveable>())
+      {
+        item.SaveState();
+      }
+    }
+
+    private TOut CreateNotifyingWrapper(TIn tIn)
+    {
+      var result = factory(tIn);
+      result.PropertyChanged += this.Result_PropertyChanged;
+      return result;
+    }
+
+    private void Result_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+      IsDirtyChanged?.Invoke(this, new EventArgs());
     }
   }
 }

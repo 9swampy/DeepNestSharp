@@ -1,8 +1,10 @@
-﻿using System.IO;
-
-namespace DeepNestLib.NestProject
+﻿namespace DeepNestLib.NestProject
 {
-  public class DetailLoadInfo : IDetailLoadInfo
+  using System.IO;
+  using System.Text.Json;
+  using DeepNestLib.IO;
+
+  public class DetailLoadInfo : Saveable, IDetailLoadInfo
   {
     public string Name => new FileInfo(Path).Name;
 
@@ -17,5 +19,10 @@ namespace DeepNestLib.NestProject
     public bool IsMultiplied { get; set; } = true;
 
     public AnglesEnum StrictAngle { get; set; } = AnglesEnum.None;
+
+    public override string ToJson()
+    {
+      return JsonSerializer.Serialize(this);
+    }
   }
 }

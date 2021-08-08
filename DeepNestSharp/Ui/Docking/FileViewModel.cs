@@ -108,6 +108,11 @@
         if (isDirty != value)
         {
           isDirty = value;
+          if (!isDirty)
+          {
+            SaveState();
+          }
+
           OnPropertyChanged(nameof(IsDirty));
           OnPropertyChanged(nameof(FileName));
         }
@@ -154,6 +159,8 @@
     }
 
     protected abstract void NotifyContentUpdated();
+
+    protected abstract void SaveState();
 
     protected abstract void LoadContent();
 

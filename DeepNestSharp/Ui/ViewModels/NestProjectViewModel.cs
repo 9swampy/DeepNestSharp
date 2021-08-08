@@ -67,10 +67,16 @@
 
     private void Initialise(MainViewModel mainViewModel, IFileIoService fileIoService)
     {
+      observableProjectInfo.IsDirtyChanged += this.ObservableProjectInfo_IsDirtyChanged;
       executeNestCommand = new RelayCommand(OnExecuteNest, () => !MainViewModel.NestMonitorViewModel.IsRunning);
       addPartCommand = new AsyncRelayCommand(OnAddPartAsync);
       mainViewModel.NestMonitorViewModel.PropertyChanged += this.NestMonitorViewModel_PropertyChanged;
       this.fileIoService = fileIoService;
+    }
+
+    private void ObservableProjectInfo_IsDirtyChanged(object? sender, EventArgs e)
+    {
+      this.IsDirty = true;
     }
 
     protected override void LoadContent()
@@ -118,6 +124,11 @@
     {
       MainViewModel.NestMonitorViewModel.IsActive = true;
       MainViewModel.NestMonitorViewModel.TryStart(this);
+    }
+
+    protected override void SaveState()
+    {
+      observableProjectInfo.SaveState();
     }
   }
 }

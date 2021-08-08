@@ -15,11 +15,23 @@
     /// Initializes a new instance of the <see cref="ObservableDetailLoadInfo"/> class.
     /// </summary>
     /// <param name="sheetLoadInfo">The ProjectInfo to wrap.</param>
-    public ObservableDetailLoadInfo(DetailLoadInfo detailLoadInfo) => this.detailLoadInfo = detailLoadInfo;
+    public ObservableDetailLoadInfo(DetailLoadInfo detailLoadInfo)
+    {
+      this.detailLoadInfo = detailLoadInfo;
+      this.PropertyChanged += this.ObservableDetailLoadInfo_PropertyChanged;
+    }
+
+    private void ObservableDetailLoadInfo_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+      if (e.PropertyName != nameof(IsDirty))
+      {
+        OnPropertyChanged(nameof(IsDirty));
+      }
+    }
 
     public IList<AnglesEnum> AnglesList => Enum.GetValues(typeof(AnglesEnum)).OfType<AnglesEnum>().ToList();
 
-    public override bool IsDirty => true;
+    public override bool IsDirty => this.detailLoadInfo.IsDirty;
 
     public bool IsIncluded
     {

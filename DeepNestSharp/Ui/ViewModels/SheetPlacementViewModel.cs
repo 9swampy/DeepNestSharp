@@ -148,5 +148,10 @@
     {
       this.MainViewModel.LoadPart(SelectedItem.Part.Name);
     }
+
+    protected override void SaveState()
+    {
+      throw new NotImplementedException();
+    }
   }
 }

@@ -255,7 +255,7 @@
         if (fileToSave.FilePath == null || saveAsFlag)
         {
           var filePath = fileIoService.GetSaveFilePath(fileToSave.FileDialogFilter);
-          if (!string.IsNullOrWhiteSpace(filePath) && fileIoService.Exists(filePath))
+          if (!string.IsNullOrWhiteSpace(filePath))
           {
             fileToSave.FilePath = filePath;
           }

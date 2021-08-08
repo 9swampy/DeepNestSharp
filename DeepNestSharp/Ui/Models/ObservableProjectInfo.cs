@@ -12,6 +12,8 @@
     private ObservableCollection<IDetailLoadInfo, DetailLoadInfo, ObservableDetailLoadInfo>? detailLoadInfos;
     private ObservableCollection<ISheetLoadInfo, SheetLoadInfo, ObservableSheetLoadInfo>? sheetLoadInfos;
 
+    public event EventHandler IsDirtyChanged;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ObservableProjectInfo"/> class.
     /// </summary>
@@ -25,10 +27,16 @@
         if (this.detailLoadInfos == null || this.detailLoadInfos.Count == 0)
         {
           this.detailLoadInfos = new ObservableCollection<IDetailLoadInfo, DetailLoadInfo, ObservableDetailLoadInfo>(this.wrappedProjectInfo.DetailLoadInfos, x => new ObservableDetailLoadInfo(x));
+          this.detailLoadInfos.IsDirtyChanged += this.DetailLoadInfos_IsDirtyChanged;
         }
 
         return this.detailLoadInfos;
       }
+    }
+
+    private void DetailLoadInfos_IsDirtyChanged(object? sender, EventArgs e)
+    {
+      IsDirtyChanged?.Invoke(this, e);
     }
 
     public IList<ISheetLoadInfo, SheetLoadInfo> SheetLoadInfos
@@ -63,6 +71,11 @@
     public string ToJson()
     {
       return wrappedProjectInfo.ToJson();
+    }
+
+    internal void SaveState()
+    {
+      detailLoadInfos?.SaveState();
     }
   }
 }

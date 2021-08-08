@@ -4,7 +4,6 @@
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Ui.Docking;
-  using DeepNestSharp.Ui.Models;
 
   public class PartEditorViewModel : FileViewModel
   {
@@ -55,6 +54,11 @@
     protected override void NotifyContentUpdated()
     {
       OnPropertyChanged(nameof(SheetPlacement));
+    }
+
+    protected override void SaveState()
+    {
+      // Don't do anything, DeepNestSharp only consumes and can be used to inspect Part files.
     }
   }
 }

@@ -174,8 +174,10 @@
     <Compile Include="NestProject\IDetailLoadInfo.cs" />
     <Compile Include="NestProject\IList{TCommonInterface,TConcrete}.cs" />
     <Compile Include="NestProject\IProjectInfo.cs" />
+    <Compile Include="IO\ISaveable.cs" />
     <Compile Include="NestProject\ISheetLoadInfo.cs" />
     <Compile Include="NestProject\ProjectInfo.cs" />
+    <Compile Include="IO\Saveable.cs" />
     <Compile Include="NestProject\SheetLoadInfo.cs" />
     <Compile Include="D3.cs" />
     <Compile Include="DataInfo.cs" />

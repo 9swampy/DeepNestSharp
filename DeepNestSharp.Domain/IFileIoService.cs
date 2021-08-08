@@ -6,6 +6,6 @@
 
     bool Exists(string filePath);
 
-    string GetSaveFilePath(string fileDialogFilter);
+    string GetSaveFilePath(string fileDialogFilter, string fileName = null, string initialDirectory = null);
   }
 }
