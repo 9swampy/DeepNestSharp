@@ -2,7 +2,6 @@
 {
   using System;
   using System.Linq;
-  using System.Text.Json;
   using System.Text.Json.Serialization;
 
   public class PartPlacement : IPartPlacement
@@ -12,6 +11,7 @@
       this.Part = part;
     }
 
+    /// <inheritdoc />
     [JsonIgnore]
     public double? MergedLength
     {
@@ -26,6 +26,7 @@
       }
     }
 
+    /// <inheritdoc />
     [JsonIgnore]
     public object MergedSegments
     {
@@ -40,58 +41,57 @@
       }
     }
 
+    /// <inheritdoc />
     public int Id { get; set; }
 
+    /// <inheritdoc />
+    [JsonIgnore]
+    public bool IsExact => Part.IsExact;
+
+    /// <inheritdoc />
     [JsonIgnore]
     public bool IsDragging { get; set; }
 
-    /// <summary>
-    /// A hull of the part captured only when not Gravity or BoundingBox (ie. Squeeze).
-    /// </summary>
+    /// <inheritdoc />
     [JsonIgnore]
     public INfp Hull { get; set; }
 
-    /// <summary>
-    /// A hull of the sheet captured only when not Gravity or BoundingBox (ie. Squeeze).
-    /// </summary>
+    /// <inheritdoc />
     [JsonIgnore]
     public INfp HullSheet { get; set; }
 
+    /// <inheritdoc />
     [JsonIgnore]
     public double MaxX => this.X + this.Part.Points.Max(p => p.X);
 
+    /// <inheritdoc />
     [JsonIgnore]
     public double MaxY => this.Y + this.Part.Points.Max(p => p.Y);
 
+    /// <inheritdoc />
     [JsonIgnore]
     public double MinX => this.X + this.Part.Points.Min(p => p.X);
 
+    /// <inheritdoc />
     [JsonIgnore]
     public double MinY => this.Y + this.Part.Points.Min(p => p.Y);
 
-    /// <summary>
-    /// Rotation of the part (sheets I don't think ever get rotated, so this would be absolute).
-    /// </summary>
+    /// <inheritdoc />
     [JsonConverter(typeof(DoublePrecisionConverter))]
     public double Rotation { get; set; }
 
-    /// <summary>
-    /// Offset of the part relative to the sheet.
-    /// </summary>
+    /// <inheritdoc />
     [JsonConverter(typeof(DoublePrecisionConverter))]
     public double X { get; set; }
 
-    /// <summary>
-    /// Offset of the part relative to the sheet.
-    /// </summary>
+    /// <inheritdoc />
     [JsonConverter(typeof(DoublePrecisionConverter))]
     public double Y { get; set; }
 
-    /// <summary>
-    /// Source of the part placed.
-    /// </summary>
+    /// <inheritdoc />
     public int Source { get; set; }
 
+    /// <inheritdoc />
     public INfp Part { get; }
   }
 }
