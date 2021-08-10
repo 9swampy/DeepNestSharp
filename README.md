@@ -1,10 +1,11 @@
 # DeepNestSharp
-DeepNest - The Original (https://github.com/Jack000/Deepnest)
+DeepNest - The Original (https://github.com/Jack000/Deepnest)<br />
 DeepNestPort - C# port (https://github.com/fel88/DeepNestPort)
 
-**"If I have seen further, it is by standing upon the shoulders of giants"**
-Jack and Felix have done some great work but the Port just wasn't proving stable 
-enough for my needs; and I really needed the ability to save projects, nest 
+**"If I have seen further, it is by standing upon the shoulders of giants"**<br />
+Jack and Felix have done some great work but the originals use of a remote service
+to translate between image formats was an issue and the Port just wasn't proving stable 
+enough for my needs. I really needed the ability to save projects, nest 
 results and individual sheet placements, the ability to seed subsequent nests with 
 the results of prior nests and the ability to edit placements - to slip that 
 last piece in to the gaps on the sheet that the algorithym just wasn't finding.
@@ -14,10 +15,13 @@ Felix was keen to keep true to the original DeepNest code in DeepNestPort...
 > 
 > I'll try, but it is important to keep compatibility with the original code...
 > I think we shouldn't entangle our repositories too much
+
 ...so DeepNestSharp was born. It completely rebuilds the UI using WPF on Net.Core
 and is a huge refactor which has paid some dividends but also introduced some 
-compromises and issues, some of which are outstanding... contributions would be 
-welcome! This isn't my day job ;)
+compromises and issues, some of which are outstanding... The eagle eyed among you
+may notice something odd going on with the holes in the Previews. Doesn't affect 
+the nest, only the UI; it's on the backlog... contributions would be 
+welcome!
 
 DXF Import/Export: https://github.com/IxMilia/Dxf
 
