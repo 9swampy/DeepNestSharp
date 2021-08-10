@@ -23,7 +23,7 @@
 
     public ICollection<INfp> Polygons { get; } = new HashSet<INfp>();
 
-    public IList<INfp> Sheets { get; private set; } = new List<INfp>();
+    public IList<ISheet> Sheets { get; private set; } = new List<ISheet>();
 
     public INestResult Current { get; private set; } = null;
 
@@ -255,10 +255,9 @@
       {
         Sheets[i].X = x;
         Sheets[i].Y = y;
-        if (Sheets[i] is Sheet)
+        if (Sheets[i] is Sheet sheet)
         {
-          var r = Sheets[i] as Sheet;
-          x += r.Width + gap;
+          x += sheet.Width + gap;
         }
         else
         {

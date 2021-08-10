@@ -833,7 +833,7 @@
             State.ResetPopulation();
           }
 
-          List<INfp> sheets = new List<INfp>();
+          List<ISheet> sheets = new List<ISheet>();
           List<int> sheetids = new List<int>();
           List<int> sheetsources = new List<int>();
           List<List<INfp>> sheetchildren = new List<List<INfp>>();
@@ -849,7 +849,7 @@
                 cln.Id = sid; // id is the unique id of all parts that will be nested, including cloned duplicates
                 cln.Source = poly.Source; // source is the id of each unique part from the main part list
 
-                sheets.Add(cln);
+                sheets.Add(new Sheet(cln));
                 sheetids.Add(sid);
                 sheetsources.Add(i);
                 sheetchildren.Add(poly.Children.ToList());
@@ -886,7 +886,7 @@
       }
     }
 
-    private void ProcessPopulation(int start, int end, ISvgNestConfig config, INfp[] sheets, int[] sheetids, int[] sheetsources, List<List<INfp>> sheetchildren)
+    private void ProcessPopulation(int start, int end, ISvgNestConfig config, ISheet[] sheets, int[] sheetids, int[] sheetsources, List<List<INfp>> sheetchildren)
     {
       State.IncrementThreads();
       for (int i = start; i < end; i++)

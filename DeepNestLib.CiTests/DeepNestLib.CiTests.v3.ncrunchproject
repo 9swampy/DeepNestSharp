@@ -7,6 +7,9 @@
       <NamedTestSelector>
         <TestName>DeepNestLib.CiTests.OverlappingNestDebug180180CorrectFixture.ShouldHaveReturnedExpectedSheetPlacement</TestName>
       </NamedTestSelector>
+      <NamedTestSelector>
+        <TestName>DeepNestLib.CiTests.Placement.NestResultJsonFixture.ShouldRoundTripSerializeSimpleNestResult</TestName>
+      </NamedTestSelector>
     </IgnoredTests>
   </Settings>
 </ProjectConfiguration>

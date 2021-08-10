@@ -17,15 +17,15 @@
 
     public FitTwoSmallSquaresPartInTwoLargerSquareSheetsFixture()
     {
-      INfp firstSheet;
-      DxfGenerator.GenerateSquare("Sheet", 20D, RectangleType.FileLoad).TryConvertToNfp(firstSheetIdSrc, out firstSheet).Should().BeTrue();
-      INfp secondSheet;
-      DxfGenerator.GenerateSquare("Sheet", 20D, RectangleType.FileLoad).TryConvertToNfp(secondSheetIdSrc, out secondSheet).Should().BeTrue();
+      ISheet firstSheet;
+      DxfGenerator.GenerateSquare("Sheet", 20D, RectangleType.FileLoad).TryConvertToSheet(firstSheetIdSrc, out firstSheet).Should().BeTrue();
+      ISheet secondSheet;
+      DxfGenerator.GenerateSquare("Sheet", 20D, RectangleType.FileLoad).TryConvertToSheet(secondSheetIdSrc, out secondSheet).Should().BeTrue();
       INfp firstPart;
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryConvertToNfp(firstPartIdSrc, out firstPart).Should().BeTrue();
       INfp secondPart;
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryConvertToNfp(secondPartIdSrc, out secondPart).Should().BeTrue();
-      this.nestResult = new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), A.Dummy<MinkowskiSum>()).PlaceParts(new INfp[] { firstSheet, secondSheet }, new INfp[] { firstPart, secondPart }, new SvgNestConfig());
+      this.nestResult = new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), A.Dummy<MinkowskiSum>()).PlaceParts(new ISheet[] { firstSheet, secondSheet }, new INfp[] { firstPart, secondPart }, new SvgNestConfig());
     }
 
     [Fact]

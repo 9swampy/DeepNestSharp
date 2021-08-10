@@ -21,7 +21,7 @@
       throw new ArgumentException($"Cannot convert {nameof(typeToConvert)}.", nameof(typeToConvert));
     }
 
-    public class NfpJsonConverterInner : JsonConverter<INfp>
+    private class NfpJsonConverterInner : JsonConverter<INfp>
     {
       public override INfp Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
       {

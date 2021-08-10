@@ -42,8 +42,8 @@
           this.nestingContext.Polygons.Add(this.loadedNfp.Clone());
           this.nestingContext.Polygons.Count.Should().Be(2);
 
-          INfp firstSheet;
-          dxfGenerator.GenerateRectangle("Sheet", 595D, 395D, RectangleType.FileLoad).TryConvertToNfp(firstSheetIdSrc, out firstSheet).Should().BeTrue();
+          ISheet firstSheet;
+          dxfGenerator.GenerateRectangle("Sheet", 595D, 395D, RectangleType.FileLoad).TryConvertToSheet(firstSheetIdSrc, out firstSheet).Should().BeTrue();
           this.nestingContext.Sheets.Add(firstSheet);
 
           this.nestingContext.StartNest();

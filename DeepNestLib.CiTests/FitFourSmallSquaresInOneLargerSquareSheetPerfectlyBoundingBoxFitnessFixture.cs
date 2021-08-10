@@ -18,8 +18,8 @@
 
     public FitFourSmallSquaresInOneLargerSquareSheetPerfectlyBoundingBoxFitnessFixture()
     {
-      INfp firstSheet;
-      DxfGenerator.GenerateSquare("Sheet", 23D, RectangleType.FileLoad).TryConvertToNfp(firstSheetIdSrc, out firstSheet).Should().BeTrue();
+      ISheet firstSheet;
+      DxfGenerator.GenerateSquare("Sheet", 23D, RectangleType.FileLoad).TryConvertToSheet(firstSheetIdSrc, out firstSheet).Should().BeTrue();
       INfp firstPart;
       DxfGenerator.GenerateSquare("firstPart", 11D, RectangleType.FitFour).TryConvertToNfp(firstPartIdSrc, out firstPart).Should().BeTrue();
       // firstPart = firstPart.Rotate(180);
@@ -38,7 +38,7 @@
       fourthPart.Rotation = 180;
       var config = new DefaultSvgNestConfig();
       config.PlacementType = PlacementTypeEnum.BoundingBox;
-      this.nestResult = new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), A.Dummy<MinkowskiSum>()).PlaceParts(new INfp[] { firstSheet }, new INfp[] { firstPart, secondPart, thirdPart, fourthPart }, config);
+      this.nestResult = new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), A.Dummy<MinkowskiSum>()).PlaceParts(new ISheet[] { firstSheet }, new INfp[] { firstPart, secondPart, thirdPart, fourthPart }, config);
     }
 
     [Fact]

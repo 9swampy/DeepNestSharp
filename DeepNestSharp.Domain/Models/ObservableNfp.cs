@@ -98,7 +98,7 @@
     }
 
     /// <inheritdoc/>
-    SvgPoint[] INfp.Points => this.item.Points;
+    SvgPoint[] IPolygon.Points => this.item.Points;
 
     /// <inheritdoc/>
     public double Rotation

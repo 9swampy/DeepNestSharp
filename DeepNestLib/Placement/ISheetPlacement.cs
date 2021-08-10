@@ -17,7 +17,7 @@
 
     PolygonBounds RectBounds { get; }
 
-    INfp Sheet { get; }
+    ISheet Sheet { get; }
 
     int SheetId { get; }
 

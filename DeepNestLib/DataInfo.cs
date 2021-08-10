@@ -7,7 +7,7 @@
   {
     public int Index { get; set; }
 
-    public INfp[] Sheets { get; set; }
+    public ISheet[] Sheets { get; set; }
 
     public int[] SheetIds { get; set; }
 

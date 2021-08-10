@@ -195,7 +195,7 @@
       return res;
     }
 
-    internal NestResult PlaceParts(IEnumerable<INfp> sheets, INfp[] parts, ISvgNestConfig config)
+    internal NestResult PlaceParts(IEnumerable<ISheet> sheets, INfp[] parts, ISvgNestConfig config)
     {
       VerboseLog("PlaceParts");
       if (sheets == null || sheets.Count() == 0)
@@ -206,7 +206,7 @@
       Stopwatch sw = new Stopwatch();
       sw.Start();
 
-      var unusedSheets = new Stack<INfp>(sheets.Reverse());
+      var unusedSheets = new Stack<ISheet>(sheets.Reverse());
 
       // total length of merged lines
       double totalMerged = 0;
@@ -230,8 +230,8 @@
         var placements = new List<IPartPlacement>();
 
         // open a new sheet
-        INfp sheet = null;
-        var requeue = new Queue<INfp>();
+        ISheet sheet = null;
+        var requeue = new Queue<ISheet>();
         while (unusedSheets.Count > 0 && sheet == null)
         {
           sheet = unusedSheets.Pop();
@@ -1084,7 +1084,7 @@
       return false;
     }
 
-    private void SyncPlaceParts(NFP[] parts, INfp[] sheets, ISvgNestConfig config, int index)
+    private void SyncPlaceParts(NFP[] parts, ISheet[] sheets, ISvgNestConfig config, int index)
     {
       var nestResult = PlaceParts(sheets, parts, config);
       if (nestResult != null)
@@ -1146,7 +1146,7 @@
       window.Insert(doc);
     }
 
-    private void ThenDeepNest(NfpPair[] nfpPairs, NFP[] parts, INfp[] sheets, ISvgNestConfig config, int index)
+    private void ThenDeepNest(NfpPair[] nfpPairs, NFP[] parts, ISheet[] sheets, ISvgNestConfig config, int index)
     {
       if (config.UseParallel)
       {

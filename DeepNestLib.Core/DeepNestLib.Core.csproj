@@ -48,6 +48,7 @@
     <Compile Include="..\DeepNestLib\IO\Saveable.cs" Link="IO/Saveable.cs" />
     <Compile Include="..\DeepNestLib\IPointXY.cs" Link="IPointXY.cs" />
     <Compile Include="..\DeepNestLib\IProgressDisplayer.cs" Link="IProgressDisplayer.cs" />
+    <Compile Include="..\DeepNestLib\ISheet.cs" Link="ISheet.cs" />
     <Compile Include="..\DeepNestLib\IStringify.cs" Link="IStringify.cs" />
     <Compile Include="..\DeepNestLib\ISvgNestConfig.cs" Link="ISvgNestConfig.cs" />
     <Compile Include="..\DeepNestLib\IWindowUnk.cs" Link="IWindowUnk.cs" />
@@ -105,6 +106,7 @@
     <Compile Include="..\DeepNestLib\ReadOnlyListExtensions.cs" Link="ReadOnlyListExtensions.cs" />
     <Compile Include="..\DeepNestLib\RectangleSheet.cs" Link="RectangleSheet.cs" />
     <Compile Include="..\DeepNestLib\Sheet.cs" Link="Sheet.cs" />
+    <Compile Include="..\DeepNestLib\SheetJsonConverter.cs" Link="SheetJsonConverter.cs" />
     <Compile Include="..\DeepNestLib\Simplify.cs" Link="Simplify.cs" />
     <Compile Include="..\DeepNestLib\SvgNest.cs" Link="SvgNest.cs" />
     <Compile Include="..\DeepNestLib\SvgParser.cs" Link="SvgParser.cs" />

@@ -493,9 +493,9 @@
     {
       if (listView2.SelectedItems.Count > 0)
       {
-        var pol = listView2.SelectedItems[0].Tag as NFP;
+        var pol = listView2.SelectedItems[0].Tag as ISheet;
         context.Sheets.Remove(pol);
-        context.Polygons.Add(pol);
+        context.Polygons.Add(new NFP(pol));
         UpdateList();
       }
     }
@@ -1086,7 +1086,7 @@
     {
       if (listView2.SelectedItems.Count > 0)
       {
-        var f = listView2.SelectedItems[0].Tag as NFP;
+        var f = listView2.SelectedItems[0].Tag as ISheet;
         context.Sheets.Remove(f);
         UpdateList();
         Context.ReorderSheets();
@@ -1182,8 +1182,7 @@
 
     private void button7_Click(object sender, EventArgs e)
     {
-      var sh = context.Sheets[0] as Sheet;
-      nestPreviewDrawingContext.RenderSheetToClipboard(sh, context.Polygons, context.Sheets);
+      nestPreviewDrawingContext.RenderSheetToClipboard(context.Sheets[0], context.Polygons, context.Sheets);
     }
 
     private void button8_Click(object sender, EventArgs e)

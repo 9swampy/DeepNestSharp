@@ -12,7 +12,7 @@
     double width;
     double height;
     double area;
-    INfp sheet;
+    ISheet sheet;
     ISheetPlacement sp;
 
     public PerfectFitnessFixture()
@@ -20,7 +20,7 @@
       width = new Random().Next(50, 1200);
       height = new Random().Next(50, 900);
       area = width * height;
-      sheet = A.Fake<INfp>();
+      sheet = A.Fake<ISheet>();
       A.CallTo(() => sheet.Area).Returns(area);
       sp = A.Fake<ISheetPlacement>();
       A.CallTo(() => sp.Sheet).Returns(sheet);

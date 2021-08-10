@@ -163,6 +163,7 @@
     <Compile Include="INestState.cs" />
     <Compile Include="InnerFlowResult.cs" />
     <Compile Include="IPointXY.cs" />
+    <Compile Include="ISheet.cs" />
     <Compile Include="MessageBoxIcon.cs" />
     <Compile Include="NestExecutionHelper.cs" />
     <Compile Include="NestProject\AnglesEnum.cs" />
@@ -259,6 +260,7 @@
     <Compile Include="ReadOnlyListExtensions.cs" />
     <Compile Include="RectangleSheet.cs" />
     <Compile Include="Sheet.cs" />
+    <Compile Include="SheetJsonConverter.cs" />
     <Compile Include="Simplify.cs" />
     <Compile Include="SvgNest.cs" />
     <Compile Include="SvgNestConfig.cs" />

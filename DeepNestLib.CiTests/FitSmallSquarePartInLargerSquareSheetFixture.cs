@@ -14,11 +14,11 @@
 
     public FitSmallSquarePartInLargerSquareSheetFixture()
     {
-      INfp sheet;
-      DxfGenerator.GenerateSquare("Sheet", 22D, RectangleType.FileLoad).TryConvertToNfp(0, out sheet).Should().BeTrue();
+      ISheet sheet;
+      DxfGenerator.GenerateSquare("Sheet", 22D, RectangleType.FileLoad).TryConvertToSheet(0, out sheet).Should().BeTrue();
       INfp part;
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryConvertToNfp(0, out part).Should().BeTrue();
-      this.nestResult = new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), A.Dummy<MinkowskiSum>()).PlaceParts(new INfp[] { sheet }, new INfp[] { part }, new SvgNestConfig());
+      this.nestResult = new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), A.Dummy<MinkowskiSum>()).PlaceParts(new ISheet[] { sheet }, new INfp[] { part }, new SvgNestConfig());
     }
 
     [Fact]
@@ -30,8 +30,8 @@
     [Fact]
     private void TestAnActualCallOutToMinkowskiBecauseWhyDoTestsWorkButApplicationCrashes()
     {
-      INfp sheet;
-      DxfGenerator.GenerateSquare("Sheet", 22D, RectangleType.FileLoad).TryConvertToNfp(0, out sheet).Should().BeTrue();
+      ISheet sheet;
+      DxfGenerator.GenerateSquare("Sheet", 22D, RectangleType.FileLoad).TryConvertToSheet(0, out sheet).Should().BeTrue();
       INfp part;
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryConvertToNfp(0, out part).Should().BeTrue();
 

@@ -68,5 +68,23 @@
 
       clone.Children[0].Source.Should().Be(sut.Children[0].Source, "child Source wasn't originally copied. Note this is a refactoring; I had to remove nullable as a null would kill the PlaceParts logic; can't ever be valid; and then had to copy when there was a value.");
     }
+
+    [Fact]
+    public void GivenNfpWhenCloneTreeThenShouldBeEquivalent()
+    {
+      var random = new Random();
+      var sut = new NFP();
+      sut.IsPriority = true;
+      sut.StrictAngle = DeepNestLib.NestProject.AnglesEnum.Vertical;
+      sut.Name = DateTime.Now.ToString();
+      var firstPoint = new SvgPoint(0, 0);
+      sut.AddPoint(firstPoint);
+      sut.AddPoint(new SvgPoint(random.Next(), random.Next()));
+      sut.AddPoint(new SvgPoint(random.Next(), random.Next()));
+      var clone = sut.CloneTree();
+      clone.Should().BeEquivalentTo(sut);
+      firstPoint.X = -1;
+      clone.Should().NotBeEquivalentTo(sut, "points get cloned aren't referenced in the clone.");
+    }
   }
 }

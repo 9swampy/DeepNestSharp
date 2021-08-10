@@ -11,6 +11,6 @@
 
     ICollection<INfp> Polygons { get; }
 
-    IList<INfp> Sheets { get; }
+    IList<ISheet> Sheets { get; }
   }
 }

@@ -241,7 +241,7 @@
       var test = Transform(new PointF(x, y));
     }
 
-    public void RenderSheetToClipboard(Sheet sh, ICollection<INfp> polygons, ICollection<INfp> sheets)
+    public void RenderSheetToClipboard(ISheet sh, ICollection<INfp> polygons, ICollection<ISheet> sheets)
     {
       this.sx = (double)sh.X;
       this.sy = (double)sh.Y;
@@ -258,7 +258,7 @@
       Clipboard.SetImage(bb);
     }
 
-    private void RenderSheet(ICollection<INfp> polygons, ICollection<INfp> sheets)
+    private void RenderSheet(ICollection<INfp> polygons, ICollection<ISheet> sheets)
     {
       this.gr.SmoothingMode = SmoothingMode.AntiAlias;
       this.Clear(Color.White);

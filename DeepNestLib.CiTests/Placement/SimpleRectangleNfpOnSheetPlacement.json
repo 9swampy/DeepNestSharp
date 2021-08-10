@@ -3,6 +3,8 @@
   "SheetSource": 3,
   "PlacementType": 0,
   "Sheet": {
+    "Width": 5,
+    "Height": 5,
     "Fitted": false,
     "Sheet": null,
     "Name": "firstSheet",

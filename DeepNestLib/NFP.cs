@@ -19,10 +19,31 @@
       Children = children;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NFP"/> class.
+    /// Creates a true clone of the source; only Sheet is a common object reference.
+    /// </summary>
+    /// <param name="source">The original object to clone.</param>
+    public NFP(INfp source)
+      : this(source.Points)
+    {
+      this.Id = source.Id;
+      this.IsPriority = source.IsPriority;
+      this.Name = source.Name;
+      this.Offsetx = source.Offsetx;
+      this.Offsety = source.Offsety;
+      this.PlacementOrder = source.PlacementOrder;
+      this.Rotation = source.Rotation;
+      this.Sheet = source.Sheet;
+      this.Source = source.Source;
+      this.StrictAngle = source.StrictAngle;
+      this.X = source.X;
+      this.Y = source.Y;
+    }
+
     public NFP()
       : base(new SvgPoint[0])
     {
-      this.points = new SvgPoint[0];
     }
 
     public NFP(IEnumerable<SvgPoint> points)
@@ -48,11 +69,11 @@
 
     [JsonIgnore]
     /// <inheritdoc />
-    public double MaxX => points.Max(p => p.X);
+    public double MaxX => points.Length == 0 ? 0 : points.Max(p => p.X);
 
     [JsonIgnore]
     /// <inheritdoc />
-    public double MinX => points.Min(p => p.X);
+    public double MinX => points.Length == 0 ? 0 : points.Min(p => p.X);
 
     [JsonConverter(typeof(DoublePrecisionConverter))]
     /// <inheritdoc />
@@ -60,11 +81,11 @@
 
     [JsonIgnore]
     /// <inheritdoc />
-    public double MaxY => points.Max(p => p.Y);
+    public double MaxY => points.Length == 0 ? 0 : points.Max(p => p.Y);
 
     [JsonIgnore]
     /// <inheritdoc />
-    public double MinY => points.Min(p => p.Y);
+    public double MinY => points.Length == 0 ? 0 : points.Min(p => p.Y);
 
     [JsonIgnore]
     /// <inheritdoc />
@@ -445,7 +466,7 @@
     }
 
     /// <inheritdoc />
-    public string ToJson()
+    public virtual string ToJson()
     {
       return JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
     }

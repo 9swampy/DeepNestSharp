@@ -76,7 +76,7 @@
         var hh = double.Parse(item.Attribute("height").Value);
         GraphicsPath p = new GraphicsPath();
         p.AddRectangle(new RectangleF((float)xx, (float)yy, (float)ww, (float)hh));
-        s.Outers.Add(new LocalContour() { Points = p.PathPoints.ToList() });
+        s.AddContour(new LocalContour() { Points = p.PathPoints.ToList() });
       }
 
       foreach (var item in doc.Descendants(XName.Get("polygon", ns)))
@@ -91,7 +91,7 @@
           points.Add(new PointF(ar[0], ar[1]));
         }
 
-        s.Outers.Add(new LocalContour() { Points = points.ToList() });
+        s.AddContour(new LocalContour() { Points = points.ToList() });
       }
 
       return s;

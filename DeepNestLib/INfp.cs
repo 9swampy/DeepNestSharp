@@ -3,14 +3,25 @@
   using System.Collections.Generic;
   using DeepNestLib.NestProject;
 
-  public interface INfp : IMinMaxXY
+  public interface IPolygon
+  {
+    IList<INfp> Children { get; set; }
+
+    SvgPoint[] Points { get; }
+
+    SvgPoint this[int ind] { get; }
+
+    void AddPoint(SvgPoint point);
+
+    double Rotation { get; set; }
+  }
+
+  public interface INfp : IMinMaxXY, IPolygon
   {
     /// <summary>
     /// The gross outer area, not discounting for any holes.
     /// </summary>
     double Area { get; }
-
-    IList<INfp> Children { get; set; }
 
     bool Fitted { get; }
 
@@ -41,10 +52,6 @@
 
     int PlacementOrder { get; set; }
 
-    SvgPoint[] Points { get; }
-
-    double Rotation { get; set; }
-
     INfp Sheet { get; set; }
 
     int Source { get; set; }
@@ -56,10 +63,6 @@
     double X { get; set; }
 
     double Y { get; set; }
-
-    SvgPoint this[int ind] { get; }
-
-    void AddPoint(SvgPoint point);
 
     NFP Clone();
 

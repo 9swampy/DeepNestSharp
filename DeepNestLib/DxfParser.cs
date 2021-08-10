@@ -166,7 +166,7 @@
 
       elems = elems.Where(z => z.Start.DistTo(z.End) > RemoveThreshold).ToList();
       var cntrs2 = ConnectElements(elems.ToArray());
-      s.Outers.AddRange(cntrs2);
+      s.AddRangeContour(cntrs2);
       if (s.Outers.Any(z => z.Points.Count < 3))
       {
         throw new Exception("few points");

@@ -17,7 +17,7 @@
 
     private NFP hull;
 
-    public SheetPlacement(PlacementTypeEnum placementType, INfp sheet, IReadOnlyList<IPartPlacement> partPlacements)
+    public SheetPlacement(PlacementTypeEnum placementType, ISheet sheet, IReadOnlyList<IPartPlacement> partPlacements)
     {
       this.PlacementType = placementType;
       this.Sheet = sheet;
@@ -39,7 +39,7 @@
     public PlacementTypeEnum PlacementType { get; private set; }
 
     [JsonInclude]
-    public INfp Sheet { get; private set; }
+    public ISheet Sheet { get; private set; }
 
     [JsonInclude]
     public IReadOnlyList<IPartPlacement> PartPlacements { get; private set; } = new List<IPartPlacement>();
@@ -111,6 +111,7 @@
     public static SheetPlacement FromJson(string json)
     {
       var options = new JsonSerializerOptions();
+      options.Converters.Add(new SheetJsonConverter());
       options.Converters.Add(new NfpJsonConverter());
       options.Converters.Add(new PartPlacementJsonConverter());
       return JsonSerializer.Deserialize<SheetPlacement>(json, options);
@@ -119,6 +120,7 @@
     public string ToJson()
     {
       var options = new JsonSerializerOptions();
+      options.Converters.Add(new SheetJsonConverter());
       options.Converters.Add(new NfpJsonConverter());
       options.Converters.Add(new PartPlacementJsonConverter());
       return JsonSerializer.Serialize(this, options);

@@ -94,7 +94,7 @@
 
     public PolygonBounds RectBounds => item.RectBounds;
 
-    public INfp Sheet => item?.Sheet;
+    public ISheet Sheet => item?.Sheet;
 
     public int SheetId => item.SheetId;
 
