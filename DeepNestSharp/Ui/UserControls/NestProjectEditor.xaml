@@ -82,6 +82,17 @@
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
+          <GridViewColumn Header="Remove" Width="auto">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <DockPanel HorizontalAlignment="Center">
+                  <Button Content="Remove" 
+                          Command="{Binding DataContext.RemovePartCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                          CommandParameter="{Binding }" />
+                </DockPanel>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
         </GridView>
       </ListView.View>
     </ListView>

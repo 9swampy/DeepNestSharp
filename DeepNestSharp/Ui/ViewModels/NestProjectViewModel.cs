@@ -19,6 +19,7 @@
     private RelayCommand executeNestCommand;
     private AsyncRelayCommand addPartCommand;
     private IFileIoService fileIoService;
+    private AsyncRelayCommand<IDetailLoadInfo> removePartCommand;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NestProjectViewModel"/> class.
@@ -41,9 +42,11 @@
       Initialise(mainViewModel, fileIoService);
     }
 
-    public IAsyncRelayCommand AddPartCommand => addPartCommand;
+    public IAsyncRelayCommand AddPartCommand => addPartCommand ?? (addPartCommand = new AsyncRelayCommand(OnAddPartAsync));
 
-    public ICommand ExecuteNestCommand => executeNestCommand;
+    public IAsyncRelayCommand<IDetailLoadInfo> RemovePartCommand => removePartCommand ?? (removePartCommand = new AsyncRelayCommand<IDetailLoadInfo>(OnRemovePartAsync));
+
+    public ICommand ExecuteNestCommand => executeNestCommand ?? (executeNestCommand = new RelayCommand(OnExecuteNest, () => !MainViewModel.NestMonitorViewModel.IsRunning));
 
     public override string FileDialogFilter => DeepNestLib.NestProject.ProjectInfo.FileDialogFilter;
 
@@ -68,8 +71,6 @@
     private void Initialise(MainViewModel mainViewModel, IFileIoService fileIoService)
     {
       observableProjectInfo.IsDirtyChanged += this.ObservableProjectInfo_IsDirtyChanged;
-      executeNestCommand = new RelayCommand(OnExecuteNest, () => !MainViewModel.NestMonitorViewModel.IsRunning);
-      addPartCommand = new AsyncRelayCommand(OnAddPartAsync);
       mainViewModel.NestMonitorViewModel.PropertyChanged += this.NestMonitorViewModel_PropertyChanged;
       this.fileIoService = fileIoService;
     }
@@ -106,24 +107,34 @@
 
     private async Task OnAddPartAsync()
     {
-      var filePath = this.fileIoService.GetOpenFilePath(NFP.FileDialogFilter);
-      if (!string.IsNullOrWhiteSpace(filePath) && this.fileIoService.Exists(filePath))
+      var filePaths = this.fileIoService.GetOpenFilePaths(NFP.FileDialogFilter);
+      foreach (var filePath in filePaths)
       {
-        var newPart = new DetailLoadInfo()
+        if (!string.IsNullOrWhiteSpace(filePath) && this.fileIoService.Exists(filePath))
         {
-          Path = filePath,
-        };
+          var newPart = new DetailLoadInfo()
+          {
+            Path = filePath,
+          };
 
-        observableProjectInfo.DetailLoadInfos.Add(newPart);
-        OnPropertyChanged(nameof(ProjectInfo));
-        this.IsDirty = true;
+          observableProjectInfo.DetailLoadInfos.Add(newPart);
+        }
       }
+
+      OnPropertyChanged(nameof(ProjectInfo));
+      this.IsDirty = true;
     }
 
     private void OnExecuteNest()
     {
       MainViewModel.NestMonitorViewModel.IsActive = true;
       MainViewModel.NestMonitorViewModel.TryStart(this);
+    }
+
+    private async Task OnRemovePartAsync(IDetailLoadInfo? arg)
+    {
+      this.ProjectInfo.DetailLoadInfos.Remove(arg);
+      OnPropertyChanged(nameof(ProjectInfo));
     }
 
     protected override void SaveState()

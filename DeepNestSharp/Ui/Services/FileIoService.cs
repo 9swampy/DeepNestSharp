@@ -1,6 +1,7 @@
 ﻿namespace DeepNestSharp.Ui.Services
 {
   using System.IO;
+  using System.Linq;
   using DeepNestSharp.Domain;
   using Microsoft.Win32;
 
@@ -14,17 +15,23 @@
 
     public string GetOpenFilePath(string filter)
     {
+      return GetOpenFilePaths(filter, false).First();
+    }
+
+    public string[] GetOpenFilePaths(string filter, bool allowMultiSelect = true)
+    {
       OpenFileDialog openFileDialog = new OpenFileDialog()
       {
         Filter = filter,
+        Multiselect = allowMultiSelect,
       };
 
       if (openFileDialog.ShowDialog() == true)
       {
-        return openFileDialog.FileName;
+        return openFileDialog.FileNames;
       }
 
-      return string.Empty;
+      return new string[] { string.Empty };
     }
 
     public string GetSaveFilePath(string fileDialogFilter, string fileName = null, string initialDirectory = null)
