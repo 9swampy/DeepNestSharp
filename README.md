@@ -27,7 +27,7 @@ DXF Import/Export: https://github.com/IxMilia/Dxf
 <img src="imgs/2.png"/>
 <img src="imgs/3.png"/>
 <img src="imgs/NestResultEditor.png"/>
-<img src="imgs/SheetplacementEditor.png"/>
+<img src="imgs/SheetPlacementEditor.png"/>
 <img src="imgs/SaveFiles.png"/>
 
 
