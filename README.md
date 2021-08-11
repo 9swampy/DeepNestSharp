@@ -18,10 +18,7 @@ Felix was keen to keep true to the original DeepNest code in DeepNestPort...
 
 ...so DeepNestSharp was born. It completely rebuilds the UI using WPF on Net.Core
 and is a huge refactor which has paid some dividends but also introduced some 
-compromises and issues, some of which are outstanding... The eagle eyed among you
-may notice something odd going on with the holes in the Previews. Doesn't affect 
-the nest, only the UI; it's on the backlog... contributions would be 
-welcome!
+compromises and issues, some of which are outstanding... 
 
 DXF Import/Export: https://github.com/IxMilia/Dxf
 
