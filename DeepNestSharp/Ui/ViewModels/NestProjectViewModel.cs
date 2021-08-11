@@ -18,6 +18,7 @@
     private IDetailLoadInfo? selectedDetailLoadInfo;
     private RelayCommand executeNestCommand;
     private AsyncRelayCommand addPartCommand;
+    private RelayCommand<string> loadPartCommand;
     private IFileIoService fileIoService;
     private AsyncRelayCommand<IDetailLoadInfo> removePartCommand;
 
@@ -49,6 +50,8 @@
     public ICommand ExecuteNestCommand => executeNestCommand ?? (executeNestCommand = new RelayCommand(OnExecuteNest, () => !MainViewModel.NestMonitorViewModel.IsRunning));
 
     public override string FileDialogFilter => DeepNestLib.NestProject.ProjectInfo.FileDialogFilter;
+
+    public IRelayCommand<string> LoadPartCommand => loadPartCommand ?? (loadPartCommand = new RelayCommand<string>(OnLoadPart));
 
     public IProjectInfo ProjectInfo => observableProjectInfo;
 
@@ -129,6 +132,14 @@
     {
       MainViewModel.NestMonitorViewModel.IsActive = true;
       MainViewModel.NestMonitorViewModel.TryStart(this);
+    }
+
+    private void OnLoadPart(string? path)
+    {
+      if (!string.IsNullOrWhiteSpace(path))
+      {
+        MainViewModel.LoadPart(path);
+      }
     }
 
     private async Task OnRemovePartAsync(IDetailLoadInfo? arg)

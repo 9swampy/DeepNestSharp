@@ -9,18 +9,30 @@
   using System.IO;
   using System.Linq;
   using System.Text;
+  using System.Threading.Tasks;
   using System.Xml.Linq;
 
   public abstract class ParserBase : IExport
   {
     public abstract string SaveFileDialogFilter { get; }
 
-    public void Export(string path, ISheetPlacement sheetPlacement)
+    public async Task Export(string path, ISheetPlacement sheetPlacement)
     {
-      this.Export(path, sheetPlacement.PartPlacements.Select(o => o.Part), new ISheet[] { sheetPlacement.Sheet });
+      await this.Export(path, sheetPlacement.PartPlacements.Select(
+        o =>
+        {
+          var result = new NFP(o.Part);
+          result.Sheet = sheetPlacement.Sheet;
+          result.X = o.X;
+          result.Y = o.Y;
+          return result;
+        }),
+        new ISheet[] {
+          sheetPlacement.Sheet,
+        }).ConfigureAwait(false);
     }
 
-    public abstract void Export(string path, IEnumerable<INfp> polygons, IEnumerable<ISheet> sheets);
+    public abstract Task Export(string path, IEnumerable<INfp> polygons, IEnumerable<ISheet> sheets);
   }
 
   public class SvgParser : ParserBase
@@ -110,80 +122,83 @@
       return s;
     }
 
-    public override void Export(string path, IEnumerable<INfp> polygons, IEnumerable<ISheet> sheets)
+    public override async Task Export(string path, IEnumerable<INfp> polygons, IEnumerable<ISheet> sheets)
     {
-      StringBuilder sb = new StringBuilder();
-      sb.AppendLine("	<svg version=\"1.1\" id=\"svg2\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"   xml:space=\"preserve\">");
-
-      foreach (var item in polygons.Union(sheets))
+      await Task.Run(() =>
       {
-        if (!sheets.Contains(item))
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine("	<svg version=\"1.1\" id=\"svg2\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"   xml:space=\"preserve\">");
+
+        foreach (var item in polygons.Union(sheets))
         {
-          if (!item.Fitted)
+          if (!sheets.Contains(item))
           {
-            continue;
-          }
-        }
-
-        var m = new Matrix();
-        m.Translate((float)item.X, (float)item.Y);
-        m.Rotate((float)item.Rotation);
-
-        PointF[] pp = item.Points.Select(z => new PointF((float)z.X, (float)z.Y)).ToArray();
-        m.TransformPoints(pp);
-        var points = pp.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
-
-        string fill = "lightblue";
-        if (sheets.Contains(item))
-        {
-          fill = "none";
-        }
-
-        sb.AppendLine($"<path fill=\"{fill}\"  stroke=\"black\" d=\"");
-        for (int i = 0; i < points.Count(); i++)
-        {
-          var p = points[i];
-          string coord = p.X.ToString().Replace(",", ".") + " " + p.Y.ToString().Replace(",", ".");
-          if (i == 0)
-          {
-            sb.Append("M" + coord + " ");
-            continue;
-          }
-
-          sb.Append("L" + coord + " ");
-        }
-
-        sb.Append("z ");
-        if (item.Children != null)
-        {
-          foreach (var citem in item.Children)
-          {
-            pp = citem.Points.Select(z => new PointF((float)z.X, (float)z.Y)).ToArray();
-            m.TransformPoints(pp);
-            points = pp.Select(z => new SvgPoint(z.X, z.Y)).Reverse().ToArray();
-
-            for (int i = 0; i < points.Count(); i++)
+            if (!item.Fitted)
             {
-              var p = points[i];
-              string coord = p.X.ToString().Replace(",", ".") + " " + p.Y.ToString().Replace(",", ".");
-              if (i == 0)
-              {
-                sb.Append("M" + coord + " ");
-                continue;
-              }
+              continue;
+            }
+          }
 
-              sb.Append("L" + coord + " ");
+          var m = new Matrix();
+          m.Translate((float)item.X, (float)item.Y);
+          m.Rotate((float)item.Rotation);
+
+          PointF[] pp = item.Points.Select(z => new PointF((float)z.X, (float)z.Y)).ToArray();
+          m.TransformPoints(pp);
+          var points = pp.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+
+          string fill = "lightblue";
+          if (sheets.Contains(item))
+          {
+            fill = "none";
+          }
+
+          sb.AppendLine($"<path fill=\"{fill}\"  stroke=\"black\" d=\"");
+          for (int i = 0; i < points.Count(); i++)
+          {
+            var p = points[i];
+            string coord = p.X.ToString().Replace(",", ".") + " " + p.Y.ToString().Replace(",", ".");
+            if (i == 0)
+            {
+              sb.Append("M" + coord + " ");
+              continue;
             }
 
-            sb.Append("z ");
+            sb.Append("L" + coord + " ");
           }
+
+          sb.Append("z ");
+          if (item.Children != null)
+          {
+            foreach (var citem in item.Children)
+            {
+              pp = citem.Points.Select(z => new PointF((float)z.X, (float)z.Y)).ToArray();
+              m.TransformPoints(pp);
+              points = pp.Select(z => new SvgPoint(z.X, z.Y)).Reverse().ToArray();
+
+              for (int i = 0; i < points.Count(); i++)
+              {
+                var p = points[i];
+                string coord = p.X.ToString().Replace(",", ".") + " " + p.Y.ToString().Replace(",", ".");
+                if (i == 0)
+                {
+                  sb.Append("M" + coord + " ");
+                  continue;
+                }
+
+                sb.Append("L" + coord + " ");
+              }
+
+              sb.Append("z ");
+            }
+          }
+
+          sb.Append("\"/>");
         }
 
-        sb.Append("\"/>");
-      }
-
-      sb.AppendLine("</svg>");
-      File.WriteAllText(path, sb.ToString());
+        sb.AppendLine("</svg>");
+        File.WriteAllText(path, sb.ToString());
+      }).ConfigureAwait(false);
     }
 
     public ISvgNestConfig Config { get; }

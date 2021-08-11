@@ -16,6 +16,7 @@
       <RowDefinition Height="Auto" />
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
+    <Button Grid.Row="0" HorizontalAlignment="Left" Content="Export" Command="{Binding ExportSheetPlacementCommand}" />
     <Button Grid.Row="0" HorizontalAlignment="Right" Content="Load All Exact" Command="{Binding LoadAllExactCommand}" />
     <ListView Grid.Row="1"
               ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=UserControl}}" 

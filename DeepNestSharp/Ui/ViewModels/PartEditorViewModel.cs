@@ -1,12 +1,15 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
+  using System;
   using DeepNestLib;
   using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Ui.Docking;
+  using Microsoft.Toolkit.Mvvm.Input;
 
   public class PartEditorViewModel : FileViewModel
   {
     private INfp? part;
+    private RelayCommand<string> rotateCommand;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PartEditorViewModel"/> class.
@@ -41,6 +44,17 @@
     }
 
     public override string FileDialogFilter => NFP.FileDialogFilter;
+
+    public IRelayCommand<string> RotateCommand => rotateCommand ?? (rotateCommand = new RelayCommand<string>(OnRotate));
+
+    private void OnRotate(string? degrees)
+    {
+      double castDegrees;
+      if (degrees != null && double.TryParse(degrees, out castDegrees))
+      {
+        this.Part = new ObservableNfp(this.Part?.Rotate(castDegrees));
+      }
+    }
 
     public override string TextContent => this.Part?.ToJson() ?? string.Empty;
 

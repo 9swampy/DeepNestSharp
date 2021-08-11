@@ -4,8 +4,8 @@
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                         xmlns:local="clr-namespace:DeepNestSharp.Ui.UserControls"
-                        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-                        mc:Ignorable="d" 
+                        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:interactivity="http://schemas.microsoft.com/expression/2010/interactivity"
+             mc:Ignorable="d" 
                         d:DesignHeight="450" d:DesignWidth="800">
   <Grid>
     <Grid.RowDefinitions>
@@ -22,7 +22,10 @@
         <xctk:IntegerUpDown Value="{Binding ProjectInfo.Config.Multiplier}" HorizontalAlignment="Right" />
       </DockPanel>
     </StackPanel>
-    <ListView Grid.Row="1" ItemsSource="{Binding Path=ProjectInfo.DetailLoadInfos}" SelectedItem="{Binding SelectedDetailLoadInfo}" SelectedIndex="{Binding SelectedDetailLoadInfoIndex, Mode=TwoWay}">
+    <ListView Grid.Row="1" 
+              ItemsSource="{Binding Path=ProjectInfo.DetailLoadInfos}" 
+              SelectedItem="{Binding SelectedDetailLoadInfo}" 
+              SelectedIndex="{Binding SelectedDetailLoadInfoIndex, Mode=TwoWay}">
       <ListView.Resources>
         <DataTemplate x:Key="EditableDouble">
           <DockPanel >
@@ -33,6 +36,11 @@
           <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         </Style>
       </ListView.Resources>
+      <interactivity:Interaction.Triggers>
+        <interactivity:EventTrigger EventName="MouseDoubleClick">
+          <interactivity:InvokeCommandAction Command="{Binding LoadPartCommand}" CommandParameter="{Binding Path=SelectedDetailLoadInfo.Path}"/>
+        </interactivity:EventTrigger>
+      </interactivity:Interaction.Triggers>
       <ListView.View>
         <GridView>
           <GridViewColumn Header="Name" Width="auto" DisplayMemberBinding="{Binding Path=Name, Mode=OneWay}" />

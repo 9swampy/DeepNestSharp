@@ -5,6 +5,7 @@
   using System.Collections.ObjectModel;
   using System.IO;
   using System.Linq;
+  using System.Threading.Tasks;
   using System.Windows;
   using System.Windows.Input;
   using AvalonDock;
@@ -276,7 +277,7 @@
       files.Remove(fileToClose);
     }
 
-    internal void ExportSheetPlacement(ISheetPlacement? sheetPlacement)
+    internal async Task ExportSheetPlacement(ISheetPlacement? sheetPlacement)
     {
       if (sheetPlacement == null)
       {
@@ -294,7 +295,7 @@
         var filePath = fileIoService.GetSaveFilePath(exporter.SaveFileDialogFilter);
         if (!string.IsNullOrWhiteSpace(filePath))
         {
-          exporter.Export(filePath, sheetPlacement);
+          await exporter.Export(filePath, sheetPlacement);
         }
       }
     }

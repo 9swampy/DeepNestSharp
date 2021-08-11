@@ -54,7 +54,10 @@
     /// <inheritdoc />
     public bool Fitted
     {
-      get { return this.Sheet != null; }
+      get
+      {
+        return this.Sheet != null;
+      }
     }
 
     /// <inheritdoc />
@@ -372,7 +375,7 @@
     }
 
     /// <inheritdoc/>
-    public NFP Rotate(double degrees)
+    public INfp Rotate(double degrees)
     {
       var angle = degrees * Math.PI / 180;
       List<SvgPoint> pp = new List<SvgPoint>();
@@ -398,7 +401,7 @@
       {
         for (var j = 0; j < this.Children.Count; j++)
         {
-          rotated.Children.Add(this.Children[j].Rotate(degrees));
+          rotated.Children[j] = this.Children[j].Rotate(degrees);
         }
       }
 

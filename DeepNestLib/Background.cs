@@ -212,7 +212,7 @@
       double totalMerged = 0;
 
       // rotate paths by given rotation
-      var rotated = new List<NFP>();
+      var rotated = new List<INfp>();
       for (int i = 0; i < parts.Length; i++)
       {
         var r = parts[i].Rotate(parts[i].Rotation);
@@ -280,7 +280,7 @@
           double? minwidth = null;
           double? minarea = null;
 
-          NFP part = processingParts[i];
+          var part = processingParts[i];
           VerboseLog($"Process {i}:{part.ToShortString()}.");
 
           // inner NFP
@@ -398,7 +398,7 @@
 
             // console.log('save cache', placed.length - 1);
 
-            List<NFP> finalNfp;
+            List<INfp> finalNfp;
             InnerFlowResult clipperForDifferenceResult = TryGetDifferenceWithSheetPolygon(config, combinedNfp, part, clipperSheetNfp, out finalNfp);
             if (clipperForDifferenceResult == InnerFlowResult.Break)
             {
@@ -436,7 +436,7 @@
             minarea = null;
             double? minx = null;
             double? miny = null;
-            NFP nf;
+            INfp nf;
             double area;
             PartPlacement shiftvector = null;
 
@@ -645,9 +645,9 @@
       return new NestResult(allPlacements, unplacedParts, totalMerged, config.PlacementType, sw.ElapsedMilliseconds);
     }
 
-    private static InnerFlowResult TryGetDifferenceWithSheetPolygon(ISvgNestConfig config, List<List<IntPoint>> combinedNfp, NFP part, IntPoint[][] clipperSheetNfp, out List<NFP> differenceWithSheetPolygonNfp)
+    private static InnerFlowResult TryGetDifferenceWithSheetPolygon(ISvgNestConfig config, List<List<IntPoint>> combinedNfp, INfp part, IntPoint[][] clipperSheetNfp, out List<INfp> differenceWithSheetPolygonNfp)
     {
-      differenceWithSheetPolygonNfp = new List<NFP>();
+      differenceWithSheetPolygonNfp = new List<INfp>();
 
       List<List<IntPoint>> differenceWithSheetPolygonNfpPoints = new List<List<IntPoint>>();
       var clipperForDifference = new Clipper();
@@ -701,7 +701,7 @@
     /// <param name="startIndex"></param>
     /// <param name="combinedNfp"></param>
     /// <returns></returns>
-    private bool TryGetCombinedNfp(double clipperScale, List<INfp> placed, List<IPartPlacement> placements, NFP part, Clipper clipper, int startIndex, out List<List<IntPoint>> combinedNfp)
+    private bool TryGetCombinedNfp(double clipperScale, List<INfp> placed, List<IPartPlacement> placements, INfp part, Clipper clipper, int startIndex, out List<List<IntPoint>> combinedNfp)
     {
       combinedNfp = new List<List<IntPoint>>();
 
@@ -1101,7 +1101,7 @@
       var a = this.GetPart(processed.Asource, parts);
       var b = this.GetPart(processed.Bsource, parts);
 
-      List<NFP> aChildren = new List<NFP>();
+      var aChildren = new List<INfp>();
 
       if (a.Children != null)
       {
@@ -1115,7 +1115,7 @@
       {
         var bRotated = b.Rotate(processed.BRotation);
         var bBounds = GeometryUtil.getPolygonBounds(bRotated);
-        List<INfp> cnfp = new List<INfp>();
+        var cnfp = new List<INfp>();
 
         for (int j = 0; j < aChildren.Count; j++)
         {

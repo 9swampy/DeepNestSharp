@@ -188,6 +188,7 @@
     <Compile Include="GetInnerPolygonFixture.cs" />
     <Compile Include="NfpCtorCloneFixture.cs" />
     <Compile Include="NfpFixture.cs" />
+    <Compile Include="NfpRotateFixture.cs" />
     <Compile Include="PerfectFitnessFixture.cs" />
     <Compile Include="OuterFitPolygonFixture.cs" />
     <Compile Include="Placement\NfpJsonFixture.cs" />
@@ -241,6 +242,12 @@
     <EmbeddedResource Include="GeneticAlgorithm\SheetPlacementScenario3-MidSqueezeAllDxfSamples.json" />
     <EmbeddedResource Include="GeneticAlgorithm\SheetPlacementScenario3-WorstBoundingBoxAllDxfSamples.json" />
     <EmbeddedResource Include="GeneticAlgorithm\SheetPlacementScenario3-WorstSqueezeAllDxfSamples.json" />
+    <EmbeddedResource Include="Dxfs\_10.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dxfs\_5.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <Content Include="SquareInSquare.dxf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

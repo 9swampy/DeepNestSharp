@@ -20,7 +20,9 @@
     private IPartPlacement? selectedItem;
     private ObservableSheetPlacement? observableSheetPlacement;
     private RelayCommand? loadPartFileCommand = null;
-    private AsyncRelayCommand? loadAllExactCommand = null;
+    private AsyncRelayCommand? loadAllExactCommand;
+    private AsyncRelayCommand? exportSheetPlacementCommand;
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SheetPlacementViewModel"/> class.
@@ -60,35 +62,13 @@
     {
     }
 
+    public ICommand ExportSheetPlacementCommand => exportSheetPlacementCommand ?? (exportSheetPlacementCommand = new AsyncRelayCommand(OnExportSheetPlacement));
+
     public override string FileDialogFilter => DeepNestLib.Placement.SheetPlacement.FileDialogFilter;
 
-    public ICommand LoadAllExactCommand
-    {
-      get
-      {
-        if (loadAllExactCommand == null)
-        {
-          loadAllExactCommand = new AsyncRelayCommand(OnLoadAllExact, () => this.SheetPlacement.PartPlacements.Any(p => !p.Part.IsExact));
-          this.IsDirty = false;
-        }
+    public ICommand LoadAllExactCommand => loadAllExactCommand ?? (loadAllExactCommand = new AsyncRelayCommand(OnLoadAllExact, () => this.SheetPlacement.PartPlacements.Any(p => !p.Part.IsExact)));
 
-        return loadAllExactCommand;
-      }
-    }
-
-    public ICommand LoadPartFileCommand
-    {
-      get
-      {
-        if (loadPartFileCommand == null)
-        {
-          loadPartFileCommand = new RelayCommand(OnLoadPartFile, () => new FileInfo(this.SelectedItem.Part.Name).Exists);
-          this.IsDirty = false;
-        }
-
-        return loadPartFileCommand;
-      }
-    }
+    public ICommand LoadPartFileCommand => loadPartFileCommand ?? (loadPartFileCommand = new RelayCommand(OnLoadPartFile, () => new FileInfo(this.SelectedItem.Part.Name).Exists));
 
     public ISheetPlacement SheetPlacement => observableSheetPlacement;
 
@@ -147,6 +127,11 @@
       OnPropertyChanged(nameof(IsDirty));
     }
 
+    private async Task OnExportSheetPlacement()
+    {
+      await MainViewModel.ExportSheetPlacement(this.SheetPlacement);
+    }
+
     private async Task OnLoadAllExact()
     {
       Mouse.OverrideCursor = Cursors.Wait;
@@ -156,6 +141,7 @@
         await pp.LoadExactCommand.ExecuteAsync(null);
       }
 
+      this.IsDirty = false;
       NotifyContentUpdated();
       loadAllExactCommand?.NotifyCanExecuteChanged();
       Mouse.OverrideCursor = null;

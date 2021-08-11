@@ -19,9 +19,7 @@
   {
     private const double Gap = 10;
     private readonly MainViewModel mainViewModel;
-    private SheetPlacementViewModel? lastSheetPlacementViewModel;
-    private NestResultViewModel? lastNestResultViewModel;
-    private NestProjectViewModel? lastNestProjectViewModel;
+    private FileViewModel? lastActiveViewModel;
     private IPartPlacement? hoverPartPlacement;
     private Point mousePosition;
     private Point dragOffset;
@@ -301,27 +299,18 @@
       // System.Diagnostics.Debug.Print("Force RaiseDrawingContext");
       OnPropertyChanged(nameof(DrawingContext));
       OnPropertyChanged(nameof(ZoomDrawingContext));
-      lastSheetPlacementViewModel?.RaiseDrawingContext();
+      if (lastActiveViewModel is SheetPlacementViewModel sheetPlacementViewModel)
+      {
+        sheetPlacementViewModel?.RaiseDrawingContext();
+      }
     }
 
     private void InitialiseDrawingContext(object? sender)
     {
-      if (lastSheetPlacementViewModel != null)
+      if (lastActiveViewModel != null)
       {
-        lastSheetPlacementViewModel.PropertyChanged -= this.ActiveViewModel_PropertyChanged;
-        lastSheetPlacementViewModel = null;
-      }
-
-      if (lastNestResultViewModel != null)
-      {
-        lastNestResultViewModel.PropertyChanged -= this.ActiveViewModel_PropertyChanged;
-        lastNestResultViewModel = null;
-      }
-
-      if (lastNestProjectViewModel != null)
-      {
-        lastNestProjectViewModel.PropertyChanged -= this.ActiveViewModel_PropertyChanged;
-        lastNestProjectViewModel = null;
+        lastActiveViewModel.PropertyChanged -= this.ActiveViewModel_PropertyChanged;
+        lastActiveViewModel = null;
       }
 
       if (sender is MainViewModel mainViewModel)
@@ -331,14 +320,12 @@
         if (mainViewModel.ActiveDocument is SheetPlacementViewModel sheetPlacementViewModel &&
             sheetPlacementViewModel.SheetPlacement is ObservableSheetPlacement sheetPlacement)
         {
-          lastSheetPlacementViewModel = sheetPlacementViewModel;
-          lastSheetPlacementViewModel.PropertyChanged += this.ActiveViewModel_PropertyChanged;
+          lastActiveViewModel = sheetPlacementViewModel;
           Set(sheetPlacement);
         }
         else if (mainViewModel.ActiveDocument is NestProjectViewModel nestProjectViewModel)
         {
-          lastNestProjectViewModel = nestProjectViewModel;
-          nestProjectViewModel.PropertyChanged += ActiveViewModel_PropertyChanged;
+          lastActiveViewModel = nestProjectViewModel;
           if (nestProjectViewModel.SelectedDetailLoadInfo is ObservableDetailLoadInfo detailLoadInfo)
           {
             Set(detailLoadInfo);
@@ -346,6 +333,7 @@
         }
         else if (mainViewModel.ActiveDocument is PartEditorViewModel partViewModel)
         {
+          lastActiveViewModel = partViewModel;
           if (partViewModel.Part is ObservableNfp nfp)
           {
             Set(nfp);
@@ -353,12 +341,16 @@
         }
         else if (mainViewModel.ActiveDocument is NestResultViewModel nestResultViewModel)
         {
-          lastNestResultViewModel = nestResultViewModel;
-          lastNestResultViewModel.PropertyChanged += this.ActiveViewModel_PropertyChanged;
+          lastActiveViewModel = nestResultViewModel;
           if (nestResultViewModel.SelectedItem is ObservableSheetPlacement nestResultSheetPlacement)
           {
             Set(nestResultSheetPlacement);
           }
+        }
+
+        if (lastActiveViewModel != null)
+        {
+          lastActiveViewModel.PropertyChanged += this.ActiveViewModel_PropertyChanged;
         }
       }
     }
@@ -415,6 +407,12 @@
                  nestProjectViewModel.SelectedDetailLoadInfo is ObservableDetailLoadInfo detailLoadInfo)
         {
           Set(detailLoadInfo);
+        }
+        else if (sender is PartEditorViewModel partViewModel &&
+                 e.PropertyName == nameof(PartEditorViewModel.Part) &&
+                 partViewModel.Part is ObservableNfp nfp)
+        {
+          Set(nfp);
         }
       }
     }

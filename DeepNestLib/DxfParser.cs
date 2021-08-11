@@ -245,7 +245,7 @@
       return ret.ToArray();
     }
 
-    public override void Export(string path, IEnumerable<INfp> polygons, IEnumerable<ISheet> sheets)
+    public async override Task Export(string path, IEnumerable<INfp> polygons, IEnumerable<ISheet> sheets)
     {
       Dictionary<DxfFile, int> dxfexports = new Dictionary<DxfFile, int>();
       var sheetList = sheets.ToList();
@@ -266,7 +266,17 @@
         {
           sheetcount += 1;
           FileInfo fi = new FileInfo(path);
-          dxf.Save($"{fi.FullName.Substring(0, fi.FullName.Length - 4)}{id}.dxf", true);
+          await Task.Run(() =>
+          {
+            if (dxfexports.Count() == 1)
+            {
+              dxf.Save(fi.FullName, true);
+            }
+            else
+            {
+              dxf.Save($"{fi.FullName.Substring(0, fi.FullName.Length - 4)}{id}.dxf", true);
+            }
+          }).ConfigureAwait(false);
         }
       }
     }

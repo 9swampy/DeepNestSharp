@@ -107,7 +107,7 @@
     /// </summary>
     /// <param name="degrees">The amount to rotate, +ve clockwise, -ve anti-clockwise.</param>
     /// <returns>A clone of the original, rotated.</returns>
-    NFP Rotate(double degrees);
+    INfp Rotate(double degrees);
 
     INfp Slice(int v);
 

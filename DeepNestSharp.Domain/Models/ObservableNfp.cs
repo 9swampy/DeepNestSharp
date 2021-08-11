@@ -205,7 +205,7 @@
     }
 
     /// <inheritdoc/>
-    public NFP Rotate(double degrees)
+    public INfp Rotate(double degrees)
     {
       return this.item.Rotate(degrees);
     }
