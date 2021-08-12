@@ -162,6 +162,7 @@
     <Compile Include="INestingContextState.cs" />
     <Compile Include="INestState.cs" />
     <Compile Include="InnerFlowResult.cs" />
+    <Compile Include="IO\ProgressDisplayerBase.cs" />
     <Compile Include="IPointXY.cs" />
     <Compile Include="ISheet.cs" />
     <Compile Include="MessageBoxIcon.cs" />

@@ -52,7 +52,7 @@
       double castDegrees;
       if (degrees != null && double.TryParse(degrees, out castDegrees))
       {
-        this.Part = new ObservableNfp(this.Part?.Rotate(castDegrees));
+        this.Part = new ObservableNfp(this.Part?.Rotate(castDegrees).ShiftToOrigin());
       }
     }
 
@@ -61,7 +61,7 @@
     protected override void LoadContent()
     {
       var part = DxfParser.LoadDxfFile(this.FilePath).Result.ToNfp();
-      this.Part = new ObservableNfp(Background.ShiftPolygon(part, -part?.MinX ?? 0, -part?.MinY ?? 0));
+      this.Part = new ObservableNfp(part.Shift(-part?.MinX ?? 0, -part?.MinY ?? 0));
     }
 
     protected override void NotifyContentUpdated()

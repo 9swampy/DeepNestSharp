@@ -15,6 +15,7 @@
     public ObservableSvgNestConfig(ISvgNestConfig svgNestConfig) => this.svgNestConfig = svgNestConfig;
 
     /// <inheritdoc />
+    [Category("Nest Settings")]
     public double ClipperScale
     {
       get => svgNestConfig.ClipperScale;
@@ -34,6 +35,7 @@
     }
 
     /// <inheritdoc />
+    [Category("Simplifications")]
     public double CurveTolerance
     {
       get => svgNestConfig.CurveTolerance;
@@ -41,6 +43,7 @@
     }
 
     /// <inheritdoc />
+    [Category("Simplifications")]
     public bool DrawSimplification
     {
       get => svgNestConfig.DrawSimplification;
@@ -48,6 +51,7 @@
     }
 
     /// <inheritdoc />
+    [Category("Simplifications")]
     public bool ExploreConcave
     {
       get => svgNestConfig.ExploreConcave;
@@ -55,9 +59,11 @@
     }
 
     /// <inheritdoc />
+    [Browsable(false)]
     public override bool IsDirty => true;
 
     /// <inheritdoc />
+    [Category("Unimplemented")]
     public bool MergeLines
     {
       get => svgNestConfig.MergeLines;
@@ -65,6 +71,7 @@
     }
 
     /// <inheritdoc />
+    [Category("Genetic Algorithm")]
     public int MutationRate
     {
       get => svgNestConfig.MutationRate;
@@ -72,6 +79,7 @@
     }
 
     /// <inheritdoc />
+    [Category("Nest Settings")]
     public bool OffsetTreePhase
     {
       get => svgNestConfig.OffsetTreePhase;
@@ -79,6 +87,7 @@
     }
 
     /// <inheritdoc />
+    [Category("Nest Settings")]
     public PlacementTypeEnum PlacementType
     {
       get => svgNestConfig.PlacementType;
@@ -86,6 +95,7 @@
     }
 
     /// <inheritdoc />
+    [Category("Genetic Algorithm")]
     public int PopulationSize
     {
       get => svgNestConfig.PopulationSize;
@@ -93,6 +103,7 @@
     }
 
     /// <inheritdoc />
+    [Category("Nest Settings")]
     public int Rotations
     {
       get => svgNestConfig.Rotations;
@@ -100,6 +111,7 @@
     }
 
     /// <inheritdoc />
+    [Browsable(false)]
     public int SaveAsFileTypeIndex
     {
       get => svgNestConfig.SaveAsFileTypeIndex;
@@ -107,6 +119,7 @@
     }
 
     /// <inheritdoc />
+    [Category("Unimplemented")]
     public double Scale
     {
       get => svgNestConfig.Scale;
@@ -114,6 +127,7 @@
     }
 
     /// <inheritdoc />
+    [Category("Sheet Defaults")]
     public int SheetHeight
     {
       get => svgNestConfig.SheetHeight;
@@ -121,6 +135,7 @@
     }
 
     /// <inheritdoc />
+    [Category("Sheet Defaults")]
     public int SheetQuantity
     {
       get => svgNestConfig.SheetQuantity;
@@ -128,6 +143,7 @@
     }
 
     /// <inheritdoc />
+    [Category("File Settings")]
     public double SheetSpacing
     {
       get => svgNestConfig.SheetSpacing;
@@ -135,6 +151,7 @@
     }
 
     /// <inheritdoc />
+    [Category("Sheet Defaults")]
     public int SheetWidth
     {
       get => svgNestConfig.SheetWidth;
@@ -142,6 +159,7 @@
     }
 
     /// <inheritdoc />
+    [Category("Simplifications")]
     public bool Simplify
     {
       get => svgNestConfig.Simplify;
@@ -149,6 +167,7 @@
     }
 
     /// <inheritdoc />
+    [Category("Nest Settings")]
     public double Spacing
     {
       get => svgNestConfig.Spacing;
@@ -156,6 +175,7 @@
     }
 
     /// <inheritdoc />
+    [Category("Unimplemented")]
     public double TimeRatio
     {
       get => svgNestConfig.TimeRatio;
@@ -163,6 +183,7 @@
     }
 
     /// <inheritdoc />
+    [Category("Unimplemented")]
     public double Tolerance
     {
       get => svgNestConfig.Tolerance;
@@ -170,6 +191,7 @@
     }
 
     /// <inheritdoc />
+    [Category("File Settings")]
     public double ToleranceSvg
     {
       get => svgNestConfig.ToleranceSvg;
@@ -177,6 +199,7 @@
     }
 
     /// <inheritdoc />
+    [Category("Unimplemented")]
     public bool UseHoles
     {
       get => svgNestConfig.UseHoles;
@@ -184,6 +207,7 @@
     }
 
     /// <inheritdoc />
+    [Category("Experimental")]
     public bool UseParallel
     {
       get => svgNestConfig.UseParallel;
@@ -191,6 +215,7 @@
     }
 
     /// <inheritdoc />
+    [Category("Experimental")]
     public AnglesEnum StrictAngles
     {
       get => svgNestConfig.StrictAngles;
@@ -198,6 +223,7 @@
     }
 
     /// <inheritdoc />
+    [Category("Nest Settings")]
     public int Multiplier
     {
       get => svgNestConfig.Multiplier;
@@ -205,6 +231,7 @@
     }
 
     /// <inheritdoc />
+    [Category("Experimental")]
     public int ParallelNests
     {
       get => svgNestConfig.ParallelNests;
@@ -212,10 +239,16 @@
     }
 
     /// <inheritdoc />
+    [Category("Unimplemented")]
     public bool ShowPartPositions
     {
       get => svgNestConfig.ShowPartPositions;
       set => SetProperty(nameof(ShowPartPositions), () => svgNestConfig.ShowPartPositions, v => svgNestConfig.ShowPartPositions = v, value);
+    }
+
+    public string ToJson()
+    {
+      return svgNestConfig.ToJson();
     }
   }
 }

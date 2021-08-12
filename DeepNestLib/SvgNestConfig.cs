@@ -1,6 +1,7 @@
 ﻿namespace DeepNestLib
 {
   using DeepNestLib.NestProject;
+using System.Text.Json;
 
   public class SvgNestConfig : ISvgNestConfig
   {
@@ -24,6 +25,16 @@
 
     /// <inheritdoc/>
     public int Rotations { get; set; } = 4;
+
+    public string ToJson()
+    {
+      return SvgNestConfigJsonConverter.ToJson(this);
+    }
+
+    internal static ISvgNestConfig FromJson(string json)
+    {
+      return SvgNestConfigJsonConverter.FromJson(json);
+    }
 
     /// <inheritdoc/>
     public double SheetSpacing { get; set; } = 0;

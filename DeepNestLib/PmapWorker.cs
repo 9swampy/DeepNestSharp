@@ -35,7 +35,8 @@
 
     public NfpPair[] PmapDeepNest()
     {
-      NfpPair[] ret = new NfpPair[pairs.Count()];
+      progressDisplayer.InitialiseLoopProgress("PmapDeepNest", pairs.Count);
+      NfpPair[] ret = new NfpPair[pairs.Count];
       if (this.useParallel)
       {
         Parallel.For(0, pairs.Count, (i) =>
@@ -65,7 +66,6 @@
       {
         if (!NfpPairCache.TryGetValue(a.Points, b.Points, pair.ARotation, pair.BRotation, pair.Asource, pair.Bsource, MinkowskiSumPick.Largest, out clipperNfp))
         {
-          DisplayProgress();
           clipperNfp = minkoskiSumService.ClipperExecute(a.Points, b.Points, MinkowskiSumPick.Largest);
           NfpPairCache.Add(a.Points, b.Points, pair.ARotation, pair.BRotation, pair.Asource, pair.Bsource, MinkowskiSumPick.Largest, clipperNfp);
         }
@@ -74,6 +74,7 @@
       pair.A = null;
       pair.B = null;
       pair.nfp = clipperNfp;
+      DisplayProgress();
       return pair;
     }
   }

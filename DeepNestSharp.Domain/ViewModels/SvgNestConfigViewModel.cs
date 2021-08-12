@@ -3,7 +3,8 @@
   using DeepNestLib;
   using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Ui.Docking;
-  
+  using System;
+
   public class SvgNestConfigViewModel : ToolViewModel
   {
     /// <summary>
@@ -15,6 +16,13 @@
       this.SvgNestConfig = new ObservableSvgNestConfig(config);
     }
 
+    public event EventHandler NotifyUpdatePropertyGrid;
+
     public ISvgNestConfig SvgNestConfig { get; }
+
+    public void RaiseNotifyUpdatePropertyGrid()
+    {
+      NotifyUpdatePropertyGrid?.Invoke(this, EventArgs.Empty);
+    }
   }
 }

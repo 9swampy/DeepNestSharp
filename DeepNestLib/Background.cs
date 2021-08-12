@@ -528,12 +528,12 @@
                   throw new NotImplementedException();
 
                   // if lines can be merged, subtract savings from area calculation
-                  var shiftedpart = ShiftPolygon(part, shiftvector);
+                  var shiftedpart = part.Shift(shiftvector);
                   List<INfp> shiftedplaced = new List<INfp>();
 
                   for (int m = 0; m < placed.Count; m++)
                   {
-                    shiftedplaced.Add(ShiftPolygon(placed[m], placements[m]));
+                    shiftedplaced.Add(placed[m].Shift(placements[m]));
                   }
 
                   // don't check small lines, cut off at about 1/2 in
@@ -783,36 +783,6 @@
 #if NCRUNCH
       Trace.WriteLine(message);
 #endif
-    }
-
-    public static INfp ShiftPolygon(INfp p, IPartPlacement shift)
-    {
-      return ShiftPolygon(p, shift.X, shift.Y);
-    }
-
-    public static INfp ShiftPolygon(INfp p, double x, double y)
-    {
-      NFP shifted = new NFP();
-      shifted.Id = p.Id;
-      shifted.Name = p.Name;
-      shifted.PlacementOrder = p.PlacementOrder;
-      shifted.Rotation = p.Rotation;
-      shifted.Source = p.Source;
-      shifted.StrictAngle = p.StrictAngle;
-      for (var i = 0; i < p.Length; i++)
-      {
-        shifted.AddPoint(new SvgPoint(p[i].X + x, p[i].Y + y) { Exact = p[i].Exact });
-      }
-
-      if (p.Children != null /*&& p.Children.Count*/)
-      {
-        for (int i = 0; i < p.Children.Count(); i++)
-        {
-          shifted.Children.Add(ShiftPolygon(p.Children[i], x, y));
-        }
-      }
-
-      return shifted;
     }
 
     // returns the square of the length of any merged lines

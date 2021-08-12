@@ -10,13 +10,16 @@
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
+      <RowDefinition Height="3*"/>
+      <RowDefinition Height="Auto"/>
       <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
     <StackPanel Grid.Row="0" Orientation="Horizontal" >
-      <Button Content="Execute" Command="{Binding ExecuteNestCommand}" />
-      <Button Content="Add Part" Command="{Binding AddPartCommand}" />
+      <Button Content="Execute" Command="{Binding ExecuteNestCommand}" Margin="5,5,5,5" />
+      <Button Content="Add Sheet" Command="{Binding AddSheetCommand}" Margin="5,5,5,5" />
+      <Button Content="Add Part" Command="{Binding AddPartCommand}" Margin="5,5,5,5" />
       <DockPanel Width="300">
-        <TextBlock HorizontalAlignment="Right">Multiplier</TextBlock>
+        <TextBlock HorizontalAlignment="Right" Margin="5,7,0,5">Multiplier</TextBlock>
       </DockPanel>
       <DockPanel Width="50">
         <xctk:IntegerUpDown Value="{Binding ProjectInfo.Config.Multiplier}" HorizontalAlignment="Right" />
@@ -96,6 +99,64 @@
                 <DockPanel HorizontalAlignment="Center">
                   <Button Content="Remove" 
                           Command="{Binding DataContext.RemovePartCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                          CommandParameter="{Binding }" />
+                </DockPanel>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+        </GridView>
+      </ListView.View>
+    </ListView>
+    <GridSplitter Grid.Row="2" Height="5" HorizontalAlignment="Stretch" />
+    <ListView Grid.Row="3" 
+              ItemsSource="{Binding Path=ProjectInfo.SheetLoadInfos}" 
+              SelectedItem="{Binding SelectedSheetLoadInfo}" 
+              SelectedIndex="{Binding SelectedSheetLoadInfoIndex, Mode=TwoWay}">
+      <ListView.Resources>
+        <DataTemplate x:Key="EditableDouble">
+          <DockPanel >
+            <TextBox HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Text="{Binding Path=X, Mode=OneWay, StringFormat={}{0:0.0000}}"/>
+          </DockPanel>
+        </DataTemplate>
+        <Style TargetType="ListViewItem">
+          <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
+      </ListView.Resources>
+      <ListView.View>
+        <GridView>
+          <GridViewColumn Header="Width" Width="100" >
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <DockPanel HorizontalAlignment="Center">
+                  <xctk:IntegerUpDown HorizontalAlignment="Stretch" MinWidth="50" Minimum="0" HorizontalContentAlignment="Right" Value="{Binding Path=Width, Mode=TwoWay}"/>
+                </DockPanel>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Header="Height" Width="100" >
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <DockPanel HorizontalAlignment="Center">
+                  <xctk:IntegerUpDown HorizontalAlignment="Stretch" MinWidth="50" Minimum="0" HorizontalContentAlignment="Right" Value="{Binding Path=Height, Mode=TwoWay}"/>
+                </DockPanel>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Header="Quantity" Width="100" >
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <DockPanel HorizontalAlignment="Center">
+                  <xctk:IntegerUpDown HorizontalAlignment="Stretch" MinWidth="50" Minimum="0" HorizontalContentAlignment="Right" Value="{Binding Path=Quantity, Mode=TwoWay}"/>
+                </DockPanel>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Header="Remove" Width="auto">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <DockPanel HorizontalAlignment="Center">
+                  <Button Content="Remove" 
+                          Command="{Binding DataContext.RemoveSheetCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                           CommandParameter="{Binding }" />
                 </DockPanel>
               </DataTemplate>

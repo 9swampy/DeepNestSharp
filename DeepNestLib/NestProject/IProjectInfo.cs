@@ -8,7 +8,7 @@
 
     IList<ISheetLoadInfo, SheetLoadInfo> SheetLoadInfos { get; }
 
-    void Load(string filePath);
+    void Load(ISvgNestConfig config, string filePath);
 
     void Load(ProjectInfo source);
 

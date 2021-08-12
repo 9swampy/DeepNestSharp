@@ -329,5 +329,10 @@
         Properties.Settings.Default.Upgrade();
       }
     }
+
+    public string ToJson()
+    {
+      return SvgNestConfigJsonConverter.ToJson(this);
+    }
   }
 }

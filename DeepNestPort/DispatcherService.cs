@@ -1,10 +1,9 @@
 ﻿namespace DeepNestPort
 {
-  using DeepNestLib;
   using System;
-  using System.Reflection;
-  using System.Windows.Forms;
+  using System.Threading.Tasks;
   using System.Windows.Threading;
+  using DeepNestLib;
 
   public class DispatcherService : IDispatcherService
   {
@@ -15,6 +14,11 @@
     public void Invoke(Action callback)
     {
       dispatcher.Invoke(callback);
+    }
+
+    public async Task InvokeAsync(Action callback)
+    {
+      await dispatcher.InvokeAsync(callback).Task.ConfigureAwait(false);
     }
   }
 }

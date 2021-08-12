@@ -1,6 +1,7 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
   using System;
+  using System.Threading.Tasks;
   using DeepNestLib;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain.Models;
@@ -15,7 +16,7 @@ using Microsoft.Win32;
     private int selectedIndex;
     private ObservableSheetPlacement selectedItem;
     private RelayCommand<ISheetPlacement> loadSheetPlacementCommand;
-    private RelayCommand<ISheetPlacement> exportSheetPlacementCommand;
+    private AsyncRelayCommand<ISheetPlacement> exportSheetPlacementCommand;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NestResultViewModel"/> class.
@@ -49,7 +50,7 @@ using Microsoft.Win32;
       }
     }
 
-    public IRelayCommand<ISheetPlacement> ExportSheetPlacementCommand => exportSheetPlacementCommand ?? (exportSheetPlacementCommand = new RelayCommand<ISheetPlacement>(OnExportSheetPlacement));
+    public IRelayCommand<ISheetPlacement> ExportSheetPlacementCommand => exportSheetPlacementCommand ?? (exportSheetPlacementCommand = new AsyncRelayCommand<ISheetPlacement>(OnExportSheetPlacementAsync));
 
     public override string FileDialogFilter => DeepNestLib.Placement.NestResult.FileDialogFilter;
 
@@ -105,9 +106,9 @@ using Microsoft.Win32;
       // Don't do anything, DeepNestSharp only consumes and can be used to inspect Part files.
     }
 
-    private void OnExportSheetPlacement(ISheetPlacement? sheetPlacement)
+    private async Task OnExportSheetPlacementAsync(ISheetPlacement? sheetPlacement)
     {
-      MainViewModel.ExportSheetPlacement(sheetPlacement);
+      await MainViewModel.ExportSheetPlacementAsync(sheetPlacement).ConfigureAwait(false);
     }
 
     private void OnLoadSheetPlacement(ISheetPlacement? sheetPlacement)

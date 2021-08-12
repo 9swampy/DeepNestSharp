@@ -2,6 +2,7 @@
 {
   using System.Collections.Generic;
   using DeepNestLib.NestProject;
+using DeepNestLib.Placement;
 
   public interface IPolygon
   {
@@ -82,8 +83,12 @@
     /// </summary>
     /// <returns>A clone.</returns>
     INfp CloneTop();
-
+    INfp ShiftToOrigin();
     NFP GetHull();
+
+    INfp Shift(IPartPlacement shift);
+
+    INfp Shift(double x, double y);
 
     /// <summary>
     /// Replace the points of the current part with those passed in.

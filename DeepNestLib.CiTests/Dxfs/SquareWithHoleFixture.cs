@@ -15,7 +15,7 @@
       var generator = new DxfGenerator();
       var nfp = generator.GenerateSquare("outer", 20, RectangleType.TopRightAntiClockwise, true).ToNfp();
       var hole = generator.GenerateSquare("hole", 10, RectangleType.BottomLeftClockwise).ToNfp();
-      hole = Background.ShiftPolygon(hole, 5, 5);
+      hole = hole.Shift(5, 5);
       hole.Name = "hole";
       hole.X = 0;
       hole.Y = 0;

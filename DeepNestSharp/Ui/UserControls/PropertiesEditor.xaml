@@ -8,6 +8,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
   <ScrollViewer>
     <xctk:PropertyGrid 
+      Name="propertyGrid"
       HorizontalAlignment="Stretch" 
       VerticalAlignment="Stretch"
       SelectedObject="{Binding SelectedObject}"

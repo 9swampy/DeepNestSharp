@@ -28,9 +28,9 @@
     private RelayCommand loadLayoutCommand;
     private RelayCommand saveLayoutCommand;
     private RelayCommand exitCommand;
-    private RelayCommand loadNestProjectCommand;
-    private RelayCommand loadSheetPlacementCommand;
-    private RelayCommand loadNestResultCommand;
+    private AsyncRelayCommand loadNestProjectCommand;
+    private AsyncRelayCommand loadSheetPlacementCommand;
+    private AsyncRelayCommand loadNestResultCommand;
     private RelayCommand activeDocumentSaveCommand;
     private RelayCommand activeDocumentSaveAsCommand;
     private RelayCommand createNestProjectCommand;
@@ -143,13 +143,13 @@
 
     public SvgNestConfigViewModel SvgNestConfigViewModel { get; }
 
-    public ICommand LoadSheetPlacementCommand => loadSheetPlacementCommand ?? (loadSheetPlacementCommand = new RelayCommand(OnLoadSheetPlacement));
+    public ICommand LoadSheetPlacementCommand => loadSheetPlacementCommand ?? (loadSheetPlacementCommand = new AsyncRelayCommand(OnLoadSheetPlacementAsync));
 
-    public ICommand LoadNestResultCommand => loadNestResultCommand ?? (loadNestResultCommand = new RelayCommand(OnLoadNestResult));
+    public ICommand LoadNestResultCommand => loadNestResultCommand ?? (loadNestResultCommand = new AsyncRelayCommand(OnLoadNestResultAsync));
 
     public ICommand CreateNestProjectCommand => createNestProjectCommand ?? (createNestProjectCommand = new RelayCommand(OnCreateNestProject));
 
-    public ICommand LoadNestProjectCommand => loadNestProjectCommand ?? (loadNestProjectCommand = new RelayCommand(OnLoadNestProject));
+    public ICommand LoadNestProjectCommand => loadNestProjectCommand ?? (loadNestProjectCommand = new AsyncRelayCommand(OnLoadNestProjectAsync));
 
     public ICommand ActiveDocumentSaveCommand => activeDocumentSaveCommand ?? (activeDocumentSaveCommand = new RelayCommand(() => Save(this.ActiveDocument, false), () => this.ActiveDocument?.IsDirty ?? false));
 
@@ -179,9 +179,9 @@
 
     public IDispatcherService DispatcherService { get; }
 
-    public void OnLoadNestProject()
+    public async Task OnLoadNestProjectAsync()
     {
-      var filePath = fileIoService.GetOpenFilePath(ProjectInfo.FileDialogFilter);
+      var filePath = await fileIoService.GetOpenFilePathAsync(ProjectInfo.FileDialogFilter).ConfigureAwait(false);
       if (!string.IsNullOrWhiteSpace(filePath) && fileIoService.Exists(filePath))
       {
         OnLoadNestProject(filePath);
@@ -190,15 +190,22 @@
 
     public void OnLoadNestProject(string fileName)
     {
-      var loaded = new NestProjectViewModel(this, fileName, fileIoService);
-      loaded.PropertyChanged += this.NestProjectViewModel_PropertyChanged;
-      this.files.Add(loaded);
-      this.ActiveDocument = loaded;
+      if (DispatcherService.InvokeRequired)
+      {
+        DispatcherService.Invoke(() => OnLoadNestProject(fileName));
+      }
+      else
+      {
+        var loaded = new NestProjectViewModel(this, fileName, fileIoService);
+        loaded.PropertyChanged += this.NestProjectViewModel_PropertyChanged;
+        this.files.Add(loaded);
+        this.ActiveDocument = loaded;
+      }
     }
 
-    private void OnLoadNestResult()
+    public async Task OnLoadNestResultAsync()
     {
-      var filePath = fileIoService.GetOpenFilePath(NestResult.FileDialogFilter);
+      var filePath = await fileIoService.GetOpenFilePathAsync(NestResult.FileDialogFilter).ConfigureAwait(false);
       if (!string.IsNullOrWhiteSpace(filePath) && fileIoService.Exists(filePath))
       {
         LoadNestResult(filePath);
@@ -219,9 +226,9 @@
       this.ActiveDocument = loaded;
     }
 
-    public void LoadPart()
+    public async Task LoadPartAsync()
     {
-      var filePath = fileIoService.GetOpenFilePath(NFP.FileDialogFilter);
+      var filePath = await fileIoService.GetOpenFilePathAsync(NFP.FileDialogFilter).ConfigureAwait(false);
       if (!string.IsNullOrWhiteSpace(filePath))
       {
         LoadPart(filePath);
@@ -235,9 +242,9 @@
       this.ActiveDocument = loaded;
     }
 
-    public void OnLoadSheetPlacement()
+    public async Task OnLoadSheetPlacementAsync()
     {
-      var filePath = fileIoService.GetOpenFilePath(SheetPlacement.FileDialogFilter);
+      var filePath = await fileIoService.GetOpenFilePathAsync(SheetPlacement.FileDialogFilter).ConfigureAwait(false);
       if (!string.IsNullOrWhiteSpace(filePath) && fileIoService.Exists(filePath))
       {
         LoadSheetPlacement(filePath);
@@ -277,7 +284,7 @@
       files.Remove(fileToClose);
     }
 
-    internal async Task ExportSheetPlacement(ISheetPlacement? sheetPlacement)
+    internal async Task ExportSheetPlacementAsync(ISheetPlacement? sheetPlacement)
     {
       if (sheetPlacement == null)
       {

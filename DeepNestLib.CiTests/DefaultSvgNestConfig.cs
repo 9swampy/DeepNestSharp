@@ -1,6 +1,7 @@
 ﻿namespace DeepNestLib.CiTests
 {
   using DeepNestLib.NestProject;
+  using System;
 
   public class DefaultSvgNestConfig : ISvgNestConfig
   {
@@ -59,5 +60,10 @@
     public int ParallelNests { get; set; } = 10;
 
     public bool ShowPartPositions { get; set; } = false;
+
+    public string ToJson()
+    {
+      throw new NotImplementedException();
+    }
   }
 }

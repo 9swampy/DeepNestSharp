@@ -37,7 +37,7 @@
     private bool stop = false;
     private Random r = new Random();
     private int lastOpenFilterIndex = 1;
-    private readonly ProjectInfo projectInfo = new ProjectInfo();
+    private readonly ProjectInfo projectInfo = new ProjectInfo(SvgNest.Config);
     private bool autoFit = true;
     private NestExecutionHelper nestExecutionHelper = new NestExecutionHelper();
     private NestState nestState;
@@ -1575,7 +1575,7 @@
         dialog.Filter = ProjectInfo.FileDialogFilter;
         if (dialog.ShowDialog() == DialogResult.OK)
         {
-          var info = ProjectInfo.LoadFromFile(dialog.FileName);
+          var info = ProjectInfo.LoadFromFile(SvgNest.Config, dialog.FileName);
           this.projectInfo.Load(info);
           UpdateInfos();
         }

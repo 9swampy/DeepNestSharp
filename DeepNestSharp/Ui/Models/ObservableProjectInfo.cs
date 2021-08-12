@@ -4,21 +4,29 @@
   using DeepNestLib;
   using DeepNestLib.NestProject;
   using DeepNestSharp.Domain.Models;
+  using DeepNestSharp.Ui.ViewModels;
+  using Light.GuardClauses;
   using Microsoft.Toolkit.Mvvm.ComponentModel;
 
   public class ObservableProjectInfo : ObservableObject, IProjectInfo
   {
+    private readonly MainViewModel mainViewModel;
     private readonly IProjectInfo wrappedProjectInfo;
     private ObservableCollection<IDetailLoadInfo, DetailLoadInfo, ObservableDetailLoadInfo>? detailLoadInfos;
     private ObservableCollection<ISheetLoadInfo, SheetLoadInfo, ObservableSheetLoadInfo>? sheetLoadInfos;
-
-    public event EventHandler IsDirtyChanged;
+    private ObservableSvgNestConfig? observableConfig;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ObservableProjectInfo"/> class.
     /// </summary>
     /// <param name="projectInfo">The ProjectInfo to wrap.</param>
-    public ObservableProjectInfo(IProjectInfo projectInfo) => this.wrappedProjectInfo = projectInfo;
+    public ObservableProjectInfo(MainViewModel mainViewModel)
+    {
+      this.mainViewModel = mainViewModel;
+      this.wrappedProjectInfo = new ProjectInfo(mainViewModel.SvgNestConfigViewModel.SvgNestConfig);
+    }
+
+    public event EventHandler? IsDirtyChanged;
 
     public IList<IDetailLoadInfo, DetailLoadInfo> DetailLoadInfos
     {
@@ -34,11 +42,6 @@
       }
     }
 
-    private void DetailLoadInfos_IsDirtyChanged(object? sender, EventArgs e)
-    {
-      IsDirtyChanged?.Invoke(this, e);
-    }
-
     public IList<ISheetLoadInfo, SheetLoadInfo> SheetLoadInfos
     {
       get
@@ -52,15 +55,34 @@
       }
     }
 
-    public ISvgNestConfig Config => SvgNest.Config;
-
-    public void Load(string filePath)
+    public ISvgNestConfig Config
     {
-      wrappedProjectInfo.Load(filePath);
+      get
+      {
+        if (this.observableConfig == null)
+        {
+          this.observableConfig = (ObservableSvgNestConfig)mainViewModel.SvgNestConfigViewModel.SvgNestConfig;
+        }
+
+        return this.observableConfig;
+      }
+    }
+
+    private void DetailLoadInfos_IsDirtyChanged(object? sender, EventArgs e)
+    {
+      IsDirtyChanged?.Invoke(this, e);
+    }
+
+    public void Load(ISvgNestConfig config, string filePath)
+    {
+      // This is a fudge; need a better way of injecting Config; loathe to go Locator but AvalonDock's pushing that way.
+      config.MustBe(mainViewModel.SvgNestConfigViewModel.SvgNestConfig);
+      wrappedProjectInfo.Load(config, filePath);
       this.DetailLoadInfos.Clear();
       this.SheetLoadInfos.Clear();
       OnPropertyChanged(nameof(DetailLoadInfos));
       OnPropertyChanged(nameof(SheetLoadInfos));
+      mainViewModel.SvgNestConfigViewModel.RaiseNotifyUpdatePropertyGrid();
     }
 
     public void Load(ProjectInfo source)

@@ -45,6 +45,7 @@
     <Compile Include="..\DeepNestLib\InrangeItem.cs" Link="InrangeItem.cs" />
     <Compile Include="..\DeepNestLib\IntPointArrayExtensions.cs" Link="IntPointArrayExtensions.cs" />
     <Compile Include="..\DeepNestLib\IO\ISaveable.cs" Link="IO/ISaveable.cs" />
+    <Compile Include="..\DeepNestLib\IO\ProgressDisplayerBase.cs" Link="IO/ProgressDisplayerBase.cs" />
     <Compile Include="..\DeepNestLib\IO\Saveable.cs" Link="IO/Saveable.cs" />
     <Compile Include="..\DeepNestLib\IPointXY.cs" Link="IPointXY.cs" />
     <Compile Include="..\DeepNestLib\IProgressDisplayer.cs" Link="IProgressDisplayer.cs" />

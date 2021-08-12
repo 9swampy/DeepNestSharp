@@ -7,6 +7,7 @@
   using System.Text.Json;
   using System.Text.Json.Serialization;
   using DeepNestLib.NestProject;
+using DeepNestLib.Placement;
 
   public class NFP : PolygonBase, INfp, IHiddenNfp, IStringify
   {
@@ -513,6 +514,56 @@
       }
 
       return resultBuilder.ToString();
+    }
+
+    /// <summary>
+    /// Shifts the polygon and all it's children iteratively by the specified PartPlacement(X,Y) offset.
+    /// </summary>
+    /// <param name="shift"></param>
+    /// <returns></returns>
+    public INfp Shift(IPartPlacement shift)
+    {
+      return Shift(shift.X, shift.Y);
+    }
+
+    /// <summary>
+    /// Shifts the polygon and all it's children iteratively by the specified X,Y offset.
+    /// </summary>
+    /// <param name="x">Distance to shift on X axis.</param>
+    /// <param name="y">Distance to shift on Y axis.</param>
+    /// <returns>A partial clone of the polygon.</returns>
+    public INfp Shift(double x, double y)
+    {
+      NFP shifted = new NFP();
+      shifted.Id = this.Id;
+      shifted.Name = this.Name;
+      shifted.PlacementOrder = this.PlacementOrder;
+      shifted.Rotation = this.Rotation;
+      shifted.Source = this.Source;
+      shifted.StrictAngle = this.StrictAngle;
+      for (var i = 0; i < this.Length; i++)
+      {
+        shifted.AddPoint(new SvgPoint(this[i].X + x, this[i].Y + y) { Exact = this[i].Exact });
+      }
+
+      if (this.Children != null /*&& p.Children.Count*/)
+      {
+        for (int i = 0; i < this.Children.Count(); i++)
+        {
+          shifted.Children.Add(this.Children[i].Shift(x, y));
+        }
+      }
+
+      return shifted;
+    }
+
+    /// <summary>
+    /// Shift the polygon to the origin.
+    /// </summary>
+    /// <returns>A partial clone of the polygon.</returns>
+    public INfp ShiftToOrigin()
+    {
+      return Shift(-this.MinX, -this.MinY);
     }
   }
 }

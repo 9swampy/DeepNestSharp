@@ -8,13 +8,11 @@
              d:DesignHeight="450" d:DesignWidth="800">
   <ScrollViewer>
     <xctk:PropertyGrid 
+      Name="propertyGrid"
       HorizontalAlignment="Stretch" 
       VerticalAlignment="Stretch"
       SelectedObject="{Binding SvgNestConfig}"
       AutoGenerateProperties="true">
-      <!--<xctk:PropertyGrid.PropertyDefinitions>
-        <xctk:PropertyDefinition TargetProperties="SvgNestConfig.Name" />
-      </xctk:PropertyGrid.PropertyDefinitions>-->
     </xctk:PropertyGrid>
   </ScrollViewer>
 </UserControl>

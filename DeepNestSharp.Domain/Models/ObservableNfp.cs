@@ -1,10 +1,12 @@
 ﻿namespace DeepNestSharp.Domain.Models
 {
   using System.Collections.Generic;
+using System.ComponentModel;
   using System.Linq;
   using DeepNestLib;
   using DeepNestLib.NestProject;
-  
+  using DeepNestLib.Placement;
+
   public class ObservableNfp : ObservablePropertyObject, INfp
   {
     private readonly INfp item;
@@ -21,10 +23,12 @@
     /// <inheritdoc/>
     public override bool IsDirty => true;
 
+    [Description("The gross outer area, not discounting for any holes."), Category("Dimensions")]
     /// <inheritdoc/>
     public double Area => this.item.Area;
 
     /// <inheritdoc/>
+    [Description("The children (aka holes) nested inside the part."), Category("Definition")]
     public IList<INfp> Children
     {
       get => this.item.Children;
@@ -34,10 +38,12 @@
     /// <inheritdoc/>
     public bool Fitted => this.item.Fitted;
 
+    [Description("The overall height of the part."), Category("Dimensions")]
     /// <inheritdoc/>
     public double HeightCalculated => this.item.HeightCalculated;
 
     /// <inheritdoc/>
+    [Description("The Id of the part."), Category("Description")]
     public int Id
     {
       get => this.item.Id;
@@ -48,6 +54,7 @@
     public bool IsExact => !this.item.Points.Any(o => !o.Exact);
 
     /// <inheritdoc/>
+    [Browsable(false)]
     public bool IsPriority
     {
       get => this.item.IsPriority;
@@ -55,21 +62,27 @@
     }
 
     /// <inheritdoc/>
+    [Browsable(false)]
     public int Length => this.item.Length;
 
     /// <inheritdoc/>
+    [Description("The MaxX of part's points."), Category("Placement")]
     public double MaxX => this.item.MaxX;
 
     /// <inheritdoc/>
+    [Description("The MaxY of part's points."), Category("Placement")]
     public double MaxY => this.item.MaxY;
 
     /// <inheritdoc/>
+    [Description("The MinX of part's points."), Category("Placement")]
     public double MinX => this.item.MinX;
 
     /// <inheritdoc/>
+    [Description("The MinY of part's points."), Category("Placement")]
     public double MinY => this.item.MinY;
 
     /// <inheritdoc/>
+    [Description("The name of file loaded as the part."), Category("Description")]
     public string Name
     {
       get => this.item.Name;
@@ -77,6 +90,7 @@
     }
 
     /// <inheritdoc/>
+    [Description("The X offset (Set and used by the export process)."), Category("Placement")]
     public double? Offsetx
     {
       get => this.item.Offsetx;
@@ -84,6 +98,7 @@
     }
 
     /// <inheritdoc/>
+    [Description("The Y offset (Set and used by the export process)."), Category("Placement")]
     public double? Offsety
     {
       get => this.item.Offsety;
@@ -91,6 +106,7 @@
     }
 
     /// <inheritdoc/>
+    [Description("An index noting the order in the plcement sequence at which this part got inserted."), Category("Placement")]
     public int PlacementOrder
     {
       get => this.item.PlacementOrder;
@@ -98,9 +114,11 @@
     }
 
     /// <inheritdoc/>
+    [Description("The points that make up the outer edge of the part."), Category("Definition")]
     SvgPoint[] IPolygon.Points => this.item.Points;
 
     /// <inheritdoc/>
+    [Description("The degrees of rotation from the original imported part (tbc)."), Category("Placement")]
     public double Rotation
     {
       get => this.item.Rotation;
@@ -122,16 +140,19 @@
     }
 
     /// <inheritdoc/>
+    [Description("Denotes whether any restrictions on angle of placement have been imposed."), Category("Placement")]
     public AnglesEnum StrictAngle
     {
       get => this.item.StrictAngle;
       set => SetProperty(nameof(StrictAngle), () => this.item.StrictAngle, v => this.item.StrictAngle = v, value);
     }
 
+    [Description("The overall width of the part."), Category("Dimensions")]
     /// <inheritdoc/>
     public double WidthCalculated => this.item.WidthCalculated;
 
     /// <inheritdoc/>
+    [Description("The X offset of the part from the origin."), Category("Placement")]
     public double X
     {
       get => this.item.X;
@@ -139,6 +160,7 @@
     }
 
     /// <inheritdoc/>
+    [Description("The Y offset of the part from the origin."), Category("Placement")]
     public double Y
     {
       get => this.item.Y;
@@ -238,6 +260,21 @@
     public string ToOpenScadPolygon()
     {
       return this.item.ToOpenScadPolygon();
+    }
+
+    public INfp Shift(IPartPlacement shift)
+    {
+      return this.item.Shift(shift);
+    }
+
+    public INfp Shift(double x, double y)
+    {
+      return this.item.Shift(x, y);
+    }
+
+    public INfp ShiftToOrigin()
+    {
+      return this.item.ShiftToOrigin();
     }
   }
 }

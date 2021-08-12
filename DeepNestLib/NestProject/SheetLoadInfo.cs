@@ -2,28 +2,70 @@
 {
   using System;
   using System.Text.Json;
+  using System.Text.Json.Serialization;
   using DeepNestLib;
   using DeepNestLib.IO;
 
+#pragma warning disable CS0618 // Type or member is obsolete
+  public sealed class ConfigSheetLoadInfo : SheetLoadInfo
+  {
+    private readonly ISvgNestConfig config;
+
+    public ConfigSheetLoadInfo(ISvgNestConfig config)
+      : base()
+    {
+      this.config = config;
+    }
+
+    public override int Width
+    {
+      get { return config.SheetWidth; }
+      set { config.SheetWidth = value; }
+    }
+
+    public override int Height
+    {
+      get { return config.SheetHeight; }
+      set { config.SheetHeight = value; }
+    }
+
+    public override int Quantity
+    {
+      get { return config.SheetQuantity; }
+      set { config.SheetQuantity = value; }
+    }
+
+    public override string ToJson()
+    {
+      return JsonSerializer.Serialize(this);
+    }
+  }
+#pragma warning restore CS0618 // Type or member is obsolete
+
   public class SheetLoadInfo : Saveable, ISheetLoadInfo
   {
-    public int Width
-    {
-      get { return SvgNest.Config.SheetWidth; }
-      set { SvgNest.Config.SheetWidth = value; }
+    [Obsolete("Only use from ConfigSheetLoadInfo to bypass the constructor - could just pass the config in but if we do it would be less transparent; no other reason to keep it long term is there?")]
+    protected SheetLoadInfo()
+    { 
     }
 
-    public int Height
+    public SheetLoadInfo(ISvgNestConfig config)
+      : this(config.SheetWidth, config.SheetHeight, config.SheetQuantity)
+    { }
+
+    [JsonConstructor]
+    public SheetLoadInfo(int width, int height, int quantity)
     {
-      get { return SvgNest.Config.SheetHeight; }
-      set { SvgNest.Config.SheetHeight = value; }
+      this.Width = width;
+      this.Height = height;
+      this.Quantity = quantity;
     }
 
-    public int Quantity
-    {
-      get { return SvgNest.Config.SheetQuantity; }
-      set { SvgNest.Config.SheetQuantity = value; }
-    }
+    public virtual int Width { get; set; }
+
+    public virtual int Height { get; set; }
+
+    public virtual int Quantity { get; set; }
 
     public override string ToJson()
     {

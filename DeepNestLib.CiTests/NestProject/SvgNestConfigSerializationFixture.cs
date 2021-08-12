@@ -7,16 +7,14 @@
   using FluentAssertions;
   using Xunit;
 
-  public class ProjectInfoSerializationFixture
+  public class SvgNestConfigSerializationFixture
   {
     [Fact]
     public void ShouldRoundTripSerialize()
     {
-      var config = SvgNest.Config;
-      var sut = new ProjectInfo(config);
-      sut.SheetLoadInfos.Should().NotBeEmpty();
+      var sut = SvgNest.Config;
       var json = sut.ToJson();
-      ProjectInfo actual = ProjectInfo.FromJson(config, json);
+      var actual = SvgNestConfig.FromJson(json);
 
       actual.Should().BeEquivalentTo(sut);
     }

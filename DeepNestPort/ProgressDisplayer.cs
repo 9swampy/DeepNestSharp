@@ -2,8 +2,9 @@
 {
   using System;
   using DeepNestLib;
+  using DeepNestLib.IO;
 
-  public class ProgressDisplayer : IProgressDisplayer
+  public class ProgressDisplayer : ProgressDisplayerBase, IProgressDisplayer
   {
     private readonly Form1 form;
     private readonly Action initialiseUiForStartNest;
@@ -22,12 +23,12 @@
       this.form.DisplayProgress(percentageComplete);
     }
 
-    public void DisplayProgress(double percentageComplete)
+    public override void DisplayProgress(double percentageComplete)
     {
       this.form.DisplayProgress(percentageComplete);
     }
 
-    public void DisplayTransientMessage(string message)
+    public override void DisplayTransientMessage(string message)
     {
       this.form.ToolStripMessage = message;
     }

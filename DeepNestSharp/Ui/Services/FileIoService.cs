@@ -2,36 +2,55 @@
 {
   using System.IO;
   using System.Linq;
+  using System.Threading.Tasks;
+  using DeepNestLib;
   using DeepNestSharp.Domain;
   using Microsoft.Win32;
 
   public class FileIoService : IFileIoService
   {
+    private readonly IDispatcherService dispatcherService;
+
+    public FileIoService(IDispatcherService dispatcherService)
+    {
+      this.dispatcherService = dispatcherService;
+    }
+
     public bool Exists(string filePath)
     {
       var fileInfo = new FileInfo(filePath);
       return fileInfo.Exists;
     }
 
-    public string GetOpenFilePath(string filter)
+    public async Task<string> GetOpenFilePathAsync(string filter)
     {
-      return GetOpenFilePaths(filter, false).First();
+      var filePaths = await GetOpenFilePathsAsync(filter, false).ConfigureAwait(false);
+      return filePaths.First();
     }
 
-    public string[] GetOpenFilePaths(string filter, bool allowMultiSelect = true)
+    public async Task<string[]> GetOpenFilePathsAsync(string filter, bool allowMultiSelect = true)
     {
-      OpenFileDialog openFileDialog = new OpenFileDialog()
+      try
       {
-        Filter = filter,
-        Multiselect = allowMultiSelect,
-      };
+        OpenFileDialog openFileDialog = new OpenFileDialog()
+        {
+          Filter = filter,
+          Multiselect = allowMultiSelect,
+        };
 
-      if (openFileDialog.ShowDialog() == true)
-      {
-        return openFileDialog.FileNames;
+        bool dialogResponse = false;
+        await dispatcherService.InvokeAsync(() => dialogResponse = openFileDialog.ShowDialog() == true).ConfigureAwait(false);
+        if (dialogResponse)
+        {
+          return openFileDialog.FileNames;
+        }
+
+        return new string[] { string.Empty };
       }
-
-      return new string[] { string.Empty };
+      catch (System.Exception ex)
+      {
+        throw;
+      }
     }
 
     public string GetSaveFilePath(string fileDialogFilter, string fileName = null, string initialDirectory = null)

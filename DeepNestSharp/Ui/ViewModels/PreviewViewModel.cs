@@ -428,7 +428,7 @@
         this.DrawingContext.Add(partPlacement);
         foreach (var child in part.Children)
         {
-          Set(new ObservableHole(Background.ShiftPolygon(child, partPlacement)));
+          Set(new ObservableHole(child.Shift(partPlacement)));
         }
       }
 
@@ -440,7 +440,7 @@
     {
       ResetDrawingContext();
       var polygon = item.LoadAsync().Result;
-      var shiftedPart = Background.ShiftPolygon(polygon, -polygon.MinX, -polygon.MinY);
+      var shiftedPart = polygon.Shift(-polygon.MinX, -polygon.MinY);
       Set(new ObservableNfp(shiftedPart));
     }
 

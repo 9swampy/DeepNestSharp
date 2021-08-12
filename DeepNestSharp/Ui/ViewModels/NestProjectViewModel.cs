@@ -8,19 +8,21 @@
   using DeepNestSharp.Domain;
   using DeepNestSharp.Ui.Docking;
   using DeepNestSharp.Ui.Models;
+  using Light.GuardClauses;
   using Microsoft.Toolkit.Mvvm.Input;
 
   public class NestProjectViewModel : FileViewModel, INestProjectViewModel
   {
-    private readonly ObservableProjectInfo observableProjectInfo = new ObservableProjectInfo(new ProjectInfo());
-
     private int selectedDetailLoadInfoIndex;
     private IDetailLoadInfo? selectedDetailLoadInfo;
     private RelayCommand executeNestCommand;
     private AsyncRelayCommand addPartCommand;
+    private AsyncRelayCommand addSheetCommand;
+    private RelayCommand<IDetailLoadInfo> removePartCommand;
+    private RelayCommand<ISheetLoadInfo> removeSheetCommand;
     private RelayCommand<string> loadPartCommand;
     private IFileIoService fileIoService;
-    private AsyncRelayCommand<IDetailLoadInfo> removePartCommand;
+    private ObservableProjectInfo? observableProjectInfo;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NestProjectViewModel"/> class.
@@ -45,7 +47,11 @@
 
     public IAsyncRelayCommand AddPartCommand => addPartCommand ?? (addPartCommand = new AsyncRelayCommand(OnAddPartAsync));
 
-    public IAsyncRelayCommand<IDetailLoadInfo> RemovePartCommand => removePartCommand ?? (removePartCommand = new AsyncRelayCommand<IDetailLoadInfo>(OnRemovePartAsync));
+    public IAsyncRelayCommand AddSheetCommand => addSheetCommand ?? (addSheetCommand = new AsyncRelayCommand(OnAddSheetAsync));
+
+    public IRelayCommand<IDetailLoadInfo> RemovePartCommand => removePartCommand ?? (removePartCommand = new RelayCommand<IDetailLoadInfo>(OnRemovePart));
+
+    public IRelayCommand<ISheetLoadInfo> RemoveSheetCommand => removeSheetCommand ?? (removeSheetCommand = new RelayCommand<ISheetLoadInfo>(OnRemoveSheet));
 
     public ICommand ExecuteNestCommand => executeNestCommand ?? (executeNestCommand = new RelayCommand(OnExecuteNest, () => !MainViewModel.NestMonitorViewModel.IsRunning));
 
@@ -53,7 +59,7 @@
 
     public IRelayCommand<string> LoadPartCommand => loadPartCommand ?? (loadPartCommand = new RelayCommand<string>(OnLoadPart));
 
-    public IProjectInfo ProjectInfo => observableProjectInfo;
+    public IProjectInfo ProjectInfo => observableProjectInfo ?? (observableProjectInfo = new ObservableProjectInfo(MainViewModel));
 
     public IDetailLoadInfo SelectedDetailLoadInfo
     {
@@ -71,21 +77,9 @@
 
     public override string TextContent { get => this.ProjectInfo.ToJson(); }
 
-    private void Initialise(MainViewModel mainViewModel, IFileIoService fileIoService)
-    {
-      observableProjectInfo.IsDirtyChanged += this.ObservableProjectInfo_IsDirtyChanged;
-      mainViewModel.NestMonitorViewModel.PropertyChanged += this.NestMonitorViewModel_PropertyChanged;
-      this.fileIoService = fileIoService;
-    }
-
-    private void ObservableProjectInfo_IsDirtyChanged(object? sender, EventArgs e)
-    {
-      this.IsDirty = true;
-    }
-
     protected override void LoadContent()
     {
-      this.ProjectInfo.Load(this.FilePath);
+      this.ProjectInfo.Load(this.MainViewModel.SvgNestConfigViewModel.SvgNestConfig, this.FilePath);
     }
 
     protected override void NotifyContentUpdated()
@@ -93,6 +87,18 @@
       OnPropertyChanged(nameof(ProjectInfo));
       OnPropertyChanged(nameof(SelectedDetailLoadInfoIndex));
       OnPropertyChanged(nameof(SelectedDetailLoadInfo));
+    }
+
+    private void Initialise(MainViewModel mainViewModel, IFileIoService fileIoService)
+    {
+      this.ProjectInfo.MustBe(observableProjectInfo);
+      if (this.observableProjectInfo != null)
+      {
+        this.observableProjectInfo.IsDirtyChanged += this.ObservableProjectInfo_IsDirtyChanged;
+      }
+
+      mainViewModel.NestMonitorViewModel.PropertyChanged += this.NestMonitorViewModel_PropertyChanged;
+      this.fileIoService = fileIoService;
     }
 
     private void NestMonitorViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -108,9 +114,14 @@
       }
     }
 
+    private void ObservableProjectInfo_IsDirtyChanged(object? sender, EventArgs e)
+    {
+      this.IsDirty = true;
+    }
+
     private async Task OnAddPartAsync()
     {
-      var filePaths = this.fileIoService.GetOpenFilePaths(NFP.FileDialogFilter);
+      var filePaths = await this.fileIoService.GetOpenFilePathsAsync(NFP.FileDialogFilter);
       foreach (var filePath in filePaths)
       {
         if (!string.IsNullOrWhiteSpace(filePath) && this.fileIoService.Exists(filePath))
@@ -120,9 +131,18 @@
             Path = filePath,
           };
 
-          observableProjectInfo.DetailLoadInfos.Add(newPart);
+          observableProjectInfo?.DetailLoadInfos.Add(newPart);
         }
       }
+
+      OnPropertyChanged(nameof(ProjectInfo));
+      this.IsDirty = true;
+    }
+
+    private async Task OnAddSheetAsync()
+    {
+      var newSheet = new SheetLoadInfo(this.ProjectInfo.Config);
+      observableProjectInfo.SheetLoadInfos.Add(newSheet);
 
       OnPropertyChanged(nameof(ProjectInfo));
       this.IsDirty = true;
@@ -142,10 +162,22 @@
       }
     }
 
-    private async Task OnRemovePartAsync(IDetailLoadInfo? arg)
+    private void OnRemovePart(IDetailLoadInfo? arg)
     {
-      this.ProjectInfo.DetailLoadInfos.Remove(arg);
-      OnPropertyChanged(nameof(ProjectInfo));
+      if (arg != null)
+      {
+        this.ProjectInfo.DetailLoadInfos.Remove(arg);
+        OnPropertyChanged(nameof(ProjectInfo));
+      }
+    }
+
+    private void OnRemoveSheet(ISheetLoadInfo? arg)
+    {
+      if (arg != null)
+      {
+        this.ProjectInfo.SheetLoadInfos.Remove(arg);
+        OnPropertyChanged(nameof(ProjectInfo));
+      }
     }
 
     protected override void SaveState()

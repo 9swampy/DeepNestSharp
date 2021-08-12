@@ -186,6 +186,7 @@
     <Compile Include="GeneticAlgorithm\SheetPlacementJsonHelper.cs" />
     <Compile Include="GeneticAlgorithm\SqueezeFitnessFixture.cs" />
     <Compile Include="GetInnerPolygonFixture.cs" />
+    <Compile Include="NestProject\SvgNestConfigSerializationFixture.cs" />
     <Compile Include="NfpCtorCloneFixture.cs" />
     <Compile Include="NfpFixture.cs" />
     <Compile Include="NfpRotateFixture.cs" />

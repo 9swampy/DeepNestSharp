@@ -1,15 +1,17 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
   using System;
+  using System.Reflection;
   using DeepNestLib;
+  using DeepNestLib.IO;
 
-  internal class ProgressDisplayer : IProgressDisplayer
+  internal class ProgressDisplayer : ProgressDisplayerBase, IProgressDisplayer
   {
     private readonly MainViewModel mainViewModel;
     private readonly IMessageService messageService;
     private readonly IDispatcherService dispatcherService;
     private readonly NestMonitorViewModel nestMonitorViewModel;
-
+    
     public ProgressDisplayer(NestMonitorViewModel nestMonitorViewModel, IMessageService messageService, IDispatcherService dispatcherService, MainViewModel mainViewModel)
     {
       this.mainViewModel = mainViewModel;
@@ -28,7 +30,7 @@
       messageService.DisplayMessageBox(text, caption, icon);
     }
 
-    public void DisplayProgress(double percentageComplete)
+    public override void DisplayProgress(double percentageComplete)
     {
       nestMonitorViewModel.Progress = percentageComplete;
     }
@@ -38,7 +40,7 @@
       DisplayProgress(ProgressDisplayerHelper.CalculatePercentageComplete(placedParts, currentPopulation, SvgNest.Config.PopulationSize, nestMonitorViewModel.TopNestResults.Top.TotalPartsCount));
     }
 
-    public void DisplayTransientMessage(string message)
+    public override void DisplayTransientMessage(string message)
     {
       if (dispatcherService.InvokeRequired)
       {

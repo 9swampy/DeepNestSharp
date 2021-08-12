@@ -3,6 +3,7 @@
   using System;
   using System.Collections.Generic;
   using System.Linq;
+using System.Reflection;
   using System.Threading.Tasks;
   using System.Xml.Linq;
   using DeepNestLib.Placement;
@@ -73,10 +74,12 @@
           Sheets[i].Id = i;
         }
 
+        this.progressDisplayer.InitialiseLoopProgress("Pre-processing (Polygon Clone). . .", Polygons.Count);
         foreach (var item in Polygons)
         {
           NFP clone = item.CloneExact();
           lpoly.Add(clone);
+          this.progressDisplayer.IncrementLoopProgress();
         }
 
         foreach (var item in Sheets)
@@ -103,11 +106,13 @@
         if (config.OffsetTreePhase)
         {
           var grps = lpoly.GroupBy(z => z.Source).ToArray();
+          this.progressDisplayer.InitialiseLoopProgress("Pre-processing (Offset Tree Phase). . .", grps.Length);
           if (config.UseParallel)
           {
             Parallel.ForEach(grps, (item) =>
             {
               OffsetTreeReplace(config, item);
+              this.progressDisplayer.IncrementLoopProgress();
             });
           }
           else
@@ -115,6 +120,7 @@
             foreach (var item in grps)
             {
               OffsetTreeReplace(config, item);
+              this.progressDisplayer.IncrementLoopProgress();
             }
           }
 

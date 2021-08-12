@@ -26,6 +26,16 @@
       Are.Set();
     }
 
+    public void IncrementLoopProgress()
+    {
+      Are.Set();
+    }
+
+    public void InitialiseLoopProgress(string transientMessage, int loopMax)
+    {
+      Are.Set();
+    }
+
     public void InitialiseUiForStartNest()
     {
       throw new System.NotImplementedException();

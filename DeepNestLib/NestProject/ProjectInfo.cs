@@ -1,5 +1,6 @@
 namespace DeepNestLib.NestProject
 {
+  using Light.GuardClauses;
   using System;
   using System.Collections.Generic;
   using System.IO;
@@ -10,17 +11,58 @@ namespace DeepNestLib.NestProject
   public class ProjectInfo : IProjectInfo
   {
     public const string FileDialogFilter = "DeepNest Projects (*.dnest)|*.dnest|Json (*.json)|*.json|All files (*.*)|*.*";
+    private ISvgNestConfig config;
+    private WrappableList<ISheetLoadInfo, SheetLoadInfo> wrappableSheetLoadInfos;
+
+    public ProjectInfo(ISvgNestConfig config) => this.config = config;
 
     [JsonInclude]
     public IList<IDetailLoadInfo, DetailLoadInfo> DetailLoadInfos { get; private set; } = new WrappableList<IDetailLoadInfo, DetailLoadInfo>();
 
     [JsonInclude]
-    public IList<ISheetLoadInfo, SheetLoadInfo> SheetLoadInfos { get; private set; } = new WrappableList<ISheetLoadInfo, SheetLoadInfo>() { new SheetLoadInfo() };
+    public IList<ISheetLoadInfo, SheetLoadInfo> SheetLoadInfos
+    {
+      get
+      {
+        if (wrappableSheetLoadInfos == null)
+        {
+          ISheetLoadInfo sheetLoadInfo;
+          if (config == null)
+          {
+            //This is a bit of a fudge for during deserialisation; ultimately this should get set with the deserialised object, just need to get the deserializer past this
+            sheetLoadInfo = new SheetLoadInfo(SvgNest.Config);
+          }
+          else
+          {
+            sheetLoadInfo = new ConfigSheetLoadInfo(Config);
+          }
+          wrappableSheetLoadInfos = new WrappableList<ISheetLoadInfo, SheetLoadInfo>() { sheetLoadInfo };
+        }
+
+        return wrappableSheetLoadInfos;
+      }
+
+      private set
+      {
+        wrappableSheetLoadInfos = (WrappableList<ISheetLoadInfo, SheetLoadInfo>)value;
+      }
+    }
 
     [JsonInclude]
-    public ISvgNestConfig Config => SvgNest.Config;
+    public ISvgNestConfig Config
+    {
+      get
+      {
+        return config ?? (config = SvgNest.Config);
+      }
 
-    public static ProjectInfo FromJson(string json)
+      private set
+      {
+        config = value;
+      }
+    }
+
+    public static ProjectInfo FromJson(ISvgNestConfig config, string json)
     {
       try
       {
@@ -32,14 +74,22 @@ namespace DeepNestLib.NestProject
           options.Converters.Add(new WrappableListJsonConverter<ISheetLoadInfo, SheetLoadInfo>());
           options.Converters.Add(new SheetLoadInfoJsonConverter());
           options.Converters.Add(new SvgNestConfigJsonConverter());
-          return JsonSerializer.Deserialize<ProjectInfo>(json, options);
+          var result = JsonSerializer.Deserialize<ProjectInfo>(json, options);
+          var deserialized = result.config;
+          result.config = config;
+          if (deserialized != null)
+          {
+            SvgNestConfigJsonConverter.FullCopy(deserialized, config);
+          }
+
+          return result;
         }
 
-        return new ProjectInfo();
+        return new ProjectInfo(config);
       }
       catch (Exception ex)
       {
-        return new ProjectInfo();
+        return new ProjectInfo(config);
       }
     }
 
@@ -55,7 +105,8 @@ namespace DeepNestLib.NestProject
         this.DetailLoadInfos.Add(p);
       }
 
-      var sheetInfoSource = source.SheetLoadInfos.SingleOrDefault();
+#if DeepNestPort
+      var sheetInfoSource = source.SheetLoadInfos.FirstOrDefault();
       if (sheetInfoSource != null)
       {
         var sheetInfoTarget = this.SheetLoadInfos.Single();
@@ -63,30 +114,41 @@ namespace DeepNestLib.NestProject
         sheetInfoTarget.Height = sheetInfoSource.Height;
         sheetInfoTarget.Quantity = sheetInfoSource.Quantity;
       }
+#else
+      this.SheetLoadInfos.Clear();
+      foreach (var s in source.SheetLoadInfos)
+      {
+        this.SheetLoadInfos.Add(s);
+      }
+#endif
     }
 
     public string ToJson()
     {
+      Config.MustBe(this.config);
+      SheetLoadInfos.MustNotBeNull();
+
       var options = new JsonSerializerOptions();
       options.Converters.Add(new DetailLoadInfoJsonConverter());
       options.Converters.Add(new WrappableListJsonConverter<IDetailLoadInfo, DetailLoadInfo>());
       options.Converters.Add(new WrappableListJsonConverter<ISheetLoadInfo, SheetLoadInfo>());
       options.Converters.Add(new SheetLoadInfoJsonConverter());
-      options.Converters.Add(new SvgNestConfigJsonConverter());
+      options.WriteIndented = true;
+      //options.Converters.Add(new SvgNestConfigJsonConverter());
       return JsonSerializer.Serialize(this, options);
     }
 
-    public static ProjectInfo LoadFromFile(string fileName)
+    public static ProjectInfo LoadFromFile(ISvgNestConfig config, string fileName)
     {
       using (StreamReader inputFile = new StreamReader(fileName))
       {
-        return FromJson(inputFile.ReadToEnd());
+        return FromJson(config, inputFile.ReadToEnd());
       }
     }
 
-    public void Load(string filePath)
+    public void Load(ISvgNestConfig config, string filePath)
     {
-      var source = LoadFromFile(filePath);
+      var source = LoadFromFile(config, filePath);
       Load(source);
     }
 

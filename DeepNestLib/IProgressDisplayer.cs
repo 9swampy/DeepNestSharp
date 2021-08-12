@@ -17,6 +17,10 @@
     void UpdateNestsList();
 
     void InitialiseUiForStartNest();
+
+    void IncrementLoopProgress();
+
+    void InitialiseLoopProgress(string transientMessage, int loopMax);
   }
 
   public class ProgressDisplayerHelper

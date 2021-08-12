@@ -73,5 +73,7 @@
     int ParallelNests { get; set; }
 
     bool ShowPartPositions { get; set; }
+
+    string ToJson();
   }
 }
