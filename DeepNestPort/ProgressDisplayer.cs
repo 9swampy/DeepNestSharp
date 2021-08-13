@@ -19,13 +19,15 @@
 
     public void DisplayProgress(int placedParts, int currentPopulation)
     {
-      var percentageComplete = ProgressDisplayerHelper.CalculatePercentageComplete(placedParts, currentPopulation, SvgNest.Config.PopulationSize, this.form.Context.Polygons.Count);
-      this.form.DisplayProgress(percentageComplete);
+      this.form.DisplayProgress(CalculatePercentageComplete(placedParts, currentPopulation, SvgNest.Config.PopulationSize, this.form.Context.Polygons.Count));
     }
 
-    public override void DisplayProgress(double percentageComplete)
+    public override void DisplayProgress(ProgressBar progressBar, double percentageComplete)
     {
-      this.form.DisplayProgress(percentageComplete);
+      if (progressBar == ProgressBar.Primary)
+      {
+        this.form.DisplayProgress(percentageComplete);
+      }
     }
 
     public override void DisplayTransientMessage(string message)
@@ -33,7 +35,7 @@
       this.form.ToolStripMessage = message;
     }
 
-    public void DisplayMessageBox(string text, string caption, DeepNestLib.MessageBoxIcon icon)
+    public void DisplayMessageBox(string text, string caption, MessageBoxIcon icon)
     {
       messageService.DisplayMessageBox(text, caption, icon);
     }
@@ -46,6 +48,11 @@
     public void InitialiseUiForStartNest()
     {
       this.initialiseUiForStartNest();
+    }
+
+    public override void SetIsVisibleSecondaryProgressBar(bool isVisible)
+    {
+      // NOP.
     }
   }
 }

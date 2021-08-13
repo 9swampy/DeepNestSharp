@@ -1,12 +1,15 @@
 ﻿namespace DeepNestSharp.Ui.Services
 {
   using System;
+  using System.Threading;
   using System.Threading.Tasks;
   using System.Windows.Threading;
   using DeepNestLib;
+  using Microsoft.VisualStudio.Threading;
 
   public class DispatcherService : IDispatcherService
   {
+    private static JoinableTaskContext joinableTaskContext = new JoinableTaskContext();
     private Dispatcher dispatcher = System.Windows.Application.Current.Dispatcher;
 
     public DispatcherService(Dispatcher dispatcher)
@@ -16,11 +19,12 @@
 
     public bool InvokeRequired => !dispatcher.CheckAccess();
 
-    public void Invoke(Action callback) => dispatcher.Invoke(callback);
+    public void Invoke(Action callback) => joinableTaskContext.Factory.Run(async () => await InvokeAsync(callback).ConfigureAwait(false));
 
     public async Task InvokeAsync(Action callback)
     {
-      await dispatcher.InvokeAsync(callback).Task.ConfigureAwait(false);
+      await joinableTaskContext.Factory.SwitchToMainThreadAsync();
+      callback();
     }
 
     //public void Invoke(Action callback)

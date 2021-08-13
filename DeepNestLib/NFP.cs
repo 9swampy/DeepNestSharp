@@ -376,7 +376,7 @@ using DeepNestLib.Placement;
     }
 
     /// <inheritdoc/>
-    public INfp Rotate(double degrees)
+    public INfp Rotate(double degrees, WithChildren withChildren)
     {
       var angle = degrees * Math.PI / 180;
       List<SvgPoint> pp = new List<SvgPoint>();
@@ -398,11 +398,11 @@ using DeepNestLib.Placement;
 
       // rotated.Rotation = rotated.Rotation % 360f;
 
-      if (this.Children != null && this.Children.Count > 0)
+      if (this.Children != null && this.Children.Count > 0 && withChildren == WithChildren.Included)
       {
         for (var j = 0; j < this.Children.Count; j++)
         {
-          rotated.Children[j] = this.Children[j].Rotate(degrees);
+          rotated.Children[j] = this.Children[j].Rotate(degrees, withChildren);
         }
       }
 

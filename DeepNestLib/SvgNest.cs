@@ -24,7 +24,7 @@
       IMessageService messageService,
       IProgressDisplayer progressDisplayer,
       IMinkowskiSumService minkowskiSumService,
-      NestState nestState)
+      INestStateSvgNest nestState)
     {
       this.State = nestState;
       this.messageService = messageService;
@@ -776,34 +776,50 @@
 
     public void ResponseProcessor(NestResult payload)
     {
-      if (this.ga == null || payload == null)
+      try
       {
-        // user might have quit while we're away
-        return;
-      }
+        if (this.ga == null || payload == null)
+        {
+          // user might have quit while we're away
+          return;
+        }
 
-      State.IncrementPopulation();
-      State.SetLastPlacementTime(payload.PlacePartTime);
-      State.IncrementNestCount();
-      State.IncrementTotalNestTime(payload.PlacePartTime);
+        State.IncrementPopulation();
+        State.SetLastNestTime(payload.BackgroundTime);
+        State.SetLastPlacementTime(payload.PlacePartTime);
+        State.IncrementNestCount();
+        State.IncrementPlacementTime(payload.PlacePartTime);
+        State.IncrementNestTime(payload.BackgroundTime);
 
 #if NCRUNCH
       Trace.WriteLine("payload.Index I don't think is being set right; double check before retrying threaded execution.");
 #endif
-      this.ga.Population[payload.index].Processing = false;
-      this.ga.Population[payload.index].Fitness = payload.Fitness;
+        this.ga.Population[payload.index].Processing = false;
+        this.ga.Population[payload.index].Fitness = payload.Fitness;
 
-      int currentPlacements = 0;
-      if (this.State.TopNestResults.TryAdd(payload))
-      {
-        currentPlacements = this.State.TopNestResults.Top.UsedSheets[0].PartPlacements.Count;
-        if (this.State.TopNestResults.IndexOf(payload) < this.State.TopNestResults.EliteSurvivors)
+        int currentPlacements = 0;
+        if (this.State.TopNestResults.TryAdd(payload))
         {
-          this.progressDisplayer.DisplayTransientMessage($"New top {this.State.TopNestResults.MaxCapacity} nest found: nesting time = {payload.PlacePartTime}ms");
-          this.progressDisplayer?.UpdateNestsList();
+          currentPlacements = this.State.TopNestResults.Top.UsedSheets[0].PartPlacements.Count;
+          if (this.State.TopNestResults.IndexOf(payload) < this.State.TopNestResults.EliteSurvivors)
+          {
+            this.progressDisplayer.DisplayTransientMessage($"New top {this.State.TopNestResults.MaxCapacity} nest found: nesting time = {payload.PlacePartTime}ms");
+            this.progressDisplayer?.UpdateNestsList();
+          }
+        }
+        else
+        {
+          this.progressDisplayer.DisplayTransientMessage($"Nesting time = {payload.PlacePartTime}ms");
         }
 
-        progressDisplayer.DisplayProgress(currentPlacements, State.Population);
+        if (currentPlacements > 0)
+        {
+          progressDisplayer.DisplayProgress(currentPlacements, State.Population);
+        }
+      }
+      catch (Exception ex)
+      {
+        throw;
       }
     }
 
@@ -813,7 +829,7 @@
     /// </summary>
     /// <param name="partNestItems"></param>
     /// <param name="background"></param>
-    public void launchWorkers(NestItem<INfp>[] partNestItems, NestItem<ISheet>[] sheetNestItems, ISvgNestConfig config)
+    public void launchWorkers(NestItem<INfp>[] partNestItems, NestItem<ISheet>[] sheetNestItems, ISvgNestConfig config, INestStateBackground nestStateBackground)
     {
       try
       {
@@ -821,7 +837,7 @@
         {
           if (this.ga == null)
           {
-            State.Reset();
+            //State.Reset();
             this.ga = new Procreant(partNestItems, config);
           }
 
@@ -874,9 +890,9 @@
             var end1 = this.ga.Population.Length / 3;
             var end2 = this.ga.Population.Length * 2 / 3;
             var end3 = this.ga.Population.Length;
-            var t1 = new Thread(() => ProcessPopulation(0, end1, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren));
-            var t2 = new Thread(() => ProcessPopulation(end1, end2, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren));
-            var t3 = new Thread(() => ProcessPopulation(end2, this.ga.Population.Length, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren));
+            var t1 = new Thread(() => ProcessPopulation(0, end1, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren, nestStateBackground));
+            var t2 = new Thread(() => ProcessPopulation(end1, end2, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren, nestStateBackground));
+            var t3 = new Thread(() => ProcessPopulation(end2, this.ga.Population.Length, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren, nestStateBackground));
             t1.Start();
             t2.Start();
             t3.Start();
@@ -886,7 +902,7 @@
           }
           else
           {
-            ProcessPopulation(0, this.ga.Population.Length, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren);
+            ProcessPopulation(0, this.ga.Population.Length, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren, nestStateBackground);
           }
         }
       }
@@ -897,7 +913,7 @@
       }
     }
 
-    private void ProcessPopulation(int start, int end, ISvgNestConfig config, ISheet[] sheets, int[] sheetids, int[] sheetsources, List<List<INfp>> sheetchildren)
+    private void ProcessPopulation(int start, int end, ISvgNestConfig config, ISheet[] sheets, int[] sheetids, int[] sheetsources, List<List<INfp>> sheetchildren, INestStateBackground nestStateBackground)
     {
       State.IncrementThreads();
       for (int i = start; i < end; i++)
@@ -946,7 +962,7 @@
           }
           else
           {
-            Background background = new Background(this.progressDisplayer, this, minkowskiSumService);
+            Background background = new Background(this.progressDisplayer, this, minkowskiSumService, nestStateBackground);
             background.BackgroundStart(data, config);
           }
         }
@@ -955,6 +971,6 @@
       State.DecrementThreads();
     }
 
-    private NestState State { get; }
+    private INestStateSvgNest State { get; }
   }
 }

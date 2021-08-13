@@ -21,11 +21,10 @@
     private readonly IProgressDisplayer progressDisplayer;
     private readonly SvgNest nest;
     private readonly IMinkowskiSumService minkowskiSumService;
+    private readonly INestStateBackground state;
 
     // run the placement synchronously
     private IWindowUnk window = new WindowUnk();
-
-    public Action<SvgNest, NestResult> ResponseAction;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Background"/> class.
@@ -34,13 +33,14 @@
     /// <param name="progressDisplayer">Callback access to the executing UI</param>
     /// <param name="nest">Passed in because have had issues with nest.ResponseProcessor accepting responses after a new nest has already been started.</param>
     /// <param name="minkowskiSumService">MinkowskiSumService used to inject algorithms to calculate the No-Fit-Polygons critical to DeepNest.</param>
-    public Background(IProgressDisplayer progressDisplayer, SvgNest nest, IMinkowskiSumService minkowskiSumService)
+    public Background(IProgressDisplayer progressDisplayer, SvgNest nest, IMinkowskiSumService minkowskiSumService, INestStateBackground state)
     {
       this.cacheProcess = new Dictionary<string, INfp[]>();
       this.window = new WindowUnk();
       this.progressDisplayer = progressDisplayer;
       this.nest = nest;
       this.minkowskiSumService = minkowskiSumService;
+      this.state = state;
     }
 
     // returns clipper nfp. Remember that clipper nfp are a list of polygons, not a tree!
@@ -113,6 +113,8 @@
     {
       try
       {
+        var backgroundStopwatch = new Stopwatch();
+        backgroundStopwatch.Start();
         var individual = data.Individual;
 
         var parts = individual.Parts.ToArray();
@@ -148,13 +150,13 @@
         // console.time('Total');
         if (pairs.Count > 0)
         {
-          var pmapWorker = new PmapWorker(pairs, progressDisplayer, config.UseParallel, minkowskiSumService);
+          var pmapWorker = new PmapWorker(pairs, progressDisplayer, config.UseParallel, minkowskiSumService, state);
           var pmapResult = pmapWorker.PmapDeepNest();
-          this.ThenDeepNest(pmapResult, parts, data.Sheets, config, data.Index);
+          this.ThenDeepNest(pmapResult, parts, data.Sheets, config, data.Index, backgroundStopwatch);
         }
         else
         {
-          this.SyncPlaceParts(parts, data.Sheets, config, data.Index);
+          this.SyncPlaceParts(parts, data.Sheets, config, data.Index, backgroundStopwatch);
         }
       }
       catch (ArgumentNullException)
@@ -195,7 +197,7 @@
       return res;
     }
 
-    internal NestResult PlaceParts(IEnumerable<ISheet> sheets, INfp[] parts, ISvgNestConfig config)
+    internal NestResult PlaceParts(IEnumerable<ISheet> sheets, INfp[] parts, ISvgNestConfig config, Stopwatch backgroundStopwatch)
     {
       VerboseLog("PlaceParts");
       if (sheets == null || sheets.Count() == 0)
@@ -642,7 +644,7 @@
       }
 
       VerboseLog($"Nest complete in {sw.ElapsedMilliseconds}");
-      return new NestResult(allPlacements, unplacedParts, totalMerged, config.PlacementType, sw.ElapsedMilliseconds);
+      return new NestResult(parts.Length, allPlacements, unplacedParts, totalMerged, config.PlacementType, sw.ElapsedMilliseconds, backgroundStopwatch.ElapsedMilliseconds);
     }
 
     private static InnerFlowResult TryGetDifferenceWithSheetPolygon(ISvgNestConfig config, List<List<IntPoint>> combinedNfp, INfp part, IntPoint[][] clipperSheetNfp, out List<INfp> differenceWithSheetPolygonNfp)
@@ -1054,13 +1056,20 @@
       return false;
     }
 
-    private void SyncPlaceParts(INfp[] parts, ISheet[] sheets, ISvgNestConfig config, int index)
+    private void SyncPlaceParts(INfp[] parts, ISheet[] sheets, ISvgNestConfig config, int index, Stopwatch backgroundStopwatch)
     {
-      var nestResult = PlaceParts(sheets, parts, config);
-      if (nestResult != null)
+      try
       {
-        nestResult.index = index;
-        this.nest.ResponseProcessor(nestResult);
+        var nestResult = PlaceParts(sheets, parts, config, backgroundStopwatch);
+        if (nestResult != null)
+        {
+          nestResult.index = index;
+          this.nest.ResponseProcessor(nestResult);
+        }
+      }
+      catch (Exception ex)
+      {
+        throw;
       }
     }
 
@@ -1116,8 +1125,13 @@
       window.Insert(doc);
     }
 
-    private void ThenDeepNest(NfpPair[] nfpPairs, INfp[] parts, ISheet[] sheets, ISvgNestConfig config, int index)
+    private void ThenDeepNest(NfpPair[] nfpPairs, INfp[] parts, ISheet[] sheets, ISvgNestConfig config, int index, Stopwatch backgroundStopwatch)
     {
+      if (state.AveragePlacementTime == 0 || state.AveragePlacementTime >= 2000)
+      {
+        progressDisplayer.InitialiseLoopProgress(ProgressBar.Secondary, "DeepNest. . .", nfpPairs.Length);
+      }
+
       if (config.UseParallel)
       {
         Parallel.For(0, nfpPairs.Count(), (i) =>
@@ -1135,7 +1149,8 @@
 
       // console.timeEnd('Total');
       // console.log('before sync');
-      this.SyncPlaceParts(parts, sheets, config, index);
+      this.SyncPlaceParts(parts, sheets, config, index, backgroundStopwatch);
+      progressDisplayer.SetIsVisibleSecondaryProgressBar(false);
     }
 
     internal INfp GetOuterNfp(INfp a, INfp b, MinkowskiCache type, bool inside = false) // todo:?inside def?

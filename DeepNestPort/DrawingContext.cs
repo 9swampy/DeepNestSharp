@@ -343,7 +343,7 @@
           yy += (int)font.Size + gap;
           this.gr.DrawString($"Nests: {context.State.TopNestResults.Count} Fitness: {context.State.TopNestResults.Top.Fitness}   Area:{context.State.TopNestResults.Top.TotalSheetsArea}  ", font, Brushes.DarkBlue, 0, yy);
           yy += (int)font.Size + gap;
-          this.gr.DrawString($"Minkowski Calls: {context.State.CallCounter};  Last placing time: {context.State.LastPlacementTime}ms;  Average nest time: {context.State.AverageNestTime}ms", font, Brushes.DarkBlue, 0, yy);
+          this.gr.DrawString($"Minkowski Calls: {context.State.CallCounter};  Last placing time: {context.State.LastPlacementTime}ms;  Average nest time: {context.State.AveragePlacementTime}ms", font, Brushes.DarkBlue, 0, yy);
           yy += (int)font.Size + gap;
         }
       }

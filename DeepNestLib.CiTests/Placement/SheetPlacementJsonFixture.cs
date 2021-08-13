@@ -2,6 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
+  using System.Diagnostics;
   using System.IO;
   using System.Reflection;
   using DeepNestLib.Placement;
@@ -137,7 +138,7 @@
       var sheetPlacementsCollection = new SheetPlacementCollection();
       sheetPlacementsCollection.Add(sheetPlacement);
 
-      Action act = () => _ = new NestResult(sheetPlacementsCollection, new List<INfp>(), 121, sheetPlacement.PlacementType, 1234);
+      Action act = () => _ = new NestResult(1, sheetPlacementsCollection, new List<INfp>(), 121, sheetPlacement.PlacementType, 1234, 4321);
 
       act.Should().NotThrow();
     }
@@ -154,7 +155,7 @@
       var sheetPlacementsCollection = new SheetPlacementCollection();
       sheetPlacementsCollection.Add(sheetPlacement);
 
-      var nestResult = new NestResult(sheetPlacementsCollection, new List<INfp>(), 121, sheetPlacement.PlacementType, 1234);
+      var nestResult = new NestResult(1, sheetPlacementsCollection, new List<INfp>(), 121, sheetPlacement.PlacementType, 1234, 4321);
       Action act = () => _ = nestResult.ToJson();
 
       act.Should().NotThrow();
@@ -173,7 +174,7 @@
       var sheetPlacementsCollection = new SheetPlacementCollection();
       sheetPlacementsCollection.Add(sheetPlacement);
 
-      var nestResult = new NestResult(sheetPlacementsCollection, new List<INfp>() { unplacedNfp }, 121, sheetPlacement.PlacementType, 1234);
+      var nestResult = new NestResult(1, sheetPlacementsCollection, new List<INfp>() { unplacedNfp }, 121, sheetPlacement.PlacementType, 1234, 4321);
       var json = nestResult.ToJson();
       var actual = NestResult.FromJson(json);
 
@@ -183,7 +184,7 @@
                    .Including(o => o.UsedSheets)
                    .Excluding(o => o.Fitness)
                    .Excluding(o => o.CreatedAt));
-                   //.ExcludingProperties());
+      //.ExcludingProperties());
     }
   }
 }

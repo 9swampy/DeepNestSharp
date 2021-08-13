@@ -23,20 +23,24 @@
     }
 
     public NestResult(
+      int totalParts,
       SheetPlacementCollection allPlacements,
       IList<INfp> unplacedParts,
       double mergedLength,
       PlacementTypeEnum placementType,
-      long placePartTime)
+      long placePartTime,
+      long backgroundTime)
 #pragma warning disable CS0612 // Type or member is obsolete
       : this()
 #pragma warning restore CS0612 // Type or member is obsolete
     {
+      this.TotalParts = totalParts;
       this.UsedSheets = allPlacements;
       this.UnplacedParts = unplacedParts;
       this.MergedLength = mergedLength;
       this.PlacementType = placementType;
       this.PlacePartTime = placePartTime;
+      this.BackgroundTime = backgroundTime;
     }
 
     private ISheetPlacementFitness SheetPlacementFitness => this.fitness;
@@ -71,6 +75,8 @@
         return this.SheetPlacementFitness.Sheets;
       }
     }
+
+    public int TotalParts { get; }
 
     [JsonIgnore]
     public double MaterialWasted
@@ -127,6 +133,7 @@
     public PlacementTypeEnum PlacementType { get; }
 
     public long PlacePartTime { get; }
+    public long BackgroundTime { get; }
 
     [JsonIgnore]
     public int TotalPlacedCount => this.UsedSheets.Sum(o => o.PartPlacements.Count);

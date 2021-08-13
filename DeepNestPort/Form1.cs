@@ -590,7 +590,7 @@
                 sw.Stop();
                 if (SvgNest.Config.UseParallel)
                 {
-                  this.ProgressDisplayerInstance.DisplayTransientMessage($"Iteration time: {sw.ElapsedMilliseconds}ms ({this.context.State.AverageNestTime}ms average)");
+                  this.ProgressDisplayerInstance.DisplayTransientMessage($"Iteration time: {sw.ElapsedMilliseconds}ms ({this.context.State.AveragePlacementTime}ms average)");
                 }
                 else
                 {

@@ -1,6 +1,7 @@
 ﻿namespace DeepNestLib.CiTests
 {
   using System;
+using System.Diagnostics;
   using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
@@ -25,7 +26,7 @@
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryConvertToNfp(firstPartIdSrc, out firstPart).Should().BeTrue();
       INfp secondPart;
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryConvertToNfp(secondPartIdSrc, out secondPart).Should().BeTrue();
-      this.nestResult = new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), A.Dummy<MinkowskiSum>()).PlaceParts(new ISheet[] { firstSheet, secondSheet }, new INfp[] { firstPart, secondPart }, new SvgNestConfig());
+      this.nestResult = new Background(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), A.Dummy<MinkowskiSum>(), A.Dummy<NestState>()).PlaceParts(new ISheet[] { firstSheet, secondSheet }, new INfp[] { firstPart, secondPart }, new SvgNestConfig(), A.Dummy<Stopwatch>());
     }
 
     [Fact]

@@ -2,40 +2,38 @@
 {
   using System;
   using System.Collections.Generic;
+  using System.Diagnostics;
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
 
   public class PmapWorker
   {
+    private static readonly NfpPairDictionary NfpPairCache = new NfpPairDictionary();
+    private static volatile object nfpPairCacheSyncLock = new object();
+
     private readonly IList<NfpPair> pairs;
     private readonly IProgressDisplayer progressDisplayer;
     private readonly bool useParallel;
     private readonly IMinkowskiSumService minkoskiSumService;
-    private int processed = 0;
-    private static readonly NfpPairDictionary NfpPairCache = new NfpPairDictionary();
-    private static volatile object nfpPairCacheSyncLock = new object();
+    private readonly INestStateBackground state;
 
-    public PmapWorker(IList<NfpPair> pairs, IProgressDisplayer progressDisplayer, bool useParallel, IMinkowskiSumService minkoskiSumService)
+    public PmapWorker(IList<NfpPair> pairs, IProgressDisplayer progressDisplayer, bool useParallel, IMinkowskiSumService minkoskiSumService, INestStateBackground state)
     {
       this.pairs = pairs;
       this.progressDisplayer = progressDisplayer;
       this.useParallel = useParallel;
       this.minkoskiSumService = minkoskiSumService;
-    }
-
-    private void DisplayProgress()
-    {
-      Interlocked.Increment(ref this.processed);
-      if (this.pairs != null)
-      {
-        this.progressDisplayer.DisplayProgress(Math.Min(1F, (double)this.processed / (double)this.pairs.Count));
-      }
+      this.state = state;
     }
 
     public NfpPair[] PmapDeepNest()
     {
-      progressDisplayer.InitialiseLoopProgress("PmapDeepNest", pairs.Count);
+      if (state.AveragePlacementTime == 0 || state.AveragePlacementTime >= 2000)
+      {
+        progressDisplayer.InitialiseLoopProgress(ProgressBar.Secondary, "Pmap. . .", pairs.Count);
+      }
+
       NfpPair[] ret = new NfpPair[pairs.Count];
       if (this.useParallel)
       {
@@ -53,6 +51,8 @@
         }
       }
 
+      state.SetNfpPairCachePercentCached(NfpPairCache.PercentCached);
+      progressDisplayer.SetIsVisibleSecondaryProgressBar(false);
       return ret.ToArray();
     }
 
@@ -74,7 +74,7 @@
       pair.A = null;
       pair.B = null;
       pair.nfp = clipperNfp;
-      DisplayProgress();
+      progressDisplayer.IncrementLoopProgress(ProgressBar.Secondary);
       return pair;
     }
   }

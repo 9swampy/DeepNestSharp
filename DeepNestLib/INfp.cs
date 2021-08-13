@@ -2,7 +2,7 @@
 {
   using System.Collections.Generic;
   using DeepNestLib.NestProject;
-using DeepNestLib.Placement;
+  using DeepNestLib.Placement;
 
   public interface IPolygon
   {
@@ -112,7 +112,7 @@ using DeepNestLib.Placement;
     /// </summary>
     /// <param name="degrees">The amount to rotate, +ve clockwise, -ve anti-clockwise.</param>
     /// <returns>A clone of the original, rotated.</returns>
-    INfp Rotate(double degrees);
+    INfp Rotate(double degrees, WithChildren withChildren = WithChildren.Included);
 
     INfp Slice(int v);
 
@@ -125,5 +125,11 @@ using DeepNestLib.Placement;
     string ToShortString();
 
     string ToOpenScadPolygon();
+  }
+
+  public enum WithChildren
+  {
+    Included,
+    Excluded,
   }
 }

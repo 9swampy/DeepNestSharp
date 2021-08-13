@@ -44,6 +44,16 @@
 
     public bool TryAdd(INestResult payload)
     {
+      if (double.IsNaN(payload.Fitness))
+      {
+        return false;
+      }
+
+      if (payload.TotalPartsCount > payload.TotalParts)
+      {
+        return false;
+      }
+
       if (dispatcherService.InvokeRequired)
       {
         bool result = false;

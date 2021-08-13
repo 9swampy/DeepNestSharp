@@ -11,7 +11,7 @@
       Are.Set();
     }
 
-    public void DisplayProgress(double percentageComplete)
+    public void DisplayProgress(ProgressBar progressBar, double percentageComplete)
     {
       Are.Set();
     }
@@ -26,12 +26,12 @@
       Are.Set();
     }
 
-    public void IncrementLoopProgress()
+    public void IncrementLoopProgress(ProgressBar progressBar)
     {
       Are.Set();
     }
 
-    public void InitialiseLoopProgress(string transientMessage, int loopMax)
+    public void InitialiseLoopProgress(ProgressBar progressBar, string transientMessage, int loopMax)
     {
       Are.Set();
     }
@@ -39,6 +39,11 @@
     public void InitialiseUiForStartNest()
     {
       throw new System.NotImplementedException();
+    }
+
+    public void SetIsVisibleSecondaryProgressBar(bool isVisible)
+    {
+      Are.Set();
     }
 
     public void UpdateNestsList()

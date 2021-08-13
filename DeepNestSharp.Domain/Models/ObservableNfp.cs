@@ -227,9 +227,9 @@ using System.ComponentModel;
     }
 
     /// <inheritdoc/>
-    public INfp Rotate(double degrees)
+    public INfp Rotate(double degrees, WithChildren withChildren)
     {
-      return this.item.Rotate(degrees);
+      return this.item.Rotate(degrees, withChildren);
     }
 
     /// <inheritdoc/>

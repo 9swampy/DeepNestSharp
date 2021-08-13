@@ -57,6 +57,8 @@
 
     public double TotalPartsArea => this.item.TotalPartsArea;
 
+    public int TotalParts => this.item.TotalParts;
+
     public string ToJson()
     {
       return this.item.ToJson();

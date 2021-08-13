@@ -19,7 +19,6 @@
     private readonly MainViewModel mainViewModel;
     private readonly IMessageService messageService;
     private readonly IProgressDisplayer progressDisplayer;
-    private INestProjectViewModel? nestProjectViewModel;
     private bool isRunning;
     private bool isStopping;
     private NestExecutionHelper nestExecutionHelper = new NestExecutionHelper();
@@ -29,21 +28,23 @@
     private Task? nestWorkerTask;
     private string lastLogMessage = string.Empty;
     private double progress;
+    private double progressSecondary;
     private int selectedIndex;
     private INestResult? selectedItem;
 
-    private RelayCommand stopNestCommand;
-    private RelayCommand continueNestCommand;
-    private RelayCommand restartNestCommand;
-    private RelayCommand loadSheetPlacementCommand;
-    private RelayCommand<INestResult> loadNestResultCommand;
+    private RelayCommand? stopNestCommand;
+    private RelayCommand? continueNestCommand;
+    private RelayCommand? restartNestCommand;
+    private RelayCommand? loadSheetPlacementCommand;
+    private RelayCommand<INestResult>? loadNestResultCommand;
+    private bool isSecondaryProgressVisible;
 
     public NestMonitorViewModel(MainViewModel mainViewModel, IMessageService messageService)
       : base("Monitor")
     {
       this.mainViewModel = mainViewModel;
       this.messageService = messageService;
-      this.progressDisplayer = new ProgressDisplayer(this, messageService, mainViewModel.DispatcherService, mainViewModel);
+      this.progressDisplayer = new ProgressDisplayer(this, messageService, mainViewModel.DispatcherService);
     }
 
     public ICommand ContinueNestCommand => continueNestCommand ?? (continueNestCommand = new RelayCommand(OnContinueNest, () => false));
@@ -62,6 +63,12 @@
         SetProperty(ref this.isRunning, value);
         Contextualise();
       }
+    }
+
+    public bool IsSecondaryProgressVisible
+    {
+      get => isSecondaryProgressVisible;
+      internal set => SetProperty(ref isSecondaryProgressVisible, value);
     }
 
     public bool IsStopping
@@ -104,9 +111,15 @@
       internal set => SetProperty(ref progress, value);
     }
 
+    public double ProgressSecondary
+    {
+      get => progressSecondary;
+      internal set => SetProperty(ref progressSecondary, value);
+    }
+
     public ICommand RestartNestCommand => restartNestCommand ?? (restartNestCommand = new RelayCommand(OnRestartNest, () => false));
 
-    public NestState State => Context.State;
+    public INestState State => Context.State;
 
     public ICommand StopNestCommand => stopNestCommand ?? (stopNestCommand = new RelayCommand(OnStopNest, () => IsRunning && !IsStopping));
 
@@ -163,8 +176,6 @@
         }
 
         this.IsRunning = true;
-
-        this.nestProjectViewModel = nestProjectViewModel;
         this.nestExecutionHelper.InitialiseNest(
                           this.Context,
                           nestProjectViewModel.ProjectInfo.SheetLoadInfos,
@@ -282,11 +293,11 @@
             sw.Stop();
             if (SvgNest.Config.UseParallel)
             {
-              await DisplayToolStripMessage($"Iteration time:{sw.ElapsedMilliseconds}ms Average:{nestMonitorViewModel.Context.State.AverageNestTime}ms");
+              await DisplayToolStripMessage($"Iteration time:{sw.ElapsedMilliseconds}ms Average:{nestMonitorViewModel.Context.State.AveragePlacementTime}ms");
             }
             else
             {
-              await DisplayToolStripMessage($"Nesting time:{sw.ElapsedMilliseconds}ms Average:{nestMonitorViewModel.Context.State.AverageNestTime}ms");
+              await DisplayToolStripMessage($"Nesting time:{sw.ElapsedMilliseconds}ms Average:{nestMonitorViewModel.Context.State.AveragePlacementTime}ms");
             }
 
             if (nestMonitorViewModel.Context.State.IsErrored)
@@ -306,7 +317,7 @@
         }
         finally
         {
-          nestMonitorViewModel.mainViewModel.DispatcherService.Invoke(() =>
+          await nestMonitorViewModel.mainViewModel.DispatcherService.InvokeAsync(() =>
           {
             Mouse.OverrideCursor = null;
             nestMonitorViewModel.IsStopping = false;

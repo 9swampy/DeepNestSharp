@@ -2,7 +2,9 @@
 {
   public interface INestState
   {
-    long AverageNestTime { get; }
+    long AveragePlacementTime { get; }
+
+    int CallCounter { get; }
 
     int Generations { get; }
 
@@ -14,8 +16,54 @@
 
     int NestCount { get; }
 
+    double NfpPairCachePercentCached { get; }
+
     int Population { get; }
 
     int Threads { get; }
+
+    TopNestResultsCollection TopNestResults { get; }
+
+    void SetIsErrored();
+  }
+
+  public interface INestStateBackground : INestState
+  {
+    void SetNfpPairCachePercentCached(double percentCached);
+  }
+
+  public interface INestStateSvgNest : INestState
+  {
+    void IncrementPopulation();
+
+    void SetLastNestTime(long backgroundTime);
+
+    void SetLastPlacementTime(long placePartTime);
+
+    void IncrementNestCount();
+
+    void IncrementNestTime(long backgroundTime);
+
+    void IncrementPlacementTime(long placePartTime);
+
+    void IncrementGenerations();
+
+    void ResetPopulation();
+
+    void IncrementThreads();
+
+    void DecrementThreads();
+  }
+
+  public interface INestStateMinkowski : INestState
+  {
+    void IncrementCallCounter();
+  }
+
+  public interface INestStateNestingContext : INestState
+  {
+    void IncrementIterations();
+
+    void Reset();
   }
 }

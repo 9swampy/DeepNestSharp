@@ -22,6 +22,8 @@
 
     double[] Rotation { get; set; }
 
+    int TotalParts { get; }
+
     IList<INfp> UnplacedParts { get; }
 
     IList<ISheetPlacement, SheetPlacement> UsedSheets { get; }

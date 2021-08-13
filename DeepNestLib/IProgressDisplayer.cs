@@ -6,7 +6,7 @@
     /// DisplayProgress on a percentage scale.
     /// </summary>
     /// <param name="percentageComplete">A number bettwen 0 (0%) and 1 (100%).</param>
-    void DisplayProgress(double percentageComplete);
+    void DisplayProgress(ProgressBar progressBar, double percentageComplete);
 
     void DisplayProgress(int placedParts, int currentPopulation);
 
@@ -18,19 +18,16 @@
 
     void InitialiseUiForStartNest();
 
-    void IncrementLoopProgress();
+    void IncrementLoopProgress(ProgressBar progressBar);
 
-    void InitialiseLoopProgress(string transientMessage, int loopMax);
+    void SetIsVisibleSecondaryProgressBar(bool isVisible);
+
+    void InitialiseLoopProgress(ProgressBar progressBar, string transientMessage, int loopMax);
   }
 
-  public class ProgressDisplayerHelper
+  public enum ProgressBar
   {
-    public static double CalculatePercentageComplete(int placedParts, int currentPopulation, int populationSize, int totalPartsToPlace)
-    {
-      double progressPopulation = 0.66f * ((double)currentPopulation / (double)populationSize);
-      double progressPlacements = 0.34f * ((double)placedParts / (double)totalPartsToPlace);
-      var percentageComplete = progressPopulation + progressPlacements;
-      return percentageComplete;
-    }
+    Primary,
+    Secondary
   }
 }

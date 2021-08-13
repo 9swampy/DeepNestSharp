@@ -5,6 +5,7 @@
   using System.Drawing;
   using System.Linq;
   using System.Threading;
+  using System.Threading.Tasks;
   using ClipperLib;
   using Minkowski;
 
@@ -13,14 +14,14 @@
     private static volatile object minkowskiSyncLock = new object();
     private MinkowskiDictionary minkowskiCache = new MinkowskiDictionary();
 
-    private readonly NestState State;
+    private readonly INestStateMinkowski State;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MinkowskiSum"/> class.
     /// Private because sharing/reusing the cache is dangerous. 
     /// Replacing static global dependencies with factories to facilitate Unit Tests.
     /// </summary>
-    private MinkowskiSum(NestState state)
+    private MinkowskiSum(INestStateMinkowski state)
     {
       this.State = state;
     }
@@ -30,7 +31,7 @@
     /// </summary>
     /// <param name="nestState">Shared NestState (instead of NestState.Default).</param>
     /// <returns></returns>
-    public static IMinkowskiSumService CreateInstance(NestState nestState) => new MinkowskiSum(nestState);
+    public static IMinkowskiSumService CreateInstance(INestStateMinkowski nestState) => new MinkowskiSum(nestState);
 
     INfp IMinkowskiSumService.DllImportExecute(INfp a, INfp b, MinkowskiSumCleaning minkowskiSumCleaning)
     {

@@ -4,11 +4,12 @@
   using System.IO;
   using System.Linq;
   using DeepNestLib.NestProject;
-  
+
   public class NestExecutionHelper
   {
     public void InitialiseNest(NestingContext context, IList<ISheetLoadInfo> sheetLoadInfos, IList<IDetailLoadInfo> detailLoadInfos, IProgressDisplayer progressDisplayer)
     {
+      progressDisplayer.SetIsVisibleSecondaryProgressBar(false);
       context.Reset();
       int src = 0;
       foreach (var item in sheetLoadInfos)

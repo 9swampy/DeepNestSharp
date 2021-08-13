@@ -51,7 +51,7 @@
     }
 
     /// <inheritdoc />
-    [Category("Simplifications")]
+    [Category("Unimplemented")]
     public bool ExploreConcave
     {
       get => svgNestConfig.ExploreConcave;

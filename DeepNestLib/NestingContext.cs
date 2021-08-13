@@ -3,7 +3,6 @@
   using System;
   using System.Collections.Generic;
   using System.Linq;
-using System.Reflection;
   using System.Threading.Tasks;
   using System.Xml.Linq;
   using DeepNestLib.Placement;
@@ -12,6 +11,9 @@ using System.Reflection;
   {
     private readonly IMessageService messageService;
     private readonly IProgressDisplayer progressDisplayer;
+    private readonly NestState state;
+    private readonly INestStateBackground stateBackground;
+    private readonly INestStateNestingContext stateNestingContext;
     private volatile bool isStopped;
     private volatile SvgNest nest;
 
@@ -20,6 +22,9 @@ using System.Reflection;
       this.messageService = messageService;
       this.progressDisplayer = progressDisplayer;
       this.State = state;
+      this.state = state;
+      this.stateNestingContext = state;
+      this.stateBackground = state;
     }
 
     public ICollection<INfp> Polygons { get; } = new HashSet<INfp>();
@@ -34,7 +39,7 @@ using System.Reflection;
       private set => nest = value;
     }
 
-    public NestState State { get; }
+    public INestState State { get; }
 
     public void StartNest()
     {
@@ -44,8 +49,8 @@ using System.Reflection;
       this.Nest = new SvgNest(
         this.messageService,
         this.progressDisplayer,
-        MinkowskiSum.CreateInstance(State),
-        State);
+        MinkowskiSum.CreateInstance(state),
+        state);
       this.progressDisplayer.DisplayTransientMessage($"Pre-processing. . .");
       this.isStopped = false;
     }
@@ -74,12 +79,12 @@ using System.Reflection;
           Sheets[i].Id = i;
         }
 
-        this.progressDisplayer.InitialiseLoopProgress("Pre-processing (Polygon Clone). . .", Polygons.Count);
+        this.progressDisplayer.InitialiseLoopProgress(ProgressBar.Primary, "Pre-processing (Polygon Clone). . .", Polygons.Count);
         foreach (var item in Polygons)
         {
           NFP clone = item.CloneExact();
           lpoly.Add(clone);
-          this.progressDisplayer.IncrementLoopProgress();
+          this.progressDisplayer.IncrementLoopProgress(ProgressBar.Primary);
         }
 
         foreach (var item in Sheets)
@@ -106,13 +111,13 @@ using System.Reflection;
         if (config.OffsetTreePhase)
         {
           var grps = lpoly.GroupBy(z => z.Source).ToArray();
-          this.progressDisplayer.InitialiseLoopProgress("Pre-processing (Offset Tree Phase). . .", grps.Length);
+          this.progressDisplayer.InitialiseLoopProgress(ProgressBar.Primary, "Pre-processing (Offset Tree Phase). . .", grps.Length);
           if (config.UseParallel)
           {
             Parallel.ForEach(grps, (item) =>
             {
               OffsetTreeReplace(config, item);
-              this.progressDisplayer.IncrementLoopProgress();
+              this.progressDisplayer.IncrementLoopProgress(ProgressBar.Primary);
             });
           }
           else
@@ -120,7 +125,7 @@ using System.Reflection;
             foreach (var item in grps)
             {
               OffsetTreeReplace(config, item);
-              this.progressDisplayer.IncrementLoopProgress();
+              this.progressDisplayer.IncrementLoopProgress(ProgressBar.Primary);
             }
           }
 
@@ -165,10 +170,10 @@ using System.Reflection;
         {
           if (!this.isStopped)
           {
-            Nest.launchWorkers(partsLocal.ToArray(), sheetsLocal.ToArray(), config);
+            Nest.launchWorkers(partsLocal.ToArray(), sheetsLocal.ToArray(), config, stateBackground);
           }
 
-          if (State.TopNestResults != null && State.TopNestResults.Count > 0)
+          if (state.TopNestResults != null && State.TopNestResults.Count > 0)
           {
             var plcpr = State.TopNestResults.Top;
 
@@ -178,14 +183,14 @@ using System.Reflection;
             }
           }
 
-          State.IncrementIterations();
+          stateNestingContext.IncrementIterations();
         }
       }
       catch (Exception ex)
       {
         if (!State.IsErrored)
         {
-          State.SetIsErrored();
+          state.SetIsErrored();
           this.messageService.DisplayMessage(ex);
         }
 
@@ -407,7 +412,7 @@ using System.Reflection;
     /// </summary>
     private void InternalReset()
     {
-      State.Reset();
+      stateNestingContext.Reset();
       Current = null;
       this.Current = null;
     }
