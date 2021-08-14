@@ -2,8 +2,10 @@
 {
   using System;
   using System.Diagnostics;
+  using System.Reflection;
   using System.Runtime.CompilerServices;
   using System.Text;
+  using System.Threading;
   using System.Threading.Tasks;
   using System.Windows.Input;
   using DeepNestLib;
@@ -134,17 +136,23 @@
       get => selectedItem;
       set
       {
-        SetProperty(ref selectedItem, value);
         if (value == null)
         {
           DrawingContext.Clear();
+          if (!this.TopNestResults.IsEmpty)
+          {
+            _ = Task.Factory.StartNew(() =>
+              {
+                SelectedIndex = 0;
+              });
+          }
         }
         else
         {
+          SetProperty(ref selectedItem, value);
           DrawingContext.For(value.UsedSheets[0]);
+          OnPropertyChanged(nameof(DrawingContext));
         }
-
-        OnPropertyChanged(nameof(DrawingContext));
       }
     }
 
@@ -166,7 +174,7 @@
       }
     }
 
-    public bool TryStart(INestProjectViewModel nestProjectViewModel)
+    public async Task<bool> TryStartAsync(INestProjectViewModel nestProjectViewModel)
     {
       lock (syncLock)
       {
@@ -192,12 +200,7 @@
         else
         {
           this.nestWorker = new NestWorker(this);
-          this.nestWorkerTask = new Task(() =>
-          {
-#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
-            Task.Run(() => this.nestWorker.Execute()).Wait();
-#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
-          });
+          this.nestWorkerTask = this.nestWorker.ExecuteAsync();
           this.nestWorkerConfiguredTaskAwaitable = this.nestWorkerTask.ConfigureAwait(false);
           this.nestWorkerConfiguredTaskAwaitable?.GetAwaiter().OnCompleted(() =>
           {
@@ -277,7 +280,7 @@
         this.nestMonitorViewModel = nestMonitorViewModel;
       }
 
-      public async Task Execute()
+      public async Task ExecuteAsync()
       {
         try
         {

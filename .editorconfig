@@ -32,7 +32,7 @@ dotnet_diagnostic.SA1512.severity = suggestion
 # SA1611: Element parameters should be documented
 dotnet_diagnostic.SA1611.severity = suggestion
 dotnet_diagnostic.SX1309.severity=none
-dotnet_diagnostic.SX1309S.severity=silent
+dotnet_diagnostic.SX1309S.severity=none
 
 # IDE0021: Use block body for constructors
 csharp_style_expression_bodied_constructors = when_on_single_line

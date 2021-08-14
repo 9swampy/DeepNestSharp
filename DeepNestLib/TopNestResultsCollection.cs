@@ -125,6 +125,8 @@
       }
     }
 
+    public bool IsEmpty => this.items.Count == 0;
+
     public IEnumerator<INestResult> GetEnumerator()
     {
       return items.GetEnumerator();

@@ -7,7 +7,7 @@
   using FluentAssertions;
   using Xunit;
 
-  public class PerfectFitnessFixture
+  public class PerfectBoundingBoxFitnessFixture
   {
     double width;
     double height;
@@ -15,7 +15,7 @@
     ISheet sheet;
     ISheetPlacement sp;
 
-    public PerfectFitnessFixture()
+    public PerfectBoundingBoxFitnessFixture()
     {
       width = new Random().Next(50, 1200);
       height = new Random().Next(50, 900);
@@ -59,10 +59,10 @@
     }
 
     [Fact]
-    public void GivenPerfectFitThenBoundsShouldBeExpected()
+    public void GivenBoundsPenaltyShouldBeInLineWithSheetsPenaltyThenBoundsShouldBeComingCloseToSheets()
     {
       var sut = new OriginalFitnessSheet(sp);
-      sut.Bounds.Should().BeApproximately(area * 4 / 3, area / 6);
+      sut.Bounds.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
     }
   }
 }

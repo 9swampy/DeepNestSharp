@@ -71,5 +71,12 @@
     {
       this.nestResult.UnplacedParts.Should().BeEmpty();
     }
+
+
+    [Fact]
+    public void GivenBoundsPenaltyShouldBeInLineWithSheetsPenaltyThenScenario1BoundsShouldBeComingCloseToSheets()
+    {
+      this.nestResult.FitnessSheets.Should().BeApproximately(this.nestResult.FitnessBounds, this.nestResult.FitnessBounds / 2);
+    }
   }
 }

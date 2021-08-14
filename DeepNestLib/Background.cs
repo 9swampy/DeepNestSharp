@@ -13,6 +13,9 @@
 
   public class Background
   {
+    internal const bool NCrunchTrace = false;
+    private bool firstNCrunchTrace = false;
+
     private const bool EnableCaches = true;
 
     private static volatile object lockobj = new object();
@@ -647,7 +650,7 @@
       return new NestResult(parts.Length, allPlacements, unplacedParts, totalMerged, config.PlacementType, sw.ElapsedMilliseconds, backgroundStopwatch.ElapsedMilliseconds);
     }
 
-    private static InnerFlowResult TryGetDifferenceWithSheetPolygon(ISvgNestConfig config, List<List<IntPoint>> combinedNfp, INfp part, IntPoint[][] clipperSheetNfp, out List<INfp> differenceWithSheetPolygonNfp)
+    private InnerFlowResult TryGetDifferenceWithSheetPolygon(ISvgNestConfig config, List<List<IntPoint>> combinedNfp, INfp part, IntPoint[][] clipperSheetNfp, out List<INfp> differenceWithSheetPolygonNfp)
     {
       differenceWithSheetPolygonNfp = new List<INfp>();
 
@@ -780,10 +783,21 @@
       return true;
     }
 
-    private static void VerboseLog(string message)
+    private void VerboseLog(string message)
     {
 #if NCRUNCH
-      Trace.WriteLine(message);
+      if (NCrunchTrace)
+      {
+        Trace.WriteLine(message);
+      }
+      else
+      {
+        if (firstNCrunchTrace)
+        {
+          firstNCrunchTrace = false;
+          Trace.WriteLine("Background.NCrunchTrace disabled");
+        }
+      }
 #endif
     }
 

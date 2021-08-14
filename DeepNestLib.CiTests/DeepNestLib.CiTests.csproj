@@ -119,6 +119,7 @@
     </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
     </Reference>
@@ -182,6 +183,7 @@
     <Compile Include="FitOnlyOneOfTwoSmallSquaresPartInOneLargerSquareSheetsFixture.cs" />
     <Compile Include="FitTwoSmallSquaresPartInTwoLargerSquareSheetsFixture.cs" />
     <Compile Include="GeneticAlgorithm\BoundingBoxFitnessFixture.cs" />
+    <Compile Include="GeneticAlgorithm\GravityBoundsFixture.cs" />
     <Compile Include="GeneticAlgorithm\GravityFitnessFixture.cs" />
     <Compile Include="GeneticAlgorithm\SheetPlacementJsonHelper.cs" />
     <Compile Include="GeneticAlgorithm\SqueezeFitnessFixture.cs" />

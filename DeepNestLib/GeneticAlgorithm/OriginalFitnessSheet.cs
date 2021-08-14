@@ -110,22 +110,20 @@
           {
             double area;
             var rectBounds = sheetPlacement.RectBounds;
+            double bound;
             if (sheetPlacement.PlacementType == PlacementTypeEnum.Gravity)
             {
-              area = (rectBounds.Width * 3) * rectBounds.Height;
+              area = Math.Pow(((rectBounds.Width * 3) + rectBounds.Height) / 4, 2);
+              var sheetWidth = sheetPlacement.Sheet.Width == 0 ? sheetPlacement.Sheet.WidthCalculated : sheetPlacement.Sheet.Width;
+              bound = rectBounds.Width / sheetWidth * sheetPlacement.Sheet.Area * 2;
             }
             else
             {
               area = rectBounds.Width * rectBounds.Height;
+              bound = area;
             }
 
-            bounds = (((rectBounds.Width * 2) / sheetPlacement.Sheet.Area) + area + sheetPlacement.Hull.Area) / 6;
-
-            if (this.sheetPlacement.PlacementType == PlacementTypeEnum.BoundingBox ||
-                this.sheetPlacement.PlacementType == PlacementTypeEnum.Squeeze)
-            {
-              bounds *= 4;
-            }
+            bounds = ((bound * 4) + area + sheetPlacement.Hull.Area) / 5;
           }
         }
 

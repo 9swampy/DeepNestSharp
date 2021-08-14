@@ -2,6 +2,7 @@
 {
   using System.IO;
   using System.Reflection;
+  using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
   using FluentAssertions;
   using Xunit;
@@ -30,9 +31,29 @@
     }
 
     [Fact]
+    public void GivenTwoSheetPlacementsWhenSamePartsPlacedOnEachButS2IsBetterByGravityIsGuessS2MaterialWastedShouldBeLessTbc()
+    {
+      scenario2.Fitness.MaterialWasted.Should().BeLessThan(scenario1.Fitness.MaterialWasted);
+    }
+
+    [Fact]
     public void GivenTwoSheetPlacementsWhenSameSheetsUsedOnEachThenSheetsFitnessShouldBeSame()
     {
       scenario1.Fitness.Sheets.Should().Be(scenario2.Fitness.Sheets);
+    }
+
+    [Fact]
+    public void GivenBoundsPenaltyShouldBeInLineWithSheetsPenaltyThenScenario1BoundsShouldBeComingCloseToSheets()
+    {
+      var sut = new OriginalFitnessSheet(scenario1);
+      sut.Bounds.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
+    }
+
+    [Fact]
+    public void GivenBoundsPenaltyShouldBeInLineWithSheetsPenaltyThenScenario2BoundsShouldBeComingCloseToSheets()
+    {
+      var sut = new OriginalFitnessSheet(scenario2);
+      sut.Bounds.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
     }
   }
 }

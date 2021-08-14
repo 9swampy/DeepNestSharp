@@ -15,7 +15,7 @@
   {
     private int selectedDetailLoadInfoIndex;
     private IDetailLoadInfo? selectedDetailLoadInfo;
-    private RelayCommand executeNestCommand;
+    private AsyncRelayCommand executeNestCommand;
     private AsyncRelayCommand addPartCommand;
     private AsyncRelayCommand addSheetCommand;
     private RelayCommand<IDetailLoadInfo> removePartCommand;
@@ -53,7 +53,7 @@
 
     public IRelayCommand<ISheetLoadInfo> RemoveSheetCommand => removeSheetCommand ?? (removeSheetCommand = new RelayCommand<ISheetLoadInfo>(OnRemoveSheet));
 
-    public ICommand ExecuteNestCommand => executeNestCommand ?? (executeNestCommand = new RelayCommand(OnExecuteNest, () => !MainViewModel.NestMonitorViewModel.IsRunning));
+    public ICommand ExecuteNestCommand => executeNestCommand ?? (executeNestCommand = new AsyncRelayCommand(OnExecuteNest, () => !MainViewModel.NestMonitorViewModel.IsRunning));
 
     public override string FileDialogFilter => DeepNestLib.NestProject.ProjectInfo.FileDialogFilter;
 
@@ -148,10 +148,10 @@
       this.IsDirty = true;
     }
 
-    private void OnExecuteNest()
+    private async Task OnExecuteNest()
     {
       MainViewModel.NestMonitorViewModel.IsActive = true;
-      MainViewModel.NestMonitorViewModel.TryStart(this);
+      await MainViewModel.NestMonitorViewModel.TryStartAsync(this).ConfigureAwait(false);
     }
 
     private void OnLoadPart(string? path)
