@@ -7,6 +7,7 @@
 #endif
   using System.Linq;
   using System.Threading;
+  using System.Threading.Tasks;
   using ClipperLib;
   using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
@@ -890,15 +891,10 @@
             var end1 = this.ga.Population.Length / 3;
             var end2 = this.ga.Population.Length * 2 / 3;
             var end3 = this.ga.Population.Length;
-            var t1 = new Thread(() => ProcessPopulation(0, end1, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren, nestStateBackground));
-            var t2 = new Thread(() => ProcessPopulation(end1, end2, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren, nestStateBackground));
-            var t3 = new Thread(() => ProcessPopulation(end2, this.ga.Population.Length, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren, nestStateBackground));
-            t1.Start();
-            t2.Start();
-            t3.Start();
-            t1.Join();
-            t2.Join();
-            t3.Join();
+            Parallel.Invoke(
+              () => ProcessPopulation(0, end1, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren, nestStateBackground),
+              () => ProcessPopulation(end1, end2, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren, nestStateBackground),
+              () => ProcessPopulation(end2, this.ga.Population.Length, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren, nestStateBackground));
           }
           else
           {

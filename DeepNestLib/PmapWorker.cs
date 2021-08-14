@@ -37,9 +37,10 @@
       NfpPair[] ret = new NfpPair[pairs.Count];
       if (this.useParallel)
       {
-        Parallel.For(0, pairs.Count, (i) =>
+        Parallel.For(0, this.pairs.Count, (i) =>
         {
-          ret[i] = this.Process(pairs[i]);
+          var item = pairs[i];
+          ProcessAndCaptureResult(item, result => ret[i] = result);
         });
       }
       else
@@ -56,10 +57,15 @@
       return ret.ToArray();
     }
 
+    private void ProcessAndCaptureResult(NfpPair item, Action<NfpPair> captureResultAction)
+    {
+      captureResultAction(this.Process(item));
+    }
+
     internal NfpPair Process(NfpPair pair)
     {
-      var a = pair.A.Rotate(pair.ARotation);
-      var b = pair.B.Rotate(pair.BRotation);
+      var a = pair.A.Rotate(pair.ARotation, WithChildren.Excluded);
+      var b = pair.B.Rotate(pair.BRotation, WithChildren.Excluded);
 
       NFP clipperNfp;
       lock (nfpPairCacheSyncLock)

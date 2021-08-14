@@ -6,7 +6,7 @@
     },
     "DeepNestSharp.dnest": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Git\\CanDispenserCnc\\CuttingLists\\Std320x164\\Recreate300x200GoodSwitchbackNest.dnest"
+      "commandLineArgs": "C:\\Git\\CanDispenserCnc\\CuttingLists\\MixedSheetOfActimelAndStd320BackTopAndFront.dnest"
     },
     "DeepNestSharp.dnsp": {
       "commandName": "Project",

@@ -4,8 +4,6 @@
   using System.Collections.Generic;
   using System.Drawing;
   using System.Linq;
-  using System.Threading;
-  using System.Threading.Tasks;
   using ClipperLib;
   using Minkowski;
 
@@ -14,7 +12,7 @@
     private static volatile object minkowskiSyncLock = new object();
     private MinkowskiDictionary minkowskiCache = new MinkowskiDictionary();
 
-    private readonly INestStateMinkowski State;
+    private readonly INestStateMinkowski state;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MinkowskiSum"/> class.
@@ -23,7 +21,7 @@
     /// </summary>
     private MinkowskiSum(INestStateMinkowski state)
     {
-      this.State = state;
+      this.state = state;
     }
 
     /// <summary>
@@ -84,7 +82,7 @@
 #endif
           MinkowskiWrapper.calculateNFP();
 
-          State.IncrementCallCounter();
+          state.IncrementCallCounter();
 
           int[] sizes;
           int[] sizes1;

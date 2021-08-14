@@ -398,7 +398,7 @@ using DeepNestLib.Placement;
 
       // rotated.Rotation = rotated.Rotation % 360f;
 
-      if (this.Children != null && this.Children.Count > 0 && withChildren == WithChildren.Included)
+      if (withChildren == WithChildren.Included && this.Children != null && this.Children.Count > 0)
       {
         for (var j = 0; j < this.Children.Count; j++)
         {

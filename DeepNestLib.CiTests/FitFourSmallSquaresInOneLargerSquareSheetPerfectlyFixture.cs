@@ -58,13 +58,13 @@ using System.Diagnostics;
     [Obsolete]
     public void ShouldHaveExpectedFitness()
     {
-      this.nestResult.Fitness.Should().BeApproximately(976, 10);
+      this.nestResult.Fitness.Should().BeApproximately(1657, 10);
     }
 
     [Fact]
     public void ShouldHaveSameFitnessBoundsAsOriginal()
     {
-      this.nestResult.FitnessBounds.Should().BeApproximately(322, 10);
+      this.nestResult.FitnessBounds.Should().BeApproximately(1003, 10);
     }
 
     [Fact]
