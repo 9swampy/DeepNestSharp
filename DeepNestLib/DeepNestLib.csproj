@@ -238,6 +238,8 @@
     <Compile Include="PartPlacementJsonConverter.cs" />
     <Compile Include="PlacementTypeEnum.cs" />
     <Compile Include="DoublePrecisionConverter.cs" />
+    <Compile Include="Placement\NfpHelper.cs" />
+    <Compile Include="Placement\PlacementWorker.cs" />
     <Compile Include="Placement\INestResult.cs" />
     <Compile Include="Placement\IPartPlacement.cs" />
     <Compile Include="Placement\ISheetPlacement.cs" />

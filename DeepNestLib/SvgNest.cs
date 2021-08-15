@@ -437,8 +437,8 @@
     /// <returns></returns>
     internal static INfp ClipSubject(INfp subject, INfp clipBounds, double clipperScale)
     {
-      var clipperSubject = Background.InnerNfpToClipperCoordinates(new INfp[] { subject }, clipperScale);
-      var clipperClip = Background.InnerNfpToClipperCoordinates(new INfp[] { clipBounds }, clipperScale);
+      var clipperSubject = NfpHelper.InnerNfpToClipperCoordinates(new INfp[] { subject }, clipperScale);
+      var clipperClip = NfpHelper.InnerNfpToClipperCoordinates(new INfp[] { clipBounds }, clipperScale);
 
       var clipper = new Clipper();
       clipper.AddPaths(clipperClip.Select(z => z.ToList()).ToList(), PolyType.ptClip, true);

@@ -69,7 +69,7 @@
       {
         var clipperScale = new SvgNestConfig().ClipperScale;
         var allpoints = CombinedPoints(this.PartPlacements);
-        var clipperNfp = Background.NfpToClipperCoordinates(allpoints, clipperScale);
+        var clipperNfp = NfpHelper.NfpToClipperCoordinates(allpoints, clipperScale);
 
         var combinedNfp = new List<List<ClipperLib.IntPoint>>();
         var clipper = new ClipperLib.Clipper();
