@@ -11,6 +11,9 @@
   public class RunFullNestBoundingBoxFixture
   {
     private const string DxfTestFilename = "Dxfs._5.dxf";
+    private const double ExpectedFitness = 494512;
+    private const double ExpectedFitnessTolerance = 10000;
+
     private readonly DxfGenerator dxfGenerator = new DxfGenerator();
     private static volatile object testSyncLock = new object();
     private DefaultSvgNestConfig config;
@@ -36,7 +39,8 @@
           config.PopulationSize = 40;
           this.loadedRawDetail = DxfParser.LoadDxfStream(DxfTestFilename);
           this.loadedRawDetail.Should().NotBeNull();
-          this.nestingContext = A.Dummy<NestingContext>();
+          var progressCapture = new ProgressTestResponse();
+          this.nestingContext = new NestingContext(A.Fake<IMessageService>(), progressCapture, new NestState(config, A.Fake<IDispatcherService>()));
           this.hasImportedRawDetail = loadedRawDetail.TryConvertToNfp(A.Dummy<int>(), out this.loadedNfp);
           this.nestingContext.Polygons.Add(this.loadedNfp);
           this.nestingContext.Polygons.Add(this.loadedNfp.Clone());
@@ -53,6 +57,11 @@
             i++;
             this.nestingContext.NestIterate(this.config);
             Thread.Sleep(100);
+            if (this.nestingContext.State.TopNestResults.Count >= terminateNestResultCount &&
+                this.nestingContext.State.TopNestResults.Top.Fitness <= ExpectedFitness + ExpectedFitnessTolerance)
+            {
+              break;
+            }
           }
         }
       }
@@ -85,7 +94,7 @@
     [Fact]
     public void FitnessShouldBeExpected()
     {
-      this.nestingContext.State.TopNestResults.Top.Fitness.Should().BeLessThan(600000);
+      this.nestingContext.State.TopNestResults.Top.Fitness.Should().BeLessThan(ExpectedFitness+ExpectedFitnessTolerance);
     }
 
     [Fact]

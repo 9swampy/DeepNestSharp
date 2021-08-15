@@ -29,11 +29,7 @@
 
     public NfpPair[] PmapDeepNest()
     {
-      if (state.AveragePlacementTime == 0 || state.AveragePlacementTime >= 2000)
-      {
-        progressDisplayer.InitialiseLoopProgress(ProgressBar.Secondary, "Pmap. . .", pairs.Count);
-      }
-
+      progressDisplayer.InitialiseLoopProgress(ProgressBar.Secondary, "Pmap. . .", pairs.Count);
       NfpPair[] ret = new NfpPair[pairs.Count];
       if (this.useParallel)
       {

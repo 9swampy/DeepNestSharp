@@ -17,7 +17,8 @@
     private IDetailLoadInfo? selectedDetailLoadInfo;
     private AsyncRelayCommand executeNestCommand;
     private AsyncRelayCommand addPartCommand;
-    private AsyncRelayCommand addSheetCommand;
+    private RelayCommand addSheetCommand;
+    private RelayCommand clearPartsCommand;
     private RelayCommand<IDetailLoadInfo> removePartCommand;
     private RelayCommand<ISheetLoadInfo> removeSheetCommand;
     private RelayCommand<string> loadPartCommand;
@@ -47,7 +48,9 @@
 
     public IAsyncRelayCommand AddPartCommand => addPartCommand ?? (addPartCommand = new AsyncRelayCommand(OnAddPartAsync));
 
-    public IAsyncRelayCommand AddSheetCommand => addSheetCommand ?? (addSheetCommand = new AsyncRelayCommand(OnAddSheetAsync));
+    public IRelayCommand AddSheetCommand => addSheetCommand ?? (addSheetCommand = new RelayCommand(OnAddSheet));
+
+    public IRelayCommand ClearPartsCommand => clearPartsCommand ?? (clearPartsCommand = new RelayCommand(OnClearParts));
 
     public IRelayCommand<IDetailLoadInfo> RemovePartCommand => removePartCommand ?? (removePartCommand = new RelayCommand<IDetailLoadInfo>(OnRemovePart));
 
@@ -139,11 +142,18 @@
       this.IsDirty = true;
     }
 
-    private async Task OnAddSheetAsync()
+    private void OnAddSheet()
     {
       var newSheet = new SheetLoadInfo(this.ProjectInfo.Config);
-      observableProjectInfo.SheetLoadInfos.Add(newSheet);
+      observableProjectInfo?.SheetLoadInfos.Add(newSheet);
 
+      OnPropertyChanged(nameof(ProjectInfo));
+      this.IsDirty = true;
+    }
+
+    private void OnClearParts()
+    {
+      observableProjectInfo?.DetailLoadInfos.Clear();
       OnPropertyChanged(nameof(ProjectInfo));
       this.IsDirty = true;
     }

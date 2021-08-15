@@ -58,7 +58,7 @@ using System.Diagnostics;
     [Obsolete]
     public void ShouldHaveExpectedFitness()
     {
-      this.nestResult.Fitness.Should().BeApproximately(1657, 10);
+      this.nestResult.Fitness.Should().BeApproximately(1612, 10);
     }
 
     [Fact]
@@ -82,7 +82,7 @@ using System.Diagnostics;
     [Fact]
     public void ShouldHaveExpectedFitnessMaterialWasted()
     {
-      this.nestResult.MaterialWasted.Should().BeApproximately(90, 1D);
+      this.nestResult.MaterialWasted.Should().BeApproximately(45, 10D);
     }
 
     [Fact]

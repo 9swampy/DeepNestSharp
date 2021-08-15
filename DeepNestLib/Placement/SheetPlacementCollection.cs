@@ -50,5 +50,7 @@ using System.Text.Json.Serialization;
         return sheets;
       }
     }
+
+    public int TotalPartsPlaced => this.Sum(o => o.PartPlacements.Count);
   }
 }

@@ -20,7 +20,6 @@
 
     private readonly MainViewModel mainViewModel;
     private readonly IMessageService messageService;
-    private readonly IProgressDisplayer progressDisplayer;
     private bool isRunning;
     private bool isStopping;
     private NestExecutionHelper nestExecutionHelper = new NestExecutionHelper();
@@ -30,6 +29,7 @@
     private Task? nestWorkerTask;
     private string lastLogMessage = string.Empty;
     private double progress;
+    private IProgressDisplayer progressDisplayer;
     private double progressSecondary;
     private int selectedIndex;
     private INestResult? selectedItem;
@@ -46,7 +46,6 @@
     {
       this.mainViewModel = mainViewModel;
       this.messageService = messageService;
-      this.progressDisplayer = new ProgressDisplayer(this, messageService, mainViewModel.DispatcherService);
     }
 
     public ICommand ContinueNestCommand => continueNestCommand ?? (continueNestCommand = new RelayCommand(OnContinueNest, () => false));
@@ -107,6 +106,8 @@
 
     public StringBuilder MessageLogBuilder { get; } = new StringBuilder();
 
+    private IProgressDisplayer ProgressDisplayer => progressDisplayer ?? (progressDisplayer = new ProgressDisplayer(this, messageService, mainViewModel.DispatcherService));
+
     public double Progress
     {
       get => progress;
@@ -166,7 +167,9 @@
         {
           if (this.context == null)
           {
-            this.context = new NestingContext(messageService, progressDisplayer, new NestState(mainViewModel.SvgNestConfigViewModel.SvgNestConfig, mainViewModel.DispatcherService));
+            var progressDisplayer = ProgressDisplayer;
+            var nestState = new NestState(mainViewModel.SvgNestConfigViewModel.SvgNestConfig, mainViewModel.DispatcherService);
+            this.context = new NestingContext(messageService, progressDisplayer, nestState);
           }
         }
 
@@ -188,14 +191,14 @@
                           this.Context,
                           nestProjectViewModel.ProjectInfo.SheetLoadInfos,
                           nestProjectViewModel.ProjectInfo.DetailLoadInfos,
-                          this.progressDisplayer);
+                          this.ProgressDisplayer);
         if (this.Context.Sheets.Count == 0)
         {
-          this.progressDisplayer.DisplayMessageBox("There are no sheets. Please add some and try again.", "DeepNest", MessageBoxIcon.Error);
+          this.ProgressDisplayer.DisplayMessageBox("There are no sheets. Please add some and try again.", "DeepNest", MessageBoxIcon.Error);
         }
         else if (this.Context.Polygons.Count == 0)
         {
-          this.progressDisplayer.DisplayMessageBox("There are no parts. Please add some and try again.", "DeepNest", MessageBoxIcon.Error);
+          this.ProgressDisplayer.DisplayMessageBox("There are no parts. Please add some and try again.", "DeepNest", MessageBoxIcon.Error);
         }
         else
         {
@@ -286,7 +289,7 @@
         {
           Debug.Print("Start-Execute");
           nestMonitorViewModel.Context.StartNest();
-          nestMonitorViewModel.progressDisplayer.UpdateNestsList();
+          nestMonitorViewModel.ProgressDisplayer.UpdateNestsList();
           while (!nestMonitorViewModel.IsStopping)
           {
             Stopwatch sw = new Stopwatch();
@@ -334,7 +337,7 @@
       {
         if (!nestMonitorViewModel.IsStopping)
         {
-          await Task.Run(() => nestMonitorViewModel.progressDisplayer.DisplayTransientMessage(message)).ConfigureAwait(false);
+          await Task.Run(() => nestMonitorViewModel.ProgressDisplayer.DisplayTransientMessage(message)).ConfigureAwait(false);
         }
       }
 
@@ -342,7 +345,7 @@
       {
         if (!nestMonitorViewModel.IsStopping)
         {
-          await Task.Run(() => nestMonitorViewModel.progressDisplayer.UpdateNestsList()).ConfigureAwait(false);
+          await Task.Run(() => nestMonitorViewModel.ProgressDisplayer.UpdateNestsList()).ConfigureAwait(false);
         }
       }
 

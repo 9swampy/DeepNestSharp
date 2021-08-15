@@ -47,7 +47,7 @@
       InitializeComponent();
 
       this.nestState = NestState.CreateInstance(SvgNest.Config, new DispatcherService());
-      this.ProgressDisplayerInstance = new ProgressDisplayer(this, InitialiseUiForStartNest, new MessageBoxService());
+      this.ProgressDisplayerInstance = new ProgressDisplayer(this, InitialiseUiForStartNest, new MessageBoxService(), () => this.nestState);
       this.ContextualiseRunStopButtons(false);
 
       LoadSettings();
@@ -114,7 +114,7 @@
         {
           if (this.context == null)
           {
-            this.context = new NestingContext(new MessageBoxService(), new ProgressDisplayer(this, InitialiseUiForStartNest, new MessageBoxService()), this.nestState);
+            this.context = new NestingContext(new MessageBoxService(), new ProgressDisplayer(this, InitialiseUiForStartNest, new MessageBoxService(), () => this.nestState), this.nestState);
           }
         }
 

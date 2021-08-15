@@ -6,6 +6,8 @@
 
   public interface INestResult
   {
+    DateTime CreatedAt { get; }
+
     double Fitness { get; }
 
     double FitnessBounds { get; }
@@ -13,6 +15,8 @@
     double FitnessSheets { get; }
 
     double FitnessUnplaced { get; }
+
+    bool IsValid { get; }
 
     double MergedLength { get; }
 
@@ -39,8 +43,6 @@
     double TotalSheetsArea { get; }
 
     double TotalPartsArea { get; }
-
-    DateTime CreatedAt { get; }
 
     string ToJson();
   }

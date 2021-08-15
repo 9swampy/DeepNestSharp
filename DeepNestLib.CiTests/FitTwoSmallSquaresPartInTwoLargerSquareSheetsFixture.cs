@@ -44,7 +44,7 @@ using System.Diagnostics;
     [Fact]
     public void ShouldHaveExpectedFitness()
     {
-      this.nestResult.Fitness.Should().BeApproximately(3550, 1);
+      this.nestResult.Fitness.Should().BeApproximately(2589, 1);
     }
 
     [Fact]

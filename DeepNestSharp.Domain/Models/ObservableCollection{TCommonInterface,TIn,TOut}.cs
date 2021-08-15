@@ -70,6 +70,12 @@ namespace DeepNestSharp.Domain.Models
       isCollectionChanged = true;
     }
 
+    public new void Clear()
+    {
+      this.ItemsWrapped.Clear();
+      base.Clear();
+    }
+
     public int IndexOf(TCommonInterface item)
     {
       if (item is TIn tIn)

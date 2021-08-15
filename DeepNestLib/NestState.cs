@@ -15,13 +15,14 @@
     private int generations;
     private int iterations;
     private int population;
+    private int rejected;
     private int threads;
     private int nestCount;
     private long totalNestTime;
     private long lastPlacementTime;
     private double nfpPairCachePercentCached;
     private long lastNestTime;
-    private long totalBackgroundTime;
+    private long totalPlacementTime;
 
     public NestState(ISvgNestConfig config, IDispatcherService dispatcherService)
     {
@@ -42,7 +43,7 @@
     [Description("Average time per Nest Result since start of the run.")]
     [Category("Performance")]
     [DisplayName("Average Nest Time")]
-    public long AverageNestTime => nestCount == 0 ? 0 : totalBackgroundTime / nestCount;
+    public long AverageNestTime => nestCount == 0 ? 0 : totalPlacementTime / nestCount;
 
     [Description("Average time per Nest Result since start of the run.")]
     [Category("Performance")]
@@ -103,6 +104,10 @@
     [Description("Population of the current generation.")]
     [Category("Genetic Algorithm")]
     public int Population => population;
+
+    [Description("Number of rejected Nests.")]
+    [Category("Performance")]
+    public int Rejected => rejected;
 
     [Description("Number of active Nest threads.")]
     [Category("Performance")]
@@ -166,7 +171,7 @@
 
     void INestStateSvgNest.IncrementNestTime(long backgroundTime)
     {
-      totalBackgroundTime += backgroundTime;
+      totalPlacementTime += backgroundTime;
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AverageNestTime)));
     }
 
@@ -221,6 +226,12 @@
     {
       nfpPairCachePercentCached = percentCached;
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NfpPairCachePercentCached)));
+    }
+
+    public void IncrementRejected()
+    {
+      Interlocked.Increment(ref rejected);
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Rejected)));
     }
   }
 }

@@ -18,7 +18,7 @@
       <ColumnDefinition Width="*"/>
     </Grid.ColumnDefinitions>
     <Slider Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Left" Minimum="1" x:Name="slider"/>
-    <ScrollViewer Name="scrollViewer" Grid.Column="1" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible">
+    <ScrollViewer Name="scrollViewer" Grid.Column="1" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden">
       <Grid Name="grid" Width="400" Height="400" RenderTransformOrigin="0.5,0.5">
         <Grid.LayoutTransform>
           <TransformGroup>

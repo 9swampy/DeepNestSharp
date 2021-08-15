@@ -1,4 +1,6 @@
-﻿namespace DeepNestLib.IO
+﻿using System;
+
+namespace DeepNestLib.IO
 {
   public abstract class ProgressDisplayerBase
   {
@@ -7,6 +9,15 @@
 
     private double loopIndexSecondary;
     private double loopMaxSecondary;
+    private readonly Func<INestState> stateFactory;
+    private INestState state;
+
+    protected ProgressDisplayerBase(Func<INestState> stateFactory)
+    {
+      this.stateFactory = stateFactory;
+    }
+
+    protected INestState State => state ?? (state = stateFactory());
 
     public void IncrementLoopProgress(ProgressBar progressBar)
     {
@@ -24,34 +35,7 @@
       }
     }
 
-    public void InitialiseLoopProgress(ProgressBar progressBar, string transientMessage, int loopMax)
-    {
-      InitialiseLoopProgress(progressBar, loopMax);
-      System.Diagnostics.Debug.Print(transientMessage);
-      this.DisplayTransientMessage(transientMessage);
-      if (progressBar == ProgressBar.Secondary)
-      {
-        SetIsVisibleSecondaryProgressBar(true);
-      }
-
-      this.DisplayProgress(progressBar, 0);
-    }
-
-    public abstract void SetIsVisibleSecondaryProgressBar(bool isVisible);
-
-    public abstract void DisplayProgress(ProgressBar progressBar, double percentageComplete);
-
-    public abstract void DisplayTransientMessage(string message);
-
-    protected internal static double CalculatePercentageComplete(int placedParts, int currentPopulation, int populationSize, int totalPartsToPlace)
-    {
-      double progressPopulation = 0.66f * ((double)currentPopulation / (double)populationSize);
-      double progressPlacements = 0.34f * ((double)placedParts / (double)totalPartsToPlace);
-      var percentageComplete = progressPopulation + progressPlacements;
-      return percentageComplete;
-    }
-
-    private void InitialiseLoopProgress(ProgressBar progressBar, int loopMax)
+    public void InitialiseLoopProgress(ProgressBar progressBar, int loopMax)
     {
       switch (progressBar)
       {
@@ -65,6 +49,38 @@
           this.loopIndexSecondary = 0;
           break;
       }
+
+      if (progressBar == ProgressBar.Secondary && (State.AverageNestTime == 0 || State.AverageNestTime > 2000))
+      {
+        SetIsVisibleSecondaryProgressBar(true);
+      }
+
+      this.DisplayProgress(progressBar, 0);
+    }
+
+    public void InitialiseLoopProgress(ProgressBar progressBar, string transientMessage, int loopMax)
+    {
+      if (State.AverageNestTime == 0 || State.AverageNestTime > 2500)
+      {
+        this.DisplayTransientMessage(transientMessage);
+      }
+
+      System.Diagnostics.Debug.Print(transientMessage);
+      InitialiseLoopProgress(progressBar, loopMax);
+    }
+
+    public abstract void SetIsVisibleSecondaryProgressBar(bool isVisible);
+
+    public abstract void DisplayProgress(ProgressBar progressBar, double percentageComplete);
+
+    public abstract void DisplayTransientMessage(string message);
+
+    protected internal static double CalculatePercentageComplete(int placedParts, int currentPopulation, int populationSize, int totalPartsToPlace)
+    {
+      double progressPopulation = 0.66f * ((double)currentPopulation / populationSize);
+      double progressPlacements = 0.34f * ((double)placedParts / totalPartsToPlace);
+      var percentageComplete = progressPopulation + progressPlacements;
+      return percentageComplete;
     }
   }
 }

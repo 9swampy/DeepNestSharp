@@ -77,9 +77,9 @@
     {
       // This is a fudge; need a better way of injecting Config; loathe to go Locator but AvalonDock's pushing that way.
       config.MustBe(mainViewModel.SvgNestConfigViewModel.SvgNestConfig);
-      wrappedProjectInfo.Load(config, filePath);
       this.DetailLoadInfos.Clear();
       this.SheetLoadInfos.Clear();
+      wrappedProjectInfo.Load(config, filePath);
       OnPropertyChanged(nameof(DetailLoadInfos));
       OnPropertyChanged(nameof(SheetLoadInfos));
       mainViewModel.SvgNestConfigViewModel.RaiseNotifyUpdatePropertyGrid();

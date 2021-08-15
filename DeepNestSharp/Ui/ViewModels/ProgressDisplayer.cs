@@ -11,6 +11,7 @@
     private readonly NestMonitorViewModel nestMonitorViewModel;
 
     public ProgressDisplayer(NestMonitorViewModel nestMonitorViewModel, IMessageService messageService, IDispatcherService dispatcherService)
+      : base(() => nestMonitorViewModel.State)
     {
       this.messageService = messageService;
       this.dispatcherService = dispatcherService;

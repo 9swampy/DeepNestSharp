@@ -55,5 +55,33 @@
       var sut = new OriginalFitnessSheet(scenario2);
       sut.Bounds.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
     }
+
+    [Fact]
+    public void GivenMaterialUtilizationPenaltyShouldBeInLineWithSheetsPenaltyThenScenario1ShouldBeComingCloseToSheets()
+    {
+      var sut = new OriginalFitnessSheet(scenario1);
+      sut.MaterialUtilization.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
+    }
+
+    [Fact]
+    public void GivenMaterialUtilizationPenaltyShouldBeInLineWithSheetsPenaltyThenScenario2ShouldBeComingCloseToSheets()
+    {
+      var sut = new OriginalFitnessSheet(scenario2);
+      sut.MaterialUtilization.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
+    }
+
+    [Fact]
+    public void GivenMaterialWastedPenaltyShouldBeInLineWithSheetsPenaltyThenScenario1ShouldBeComingCloseToSheets()
+    {
+      var sut = new OriginalFitnessSheet(scenario1);
+      sut.MaterialWasted.Should().BeApproximately(sut.Sheets * 1.5, sut.Sheets);
+    }
+
+    [Fact]
+    public void GivenMaterialWastedPenaltyShouldBeInLineWithSheetsPenaltyThenScenario2ShouldBeComingCloseToSheets()
+    {
+      var sut = new OriginalFitnessSheet(scenario2);
+      sut.MaterialWasted.Should().BeApproximately(sut.Sheets * 1.5, sut.Sheets);
+    }
   }
 }

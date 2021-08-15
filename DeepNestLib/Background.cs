@@ -227,11 +227,10 @@
         rotated.Add(r);
       }
 
-      var unplacedParts = rotated.ToArray();
+      var unplacedParts = rotated;
       SheetPlacementCollection allPlacements = new SheetPlacementCollection();
-      while (unplacedParts.Length > 0 && unusedSheets.Count > 0)
+      while (unplacedParts.Count > 0 && unusedSheets.Count > 0)
       {
-        List<INfp> placed = new List<INfp>();
         var placements = new List<IPartPlacement>();
 
         // open a new sheet
@@ -244,7 +243,6 @@
           {
             var sheetPlacement = allPlacements.Single(o => o.Sheet == sheet);
             placements = sheetPlacement.PartPlacements.ToList();
-            placed = sheetPlacement.PartPlacements.Select(o => o.Part).ToList();
             if (unplacedParts.Any(o => o.IsPriority))
             {
               // Sheet's already used so by definition it's already full of priority parts, no point trying to add more
@@ -253,7 +251,7 @@
             }
             else
             {
-              VerboseLog($"Using sheet {sheet.Id}:{sheet.Source} because although it's already used for {placed.Count()} priority parts there's no priority parts left so try fill spaces with non-priority:");
+              VerboseLog($"Using sheet {sheet.Id}:{sheet.Source} because although it's already used for {placements.Count()} priority parts there's no priority parts left so try fill spaces with non-priority:");
               allPlacements.Remove(sheetPlacement);
             }
           }
@@ -261,7 +259,6 @@
           {
             VerboseLog($"Using sheet {sheet.ToShortString()} because it's a new sheet so just go ahead and use it for whatever's left:");
             placements = new List<IPartPlacement>();
-            placed = new List<INfp>();
           }
         }
 
@@ -279,24 +276,24 @@
 
         Dictionary<string, ClipCacheItem> clipCache = new Dictionary<string, ClipCacheItem>();
         var processingParts = (isPriorityPlacement ? unplacedParts.Where(o => o.IsPriority) : unplacedParts).ToArray();
-        for (int i = 0; i < processingParts.Length; i++)
+        for (int processingPartIndex = 0; processingPartIndex < processingParts.Length; processingPartIndex++)
         {
           var combinedNfp = new List<List<IntPoint>>();
           double? minwidth = null;
           double? minarea = null;
 
-          var part = processingParts[i];
-          VerboseLog($"Process {i}:{part.ToShortString()}.");
+          var part = processingParts[processingPartIndex];
+          VerboseLog($"Process {processingPartIndex}:{part.ToShortString()}.");
 
           // inner NFP
           INfp[] sheetNfp = null;
-          if (placed.Count == 0)
+          if (placements.Count == 0)
           {
             var canBePlaced = false;
 
             // try all possible rotations until it fits
             // (only do this for the first part of each sheet, to ensure that all parts that can be placed are, even if we have to to open a lot of sheets)
-            for (int j = 0; j < (360f / config.Rotations); j++)
+            for (int j = 0; j < config.Rotations; j++)
             {
               if (CanBePlaced(sheet, part, config.ClipperScale, out sheetNfp))
               {
@@ -305,31 +302,26 @@
                 break;
               }
 
-              var r = part.Rotate(360f / config.Rotations);
-              r.Rotation = part.Rotation + (360f / config.Rotations);
+              var r = part.Rotate(360D / config.Rotations);
+              r.Rotation = part.Rotation + (360D / config.Rotations);
               r.Source = part.Source;
               r.Id = part.Id;
 
               // rotation is not in-place
               part = r;
-              processingParts[i] = r;
-
-              if (part.Rotation > 360f)
-              {
-                part.Rotation = part.Rotation % 360f;
-              }
             }
 
             // part unplaceable, skip
             if (!canBePlaced)
             {
               VerboseLog($"{part.ToShortString()} could not be placed even if sheet empty (only do this for the first part on each sheet).");
+              // return InnerFlowResult.Continue;
               continue;
             }
           }
 
           PartPlacement position = null;
-          if (placed.Count == 0)
+          if (placements.Count == 0)
           {
             VerboseLog("First placement, put it on the bottom left corner. . .");
             // first placement, put it on the bottom left corner
@@ -362,9 +354,7 @@
               // console.log(sheetNfp);
             }
 
-            placements.Add(position);
-            VerboseLog($"Add part {part}");
-            placed.Add(part);
+            AddPlacement(processingParts[processingPartIndex], parts, allPlacements, placements, part, position, unplacedParts, config.PlacementType, sheet);
           }
           else if (CanBePlaced(sheet, part, config.ClipperScale, out sheetNfp))
           {
@@ -384,10 +374,11 @@
               VerboseLog($"Retrieve {clipkey}:{startIndex} from {nameof(clipCache)}; populate {nameof(clipper)}");
             }
 
-            if (!TryGetCombinedNfp(config.ClipperScale, placed, placements, part, clipper, startIndex, out combinedNfp))
+            if (!TryGetCombinedNfp(config.ClipperScale, placements, part, clipper, startIndex, out combinedNfp))
             {
               VerboseLog($"{nameof(TryGetCombinedNfp)} clipper error.");
               error = true;
+              // return InnerFlowResult.Continue;
               continue;
             }
 
@@ -396,7 +387,7 @@
               VerboseLog($"Add {clipkey} to {nameof(clipCache)}");
               clipCache[clipkey] = new ClipCacheItem()
               {
-                index = placed.Count - 1,
+                index = placements.Count - 1,
                 nfpp = combinedNfp.Select(z => z.ToArray()).ToArray(),
               };
             }
@@ -407,10 +398,12 @@
             InnerFlowResult clipperForDifferenceResult = TryGetDifferenceWithSheetPolygon(config, combinedNfp, part, clipperSheetNfp, out finalNfp);
             if (clipperForDifferenceResult == InnerFlowResult.Break)
             {
+              // return InnerFlowResult.Break;
               break;
             }
             else if (clipperForDifferenceResult == InnerFlowResult.Continue)
             {
+              // return InnerFlowResult.Continue;
               continue;
             }
 
@@ -536,9 +529,9 @@
                   var shiftedpart = part.Shift(shiftvector);
                   List<INfp> shiftedplaced = new List<INfp>();
 
-                  for (int m = 0; m < placed.Count; m++)
+                  for (int m = 0; m < placements.Count; m++)
                   {
-                    shiftedplaced.Add(placed[m].Shift(placements[m]));
+                    shiftedplaced.Add(placements[m].Part.Shift(placements[m]));
                   }
 
                   // don't check small lines, cut off at about 1/2 in
@@ -581,9 +574,7 @@
 
             if (position != null)
             {
-              VerboseLog($"Add part {part}");
-              placed.Add(part);
-              placements.Add(position);
+              AddPlacement(processingParts[processingPartIndex], parts, allPlacements, placements, part, position, unplacedParts, config.PlacementType, sheet);
               if (position.MergedLength.HasValue)
               {
                 totalMerged += position.MergedLength.Value;
@@ -592,33 +583,20 @@
             else if (part.IsPriority)
             {
               VerboseLog($"Could not place {part}. As it's Priority skip to next part.");
+              // return InnerFlowResult.Break;
               break;
-            }
-
-            // send placement progress signal
-            var placednum = placed.Count;
-            for (int j = 0; j < allPlacements.Count; j++)
-            {
-              placednum += allPlacements[j].PartPlacements.Count;
             }
           }
           else
           {
             VerboseLog($"Could not place {part.ToShortString()} even on empty {sheet.ToShortString()}.");
           }
+
+          //return InnerFlowResult.Success;
         }
 
         VerboseLog("All parts processed for current sheet.");
-        for (int i = 0; i < placed.Count; i++)
-        {
-          var index = Array.IndexOf(unplacedParts, placed[i]);
-          if (index >= 0)
-          {
-            unplacedParts = unplacedParts.Splice(index, 1);
-          }
-        }
-
-        if (isPriorityPlacement && unplacedParts.Length > 0)
+        if (isPriorityPlacement && unplacedParts.Count > 0)
         {
           VerboseLog($"Requeue {sheet.ToShortString()} for reuse.");
           unusedSheets.Push(sheet);
@@ -647,7 +625,42 @@
       }
 
       VerboseLog($"Nest complete in {sw.ElapsedMilliseconds}");
-      return new NestResult(parts.Length, allPlacements, unplacedParts, totalMerged, config.PlacementType, sw.ElapsedMilliseconds, backgroundStopwatch.ElapsedMilliseconds);
+      var result = new NestResult(parts.Length, allPlacements, unplacedParts, totalMerged, config.PlacementType, sw.ElapsedMilliseconds, backgroundStopwatch.ElapsedMilliseconds);
+#if NCRUNCH || DEBUG
+      if (!result.IsValid)
+      {
+        throw new InvalidOperationException("Invalid nest generated.");
+      }
+#endif
+      return result;
+    }
+
+    private void AddPlacement(INfp processingPart, INfp[] parts, SheetPlacementCollection allPlacements, List<IPartPlacement> placements, INfp part, PartPlacement position, List<INfp> unplacedParts, PlacementTypeEnum placementType, ISheet sheet)
+    {
+      try
+      {
+        if (!unplacedParts.Remove(processingPart))
+        {
+#if NCRUNCH || DEBUG
+          throw new InvalidOperationException("Failed to locate the part just placed in unplaced parts!");
+#endif
+        }
+#if NCRUNCH || DEBUG
+        position.Part.MustBe(part);
+        (allPlacements.TotalPartsPlaced + placements.Count).MustBeLessThanOrEqualTo(parts.Length);
+#endif
+        VerboseLog($"Placed part {part}");
+        placements.Add(position);
+        var sp = new SheetPlacement(placementType, sheet, placements);
+        if (double.IsNaN(sp.Fitness.Evaluate()))
+        {
+          System.Diagnostics.Debugger.Break();
+        }
+      }
+      catch (Exception ex)
+      {
+        throw;
+      }
     }
 
     private InnerFlowResult TryGetDifferenceWithSheetPolygon(ISvgNestConfig config, List<List<IntPoint>> combinedNfp, INfp part, IntPoint[][] clipperSheetNfp, out List<INfp> differenceWithSheetPolygonNfp)
@@ -706,38 +719,34 @@
     /// <param name="startIndex"></param>
     /// <param name="combinedNfp"></param>
     /// <returns></returns>
-    private bool TryGetCombinedNfp(double clipperScale, List<INfp> placed, List<IPartPlacement> placements, INfp part, Clipper clipper, int startIndex, out List<List<IntPoint>> combinedNfp)
+    private bool TryGetCombinedNfp(double clipperScale, List<IPartPlacement> placements, INfp part, Clipper clipper, int startIndex, out List<List<IntPoint>> combinedNfp)
     {
       combinedNfp = new List<List<IntPoint>>();
 
-      if (placed.Count != placements.Count)
+      foreach (var p in placements)
       {
-        throw new InvalidOperationException();
-      }
-      else
-      {
-        foreach (var p in placements)
+        if (p.Part.X != part.X)
         {
-          if (p.Part.X != part.X)
-          {
-            throw new InvalidOperationException();
-          }
+          throw new InvalidOperationException();
+        }
 
-          if (p.Part.Y != part.Y)
-          {
-            throw new InvalidOperationException();
-          }
+        if (p.Part.Y != part.Y)
+        {
+          throw new InvalidOperationException();
+        }
 
-          if (p.Part.Children.Count != part.Children.Count)
-          {
-            VerboseLog($"Cannot substitute {nameof(placements)}.Part for {nameof(placed)}");
-          }
+        if (p.Part.Children.Count != part.Children.Count)
+        {
+#if NCRUNCH
+          throw new InvalidOperationException("Want to lose placed so why couldn't partPlacement.Part by placed Part?");
+#endif
+          VerboseLog($"Cannot substitute {nameof(placements)}.Part for {nameof(part)}");
         }
       }
 
-      for (int j = startIndex; j < placed.Count; j++)
+      for (int j = startIndex; j < placements.Count; j++)
       {
-        var outerNfp = GetOuterNfp(placed[j], part, 0);
+        var outerNfp = GetOuterNfp(placements[j].Part, part, MinkowskiCache.Cache);
 
         if (outerNfp == null)
         {
@@ -766,7 +775,7 @@
 
         var clipperNfp = NfpToClipperCoordinates(outerNfp, clipperScale);
 
-        VerboseLog($"Add {placed[j].ToShortString()} paths to {nameof(clipper)} ({placed[j].Name})");
+        VerboseLog($"Add {placements[j].Part.ToShortString()} paths to {nameof(clipper)} ({placements[j].Part.Name})");
         clipper.AddPaths(clipperNfp.Select(z => z.ToList()).ToList(), PolyType.ptSubject, true);
       }
 
@@ -1141,11 +1150,7 @@
 
     private void ThenDeepNest(NfpPair[] nfpPairs, INfp[] parts, ISheet[] sheets, ISvgNestConfig config, int index, Stopwatch backgroundStopwatch)
     {
-      if (state.AveragePlacementTime == 0 || state.AveragePlacementTime >= 2000)
-      {
-        progressDisplayer.InitialiseLoopProgress(ProgressBar.Secondary, "DeepNest. . .", nfpPairs.Length);
-      }
-
+      progressDisplayer.InitialiseLoopProgress(ProgressBar.Secondary, "Placement. . .", nfpPairs.Length);
       if (config.UseParallel)
       {
         Parallel.For(0, nfpPairs.Count(), (i) =>

@@ -167,6 +167,11 @@ using DeepNestLib.Placement;
 
       set
       {
+        if (value > 360D)
+        {
+          value = value % 360D;
+        }
+
         this.rotation = value;
       }
     }

@@ -153,9 +153,11 @@
     [JsonIgnore]
     public double MaterialUtilization => Math.Abs(TotalPartsArea / TotalSheetsArea);
 
+    public bool IsValid => !(double.IsNaN(this.Fitness) || this.TotalPartsCount > this.TotalParts);
+
     public override string ToString()
     {
-      return $"{fitness.Evaluate()}=SumB{this.SheetPlacementFitness.Bounds:N0}+SumS{this.SheetPlacementFitness.Sheets:N0}+SumU{this.SheetPlacementFitness.MaterialWasted:N0}+U{this.fitness.Unplaced:N0}";
+      return $"{fitness.Evaluate()}=ƩB{this.SheetPlacementFitness.Bounds:N0}+ƩS{this.SheetPlacementFitness.Sheets:N0}+ƩW{this.SheetPlacementFitness.MaterialWasted:N0}+ƩU{this.SheetPlacementFitness.MaterialUtilization:N0}+U{this.fitness.Unplaced:N0}";
     }
 
     public override string ToJson()

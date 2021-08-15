@@ -44,31 +44,19 @@
 
     public bool TryAdd(INestResult payload)
     {
-      if (double.IsNaN(payload.Fitness))
-      {
-        return false;
-      }
-
-      if (payload.TotalPartsCount > payload.TotalParts)
-      {
-        return false;
-      }
-
+      var result = false;
       if (dispatcherService.InvokeRequired)
       {
-        bool result = false;
         dispatcherService.Invoke(() => result = TryAdd(payload));
-        return result;
       }
       else
       {
         lock (lockItemsObject)
         {
-          var isAdded = false;
           if (items.Count == 0)
           {
             items.Insert(0, payload);
-            isAdded = true;
+            result = true;
           }
           else
           {
@@ -83,13 +71,19 @@
               if (items.Count < MaxCapacity)
               {
                 items.Add(payload);
-                isAdded = true;
+                result = true;
               }
             }
-            else if (Math.Round(items[i].Fitness, 3) != Math.Round(payload.Fitness, 3))
+            else if (Math.Round(items[i].Fitness, 3) == Math.Round(payload.Fitness, 3))
+            {
+              // Duplicate - respond true so the TryAdd consumer can report duplicate as
+              // it won't find the result in the list
+              result = true;
+            }
+            else
             {
               items.Insert(i, payload);
-              isAdded = true;
+              result = true;
             }
           }
 
@@ -97,10 +91,10 @@
           {
             items.RemoveAt(items.Count - 1);
           }
-
-          return isAdded;
         }
       }
+
+      return result;
     }
 
     public int EliteSurvivors

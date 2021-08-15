@@ -10,6 +10,8 @@
   public class RunFullNestSqueezeFixture
   {
     private const string DxfTestFilename = "Dxfs._5.dxf";
+    private const double ExpectedFitness = 494516;
+    private const double ExpectedFitnessTolerance = 10000;
 
     private static volatile object testSyncLock = new object();
     private DefaultSvgNestConfig config;
@@ -50,6 +52,11 @@
             i++;
             this.nestingContext.NestIterate(this.config);
             progressCapture.Are.WaitOne(1000);
+            if (this.nestingContext.State.TopNestResults.Count >= terminateNestResultCount &&
+                this.nestingContext.State.TopNestResults.Top.Fitness <= ExpectedFitness + ExpectedFitnessTolerance)
+            {
+              break;
+            }
           }
         }
       }
@@ -76,7 +83,7 @@
     [Fact]
     public void FitnessShouldBeExpected()
     {
-      this.nestingContext.State.TopNestResults.Top.Fitness.Should().BeApproximately(518753, 10000);
+      this.nestingContext.State.TopNestResults.Top.Fitness.Should().BeApproximately(ExpectedFitness, ExpectedFitnessTolerance);
     }
 
     [Fact]

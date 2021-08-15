@@ -4,6 +4,8 @@
   {
     long AveragePlacementTime { get; }
 
+    long AverageNestTime { get; }
+
     int CallCounter { get; }
 
     int Generations { get; }
@@ -34,11 +36,9 @@
 
   public interface INestStateSvgNest : INestState
   {
-    void IncrementPopulation();
+    void DecrementThreads();
 
-    void SetLastNestTime(long backgroundTime);
-
-    void SetLastPlacementTime(long placePartTime);
+    void IncrementGenerations();
 
     void IncrementNestCount();
 
@@ -46,13 +46,17 @@
 
     void IncrementPlacementTime(long placePartTime);
 
-    void IncrementGenerations();
+    void IncrementPopulation();
 
-    void ResetPopulation();
+    void IncrementRejected();
 
     void IncrementThreads();
 
-    void DecrementThreads();
+    void ResetPopulation();
+
+    void SetLastNestTime(long backgroundTime);
+
+    void SetLastPlacementTime(long placePartTime);
   }
 
   public interface INestStateMinkowski : INestState

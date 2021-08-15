@@ -36,6 +36,11 @@
       Are.Set();
     }
 
+    public void InitialiseLoopProgress(ProgressBar progressBar, int loopMax)
+    {
+      Are.Set();
+    }
+
     public void InitialiseUiForStartNest()
     {
       throw new System.NotImplementedException();

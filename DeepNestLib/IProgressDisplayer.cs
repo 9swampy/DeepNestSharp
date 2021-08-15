@@ -22,6 +22,8 @@
 
     void SetIsVisibleSecondaryProgressBar(bool isVisible);
 
+    void InitialiseLoopProgress(ProgressBar progressBar, int loopMax);
+
     void InitialiseLoopProgress(ProgressBar progressBar, string transientMessage, int loopMax);
   }
 

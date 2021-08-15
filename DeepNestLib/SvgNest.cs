@@ -799,24 +799,45 @@
         this.ga.Population[payload.index].Fitness = payload.Fitness;
 
         int currentPlacements = 0;
-        if (this.State.TopNestResults.TryAdd(payload))
+        string suffix = string.Empty;
+        if (!payload.IsValid)
+        {
+          this.State.IncrementRejected();
+          suffix = " Rejected";
+        }
+        else if (this.State.TopNestResults.TryAdd(payload))
         {
           currentPlacements = this.State.TopNestResults.Top.UsedSheets[0].PartPlacements.Count;
-          if (this.State.TopNestResults.IndexOf(payload) < this.State.TopNestResults.EliteSurvivors)
+          if (this.State.TopNestResults.Contains(payload))
           {
-            this.progressDisplayer.DisplayTransientMessage($"New top {this.State.TopNestResults.MaxCapacity} nest found: nesting time = {payload.PlacePartTime}ms");
-            this.progressDisplayer?.UpdateNestsList();
+            if (this.State.TopNestResults.IndexOf(payload) < this.State.TopNestResults.EliteSurvivors)
+            {
+              suffix = " Elite";
+              this.progressDisplayer.DisplayTransientMessage($"New top {this.State.TopNestResults.MaxCapacity} nest found: nesting time = {payload.PlacePartTime}ms");
+              this.progressDisplayer?.UpdateNestsList();
+            }
+            else
+            {
+              suffix = " Top";
+            }
+          }
+          else
+          {
+            suffix = " Duplicate";
           }
         }
         else
         {
           this.progressDisplayer.DisplayTransientMessage($"Nesting time = {payload.PlacePartTime}ms");
+          suffix = " Sub-optimal";
         }
 
         if (currentPlacements > 0)
         {
           progressDisplayer.DisplayProgress(currentPlacements, State.Population);
         }
+
+        System.Diagnostics.Debug.Print($"Nest {payload.BackgroundTime}ms{suffix}");
       }
       catch (Exception ex)
       {
@@ -886,6 +907,7 @@
             }
           }
 
+          this.progressDisplayer.DisplayTransientMessage("Executing Nest. . .");
           if (config.UseParallel)
           {
             var end1 = this.ga.Population.Length / 3;

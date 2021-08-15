@@ -10,7 +10,8 @@
     private readonly Action initialiseUiForStartNest;
     private readonly IMessageService messageService;
 
-    public ProgressDisplayer(Form1 form, Action initialiseUiForStartNest, IMessageService messageService)
+    public ProgressDisplayer(Form1 form, Action initialiseUiForStartNest, IMessageService messageService, Func<INestState> stateFactory)
+      : base(stateFactory)
     {
       this.form = form;
       this.initialiseUiForStartNest = initialiseUiForStartNest;

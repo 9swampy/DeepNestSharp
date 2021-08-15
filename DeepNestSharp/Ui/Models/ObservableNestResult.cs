@@ -2,7 +2,6 @@
 {
   using System;
   using System.Collections.Generic;
-  using System.Linq;
   using DeepNestLib;
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
@@ -32,6 +31,8 @@
     public double FitnessUnplaced => this.item.FitnessUnplaced;
 
     public override bool IsDirty => true;
+
+    public bool IsValid => this.item.IsValid;
 
     public double MergedLength => this.item.MergedLength;
 

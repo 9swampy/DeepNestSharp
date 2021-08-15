@@ -170,21 +170,20 @@
     // returns a random individual from the population, weighted to the front of the list (lower fitness value is more likely to be selected)
     private PopulationItem randomWeightedIndividual(PopulationItem exclude = null)
     {
-      //var pop = this.population.slice(0);
-      var pop = this.Population.ToArray();
+      var pop = this.Population.ToList();
 
-      if (exclude != null && Array.IndexOf(pop, exclude) >= 0)
+      if (exclude != null)
       {
-        pop.Splice(Array.IndexOf(pop, exclude), 1);
+        pop.Remove(exclude);
       }
 
       var rand = r.NextDouble();
 
       double lower = 0;
-      var weight = 1 / (double)pop.Length;
+      var weight = 1 / (double)pop.Count;
       var upper = weight;
 
-      for (var i = 0; i < pop.Length; i++)
+      for (var i = 0; i < pop.Count; i++)
       {
         // if the random number falls between lower and upper bounds, select this individual
         if (rand > lower && rand < upper)
@@ -193,7 +192,7 @@
         }
 
         lower = upper;
-        upper += 2 * weight * ((pop.Length - i) / (double)pop.Length);
+        upper += 2 * weight * ((pop.Count - i) / (double)pop.Count);
       }
 
       return pop[0];
@@ -266,5 +265,4 @@
       this.Population = newpopulation.ToArray();
     }
   }
-
 }
