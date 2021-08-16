@@ -18,6 +18,7 @@
 
     private const bool EnableCaches = true;
 
+    private readonly SheetPlacementCollection allPlacements = new SheetPlacementCollection();
     private readonly NfpHelper nfpHelper;
     private readonly IEnumerable<ISheet> sheets;
     private readonly INfp[] parts;
@@ -27,6 +28,7 @@
     private Stack<ISheet> unusedSheets;
     private double totalMerged;
     private List<INfp> unplacedParts;
+    private Dictionary<string, ClipCacheItem> clipCache;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlacementWorker"/> class.
@@ -63,6 +65,12 @@
       return false;
     }
 
+    /// <summary>
+    /// Gets a value indicating whether the current loop started as a PriorityPLacement. 
+    /// Note as parts get placed this could change; hence we memoise at the start of each placement.
+    /// </summary>
+    private bool StartedAsPriorityPlacement => unplacedParts.Any(o => o.IsPriority);
+
     internal NestResult PlaceParts()
     {
       VerboseLog("PlaceParts");
@@ -72,371 +80,43 @@
       }
 
       Initialise();
-      SheetPlacementCollection allPlacements = new SheetPlacementCollection();
       while (unplacedParts.Count > 0 && unusedSheets.Count > 0)
       {
-        var placements = new List<IPartPlacement>();
-
         // open a new sheet
-        ISheet sheet = null;
-        var requeue = new Queue<ISheet>();
-        while (unusedSheets.Count > 0 && sheet == null)
-        {
-          sheet = unusedSheets.Pop();
-          if (allPlacements.Any(o => o.Sheet == sheet))
-          {
-            var sheetPlacement = allPlacements.Single(o => o.Sheet == sheet);
-            placements = sheetPlacement.PartPlacements.ToList();
-            if (unplacedParts.Any(o => o.IsPriority))
-            {
-              // Sheet's already used so by definition it's already full of priority parts, no point trying to add more
-              requeue.Enqueue(sheet);
-              sheet = null;
-            }
-            else
-            {
-              VerboseLog($"Using sheet {sheet.Id}:{sheet.Source} because although it's already used for {placements.Count()} priority parts there's no priority parts left so try fill spaces with non-priority:");
-              allPlacements.Remove(sheetPlacement);
-            }
-          }
-          else
-          {
-            VerboseLog($"Using sheet {sheet.ToShortString()} because it's a new sheet so just go ahead and use it for whatever's left:");
-            placements = new List<IPartPlacement>();
-          }
-        }
+        ISheet sheet;
+        Queue<ISheet> requeue;
+        List<IPartPlacement> placements;
 
-        if (sheet == null)
+        if (!TryGetSheet(out sheet, out placements, out requeue))
         {
           VerboseLog("No sheets left to place parts upon; break and end the nest.");
           break;
         }
 
-        bool isPriorityPlacement = unplacedParts.Any(o => o.IsPriority);
+        var isPriorityPlacement = StartedAsPriorityPlacement;
         if (isPriorityPlacement)
         {
           VerboseLog("Priority Placement.");
         }
 
-        Dictionary<string, ClipCacheItem> clipCache = new Dictionary<string, ClipCacheItem>();
+        clipCache = new Dictionary<string, ClipCacheItem>();
+
         var processingParts = (isPriorityPlacement ? unplacedParts.Where(o => o.IsPriority) : unplacedParts).ToArray();
         for (int processingPartIndex = 0; processingPartIndex < processingParts.Length; processingPartIndex++)
         {
-          var combinedNfp = new List<List<IntPoint>>();
-          double? minwidth = null;
-          double? minarea = null;
-
-          var part = processingParts[processingPartIndex];
-          VerboseLog($"Process {processingPartIndex}:{part.ToShortString()}.");
-
-          // inner NFP
-          INfp[] sheetNfp = null;
-          if (placements.Count == 0)
+          var processPartResult = ProcessPart(
+            processingParts,
+            processingPartIndex,
+            ref placements,
+            sheet);
+          if (processPartResult == InnerFlowResult.Break)
           {
-            var canBePlaced = false;
-
-            // try all possible rotations until it fits
-            // (only do this for the first part of each sheet, to ensure that all parts that can be placed are, even if we have to to open a lot of sheets)
-            for (int j = 0; j < config.Rotations; j++)
-            {
-              if (CanBePlaced(sheet, part, config.ClipperScale, out sheetNfp))
-              {
-                VerboseLog($"{part.ToShortString()} could be placed if sheet empty (only do this for the first part on each sheet).");
-                canBePlaced = true;
-                break;
-              }
-
-              var r = part.Rotate(360D / config.Rotations);
-              r.Rotation = part.Rotation + (360D / config.Rotations);
-              r.Source = part.Source;
-              r.Id = part.Id;
-
-              // rotation is not in-place
-              part = r;
-            }
-
-            // part unplaceable, skip
-            if (!canBePlaced)
-            {
-              VerboseLog($"{part.ToShortString()} could not be placed even if sheet empty (only do this for the first part on each sheet).");
-              // return InnerFlowResult.Continue;
-              continue;
-            }
+            break;
           }
-
-          PartPlacement position = null;
-          if (placements.Count == 0)
+          else if (processPartResult == InnerFlowResult.Continue)
           {
-            VerboseLog("First placement, put it on the bottom left corner. . .");
-            // first placement, put it on the bottom left corner
-            for (int j = 0; j < sheetNfp.Count(); j++)
-            {
-              for (int k = 0; k < sheetNfp[j].Length; k++)
-              {
-                if (position == null ||
-                    ((sheetNfp[j][k].X - part[0].X) < position.X) ||
-                    (
-                    GeometryUtil._almostEqual(sheetNfp[j][k].X - part[0].X, position.X)
-                    && ((sheetNfp[j][k].Y - part[0].Y) < position.Y)))
-                {
-                  position = new PartPlacement(part)
-                  {
-                    X = sheetNfp[j][k].X - part[0].X,
-                    Y = sheetNfp[j][k].Y - part[0].Y,
-                    Id = part.Id,
-                    Rotation = part.Rotation,
-                    Source = part.Source,
-                  };
-                }
-              }
-            }
-
-            if (position == null)
-            {
-              throw new Exception("position null");
-
-              // console.log(sheetNfp);
-            }
-
-            AddPlacement(processingParts[processingPartIndex], parts, allPlacements, placements, part, position, unplacedParts, config.PlacementType, sheet);
+            continue;
           }
-          else if (CanBePlaced(sheet, part, config.ClipperScale, out sheetNfp))
-          {
-            var clipper = new Clipper();
-            string clipkey = "s:" + part.Source + "r:" + part.Rotation;
-            var error = false;
-            IntPoint[][] clipperSheetNfp = NfpHelper.InnerNfpToClipperCoordinates(sheetNfp, config.ClipperScale);
-
-            // check if stored in clip cache
-            // var startindex = 0;
-            var startIndex = 0;
-            if (EnableCaches && clipCache.ContainsKey(clipkey))
-            {
-              var prevNfp = clipCache[clipkey].nfpp;
-              clipper.AddPaths(prevNfp.Select(z => z.ToList()).ToList(), PolyType.ptSubject, true);
-              startIndex = clipCache[clipkey].index;
-              VerboseLog($"Retrieve {clipkey}:{startIndex} from {nameof(clipCache)}; populate {nameof(clipper)}");
-            }
-
-            if (!TryGetCombinedNfp(config.ClipperScale, placements, part, clipper, startIndex, out combinedNfp))
-            {
-              VerboseLog($"{nameof(TryGetCombinedNfp)} clipper error.");
-              error = true;
-              // return InnerFlowResult.Continue;
-              continue;
-            }
-
-            if (EnableCaches)
-            {
-              VerboseLog($"Add {clipkey} to {nameof(clipCache)}");
-              clipCache[clipkey] = new ClipCacheItem()
-              {
-                index = placements.Count - 1,
-                nfpp = combinedNfp.Select(z => z.ToArray()).ToArray(),
-              };
-            }
-
-            // console.log('save cache', placed.length - 1);
-
-            List<INfp> finalNfp;
-            InnerFlowResult clipperForDifferenceResult = TryGetDifferenceWithSheetPolygon(config, combinedNfp, part, clipperSheetNfp, out finalNfp);
-            if (clipperForDifferenceResult == InnerFlowResult.Break)
-            {
-              // return InnerFlowResult.Break;
-              break;
-            }
-            else if (clipperForDifferenceResult == InnerFlowResult.Continue)
-            {
-              // return InnerFlowResult.Continue;
-              continue;
-            }
-
-#if NCRUNCH
-            try
-            {
-              var openScadBuilder = new StringBuilder();
-              foreach (var item in finalNfp)
-              {
-                openScadBuilder.AppendLine(item.ToOpenScadPolygon());
-              }
-
-              var openScad = openScadBuilder.ToString();
-            }
-            catch (Exception)
-            {
-              // NOP
-            }
-#endif
-            // choose placement that results in the smallest bounding box/hull etc
-            // todo: generalize gravity direction
-            /*var minwidth = null;
-            var minarea = null;
-            var minx = null;
-            var miny = null;
-            var nf, area, shiftvector;*/
-            minwidth = null;
-            minarea = null;
-            double? minx = null;
-            double? miny = null;
-            INfp nf;
-            double area;
-            PartPlacement shiftvector = null;
-
-            NFP allpoints = SheetPlacement.CombinedPoints(placements);
-            PolygonBounds allbounds = null;
-            PolygonBounds partbounds = null;
-            if (config.PlacementType == PlacementTypeEnum.Gravity || config.PlacementType == PlacementTypeEnum.BoundingBox)
-            {
-              allbounds = GeometryUtil.getPolygonBounds(allpoints);
-
-              NFP partpoints = new NFP();
-              for (int m = 0; m < part.Length; m++)
-              {
-                partpoints.AddPoint(new SvgPoint(part[m].X, part[m].Y));
-              }
-
-              partbounds = GeometryUtil.getPolygonBounds(partpoints);
-            }
-            else
-            {
-              allpoints = allpoints.GetHull();
-            }
-
-            VerboseLog($"Iterate nfps in differenceWithSheetPolygonNfp:");
-            for (int j = 0; j < finalNfp.Count; j++)
-            {
-              VerboseLog($"  For j={j}");
-              nf = finalNfp[j];
-
-              VerboseLog($"evalnf {nf.Length}");
-              for (int k = 0; k < nf.Length; k++)
-              {
-                VerboseLog($"    For k={k}");
-                shiftvector = new PartPlacement(part)
-                {
-                  Id = part.Id,
-                  X = nf[k].X - part[0].X,
-                  Y = nf[k].Y - part[0].Y,
-                  Source = part.Source,
-                  Rotation = part.Rotation,
-                };
-
-                PolygonBounds rectbounds = null;
-                if (config.PlacementType == PlacementTypeEnum.Gravity || config.PlacementType == PlacementTypeEnum.BoundingBox)
-                {
-                  NFP poly = new NFP();
-                  poly.AddPoint(new SvgPoint(allbounds.X, allbounds.Y));
-                  poly.AddPoint(new SvgPoint(allbounds.X + allbounds.Width, allbounds.Y));
-                  poly.AddPoint(new SvgPoint(allbounds.X + allbounds.Width, allbounds.Y + allbounds.Height));
-                  poly.AddPoint(new SvgPoint(allbounds.X, allbounds.Y + allbounds.Height));
-
-                  poly.AddPoint(new SvgPoint(partbounds.X + shiftvector.X, partbounds.Y + shiftvector.Y));
-                  poly.AddPoint(new SvgPoint(partbounds.X + partbounds.Width + shiftvector.X, partbounds.Y + shiftvector.Y));
-                  poly.AddPoint(new SvgPoint(partbounds.X + partbounds.Width + shiftvector.X, partbounds.Y + partbounds.Height + shiftvector.Y));
-                  poly.AddPoint(new SvgPoint(partbounds.X + shiftvector.X, partbounds.Y + partbounds.Height + shiftvector.Y));
-
-                  rectbounds = GeometryUtil.getPolygonBounds(poly);
-
-                  // weigh width more, to help compress in direction of gravity
-                  if (config.PlacementType == PlacementTypeEnum.Gravity)
-                  {
-                    area = (rectbounds.Width * 3) + rectbounds.Height;
-                  }
-                  else
-                  {
-                    area = rectbounds.Width * rectbounds.Height;
-                  }
-                }
-                else
-                {
-                  // must be convex hull
-                  var localpoints = allpoints.Clone();
-
-                  for (int m = 0; m < part.Length; m++)
-                  {
-                    localpoints.AddPoint(new SvgPoint(part[m].X + shiftvector.X, part[m].Y + shiftvector.Y));
-                  }
-
-                  area = Math.Abs(GeometryUtil.polygonArea(localpoints.GetHull()));
-                  shiftvector.Hull = localpoints.GetHull();
-                  shiftvector.HullSheet = sheet.GetHull();
-                }
-
-                // console.timeEnd('evalbounds');
-                // console.time('evalmerge');
-                MergedResult merged = null;
-                if (config.MergeLines)
-                {
-                  throw new NotImplementedException();
-
-                  // if lines can be merged, subtract savings from area calculation
-                  var shiftedpart = part.Shift(shiftvector);
-                  List<INfp> shiftedplaced = new List<INfp>();
-
-                  for (int m = 0; m < placements.Count; m++)
-                  {
-                    shiftedplaced.Add(placements[m].Part.Shift(placements[m]));
-                  }
-
-                  // don't check small lines, cut off at about 1/2 in
-                  double minlength = 0.5 * config.Scale;
-                  merged = MergedLength(shiftedplaced.ToArray(), shiftedpart, minlength, 0.1 * config.CurveTolerance);
-                  area -= merged.TotalLength * config.TimeRatio;
-                }
-
-                VerboseLog("evalmerge");
-                if (minarea == null ||
-                    area < minarea ||
-                    (GeometryUtil._almostEqual(minarea, area) && (minx == null || shiftvector.X < minx)) ||
-                    (GeometryUtil._almostEqual(minarea, area) && (minx != null && GeometryUtil._almostEqual(shiftvector.X, minx) && shiftvector.Y < miny)))
-                {
-                  VerboseLog($"evalmerge-entered minarea={minarea ?? -1:0.000000} x={shiftvector?.X ?? -1:0.000000} y={shiftvector?.Y ?? -1:0.000000}");
-                  minarea = area;
-
-                  minwidth = rectbounds != null ? rectbounds.Width : 0;
-                  position = shiftvector;
-                  if (minx == null || shiftvector.X < minx)
-                  {
-                    minx = shiftvector.X;
-                  }
-
-                  if (miny == null || shiftvector.Y < miny)
-                  {
-                    miny = shiftvector.Y;
-                  }
-
-                  if (config.MergeLines)
-                  {
-                    position.MergedLength = merged.TotalLength;
-                    position.MergedSegments = merged.Segments;
-                  }
-
-                  VerboseLog($"evalmerge-exit minarea={minarea ?? -1:0.000000} x={shiftvector?.X ?? -1:0.000000} y={shiftvector?.Y ?? -1:0.000000}");
-                }
-              }
-            }
-
-            if (position != null)
-            {
-              AddPlacement(processingParts[processingPartIndex], parts, allPlacements, placements, part, position, unplacedParts, config.PlacementType, sheet);
-              if (position.MergedLength.HasValue)
-              {
-                totalMerged += position.MergedLength.Value;
-              }
-            }
-            else if (part.IsPriority)
-            {
-              VerboseLog($"Could not place {part}. As it's Priority skip to next part.");
-              // return InnerFlowResult.Break;
-              break;
-            }
-          }
-          else
-          {
-            VerboseLog($"Could not place {part.ToShortString()} even on empty {sheet.ToShortString()}.");
-          }
-
-          //return InnerFlowResult.Success;
         }
 
         VerboseLog("All parts processed for current sheet.");
@@ -477,6 +157,368 @@
       }
 #endif
       return result;
+    }
+
+    private InnerFlowResult ProcessPart(
+      INfp[] processingParts,
+      int processingPartIndex,
+      ref List<IPartPlacement> placements,
+      ISheet sheet)
+    {
+      var combinedNfp = new List<List<IntPoint>>();
+      double? minwidth = null;
+      double? minarea = null;
+
+      var part = processingParts[processingPartIndex];
+      VerboseLog($"Process {processingPartIndex}:{part.ToShortString()}.");
+
+      // inner NFP
+      INfp[] sheetNfp = null;
+      if (placements.Count == 0)
+      {
+        var canBePlaced = false;
+
+        // try all possible rotations until it fits
+        // (only do this for the first part of each sheet, to ensure that all parts that can be placed are, even if we have to to open a lot of sheets)
+        for (int j = 0; j < config.Rotations; j++)
+        {
+          if (CanBePlaced(sheet, part, config.ClipperScale, out sheetNfp))
+          {
+            VerboseLog($"{part.ToShortString()} could be placed if sheet empty (only do this for the first part on each sheet).");
+            canBePlaced = true;
+            break;
+          }
+
+          var r = part.Rotate(360D / config.Rotations);
+          r.Rotation = part.Rotation + (360D / config.Rotations);
+          r.Source = part.Source;
+          r.Id = part.Id;
+
+          // rotation is not in-place
+          part = r;
+        }
+
+        // part unplaceable, skip
+        if (!canBePlaced)
+        {
+          VerboseLog($"{part.ToShortString()} could not be placed even if sheet empty (only do this for the first part on each sheet).");
+          return InnerFlowResult.Continue;
+          // continue;
+        }
+      }
+
+      PartPlacement position = null;
+      if (placements.Count == 0)
+      {
+        VerboseLog("First placement, put it on the bottom left corner. . .");
+        // first placement, put it on the bottom left corner
+        for (int j = 0; j < sheetNfp.Count(); j++)
+        {
+          for (int k = 0; k < sheetNfp[j].Length; k++)
+          {
+            if (position == null ||
+                ((sheetNfp[j][k].X - part[0].X) < position.X) ||
+                (
+                GeometryUtil._almostEqual(sheetNfp[j][k].X - part[0].X, position.X)
+                && ((sheetNfp[j][k].Y - part[0].Y) < position.Y)))
+            {
+              position = new PartPlacement(part)
+              {
+                X = sheetNfp[j][k].X - part[0].X,
+                Y = sheetNfp[j][k].Y - part[0].Y,
+                Id = part.Id,
+                Rotation = part.Rotation,
+                Source = part.Source,
+              };
+            }
+          }
+        }
+
+        if (position == null)
+        {
+          throw new Exception("position null");
+
+          // console.log(sheetNfp);
+        }
+
+        AddPlacement(processingParts[processingPartIndex], parts, allPlacements, placements, part, position, unplacedParts, config.PlacementType, sheet);
+      }
+      else if (CanBePlaced(sheet, part, config.ClipperScale, out sheetNfp))
+      {
+        var clipper = new Clipper();
+        string clipkey = "s:" + part.Source + "r:" + part.Rotation;
+        var error = false;
+        IntPoint[][] clipperSheetNfp = NfpHelper.InnerNfpToClipperCoordinates(sheetNfp, config.ClipperScale);
+
+        // check if stored in clip cache
+        // var startindex = 0;
+        var startIndex = 0;
+        if (EnableCaches && clipCache.ContainsKey(clipkey))
+        {
+          var prevNfp = clipCache[clipkey].nfpp;
+          clipper.AddPaths(prevNfp.Select(z => z.ToList()).ToList(), PolyType.ptSubject, true);
+          startIndex = clipCache[clipkey].index;
+          VerboseLog($"Retrieve {clipkey}:{startIndex} from {nameof(clipCache)}; populate {nameof(clipper)}");
+        }
+
+        if (!TryGetCombinedNfp(config.ClipperScale, placements, part, clipper, startIndex, out combinedNfp))
+        {
+          VerboseLog($"{nameof(TryGetCombinedNfp)} clipper error.");
+          error = true;
+          return InnerFlowResult.Continue;
+          // continue;
+        }
+
+        if (EnableCaches)
+        {
+          VerboseLog($"Add {clipkey} to {nameof(clipCache)}");
+          clipCache[clipkey] = new ClipCacheItem()
+          {
+            index = placements.Count - 1,
+            nfpp = combinedNfp.Select(z => z.ToArray()).ToArray(),
+          };
+        }
+
+        // console.log('save cache', placed.length - 1);
+
+        List<INfp> finalNfp;
+        InnerFlowResult clipperForDifferenceResult = TryGetDifferenceWithSheetPolygon(config, combinedNfp, part, clipperSheetNfp, out finalNfp);
+        if (clipperForDifferenceResult == InnerFlowResult.Break)
+        {
+          return InnerFlowResult.Break;
+          // break;
+        }
+        else if (clipperForDifferenceResult == InnerFlowResult.Continue)
+        {
+          return InnerFlowResult.Continue;
+          // continue;
+        }
+
+#if NCRUNCH
+            try
+            {
+              var openScadBuilder = new StringBuilder();
+              foreach (var item in finalNfp)
+              {
+                openScadBuilder.AppendLine(item.ToOpenScadPolygon());
+              }
+
+              var openScad = openScadBuilder.ToString();
+            }
+            catch (Exception)
+            {
+              // NOP
+            }
+#endif
+        // choose placement that results in the smallest bounding box/hull etc
+        // todo: generalize gravity direction
+        /*var minwidth = null;
+        var minarea = null;
+        var minx = null;
+        var miny = null;
+        var nf, area, shiftvector;*/
+        minwidth = null;
+        minarea = null;
+        double? minx = null;
+        double? miny = null;
+        INfp nf;
+        double area;
+        PartPlacement shiftvector = null;
+
+        NFP allpoints = SheetPlacement.CombinedPoints(placements);
+        PolygonBounds allbounds = null;
+        PolygonBounds partbounds = null;
+        if (config.PlacementType == PlacementTypeEnum.Gravity || config.PlacementType == PlacementTypeEnum.BoundingBox)
+        {
+          allbounds = GeometryUtil.getPolygonBounds(allpoints);
+
+          NFP partpoints = new NFP();
+          for (int m = 0; m < part.Length; m++)
+          {
+            partpoints.AddPoint(new SvgPoint(part[m].X, part[m].Y));
+          }
+
+          partbounds = GeometryUtil.getPolygonBounds(partpoints);
+        }
+        else
+        {
+          allpoints = allpoints.GetHull();
+        }
+
+        VerboseLog($"Iterate nfps in differenceWithSheetPolygonNfp:");
+        for (int j = 0; j < finalNfp.Count; j++)
+        {
+          VerboseLog($"  For j={j}");
+          nf = finalNfp[j];
+
+          VerboseLog($"evalnf {nf.Length}");
+          for (int k = 0; k < nf.Length; k++)
+          {
+            VerboseLog($"    For k={k}");
+            shiftvector = new PartPlacement(part)
+            {
+              Id = part.Id,
+              X = nf[k].X - part[0].X,
+              Y = nf[k].Y - part[0].Y,
+              Source = part.Source,
+              Rotation = part.Rotation,
+            };
+
+            PolygonBounds rectbounds = null;
+            if (config.PlacementType == PlacementTypeEnum.Gravity || config.PlacementType == PlacementTypeEnum.BoundingBox)
+            {
+              NFP poly = new NFP();
+              poly.AddPoint(new SvgPoint(allbounds.X, allbounds.Y));
+              poly.AddPoint(new SvgPoint(allbounds.X + allbounds.Width, allbounds.Y));
+              poly.AddPoint(new SvgPoint(allbounds.X + allbounds.Width, allbounds.Y + allbounds.Height));
+              poly.AddPoint(new SvgPoint(allbounds.X, allbounds.Y + allbounds.Height));
+
+              poly.AddPoint(new SvgPoint(partbounds.X + shiftvector.X, partbounds.Y + shiftvector.Y));
+              poly.AddPoint(new SvgPoint(partbounds.X + partbounds.Width + shiftvector.X, partbounds.Y + shiftvector.Y));
+              poly.AddPoint(new SvgPoint(partbounds.X + partbounds.Width + shiftvector.X, partbounds.Y + partbounds.Height + shiftvector.Y));
+              poly.AddPoint(new SvgPoint(partbounds.X + shiftvector.X, partbounds.Y + partbounds.Height + shiftvector.Y));
+
+              rectbounds = GeometryUtil.getPolygonBounds(poly);
+
+              // weigh width more, to help compress in direction of gravity
+              if (config.PlacementType == PlacementTypeEnum.Gravity)
+              {
+                area = (rectbounds.Width * 3) + rectbounds.Height;
+              }
+              else
+              {
+                area = rectbounds.Width * rectbounds.Height;
+              }
+            }
+            else
+            {
+              // must be convex hull
+              var localpoints = allpoints.Clone();
+
+              for (int m = 0; m < part.Length; m++)
+              {
+                localpoints.AddPoint(new SvgPoint(part[m].X + shiftvector.X, part[m].Y + shiftvector.Y));
+              }
+
+              area = Math.Abs(GeometryUtil.polygonArea(localpoints.GetHull()));
+              shiftvector.Hull = localpoints.GetHull();
+              shiftvector.HullSheet = sheet.GetHull();
+            }
+
+            // console.timeEnd('evalbounds');
+            // console.time('evalmerge');
+            MergedResult merged = null;
+            if (config.MergeLines)
+            {
+              throw new NotImplementedException();
+
+              // if lines can be merged, subtract savings from area calculation
+              var shiftedpart = part.Shift(shiftvector);
+              List<INfp> shiftedplaced = new List<INfp>();
+
+              for (int m = 0; m < placements.Count; m++)
+              {
+                shiftedplaced.Add(placements[m].Part.Shift(placements[m]));
+              }
+
+              // don't check small lines, cut off at about 1/2 in
+              double minlength = 0.5 * config.Scale;
+              merged = MergedLength(shiftedplaced.ToArray(), shiftedpart, minlength, 0.1 * config.CurveTolerance);
+              area -= merged.TotalLength * config.TimeRatio;
+            }
+
+            VerboseLog("evalmerge");
+            if (minarea == null ||
+                area < minarea ||
+                (GeometryUtil._almostEqual(minarea, area) && (minx == null || shiftvector.X < minx)) ||
+                (GeometryUtil._almostEqual(minarea, area) && (minx != null && GeometryUtil._almostEqual(shiftvector.X, minx) && shiftvector.Y < miny)))
+            {
+              VerboseLog($"evalmerge-entered minarea={minarea ?? -1:0.000000} x={shiftvector?.X ?? -1:0.000000} y={shiftvector?.Y ?? -1:0.000000}");
+              minarea = area;
+
+              minwidth = rectbounds != null ? rectbounds.Width : 0;
+              position = shiftvector;
+              if (minx == null || shiftvector.X < minx)
+              {
+                minx = shiftvector.X;
+              }
+
+              if (miny == null || shiftvector.Y < miny)
+              {
+                miny = shiftvector.Y;
+              }
+
+              if (config.MergeLines)
+              {
+                position.MergedLength = merged.TotalLength;
+                position.MergedSegments = merged.Segments;
+              }
+
+              VerboseLog($"evalmerge-exit minarea={minarea ?? -1:0.000000} x={shiftvector?.X ?? -1:0.000000} y={shiftvector?.Y ?? -1:0.000000}");
+            }
+          }
+        }
+
+        if (position != null)
+        {
+          AddPlacement(processingParts[processingPartIndex], parts, allPlacements, placements, part, position, unplacedParts, config.PlacementType, sheet);
+          if (position.MergedLength.HasValue)
+          {
+            totalMerged += position.MergedLength.Value;
+          }
+        }
+        else if (part.IsPriority)
+        {
+          VerboseLog($"Could not place {part}. As it's Priority skip to next part.");
+          return InnerFlowResult.Break;
+          //break;
+        }
+      }
+      else
+      {
+        VerboseLog($"Could not place {part.ToShortString()} even on empty {sheet.ToShortString()}.");
+      }
+
+      return InnerFlowResult.Success;
+    }
+
+    private bool TryGetSheet(out ISheet sheet, out List<IPartPlacement> partPlacements, out Queue<ISheet> requeue)
+    {
+      ISheet localSheet = null;
+      partPlacements = null;
+      requeue = new Queue<ISheet>();
+      while (unusedSheets.Count > 0 && localSheet == null)
+      {
+        localSheet = unusedSheets.Pop();
+        if (allPlacements.Any(o => o.Sheet == localSheet))
+        {
+          var sheetPlacement = allPlacements.Single(o => o.Sheet == localSheet);
+          partPlacements = sheetPlacement.PartPlacements.ToList();
+          if (unplacedParts.Any(o => o.IsPriority))
+          {
+            // Sheet's already used so by definition it's already full of priority parts, no point trying to add more
+            requeue.Enqueue(localSheet);
+          }
+          else
+          {
+            VerboseLog($"Using sheet {localSheet.Id}:{localSheet.Source} because although it's already used for {partPlacements.Count()} priority parts there's no priority parts left so try fill spaces with non-priority:");
+            allPlacements.Remove(sheetPlacement);
+            sheet = localSheet;
+            return true;
+          }
+        }
+        else
+        {
+          VerboseLog($"Using sheet {localSheet.ToShortString()} because it's a new sheet so just go ahead and use it for whatever's left:");
+          partPlacements = new List<IPartPlacement>();
+          sheet = localSheet;
+          return true;
+        }
+      }
+
+      partPlacements = null;
+      sheet = null;
+      return false;
     }
 
     private void Initialise()
