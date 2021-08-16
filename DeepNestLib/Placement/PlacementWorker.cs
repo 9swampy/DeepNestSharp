@@ -11,32 +11,43 @@
 
   public class PlacementWorker
   {
+#if NCRUNCH
     internal const bool NCrunchTrace = false;
     private bool firstNCrunchTrace = false;
+#endif
 
     private const bool EnableCaches = true;
 
-    private static volatile object lockobj = new object();
-
     private readonly NfpHelper nfpHelper;
+    private readonly IEnumerable<ISheet> sheets;
+    private readonly INfp[] parts;
+    private readonly ISvgNestConfig config;
+    private readonly Stopwatch backgroundStopwatch;
+    private Stopwatch sw;
+    private Stack<ISheet> unusedSheets;
+    private double totalMerged;
+    private List<INfp> unplacedParts;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Background"/> class.
-    /// Needs to be totally self contained so it can calculate multiple nests in parallel.
+    /// Initializes a new instance of the <see cref="PlacementWorker"/> class.
     /// </summary>
-    /// <param name="progressDisplayer">Callback access to the executing UI</param>
-    /// <param name="nest">Passed in because have had issues with nest.ResponseProcessor accepting responses after a new nest has already been started.</param>
-    /// <param name="minkowskiSumService">MinkowskiSumService used to inject algorithms to calculate the No-Fit-Polygons critical to DeepNest.</param>
-    public PlacementWorker(NfpHelper nfpHelper)
+    /// <param name="nfpHelper">NfpHelper provides access to the Nfp cache generated in the PMap stage and this will add to it, potentially.</param>
+    /// <param name="sheets">The list of sheets upon which to place parts.</param>
+    /// <param name="parts">The list of parts to be placed.</param>
+    /// <param name="config">Config for the Nest.</param>
+    /// <param name="backgroundStopwatch">Stopwatch started at Background.Start (included the PMap stage prior to the PlacementWorker).</param>
+    public PlacementWorker(NfpHelper nfpHelper, IEnumerable<ISheet> sheets, INfp[] parts, ISvgNestConfig config, Stopwatch backgroundStopwatch)
     {
       this.nfpHelper = nfpHelper;
+      this.sheets = sheets;
+      this.parts = parts;
+      this.config = config;
+      this.backgroundStopwatch = backgroundStopwatch;
     }
-
-    internal NfpHelper NfpHelper => nfpHelper;
 
     internal bool CanBePlaced(INfp sheet, INfp part, double clipperScale, out INfp[] sheetNfp)
     {
-      sheetNfp = nfpHelper.GetInnerNfp(sheet, part, 0, clipperScale);
+      sheetNfp = nfpHelper.GetInnerNfp(sheet, part, MinkowskiCache.Cache, clipperScale);
       if (sheetNfp != null && sheetNfp.Count() > 0)
       {
         if (sheetNfp[0].Length == 0)
@@ -52,34 +63,15 @@
       return false;
     }
 
-    internal NestResult PlaceParts(IEnumerable<ISheet> sheets, INfp[] parts, ISvgNestConfig config, Stopwatch backgroundStopwatch)
+    internal NestResult PlaceParts()
     {
       VerboseLog("PlaceParts");
-      if (sheets == null || sheets.Count() == 0)
+      if (this.sheets == null || this.sheets.Count() == 0)
       {
         return null;
       }
 
-      Stopwatch sw = new Stopwatch();
-      sw.Start();
-
-      var unusedSheets = new Stack<ISheet>(sheets.Reverse());
-
-      // total length of merged lines
-      double totalMerged = 0;
-
-      // rotate paths by given rotation
-      var rotated = new List<INfp>();
-      for (int i = 0; i < parts.Length; i++)
-      {
-        var r = parts[i].Rotate(parts[i].Rotation);
-        r.Rotation = parts[i].Rotation;
-        r.Source = parts[i].Source;
-        r.Id = parts[i].Id;
-        rotated.Add(r);
-      }
-
-      var unplacedParts = rotated;
+      Initialise();
       SheetPlacementCollection allPlacements = new SheetPlacementCollection();
       while (unplacedParts.Count > 0 && unusedSheets.Count > 0)
       {
@@ -485,6 +477,28 @@
       }
 #endif
       return result;
+    }
+
+    private void Initialise()
+    {
+      this.sw = new Stopwatch();
+      sw.Start();
+
+      this.unusedSheets = new Stack<ISheet>(sheets.Reverse());
+
+      // total length of merged lines
+      this.totalMerged = 0;
+
+      // rotate paths by given rotation
+      unplacedParts = new List<INfp>();
+      for (int i = 0; i < parts.Length; i++)
+      {
+        var r = parts[i].Rotate(parts[i].Rotation);
+        r.Rotation = parts[i].Rotation;
+        r.Source = parts[i].Source;
+        r.Id = parts[i].Id;
+        unplacedParts.Add(r);
+      }
     }
 
     // returns the square of the length of any merged lines

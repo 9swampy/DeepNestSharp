@@ -1,7 +1,7 @@
 ﻿namespace DeepNestLib.CiTests
 {
   using System;
-using System.Diagnostics;
+  using System.Diagnostics;
   using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
   using FakeItEasy;
@@ -19,15 +19,13 @@ using System.Diagnostics;
       DxfGenerator.GenerateSquare("Sheet", 22D, RectangleType.FileLoad).TryConvertToSheet(0, out sheet).Should().BeTrue();
       INfp part;
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryConvertToNfp(0, out part).Should().BeTrue();
-      this.nestResult = A.Dummy<PlacementWorker>()
-        .PlaceParts(new ISheet[] { sheet }, new INfp[] { part }, new SvgNestConfig(), A.Dummy<Stopwatch>());
+      this.nestResult = new PlacementWorker(A.Dummy<NfpHelper>(), new ISheet[] { sheet }, new INfp[] { part }, new SvgNestConfig(), A.Dummy<Stopwatch>()).PlaceParts();
     }
 
     [Fact]
     public void GivenNullSheetsPassedInThenNullReturned()
     {
-      A.Dummy<PlacementWorker>()
-        .PlaceParts(null, new NFP[] { new NFP() }, new SvgNestConfig(), A.Dummy<Stopwatch>()).Should().BeNull();
+      new PlacementWorker(A.Dummy<NfpHelper>(), null, new NFP[] { new NFP() }, new SvgNestConfig(), A.Dummy<Stopwatch>()).PlaceParts().Should().BeNull();
     }
 
     [Fact]

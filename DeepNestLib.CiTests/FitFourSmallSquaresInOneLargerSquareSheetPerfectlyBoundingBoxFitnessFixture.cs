@@ -39,8 +39,7 @@
       fourthPart.Rotation = 180;
       var config = new DefaultSvgNestConfig();
       config.PlacementType = PlacementTypeEnum.BoundingBox;
-      this.nestResult = A.Dummy<PlacementWorker>()
-        .PlaceParts(new ISheet[] { firstSheet }, new INfp[] { firstPart, secondPart, thirdPart, fourthPart }, config, A.Dummy<Stopwatch>());
+      this.nestResult = new PlacementWorker(A.Dummy<NfpHelper>(), new ISheet[] { firstSheet }, new INfp[] { firstPart, secondPart, thirdPart, fourthPart }, config, A.Dummy<Stopwatch>()).PlaceParts();
     }
 
     [Fact]

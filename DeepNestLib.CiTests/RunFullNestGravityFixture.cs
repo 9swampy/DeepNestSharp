@@ -2,8 +2,6 @@
 {
   using System;
   using System.Collections.Generic;
-  using System.Collections.ObjectModel;
-  using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
   using IxMilia.Dxf.Entities;
@@ -21,7 +19,7 @@
     private NestingContext nestingContext;
     private INfp loadedNfp;
     private bool hasImportedRawDetail;
-    private int terminateNestResultCount = 2;
+    private int terminateNestResultCount = 4;
     private int firstSheetIdSrc = new Random().Next();
 
     /// <summary>

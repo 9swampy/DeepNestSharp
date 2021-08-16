@@ -18,8 +18,7 @@
     private readonly IMinkowskiSumService minkowskiSumService;
     private readonly INestStateBackground state;
     private readonly NfpHelper nfpHelper;
-    private readonly PlacementWorker placementWorker;
-
+    
     // run the placement synchronously
     private IWindowUnk window = new WindowUnk();
 
@@ -38,7 +37,6 @@
       this.minkowskiSumService = minkowskiSumService;
       this.state = state;
       this.nfpHelper = new NfpHelper(minkowskiSumService, window);
-      this.placementWorker = new PlacementWorker(this.nfpHelper);
     }
 
     public INfp GetPart(int source, INfp[] parts)
@@ -126,7 +124,7 @@
     {
       try
       {
-        var nestResult = placementWorker.PlaceParts(sheets, parts, config, backgroundStopwatch);
+        var nestResult = new PlacementWorker(this.nfpHelper, sheets, parts, config, backgroundStopwatch).PlaceParts();
         if (nestResult != null)
         {
           nestResult.index = index;

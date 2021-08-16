@@ -26,8 +26,7 @@ using System.Diagnostics;
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryConvertToNfp(firstPartIdSrc, out firstPart).Should().BeTrue();
       INfp secondPart;
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryConvertToNfp(secondPartIdSrc, out secondPart).Should().BeTrue();
-      this.nestResult = A.Dummy<PlacementWorker>()
-        .PlaceParts(new ISheet[] { firstSheet, secondSheet }, new INfp[] { firstPart, secondPart }, new SvgNestConfig(), A.Dummy<Stopwatch>());
+      this.nestResult = new PlacementWorker(A.Dummy<NfpHelper>(), new ISheet[] { firstSheet, secondSheet }, new INfp[] { firstPart, secondPart }, new SvgNestConfig(), A.Dummy<Stopwatch>()).PlaceParts();
     }
 
     [Fact]
