@@ -18,11 +18,12 @@
 
     private NFP hull;
 
-    public SheetPlacement(PlacementTypeEnum placementType, ISheet sheet, IReadOnlyList<IPartPlacement> partPlacements)
+    public SheetPlacement(PlacementTypeEnum placementType, ISheet sheet, IReadOnlyList<IPartPlacement> partPlacements, double mergedLength)
     {
       this.PlacementType = placementType;
       this.Sheet = sheet;
       this.PartPlacements = partPlacements;
+      this.MergedLength = mergedLength;
       this.Fitness = new OriginalFitnessSheet(this);
     }
 
@@ -100,6 +101,8 @@
 
     [JsonIgnore]
     public double MinY => PartPlacements.Min(pp => pp.MinY);
+
+    public double MergedLength { get; }
 
     public static SheetPlacement LoadFromFile(string fileName)
     {

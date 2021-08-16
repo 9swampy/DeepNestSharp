@@ -3,6 +3,7 @@
   using System.Collections.Generic;
   using System.Linq;
   using System.Text;
+  using System.Text.Json.Serialization;
   using ClipperLib;
   using Light.GuardClauses;
 
@@ -13,14 +14,19 @@
     private readonly Dictionary<string, INfp[]> cacheProcess = new Dictionary<string, INfp[]>();
     private readonly IMinkowskiSumService minkowskiSumService;
 
-    // run the placement synchronously
-    private readonly IWindowUnk window;
+    [JsonConstructor]
+    public NfpHelper()
+    {
+    }
 
     public NfpHelper(IMinkowskiSumService minkowskiSumService, IWindowUnk window)
     {
       this.minkowskiSumService = minkowskiSumService;
-      this.window = window;
+      this.Window = window;
     }
+
+    [JsonInclude]
+    public IWindowUnk Window { get; private set; }
 
     // inner nfps can be an array of nfps, outer nfps are always singular
     public static IntPoint[][] InnerNfpToClipperCoordinates(INfp[] nfp, double clipperScale)
@@ -103,7 +109,7 @@
       var key = new DbCacheKey(a.Source, b.Source, 0, b.Rotation);
 
       // var doc = window.db.find({ A: A.source, B: B.source, Arotation: 0, Brotation: B.rotation }, true);
-      var res = window.Find(key, true);
+      var res = Window.Find(key, true);
       if (res != null)
       {
         return res;
@@ -166,7 +172,7 @@
         // insert into db
         // console.log('inserting inner: ', A.source, B.source, B.rotation, f);
         var doc = new DbCacheKey(a.Source, b.Source, 0, b.Rotation, f.ToArray());
-        window.Insert(doc, true);
+        Window.Insert(doc, true);
       }
 
       return f.ToArray();
@@ -180,7 +186,7 @@
 
       lock (lockobj)
       {
-        var doc = window.Find(key);
+        var doc = Window.Find(key);
         if (doc != null)
         {
           return doc.First();
@@ -212,7 +218,7 @@
         if (!inside)
         {
           var doc2 = new DbCacheKey(a.Source, b.Source, a.Rotation, b.Rotation, nfp);
-          window.Insert(doc2);
+          Window.Insert(doc2);
         }
 
         /*

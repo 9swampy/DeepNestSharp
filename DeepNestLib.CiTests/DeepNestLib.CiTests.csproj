@@ -173,6 +173,7 @@
     <Compile Include="DummyFactories\DummyMinkowskiSumFactory.cs" />
     <Compile Include="DummyFactories\DummyNestStateFactory.cs" />
     <Compile Include="DummyFactories\DummyNfpHelperFactory.cs" />
+    <Compile Include="DummyFactories\DummyPartPlacementWorkerFactory.cs" />
     <Compile Include="DummyFactories\DummyPlacementWorkerFactory.cs" />
     <Compile Include="DxfGenerator.cs" />
     <Compile Include="DxfParserPart5Fixture.cs" />
@@ -198,6 +199,7 @@
     <Compile Include="OuterFitPolygonFixture.cs" />
     <Compile Include="Placement\NfpJsonFixture.cs" />
     <Compile Include="NestProject\ProjectInfoSerializationFixture.cs" />
+    <Compile Include="Placement\PartPlacementWorkerFixture.cs" />
     <Compile Include="Placement\SheetPlacementJsonFixture.cs" />
     <Compile Include="PmapWorkerFixtureSetup.cs" />
     <Compile Include="PmapWorkerPmapDeepNestFixture.cs" />
@@ -260,6 +262,9 @@
     <EmbeddedResource Include="Placement\SimpleRectangleNfp.json" />
     <EmbeddedResource Include="Placement\SimpleRectangleNfpOnSheetPlacement.json" />
     <EmbeddedResource Include="Placement\SimpleRectangleSheet.json" />
+    <EmbeddedResource Include="Placement\PartPlacementWorker.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\clipper_library\clipper_library.csproj">

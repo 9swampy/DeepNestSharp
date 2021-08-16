@@ -27,6 +27,8 @@
 
     double TotalPartsArea { get; }
 
+    double MergedLength { get; }
+
     string ToJson();
 
     string ToString();

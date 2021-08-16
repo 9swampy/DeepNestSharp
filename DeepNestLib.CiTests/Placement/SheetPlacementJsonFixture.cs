@@ -15,7 +15,7 @@
     [Fact]
     public void ShouldCtor()
     {
-      Action act = () => _ = new SheetPlacement(A.Dummy<PlacementTypeEnum>(), A.Dummy<Sheet>(), A.Dummy<List<IPartPlacement>>());
+      Action act = () => _ = new SheetPlacement(A.Dummy<PlacementTypeEnum>(), A.Dummy<Sheet>(), A.Dummy<List<IPartPlacement>>(), 0);
 
       act.Should().NotThrow();
     }
@@ -25,7 +25,7 @@
     {
       var nfp = new Sheet();
       var partPlacements = new List<IPartPlacement>();
-      var sut = new SheetPlacement(A.Dummy<PlacementTypeEnum>(), A.Dummy<Sheet>(), partPlacements);
+      var sut = new SheetPlacement(A.Dummy<PlacementTypeEnum>(), A.Dummy<Sheet>(), partPlacements, 0);
       Action act = () => sut.ToJson();
 
       act.Should().NotThrow();
@@ -40,7 +40,7 @@
       new DxfGenerator().GenerateRectangle("firstPart", 1D, 2D, RectangleType.FileLoad).TryConvertToNfp(3, out firstPart).Should().BeTrue();
       firstPart.X = 3;
       firstPart.Y = 4;
-      var sut = new SheetPlacement(A.Dummy<PlacementTypeEnum>(), firstSheet, new List<IPartPlacement>() { new PartPlacement(firstPart) { X = 1, Y = 2, Rotation = 90, Id = 10, } });
+      var sut = new SheetPlacement(A.Dummy<PlacementTypeEnum>(), firstSheet, new List<IPartPlacement>() { new PartPlacement(firstPart) { X = 1, Y = 2, Rotation = 90, Id = 10, } }, 0);
 
       var json = sut.ToJson();
 
@@ -59,7 +59,7 @@
       new DxfGenerator().GenerateRectangle("firstSheet", 5D, 5D, RectangleType.FileLoad).TryConvertToSheet(3, out firstSheet).Should().BeTrue();
       INfp firstPart;
       new DxfGenerator().GenerateRectangle("firstPart", 1D, 2D, RectangleType.FileLoad).TryConvertToNfp(4, out firstPart).Should().BeTrue();
-      var expected = new SheetPlacement(A.Dummy<PlacementTypeEnum>(), firstSheet, new List<IPartPlacement>() { new PartPlacement(firstPart) });
+      var expected = new SheetPlacement(A.Dummy<PlacementTypeEnum>(), firstSheet, new List<IPartPlacement>() { new PartPlacement(firstPart) }, 0);
 
       var json = expected.ToJson();
       var actual = SheetPlacement.FromJson(json);
@@ -134,11 +134,11 @@
       var partPlacementList = new List<IPartPlacement>();
       partPlacementList.Add(partPlacement);
       var sheet = new Sheet() { Width = 100, Height = 200 };
-      var sheetPlacement = new SheetPlacement(PlacementTypeEnum.Gravity, sheet, partPlacementList);
+      var sheetPlacement = new SheetPlacement(PlacementTypeEnum.Gravity, sheet, partPlacementList, 0);
       var sheetPlacementsCollection = new SheetPlacementCollection();
       sheetPlacementsCollection.Add(sheetPlacement);
 
-      Action act = () => _ = new NestResult(1, sheetPlacementsCollection, new List<INfp>(), 121, sheetPlacement.PlacementType, 1234, 4321);
+      Action act = () => _ = new NestResult(1, sheetPlacementsCollection, new List<INfp>(), sheetPlacement.PlacementType, 1234, 4321);
 
       act.Should().NotThrow();
     }
@@ -151,11 +151,11 @@
       var partPlacementList = new List<IPartPlacement>();
       partPlacementList.Add(partPlacement);
       var sheet = Sheet.NewSheet(1, 100, 200);
-      var sheetPlacement = new SheetPlacement(PlacementTypeEnum.Gravity, sheet, partPlacementList);
+      var sheetPlacement = new SheetPlacement(PlacementTypeEnum.Gravity, sheet, partPlacementList, 121);
       var sheetPlacementsCollection = new SheetPlacementCollection();
       sheetPlacementsCollection.Add(sheetPlacement);
 
-      var nestResult = new NestResult(1, sheetPlacementsCollection, new List<INfp>(), 121, sheetPlacement.PlacementType, 1234, 4321);
+      var nestResult = new NestResult(1, sheetPlacementsCollection, new List<INfp>(), sheetPlacement.PlacementType, 1234, 4321);
       Action act = () => _ = nestResult.ToJson();
 
       act.Should().NotThrow();
@@ -170,11 +170,11 @@
       var partPlacementList = new List<IPartPlacement>();
       partPlacementList.Add(partPlacement);
       var sheet = Sheet.NewSheet(1, 100, 200);
-      var sheetPlacement = new SheetPlacement(PlacementTypeEnum.Gravity, sheet, partPlacementList);
+      var sheetPlacement = new SheetPlacement(PlacementTypeEnum.Gravity, sheet, partPlacementList, 121);
       var sheetPlacementsCollection = new SheetPlacementCollection();
       sheetPlacementsCollection.Add(sheetPlacement);
 
-      var nestResult = new NestResult(1, sheetPlacementsCollection, new List<INfp>() { unplacedNfp }, 121, sheetPlacement.PlacementType, 1234, 4321);
+      var nestResult = new NestResult(1, sheetPlacementsCollection, new List<INfp>() { unplacedNfp }, sheetPlacement.PlacementType, 1234, 4321);
       var json = nestResult.ToJson();
       var actual = NestResult.FromJson(json);
 

@@ -238,7 +238,9 @@
     <Compile Include="PartPlacementJsonConverter.cs" />
     <Compile Include="PlacementTypeEnum.cs" />
     <Compile Include="DoublePrecisionConverter.cs" />
+    <Compile Include="Placement\IPlacementWorker.cs" />
     <Compile Include="Placement\NfpHelper.cs" />
+    <Compile Include="Placement\PartPlacementWorker.cs" />
     <Compile Include="Placement\PlacementWorker.cs" />
     <Compile Include="Placement\INestResult.cs" />
     <Compile Include="Placement\IPartPlacement.cs" />
@@ -274,6 +276,7 @@
     <Compile Include="SvgPointArrayExtensions.cs" />
     <Compile Include="TopNestResultsCollection.cs" />
     <Compile Include="WindowUnk.cs" />
+    <Compile Include="WindowUnkJsonConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\clipper_library\clipper_library.csproj">

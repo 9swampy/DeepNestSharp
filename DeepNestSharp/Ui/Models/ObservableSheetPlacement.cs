@@ -64,11 +64,17 @@
 
     public INfp Hull => sheetPlacement.Hull;
 
+    public bool IsDirty => true;
+
+    public SheetPlacement Item => sheetPlacement;
+
     public double MaxX => this.sheetPlacement?.MaxX ?? MinX;
 
     public double MaxY => this.sheetPlacement?.MaxY ?? MinY;
 
     public double MaterialUtilization => sheetPlacement?.MaterialUtilization ?? 0;
+
+    public double MergedLength => ((ISheetPlacement)this.Item).MergedLength;
 
     public double MinX => this.sheetPlacement?.MinX ?? 0;
 
@@ -106,10 +112,6 @@
     public INfp Simplify => sheetPlacement.Simplify;
 
     public double TotalPartsArea => sheetPlacement.TotalPartsArea;
-
-    public bool IsDirty => true;
-
-    public SheetPlacement Item => sheetPlacement;
 
     public string ToJson()
     {

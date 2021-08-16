@@ -26,7 +26,6 @@
       int totalParts,
       SheetPlacementCollection allPlacements,
       IList<INfp> unplacedParts,
-      double mergedLength,
       PlacementTypeEnum placementType,
       long placePartTime,
       long backgroundTime)
@@ -37,7 +36,6 @@
       this.TotalParts = totalParts;
       this.UsedSheets = allPlacements;
       this.UnplacedParts = unplacedParts;
-      this.MergedLength = mergedLength;
       this.PlacementType = placementType;
       this.PlacePartTime = placePartTime;
       this.BackgroundTime = backgroundTime;
@@ -65,7 +63,7 @@
     public IList<INfp> UnplacedParts { get; private set; }
 
     [JsonInclude]
-    public double MergedLength { get; private set; }
+    public double MergedLength => UsedSheets.Sum(o => o.MergedLength);
 
     [JsonIgnore]
     public double FitnessSheets

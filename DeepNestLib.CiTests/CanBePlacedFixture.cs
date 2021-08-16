@@ -13,7 +13,7 @@
     [Fact]
     public void GivenSmallerSquareWhenFitInLargeSquareThenCanBePlaced()
     {
-      var sut = A.Dummy<PlacementWorker>();
+      var sut = A.Dummy<PartPlacementWorker>();
       var generator = new DxfGenerator();
       sut.CanBePlaced(
         generator.GenerateRectangle("Sheet", 1.01, 1.01, RectangleType.FileLoad).ToNfp(),
@@ -25,7 +25,7 @@
     [Fact]
     public void GivenLargerSquareWhenFitInSmallSquareThenCanNotBePlaced()
     {
-      var sut = A.Dummy<PlacementWorker>();
+      var sut = A.Dummy<PartPlacementWorker>();
       var generator = new DxfGenerator();
       sut.CanBePlaced(
         generator.GenerateRectangle("Sheet", 1, 1, RectangleType.FileLoad).ToNfp(),
@@ -37,7 +37,7 @@
     [Fact]
     public void GivenIdenticalSquaresWhenFitThenCanNotBePlaced()
     {
-      var sut = A.Dummy<PlacementWorker>();
+      var sut = A.Dummy<PartPlacementWorker>();
       var generator = new DxfGenerator();
       sut.CanBePlaced(
         generator.GenerateRectangle("Sheet", 1, 1, RectangleType.FileLoad).ToNfp(),
