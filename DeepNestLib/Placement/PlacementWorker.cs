@@ -18,14 +18,7 @@
 
     private static volatile object lockobj = new object();
 
-    private readonly IProgressDisplayer progressDisplayer;
-    private readonly SvgNest nest;
-    private readonly IMinkowskiSumService minkowskiSumService;
-    private readonly INestStateBackground state;
     private readonly NfpHelper nfpHelper;
-
-    // run the placement synchronously
-    private IWindowUnk window = new WindowUnk();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Background"/> class.
@@ -34,14 +27,9 @@
     /// <param name="progressDisplayer">Callback access to the executing UI</param>
     /// <param name="nest">Passed in because have had issues with nest.ResponseProcessor accepting responses after a new nest has already been started.</param>
     /// <param name="minkowskiSumService">MinkowskiSumService used to inject algorithms to calculate the No-Fit-Polygons critical to DeepNest.</param>
-    public PlacementWorker(IProgressDisplayer progressDisplayer, SvgNest nest, IMinkowskiSumService minkowskiSumService, INestStateBackground state, IWindowUnk window)
+    public PlacementWorker(NfpHelper nfpHelper)
     {
-      this.window = window;
-      this.nfpHelper = new NfpHelper(minkowskiSumService, window);
-      this.progressDisplayer = progressDisplayer;
-      this.nest = nest;
-      this.minkowskiSumService = minkowskiSumService;
-      this.state = state;
+      this.nfpHelper = nfpHelper;
     }
 
     internal NfpHelper NfpHelper => nfpHelper;

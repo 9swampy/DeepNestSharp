@@ -17,6 +17,7 @@
     private readonly SvgNest nest;
     private readonly IMinkowskiSumService minkowskiSumService;
     private readonly INestStateBackground state;
+    private readonly NfpHelper nfpHelper;
     private readonly PlacementWorker placementWorker;
 
     // run the placement synchronously
@@ -36,7 +37,8 @@
       this.nest = nest;
       this.minkowskiSumService = minkowskiSumService;
       this.state = state;
-      this.placementWorker = new PlacementWorker(progressDisplayer, nest, minkowskiSumService, state, this.window);
+      this.nfpHelper = new NfpHelper(minkowskiSumService, window);
+      this.placementWorker = new PlacementWorker(this.nfpHelper);
     }
 
     public INfp GetPart(int source, INfp[] parts)
@@ -165,7 +167,7 @@
           var cbounds = GeometryUtil.getPolygonBounds(aChildren[j]);
           if (cbounds.Width > bBounds.Width && cbounds.Height > bBounds.Height)
           {
-            var n = placementWorker.NfpHelper.GetInnerNfp(aChildren[j], bRotated, MinkowskiCache.NoCache, clipperScale);
+            var n = nfpHelper.GetInnerNfp(aChildren[j], bRotated, MinkowskiCache.NoCache, clipperScale);
             if (n != null && n.Count() > 0)
             {
               cnfp.AddRange(n);

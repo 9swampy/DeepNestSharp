@@ -6,7 +6,7 @@
   {
     protected override PlacementWorker Create()
     {
-      return new PlacementWorker(A.Fake<IProgressDisplayer>(), A.Dummy<SvgNest>(), A.Dummy<MinkowskiSum>(), A.Dummy<NestState>(), new WindowUnk());
+      return new PlacementWorker(A.Dummy<NfpHelper>());
     }
   }
 }
