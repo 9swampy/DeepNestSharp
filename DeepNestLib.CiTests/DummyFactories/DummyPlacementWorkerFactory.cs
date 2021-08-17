@@ -8,7 +8,7 @@
   {
     protected override PlacementWorker Create()
     {
-      return new PlacementWorker(A.Dummy<NfpHelper>(), new List<ISheet>(), new INfp[0], A.Fake<ISvgNestConfig>(), A.Dummy<Stopwatch>());
+      return new PlacementWorker(A.Dummy<NfpHelper>(), new List<ISheet>(), new INfp[0], A.Fake<ISvgNestConfig>(), A.Dummy<Stopwatch>(), A.Fake<INestState>());
     }
   }
 }

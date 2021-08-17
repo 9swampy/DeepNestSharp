@@ -113,9 +113,9 @@
 
     public double TotalPartsArea => sheetPlacement.TotalPartsArea;
 
-    public string ToJson()
+    public string ToJson(bool writeIndented = false)
     {
-      return this.sheetPlacement.ToJson();
+      return this.sheetPlacement.ToJson(writeIndented);
     }
 
     internal void SaveState()

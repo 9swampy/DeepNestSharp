@@ -121,12 +121,13 @@
       return JsonSerializer.Deserialize<SheetPlacement>(json, options);
     }
 
-    public override string ToJson()
+    public override string ToJson(bool writeIndented = false)
     {
       var options = new JsonSerializerOptions();
       options.Converters.Add(new SheetJsonConverter());
       options.Converters.Add(new NfpJsonConverter());
       options.Converters.Add(new PartPlacementJsonConverter());
+      options.WriteIndented = writeIndented;
       return JsonSerializer.Serialize(this, options);
     }
 

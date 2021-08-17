@@ -60,9 +60,9 @@
 
     public int TotalParts => this.item.TotalParts;
 
-    public string ToJson()
+    public string ToJson(bool writeIndented = false)
     {
-      return this.item.ToJson();
+      return this.item.ToJson(writeIndented);
     }
 
     private void Set(INestResult item)

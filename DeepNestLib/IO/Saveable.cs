@@ -14,18 +14,18 @@
       get
       {
         return this.forceIsDirty ||
-               this.ToJson() != saveState;
+               this.ToJson(false) != saveState;
       }
     }
 
-    public abstract string ToJson();
+    public abstract string ToJson(bool writeIndented);
 
     /// <summary>
     /// Update the memoised save state which is used to determine <see cref="IsDirty"/>.
     /// </summary>
     public void SaveState()
     {
-      saveState = this.ToJson();
+      saveState = this.ToJson(false);
     }
 
     /// <summary>

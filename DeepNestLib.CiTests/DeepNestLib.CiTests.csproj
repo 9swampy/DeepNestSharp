@@ -193,6 +193,7 @@
     <Compile Include="GetInnerPolygonFixture.cs" />
     <Compile Include="NestProject\SvgNestConfigSerializationFixture.cs" />
     <Compile Include="NfpCtorCloneFixture.cs" />
+    <Compile Include="NfpExtensions.cs" />
     <Compile Include="NfpFixture.cs" />
     <Compile Include="NfpRotateFixture.cs" />
     <Compile Include="PerfectFitnessFixture.cs" />

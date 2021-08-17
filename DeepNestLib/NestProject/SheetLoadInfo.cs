@@ -35,8 +35,10 @@
       set { config.SheetQuantity = value; }
     }
 
-    public override string ToJson()
+    public override string ToJson(bool writeIndented = false)
     {
+      var options = new JsonSerializerOptions();
+      options.WriteIndented = writeIndented;
       return JsonSerializer.Serialize(this);
     }
   }
@@ -46,7 +48,7 @@
   {
     [Obsolete("Only use from ConfigSheetLoadInfo to bypass the constructor - could just pass the config in but if we do it would be less transparent; no other reason to keep it long term is there?")]
     protected SheetLoadInfo()
-    { 
+    {
     }
 
     public SheetLoadInfo(ISvgNestConfig config)
@@ -67,9 +69,11 @@
 
     public virtual int Quantity { get; set; }
 
-    public override string ToJson()
+    public override string ToJson(bool writeIndented = false)
     {
-      return JsonSerializer.Serialize(this);
+      var options = new JsonSerializerOptions();
+      options.WriteIndented = writeIndented;
+      return JsonSerializer.Serialize(this, options);
     }
   }
 }

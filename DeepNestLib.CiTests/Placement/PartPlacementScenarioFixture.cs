@@ -25,7 +25,7 @@
       ((ITestPartPlacementWorker)sut).PlacementWorker = placementWorker;
       ((ITestNfpHelper)((ITestPartPlacementWorker)sut).NfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(A.Fake<INestStateMinkowski>());
 
-      sut.ProcessPart(sut.InputPart);
+      sut.ProcessPart(sut.InputPart, 0);
 
       A.CallTo(() => placementWorker.AddPlacement(sut.InputPart, A<List<IPartPlacement>>._, A<INfp>._, A<PartPlacement>._, A<PlacementTypeEnum>._, A<ISheet>._, A<double>._)).MustHaveHappened();
     }

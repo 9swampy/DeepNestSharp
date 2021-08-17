@@ -16,9 +16,9 @@
       "commandName": "Project",
       "commandLineArgs": "C:\\Git\\CanDispenserCnc\\CuttingLists\\Std320x164\\OverlappingNestDebug180180Fixture.dnest"
     },
-    "ReadMe1BetterThan2.dnest": {
+    "Overlay2ndGen.dnest": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\ReadMeExampleTwoSheetsBetterThanOne.dnest"
+      "commandLineArgs": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\SecondGenerationOverlay.dnest"
     }
   }
 }

@@ -23,6 +23,7 @@
     private readonly INfp[] parts;
     private readonly ISvgNestConfig config;
     private readonly Stopwatch backgroundStopwatch;
+    private readonly INestState state;
     private Stopwatch sw;
     private Stack<ISheet> unusedSheets;
     private List<INfp> unplacedParts;
@@ -35,13 +36,15 @@
     /// <param name="parts">The list of parts to be placed.</param>
     /// <param name="config">Config for the Nest.</param>
     /// <param name="backgroundStopwatch">Stopwatch started at Background.Start (included the PMap stage prior to the PlacementWorker).</param>
-    public PlacementWorker(NfpHelper nfpHelper, IEnumerable<ISheet> sheets, INfp[] parts, ISvgNestConfig config, Stopwatch backgroundStopwatch)
+    public PlacementWorker(NfpHelper nfpHelper, IEnumerable<ISheet> sheets, INfp[] parts, ISvgNestConfig config, Stopwatch backgroundStopwatch, INestState state)
     {
       this.nfpHelper = nfpHelper;
       this.sheets = sheets;
       this.parts = parts;
+      parts.Select(o => o.Id).Distinct().Count().MustBe(parts.Length, message: "Parts must have unique Ids.");
       this.config = config;
       this.backgroundStopwatch = backgroundStopwatch;
+      this.state = state;
     }
 
     /// <summary>
@@ -78,11 +81,13 @@
           VerboseLog("Priority Placement.");
         }
 
-        var partPlacementWorker = new PartPlacementWorker(this, config, parts, placements, sheet, nfpHelper);
+        var partPlacementWorker = new PartPlacementWorker(this, config, parts, placements, sheet, nfpHelper, state);
         var processingParts = (isPriorityPlacement ? unplacedParts.Where(o => o.IsPriority) : unplacedParts).ToArray();
         for (int processingPartIndex = 0; processingPartIndex < processingParts.Length; processingPartIndex++)
         {
-          var processPartResult = partPlacementWorker.ProcessPart(processingParts[processingPartIndex]);
+          var processingPart = processingParts[processingPartIndex];
+          var partIndex = parts.IndexOf(parts.Single(o => o.Id == processingPart.Id));
+          var processPartResult = partPlacementWorker.ProcessPart(processingParts[processingPartIndex], partIndex);
           if (processPartResult == InnerFlowResult.Break)
           {
             break;
@@ -133,7 +138,7 @@
       return result;
     }
 
-    void IPlacementWorker.AddPlacement(INfp inputPart, List<IPartPlacement> placements, INfp processedPart, PartPlacement position, PlacementTypeEnum placementType, ISheet sheet, double mergedLength)
+    SheetPlacement IPlacementWorker.AddPlacement(INfp inputPart, List<IPartPlacement> placements, INfp processedPart, PartPlacement position, PlacementTypeEnum placementType, ISheet sheet, double mergedLength)
     {
       try
       {
@@ -156,6 +161,8 @@
           // Get that in to a Json file so it can be debugged.
           System.Diagnostics.Debugger.Break();
         }
+
+        return sp;
       }
       catch (Exception ex)
       {

@@ -3,7 +3,9 @@
   using System;
   using System.Collections.Generic;
   using System.Diagnostics;
+  using System.IO;
   using System.Linq;
+  using System.Reflection;
   using System.Text.Json;
   using System.Text.Json.Serialization;
 #if NCRUNCH
@@ -19,24 +21,30 @@
     private const bool EnableCaches = true;
 
     private readonly Dictionary<string, ClipCacheItem> clipCache;
-
+    private readonly INestState state;
     private IPlacementWorker placementWorker;
     private volatile object processPartLock = new object();
-    
+#if NCRUNCH
+    private bool exportExecutions = false;
+#else
+    private bool exportExecutions = true;
+#endif
+
     [JsonConstructor]
     public PartPlacementWorker(Dictionary<string, ClipCacheItem> clipCache)
     {
       this.clipCache = clipCache;
     }
 
-    public PartPlacementWorker(IPlacementWorker placementWorker, ISvgNestConfig config, INfp[] parts, List<IPartPlacement> placements, ISheet sheet, NfpHelper nfpHelper)
-      : this(placementWorker, config, parts, placements, sheet, nfpHelper, new Dictionary<string, ClipCacheItem>())
+    public PartPlacementWorker(IPlacementWorker placementWorker, ISvgNestConfig config, INfp[] parts, List<IPartPlacement> placements, ISheet sheet, NfpHelper nfpHelper, INestState state)
+      : this(placementWorker, config, parts, placements, sheet, nfpHelper, new Dictionary<string, ClipCacheItem>(), state)
     {
     }
 
-    public PartPlacementWorker(IPlacementWorker placementWorker, ISvgNestConfig config, INfp[] parts, List<IPartPlacement> placements, ISheet sheet, NfpHelper nfpHelper, Dictionary<string, ClipCacheItem> clipCache)
+    public PartPlacementWorker(IPlacementWorker placementWorker, ISvgNestConfig config, INfp[] parts, List<IPartPlacement> placements, ISheet sheet, NfpHelper nfpHelper, Dictionary<string, ClipCacheItem> clipCache, INestState state)
     {
       this.clipCache = clipCache;
+      this.state = state;
       this.placementWorker = placementWorker;
       this.Config = config;
       this.Sheet = sheet;
@@ -44,6 +52,8 @@
       this.Parts = parts.ToList();
       this.Placements = placements.ToList();
     }
+
+    bool ITestPartPlacementWorker.ExportExecutions { set => exportExecutions = value; }
 
     [JsonInclude]
     public List<IPartPlacement> Placements { get; private set; }
@@ -70,7 +80,7 @@
 
     IPlacementWorker ITestPartPlacementWorker.PlacementWorker { get => this.placementWorker; set => this.placementWorker = value; }
 
-    public string ToJson()
+    public string ToJson(bool writeIndented = false)
     {
       var options = new JsonSerializerOptions();
       options.Converters.Add(new SvgNestConfigJsonConverter());
@@ -78,21 +88,27 @@
       options.Converters.Add(new NfpJsonConverter());
       options.Converters.Add(new PartPlacementJsonConverter());
       options.Converters.Add(new ClipCacheItemJsonConverter());
+      options.WriteIndented = writeIndented;
       return System.Text.Json.JsonSerializer.Serialize(this, options);
     }
 
     [JsonInclude]
     public INfp InputPart { get; private set; }
 
-    public InnerFlowResult ProcessPart(INfp inputPart)
+    public InnerFlowResult ProcessPart(INfp inputPart, int inputPartIndex)
     {
       lock (processPartLock)
       {
+        InputPart = inputPart;
+        if (exportExecutions)
+        {
+          Export(inputPartIndex, "In.json", this.ToJson(true));
+        }
+
         var combinedNfp = new List<List<IntPoint>>();
         double? minwidth = null;
         double? minarea = null;
 
-        InputPart = inputPart;
         var processedPart = inputPart;
         this.placementWorker.VerboseLog($"Process {inputPart.ToShortString()}.");
 
@@ -166,7 +182,7 @@
             // console.log(sheetNfp);
           }
 
-          this.placementWorker.AddPlacement(inputPart, Placements, processedPart, position, this.Config.PlacementType, Sheet, MergedLength);
+          AddPlacement(inputPart, processedPart, position, inputPartIndex);
         }
         else if (this.CanBePlaced(Sheet, processedPart, this.Config.ClipperScale, out sheetNfp))
         {
@@ -383,10 +399,9 @@
 
           if (position != null)
           {
-            this.placementWorker.AddPlacement(inputPart, Placements, processedPart, position, this.Config.PlacementType, Sheet, MergedLength);
+            AddPlacement(inputPart, processedPart, position, inputPartIndex);
             if (position.MergedLength.HasValue)
             {
-              var json = this.ToJson();
               this.MergedLength += position.MergedLength.Value;
             }
           }
@@ -403,6 +418,23 @@
 
         return InnerFlowResult.Success;
       }
+    }
+
+    private void AddPlacement(INfp inputPart, INfp processedPart, PartPlacement position, int inputPartIndex)
+    {
+      var sheetPlacement = this.placementWorker.AddPlacement(inputPart, Placements, processedPart, position, this.Config.PlacementType, Sheet, MergedLength);
+      if (exportExecutions)
+      {
+        Export(inputPartIndex, "Out.json", this.ToJson(true));
+        Export(inputPartIndex, $"Out-Parts{sheetPlacement.PartPlacements.Count}.dnsp", sheetPlacement.ToJson(true));
+      }
+    }
+
+    private void Export(int inputPartIndex, string fileNameSuffix, string json)
+    {
+      var filePath = $"C:\\Temp\\PartPlacementWorker\\{state.NestCount}-{Sheet.Id}-{inputPartIndex}-{fileNameSuffix}";
+      System.Diagnostics.Debug.Print($"Export {filePath}");
+      File.WriteAllText(filePath, json);
     }
 
     internal static PartPlacementWorker FromJson(string json)
@@ -705,6 +737,8 @@
 
   public interface ITestPartPlacementWorker
   {
+    bool ExportExecutions { set; }
+
     NfpHelper NfpHelper { get; set; }
 
     IPlacementWorker PlacementWorker { get; set; }

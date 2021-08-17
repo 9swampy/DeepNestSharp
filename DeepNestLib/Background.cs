@@ -125,7 +125,7 @@
     {
       try
       {
-        var nestResult = new PlacementWorker(this.nfpHelper, sheets, parts, config, backgroundStopwatch).PlaceParts();
+        var nestResult = new PlacementWorker(this.nfpHelper, sheets, parts, config, backgroundStopwatch, state).PlaceParts();
         if (nestResult != null)
         {
           nestResult.index = index;

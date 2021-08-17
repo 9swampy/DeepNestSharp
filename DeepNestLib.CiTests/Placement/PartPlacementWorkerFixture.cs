@@ -4,7 +4,7 @@
   using System.Collections.Generic;
   using System.IO;
   using System.Reflection;
-using System.Text.Json;
+  using System.Text.Json;
   using DeepNestLib.CiTests;
   using DeepNestLib.Placement;
   using FakeItEasy;
@@ -40,7 +40,7 @@ using System.Text.Json;
       var placements = new List<IPartPlacement>() { new PartPlacement(part) };
       var sheet = new Sheet();
       var window = new WindowUnk();
-      var clipCache = new Dictionary<string,ClipCacheItem>();
+      var clipCache = new Dictionary<string, ClipCacheItem>();
       clipCache.Add("item1", new ClipCacheItem() { index = 1, nfpp = new ClipperLib.IntPoint[][] { new ClipperLib.IntPoint[] { new ClipperLib.IntPoint(0, 0), new ClipperLib.IntPoint(1, 1) } } });
       var sut = new PartPlacementWorker(
         A.Fake<IPlacementWorker>(),
@@ -49,7 +49,8 @@ using System.Text.Json;
         placements,
         sheet,
         new NfpHelper(A.Fake<IMinkowskiSumService>(), window),
-        clipCache);
+        clipCache,
+        A.Fake<INestState>());
 
       string json = null;
       Action act = () => json = sut.ToJson();
@@ -105,7 +106,8 @@ using System.Text.Json;
         placements,
         sheet,
         new NfpHelper(A.Fake<IMinkowskiSumService>(), window),
-        clipCache);
+        clipCache,
+        A.Fake<INestState>());
 
       var json = sut.ToJson();
 

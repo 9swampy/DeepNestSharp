@@ -20,9 +20,11 @@
 
     public AnglesEnum StrictAngle { get; set; } = AnglesEnum.None;
 
-    public override string ToJson()
+    public override string ToJson(bool writeIndented = false)
     {
-      return JsonSerializer.Serialize(this);
+      var options = new JsonSerializerOptions();
+      options.WriteIndented = writeIndented;
+      return JsonSerializer.Serialize(this, options);
     }
   }
 }

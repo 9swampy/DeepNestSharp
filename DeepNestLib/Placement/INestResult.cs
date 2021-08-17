@@ -44,6 +44,6 @@
 
     double TotalPartsArea { get; }
 
-    string ToJson();
+    string ToJson(bool writeIndented = false);
   }
 }

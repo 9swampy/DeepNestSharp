@@ -29,7 +29,7 @@
 
     double MergedLength { get; }
 
-    string ToJson();
+    string ToJson(bool writeIndented = false);
 
     string ToString();
   }

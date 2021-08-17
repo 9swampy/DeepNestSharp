@@ -179,7 +179,7 @@
       return $"{fitness.Evaluate()}=ƩB{this.SheetPlacementFitness.Bounds:N0}+ƩS{this.SheetPlacementFitness.Sheets:N0}+ƩW{this.SheetPlacementFitness.MaterialWasted:N0}+ƩU{this.SheetPlacementFitness.MaterialUtilization:N0}+U{this.fitness.Unplaced:N0}";
     }
 
-    public override string ToJson()
+    public override string ToJson(bool writeIndented = false)
     {
       var options = new JsonSerializerOptions();
       //options.Converters.Add(new InterfaceConverterFactory(typeof(NFP), typeof(INfp)));
@@ -189,6 +189,7 @@
       options.Converters.Add(new SheetJsonConverter());
       options.Converters.Add(new NfpJsonConverter());
       options.Converters.Add(new PartPlacementJsonConverter());
+      options.WriteIndented = writeIndented;
       return JsonSerializer.Serialize(this, options);
     }
   }
