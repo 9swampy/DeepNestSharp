@@ -26,7 +26,7 @@
     }
 
     [JsonInclude]
-    public IWindowUnk Window { get; private set; }
+    public IWindowUnk Window { get; private set; } = new WindowUnk();
 
     IMinkowskiSumService ITestNfpHelper.MinkowskiSumService { get => this.minkowskiSumService; set => this.minkowskiSumService = value; }
 

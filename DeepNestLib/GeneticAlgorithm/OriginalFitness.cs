@@ -85,7 +85,7 @@
     {
       get
       {
-        var result = nestResult.UnplacedParts.Sum(o => 10000000 * (Math.Abs(GeometryUtil.polygonArea(o)) / TotalSheetArea));
+        var result = nestResult.UnplacedParts.Sum(o => 50 * Math.Abs(GeometryUtil.polygonArea(o)));
         if (nestResult.UnplacedParts.Any(o => o.IsPriority))
         {
           result *= 2;

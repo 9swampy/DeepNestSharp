@@ -4,7 +4,7 @@
   using System.Collections.Generic;
   using System.Collections.ObjectModel;
   using System.Linq;
-using System.Text.Json.Serialization;
+  using System.Text.Json.Serialization;
   using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.NestProject;
 
@@ -17,6 +17,11 @@ using System.Text.Json.Serialization;
 
     public SheetPlacementCollection()
       : base()
+    {
+    }
+
+    public SheetPlacementCollection(IList<ISheetPlacement, SheetPlacement> items)
+      : base(items)
     {
     }
 

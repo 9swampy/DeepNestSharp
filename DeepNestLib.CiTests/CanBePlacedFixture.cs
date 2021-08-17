@@ -14,6 +14,7 @@
     public void GivenSmallerSquareWhenFitInLargeSquareThenCanBePlaced()
     {
       var sut = A.Dummy<PartPlacementWorker>();
+      ((ITestNfpHelper)sut.NfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(A.Fake<INestStateMinkowski>());
       var generator = new DxfGenerator();
       sut.CanBePlaced(
         generator.GenerateRectangle("Sheet", 1.01, 1.01, RectangleType.FileLoad).ToNfp(),
@@ -26,6 +27,7 @@
     public void GivenLargerSquareWhenFitInSmallSquareThenCanNotBePlaced()
     {
       var sut = A.Dummy<PartPlacementWorker>();
+      ((ITestNfpHelper)sut.NfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(A.Fake<INestStateMinkowski>());
       var generator = new DxfGenerator();
       sut.CanBePlaced(
         generator.GenerateRectangle("Sheet", 1, 1, RectangleType.FileLoad).ToNfp(),
@@ -38,6 +40,7 @@
     public void GivenIdenticalSquaresWhenFitThenCanNotBePlaced()
     {
       var sut = A.Dummy<PartPlacementWorker>();
+      ((ITestNfpHelper)sut.NfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(A.Fake<INestStateMinkowski>());
       var generator = new DxfGenerator();
       sut.CanBePlaced(
         generator.GenerateRectangle("Sheet", 1, 1, RectangleType.FileLoad).ToNfp(),

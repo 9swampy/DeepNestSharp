@@ -256,6 +256,12 @@
     <EmbeddedResource Include="Dxfs\_5.dxf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="GeneticAlgorithm\ReadMeExampleTwoSheetsBetterThanOne1.dnr">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GeneticAlgorithm\ReadMeExampleTwoSheetsBetterThanOne2.dnr">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <Content Include="SquareInSquare.dxf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

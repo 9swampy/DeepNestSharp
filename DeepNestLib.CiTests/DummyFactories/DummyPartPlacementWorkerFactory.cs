@@ -8,7 +8,11 @@
   {
     protected override PartPlacementWorker Create()
     {
-      return new PartPlacementWorker(new Dictionary<string, ClipCacheItem>());
+      var result = new PartPlacementWorker(new Dictionary<string, ClipCacheItem>());
+      var nfpHelper = new NfpHelper();
+      ((ITestNfpHelper)nfpHelper).MinkowskiSumService = A.Fake<IMinkowskiSumService>();
+      ((ITestPartPlacementWorker)result).NfpHelper = nfpHelper;
+      return result;
     }
   }
 }

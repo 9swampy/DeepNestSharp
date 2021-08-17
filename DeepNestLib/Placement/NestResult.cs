@@ -16,6 +16,8 @@
 
     private readonly OriginalFitness fitness;
 
+    private SheetPlacementCollection sheetPlacementCollection;
+
     [Obsolete("Use only for deserialization.")]
     public NestResult()
     {
@@ -57,7 +59,26 @@
     public double[] Rotation { get; set; }
 
     [JsonInclude]
-    public IList<ISheetPlacement, SheetPlacement> UsedSheets { get; private set; }
+    public IList<ISheetPlacement, SheetPlacement> UsedSheets
+    {
+      get
+      {
+        return sheetPlacementCollection;
+      }
+
+      private set
+      {
+        if (value is SheetPlacementCollection sheetPlacementCollection)
+        {
+          this.sheetPlacementCollection = sheetPlacementCollection;
+        }
+        else
+        {
+          var newSheetPlacementCollection = new SheetPlacementCollection(value);
+          this.sheetPlacementCollection = newSheetPlacementCollection;
+        }
+      }
+    }
 
     [JsonInclude]
     public IList<INfp> UnplacedParts { get; private set; }

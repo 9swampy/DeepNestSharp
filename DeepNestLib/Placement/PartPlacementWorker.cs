@@ -22,7 +22,7 @@
 
     private IPlacementWorker placementWorker;
     private volatile object processPartLock = new object();
-
+    
     [JsonConstructor]
     public PartPlacementWorker(Dictionary<string, ClipCacheItem> clipCache)
     {
@@ -62,6 +62,8 @@
 
     [JsonInclude]
     public NfpHelper NfpHelper { get; private set; }
+
+    NfpHelper ITestPartPlacementWorker.NfpHelper { get => NfpHelper; set => NfpHelper = value; }
 
     [JsonInclude]
     public Dictionary<string, ClipCacheItem> ClipCache => this.clipCache;
@@ -125,7 +127,6 @@
           {
             this.placementWorker.VerboseLog($"{processedPart.ToShortString()} could not be placed even if sheet empty (only do this for the first part on each sheet).");
             return InnerFlowResult.Continue;
-            // continue;
           }
         }
 
@@ -159,10 +160,10 @@
 
           if (position == null)
           {
+            var json = this.ToJson();
             throw new Exception("position null");
 
             // console.log(sheetNfp);
-            var json = this.ToJson();
           }
 
           this.placementWorker.AddPlacement(inputPart, Placements, processedPart, position, this.Config.PlacementType, Sheet, MergedLength);
@@ -704,6 +705,8 @@
 
   public interface ITestPartPlacementWorker
   {
+    NfpHelper NfpHelper { get; set; }
+
     IPlacementWorker PlacementWorker { get; set; }
   }
 }
