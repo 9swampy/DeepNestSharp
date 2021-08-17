@@ -83,8 +83,7 @@
         for (int processingPartIndex = 0; processingPartIndex < processingParts.Length; processingPartIndex++)
         {
           var processPartResult = partPlacementWorker.ProcessPart(
-            processingParts,
-            processingPartIndex);
+            processingParts[processingPartIndex]);
           if (processPartResult == InnerFlowResult.Break)
           {
             break;
@@ -135,25 +134,27 @@
       return result;
     }
 
-    void IPlacementWorker.AddPlacement(INfp processingPart, List<IPartPlacement> placements, INfp part, PartPlacement position, PlacementTypeEnum placementType, ISheet sheet, double mergedLength)
+    void IPlacementWorker.AddPlacement(INfp inputPart, List<IPartPlacement> placements, INfp processedPart, PartPlacement position, PlacementTypeEnum placementType, ISheet sheet, double mergedLength)
     {
       try
       {
-        if (!this.unplacedParts.Remove(processingPart))
+        if (!this.unplacedParts.Remove(inputPart))
         {
 #if NCRUNCH || DEBUG
           throw new InvalidOperationException("Failed to locate the part just placed in unplaced parts!");
 #endif
         }
 #if NCRUNCH || DEBUG
-        position.Part.MustBe(part);
+        position.Part.MustBe(processedPart);
         (this.allPlacements.TotalPartsPlaced + placements.Count).MustBeLessThanOrEqualTo(parts.Length);
 #endif
-        this.VerboseLog($"Placed part {part}");
+        this.VerboseLog($"Placed part {processedPart}");
         placements.Add(position);
         var sp = new SheetPlacement(placementType, sheet, placements, mergedLength);
         if (double.IsNaN(sp.Fitness.Evaluate()))
         {
+          // Step back to calling method in PartPlacementWorker and you should find a PartPlacementWorker.ToJson() :)
+          // Get that in to a Json file so it can be debugged.
           System.Diagnostics.Debugger.Break();
         }
       }

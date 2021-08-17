@@ -109,5 +109,21 @@
     "StrictAngle": 0
   },
   "NfpHelper": { "Window": { "nfpCache": {} } },
-  "ClipCache": {}
+  "ClipCache": {
+    "item1": {
+      "index": 1,
+      "nfpp": [
+        [
+          {
+            "X": 0,
+            "Y": 0
+          },
+          {
+            "X": 1,
+            "Y": 1
+          }
+        ]
+      ]
+    }
+  }
 }

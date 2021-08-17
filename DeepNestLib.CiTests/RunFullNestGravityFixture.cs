@@ -24,6 +24,8 @@
 
     /// <summary>
     /// MinkowskiWrapper.CalculateNfp occasionally sticks; not sure why; seems fine at runtime only nCrunch has the problem.
+    /// Regularly FitnessShouldBeExpected doesn't get down to the expected 518947, only gets to 557767. A Rerun and it always works; from
+    /// logs it doesn't seem to be deadlocking because the loop keeps running. Not sure what's going on...
     /// </summary>
     public RunFullNestGravityFixture()
     {

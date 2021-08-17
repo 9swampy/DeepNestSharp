@@ -1,6 +1,7 @@
 ﻿namespace DeepNestLib.CiTests.Placement
 {
   using System;
+  using System.Collections.Generic;
   using System.IO;
   using System.Reflection;
   using DeepNestLib.CiTests;

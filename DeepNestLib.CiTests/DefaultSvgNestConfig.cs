@@ -7,7 +7,7 @@
   {
     public new double ClipperScale { get; set; } = 10000000;
 
-    public new double CurveTolerance { get; set; } = 0.72f;
+    public new double CurveTolerance { get; set; } = 0.72D;
 
     public new bool ExploreConcave { get; set; } = false;
 

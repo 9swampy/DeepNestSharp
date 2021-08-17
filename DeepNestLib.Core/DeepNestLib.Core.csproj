@@ -119,6 +119,7 @@
     <Compile Include="..\DeepNestLib\SvgPointArrayExtensions.cs" Link="SvgPointArrayExtensions.cs" />
     <Compile Include="..\DeepNestLib\TopNestResultsCollection.cs" Link="TopNestResultsCollection.cs" />
     <Compile Include="..\DeepNestLib\WindowUnk.cs" Link="WindowUnk.cs" />
+    <Compile Include="..\DeepNestLib\WindowUnkJsonConverter.cs" Link="WindowUnkJsonConverter.cs" />
   </ItemGroup>
 
   <ItemGroup>

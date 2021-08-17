@@ -7,12 +7,12 @@
   using ClipperLib;
   using Light.GuardClauses;
 
-  public class NfpHelper
+  public class NfpHelper : ITestNfpHelper
   {
     private static volatile object lockobj = new object();
 
     private readonly Dictionary<string, INfp[]> cacheProcess = new Dictionary<string, INfp[]>();
-    private readonly IMinkowskiSumService minkowskiSumService;
+    private IMinkowskiSumService minkowskiSumService;
 
     [JsonConstructor]
     public NfpHelper()
@@ -27,6 +27,8 @@
 
     [JsonInclude]
     public IWindowUnk Window { get; private set; }
+
+    IMinkowskiSumService ITestNfpHelper.MinkowskiSumService { get => this.minkowskiSumService; set => this.minkowskiSumService = value; }
 
     // inner nfps can be an array of nfps, outer nfps are always singular
     public static IntPoint[][] InnerNfpToClipperCoordinates(INfp[] nfp, double clipperScale)
@@ -261,6 +263,10 @@
 
       return frame;
     }
+  }
 
+  public interface ITestNfpHelper
+  {
+    IMinkowskiSumService MinkowskiSumService { get; set; }
   }
 }

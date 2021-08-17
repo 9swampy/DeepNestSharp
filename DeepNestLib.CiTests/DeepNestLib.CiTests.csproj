@@ -199,6 +199,7 @@
     <Compile Include="OuterFitPolygonFixture.cs" />
     <Compile Include="Placement\NfpJsonFixture.cs" />
     <Compile Include="NestProject\ProjectInfoSerializationFixture.cs" />
+    <Compile Include="Placement\PartPlacementScenarioFixture.cs" />
     <Compile Include="Placement\PartPlacementWorkerFixture.cs" />
     <Compile Include="Placement\SheetPlacementJsonFixture.cs" />
     <Compile Include="PmapWorkerFixtureSetup.cs" />
@@ -263,6 +264,9 @@
     <EmbeddedResource Include="Placement\SimpleRectangleNfpOnSheetPlacement.json" />
     <EmbeddedResource Include="Placement\SimpleRectangleSheet.json" />
     <EmbeddedResource Include="Placement\PartPlacementWorker.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Placement\PartPlacementScenarioPartPlacementWorker.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
