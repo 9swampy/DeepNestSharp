@@ -1,0 +1,149 @@
+{
+  "DetailLoadInfos": [
+    {
+      "Name": "_1.dxf",
+      "Path": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_1.dxf",
+      "Quantity": 1,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": false,
+      "StrictAngle": 0
+    },
+    {
+      "Name": "_2.dxf",
+      "Path": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_2.dxf",
+      "Quantity": 1,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": false,
+      "StrictAngle": 0
+    },
+    {
+      "Name": "_3.dxf",
+      "Path": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_3.dxf",
+      "Quantity": 1,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": false,
+      "StrictAngle": 0
+    },
+    {
+      "Name": "_4.dxf",
+      "Path": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_4.dxf",
+      "Quantity": 1,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": false,
+      "StrictAngle": 0
+    },
+    {
+      "Name": "_5.dxf",
+      "Path": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_5.dxf",
+      "Quantity": 1,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": false,
+      "StrictAngle": 0
+    },
+    {
+      "Name": "_6.dxf",
+      "Path": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_6.dxf",
+      "Quantity": 1,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": false,
+      "StrictAngle": 0
+    },
+    {
+      "Name": "_7.dxf",
+      "Path": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_7.dxf",
+      "Quantity": 1,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": false,
+      "StrictAngle": 0
+    },
+    {
+      "Name": "_8.dxf",
+      "Path": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_8.dxf",
+      "Quantity": 1,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": false,
+      "StrictAngle": 0
+    },
+    {
+      "Name": "_9.dxf",
+      "Path": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_9.dxf",
+      "Quantity": 1,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": false,
+      "StrictAngle": 0
+    },
+    {
+      "Name": "_10.dxf",
+      "Path": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_10.dxf",
+      "Quantity": 1,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": false,
+      "StrictAngle": 0
+    },
+    {
+      "Name": "_11.dxf",
+      "Path": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_11.dxf",
+      "Quantity": 1,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": false,
+      "StrictAngle": 0
+    },
+    {
+      "Name": "_12.dxf",
+      "Path": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_12.dxf",
+      "Quantity": 1,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": false,
+      "StrictAngle": 0
+    }
+  ],
+  "SheetLoadInfos": [
+    {
+      "Width": 600,
+      "Height": 200,
+      "Quantity": 3
+    }
+  ],
+  "Config": {
+    "ClipperScale": 10000000,
+    "ClipByHull": true,
+    "CurveTolerance": 0.2,
+    "DrawSimplification": true,
+    "ExploreConcave": false,
+    "MergeLines": false,
+    "MutationRate": 400,
+    "OffsetTreePhase": true,
+    "PlacementType": 1,
+    "PopulationSize": 200,
+    "Rotations": 4,
+    "SaveAsFileTypeIndex": 1,
+    "Scale": 25,
+    "SheetHeight": 800,
+    "SheetQuantity": 3,
+    "SheetSpacing": 0,
+    "SheetWidth": 1200,
+    "Simplify": false,
+    "Spacing": 0,
+    "TimeRatio": 0.5,
+    "Tolerance": 2,
+    "ToleranceSvg": 0.005,
+    "UseHoles": false,
+    "UseParallel": false,
+    "StrictAngles": 0,
+    "Multiplier": 1,
+    "ParallelNests": 10,
+    "ShowPartPositions": true
+  }
+}

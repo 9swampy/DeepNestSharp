@@ -82,8 +82,7 @@
         var processingParts = (isPriorityPlacement ? unplacedParts.Where(o => o.IsPriority) : unplacedParts).ToArray();
         for (int processingPartIndex = 0; processingPartIndex < processingParts.Length; processingPartIndex++)
         {
-          var processPartResult = partPlacementWorker.ProcessPart(
-            processingParts[processingPartIndex]);
+          var processPartResult = partPlacementWorker.ProcessPart(processingParts[processingPartIndex]);
           if (processPartResult == InnerFlowResult.Break)
           {
             break;
