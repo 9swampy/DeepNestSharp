@@ -7,7 +7,7 @@
   using System.Text.Json;
   using System.Text.Json.Serialization;
   using DeepNestLib.NestProject;
-using DeepNestLib.Placement;
+  using DeepNestLib.Placement;
 
   public class NFP : PolygonBase, INfp, IHiddenNfp, IStringify
   {
@@ -25,7 +25,7 @@ using DeepNestLib.Placement;
     /// Creates a true clone of the source; only Sheet is a common object reference.
     /// </summary>
     /// <param name="source">The original object to clone.</param>
-    public NFP(INfp source)
+    public NFP(INfp source, WithChildren withChildren)
       : this(source.Points)
     {
       this.Id = source.Id;
@@ -40,6 +40,14 @@ using DeepNestLib.Placement;
       this.StrictAngle = source.StrictAngle;
       this.X = source.X;
       this.Y = source.Y;
+
+      if (withChildren == WithChildren.Included)
+      {
+        foreach (var child in source.Children)
+        {
+          this.Children.Add(new NFP(child, withChildren));
+        }
+      }
     }
 
     public NFP()
@@ -381,7 +389,7 @@ using DeepNestLib.Placement;
     }
 
     /// <inheritdoc/>
-    public INfp Rotate(double degrees, WithChildren withChildren)
+    public INfp Rotate(double degrees, WithChildren withChildren = WithChildren.Included)
     {
       var angle = degrees * Math.PI / 180;
       List<SvgPoint> pp = new List<SvgPoint>();

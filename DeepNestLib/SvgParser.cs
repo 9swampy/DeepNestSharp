@@ -21,7 +21,7 @@
       await this.Export(path, sheetPlacement.PartPlacements.Select(
         o =>
         {
-          var result = new NFP(o.Part);
+          var result = new NFP(o.Part, WithChildren.Included);
           result.Sheet = sheetPlacement.Sheet;
           result.X = o.X;
           result.Y = o.Y;

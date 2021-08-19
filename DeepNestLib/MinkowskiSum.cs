@@ -4,15 +4,29 @@
   using System.Collections.Generic;
   using System.Drawing;
   using System.Linq;
+  using System.Text.Json.Serialization;
   using ClipperLib;
   using Minkowski;
+
+  internal interface ITestMinkowskiSumService
+  {
+    Action<string> VerboseLog { get; set; }
+  }
 
   public class MinkowskiSum : IMinkowskiSumService
   {
     private static volatile object minkowskiSyncLock = new object();
-    private MinkowskiDictionary minkowskiCache = new MinkowskiDictionary();
 
-    private readonly INestStateMinkowski state;
+    [JsonInclude]
+    public MinkowskiDictionary MinkowskiCache { get; private set; } = new MinkowskiDictionary();
+
+    public Action<string> VerboseLogAction { private get; set; }
+
+    public INestStateMinkowski State { private get; set; }
+
+    public MinkowskiSum()
+    {
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MinkowskiSum"/> class.
@@ -21,14 +35,14 @@
     /// </summary>
     private MinkowskiSum(INestStateMinkowski state)
     {
-      this.state = state;
+      this.State = state;
     }
 
     /// <summary>
     /// Create a new instance with a self contained cache.
     /// </summary>
     /// <param name="nestState">Shared NestState (instead of NestState.Default).</param>
-    /// <returns></returns>
+    /// <returns><see cref="IMinkowskiSumService"/>.</returns>
     public static IMinkowskiSumService CreateInstance(INestStateMinkowski nestState) => new MinkowskiSum(nestState);
 
     INfp IMinkowskiSumService.DllImportExecute(INfp a, INfp b, MinkowskiSumCleaning minkowskiSumCleaning)
@@ -66,14 +80,15 @@
       var bb = dic2["B"];
       var arr1 = a.Children.Select(z => z.Points.Count() * 2).ToArray();
 
-      var key = new MinkowskiKey(aa.Count, aa.ToArray(), a.Children.Count, arr1, hdat.ToArray(), bb.Count, bb.ToArray());
+      var key = new MinkowskiKey(aa.Count, aa, a.Children.Count, arr1, hdat, bb.Count, bb);
       INfp ret;
       lock (minkowskiSyncLock)
       {
-        if (!minkowskiCache.TryGetValue(key, out ret))
+        if (!MinkowskiCache.TryGetValue(key, out ret))
         {
+          VerboseLogAction?.Invoke($"{a.ToShortString()}-{b.ToShortString()} {key.GetHashCode()} not found in {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)} so calculating. . .");
 #if x64
-          // System.Diagnostics.Debug.Print($"{callCounter}.Minkowski_x64");
+          // System.Diagnostics.Debug.Print($"{state.CallCounter}.Minkowski_x64");
           long[] longs = arr1.Select(o => (long)o).ToArray();
           MinkowskiWrapper.setData(key.ALength, key.APoints, key.AChildrenLength, longs, key.Hdat, key.BLength, key.BPoints);
 #else
@@ -82,7 +97,7 @@
 #endif
           MinkowskiWrapper.calculateNFP();
 
-          state.IncrementCallCounter();
+          State.IncrementCallCounter();
 
           int[] sizes;
           int[] sizes1;
@@ -156,12 +171,19 @@
             }
           }
 
-          minkowskiCache.Add(key, ret);
+          VerboseLogAction?.Invoke($"Add {a.ToShortString()}-{b.ToShortString()} {key} to {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)}. . .");
+          System.Diagnostics.Debug.Print(key.GetHashCode().ToString());
+          MinkowskiCache.Add(key, ret);
+        }
+        else
+        {
+          VerboseLogAction?.Invoke($"{a.ToShortString()}-{b.ToShortString()} {key} found in {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)}. . .");
         }
       }
 
       if (minkowskiSumCleaning == MinkowskiSumCleaning.Cleaned)
       {
+        VerboseLogAction?.Invoke("Clean MinkowskiSum. . .");
         ret = SvgNest.CleanPolygon2(ret);
       }
 

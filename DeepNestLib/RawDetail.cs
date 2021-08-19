@@ -89,12 +89,12 @@
 
     public ISheet ToSheet(double width, double height)
     {
-      return new Sheet(this.ToNfp(), width, height);
+      return new Sheet(this.ToNfp(), width, height, WithChildren.Excluded);
     }
 
     public ISheet ToSheet()
     {
-      return new Sheet(this.ToNfp());
+      return new Sheet(this.ToNfp(), WithChildren.Excluded);
     }
 
     internal bool TryConvertToSheet(int firstSheetIdSrc, out ISheet firstSheet)
@@ -102,7 +102,7 @@
       INfp nfp;
       if (TryConvertToNfp(firstSheetIdSrc, out nfp))
       {
-        firstSheet = new Sheet(nfp);
+        firstSheet = new Sheet(nfp, WithChildren.Excluded);
         return true;
       }
 

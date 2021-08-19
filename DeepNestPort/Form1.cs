@@ -495,7 +495,7 @@
       {
         var pol = listView2.SelectedItems[0].Tag as ISheet;
         context.Sheets.Remove(pol);
-        context.Polygons.Add(new NFP(pol));
+        context.Polygons.Add(new NFP(pol, WithChildren.Excluded));
         UpdateList();
       }
     }

@@ -28,6 +28,9 @@
     [JsonInclude]
     public IWindowUnk Window { get; private set; } = new WindowUnk();
 
+    [JsonInclude]
+    public IMinkowskiSumService MinkowskiSumService { get => this.minkowskiSumService; set => this.minkowskiSumService = value; }
+
     IMinkowskiSumService ITestNfpHelper.MinkowskiSumService { get => this.minkowskiSumService; set => this.minkowskiSumService = value; }
 
     // inner nfps can be an array of nfps, outer nfps are always singular

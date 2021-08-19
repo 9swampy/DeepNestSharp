@@ -13,40 +13,40 @@
     [Fact]
     public void GivenSmallerSquareWhenFitInLargeSquareThenCanBePlaced()
     {
-      var sut = A.Dummy<PartPlacementWorker>();
-      ((ITestNfpHelper)sut.NfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(A.Fake<INestStateMinkowski>());
       var generator = new DxfGenerator();
-      sut.CanBePlaced(
+      var nfpHelper = new NfpHelper();
+      ((ITestNfpHelper)nfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(A.Fake<INestStateMinkowski>());
+      new SheetNfp(
+        nfpHelper,
         generator.GenerateRectangle("Sheet", 1.01, 1.01, RectangleType.FileLoad).ToNfp(),
         generator.GenerateRectangle("Sheet", 1, 1, RectangleType.FileLoad).ToNfp(),
-        100000,
-        out _).Should().BeTrue();
+        100000).CanAcceptPart.Should().BeTrue();
     }
 
     [Fact]
     public void GivenLargerSquareWhenFitInSmallSquareThenCanNotBePlaced()
     {
-      var sut = A.Dummy<PartPlacementWorker>();
-      ((ITestNfpHelper)sut.NfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(A.Fake<INestStateMinkowski>());
       var generator = new DxfGenerator();
-      sut.CanBePlaced(
+      var nfpHelper = new NfpHelper();
+      ((ITestNfpHelper)nfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(A.Fake<INestStateMinkowski>());
+      new SheetNfp(
+        nfpHelper,
         generator.GenerateRectangle("Sheet", 1, 1, RectangleType.FileLoad).ToNfp(),
         generator.GenerateRectangle("Sheet", 1.01, 1.01, RectangleType.FileLoad).ToNfp(),
-        100000,
-        out _).Should().BeFalse();
+        100000).CanAcceptPart.Should().BeFalse();
     }
 
     [Fact]
     public void GivenIdenticalSquaresWhenFitThenCanNotBePlaced()
     {
-      var sut = A.Dummy<PartPlacementWorker>();
-      ((ITestNfpHelper)sut.NfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(A.Fake<INestStateMinkowski>());
       var generator = new DxfGenerator();
-      sut.CanBePlaced(
+      var nfpHelper = new NfpHelper();
+      ((ITestNfpHelper)nfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(A.Fake<INestStateMinkowski>());
+      new SheetNfp(
+        nfpHelper,
         generator.GenerateRectangle("Sheet", 1, 1, RectangleType.FileLoad).ToNfp(),
         generator.GenerateRectangle("Sheet", 1, 1, RectangleType.FileLoad).ToNfp(),
-        100000,
-        out _).Should().BeFalse();
+        100000).CanAcceptPart.Should().BeFalse();
     }
   }
 

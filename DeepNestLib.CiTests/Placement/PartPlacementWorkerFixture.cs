@@ -48,7 +48,7 @@
         parts,
         placements,
         sheet,
-        new NfpHelper(A.Fake<IMinkowskiSumService>(), window),
+        new NfpHelper(MinkowskiSum.CreateInstance(A.Fake<INestStateMinkowski>()), window),
         clipCache,
         A.Fake<INestState>());
 
@@ -99,13 +99,16 @@
       var window = new WindowUnk();
       var clipCache = new Dictionary<string, ClipCacheItem>();
       clipCache.Add("item1", new ClipCacheItem() { index = 1, nfpp = new ClipperLib.IntPoint[][] { new ClipperLib.IntPoint[] { new ClipperLib.IntPoint(0, 0), new ClipperLib.IntPoint(1, 1) } } });
+
+      var minkowskiSum = (MinkowskiSum)MinkowskiSum.CreateInstance(A.Fake<INestStateMinkowski>());
+      minkowskiSum.MinkowskiCache.Add(new MinkowskiKey(1, new double[] { 1, 2 }, 2, new int[] { 3, 4 }, new double[] { 1, 2 }, 5, new double[] { 6, 8 }), part);
       var sut = new PartPlacementWorker(
         A.Fake<IPlacementWorker>(),
         new SvgNestConfig(),
         parts,
         placements,
         sheet,
-        new NfpHelper(A.Fake<IMinkowskiSumService>(), window),
+        new NfpHelper(minkowskiSum, window),
         clipCache,
         A.Fake<INestState>());
 

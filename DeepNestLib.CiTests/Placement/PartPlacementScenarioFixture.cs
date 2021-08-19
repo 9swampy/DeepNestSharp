@@ -11,7 +11,7 @@
   public class PartPlacementScenarioFixture
   {
     [Fact]
-    public void Test()
+    public void ShouldProcessToEndAndCallOutToAddPlacement()
     {
       string json;
       using (Stream stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Placement.PartPlacementScenarioPartPlacementWorker.json"))

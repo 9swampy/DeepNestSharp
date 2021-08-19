@@ -161,7 +161,7 @@
     }
 
     /// <inheritdoc/>
-    private async Task OnLoadExact()
+    public async Task OnLoadExact()
     {
       var raw = await DxfParser.LoadDxfFile(this.Part.Name);
       INfp loadedNfp;

@@ -893,13 +893,13 @@
 #if DEBUG || NCRUNCH
                 throw new InvalidOperationException("Sheet should have been a sheet; why wasn't it?");
 #endif
-                clone = new Sheet(poly.CloneTree());
+                clone = new Sheet(poly.CloneTree(), WithChildren.Excluded);
               }
 
               clone.Id = sid; // id is the unique id of all parts that will be nested, including cloned duplicates
               clone.Source = poly.Source; // source is the id of each unique part from the main part list
 
-              sheets.Add(new Sheet(clone));
+              sheets.Add(new Sheet(clone, WithChildren.Excluded));
               sheetids.Add(sid);
               sheetsources.Add(poly.Source);
               sheetchildren.Add(poly.Children.ToList());

@@ -10,7 +10,7 @@
     {
       var result = new PartPlacementWorker(new Dictionary<string, ClipCacheItem>());
       var nfpHelper = new NfpHelper();
-      ((ITestNfpHelper)nfpHelper).MinkowskiSumService = A.Fake<IMinkowskiSumService>();
+      ((ITestNfpHelper)nfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(A.Fake<INestStateMinkowski>());
       ((ITestPartPlacementWorker)result).NfpHelper = nfpHelper;
       return result;
     }

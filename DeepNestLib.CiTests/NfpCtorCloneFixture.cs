@@ -23,6 +23,7 @@
       children.Add(new NFP() { Points = new SvgPoint[] { new SvgPoint(0, 0) { Exact = true, Marked = false }, new SvgPoint(random.Next(), random.Next()) { Exact = random.NextBool(), Marked = random.NextBool() } } });
       var points = new List<SvgPoint>() { new SvgPoint(1, 1) { Exact = random.NextBool(), Marked = random.NextBool() }, new SvgPoint(random.Next(), random.Next()) { Exact = random.NextBool(), Marked = random.NextBool() } };
       var expected = new NFP(points);
+      expected.Children = children;
       expected.Id = random.Next();
       expected.IsPriority = random.NextBool();
       expected.IsPriority = random.NextBool();
@@ -38,15 +39,50 @@
       expected.Y = random.NextDouble();
       var expectedJson = expected.ToJson();
 
-      var actual = new NFP(expected);
+      var actual = new NFP(expected, WithChildren.Included);
       actual.Should().BeEquivalentTo(expected);
       actual.ToJson().Should().Be(expectedJson);
       actual.Sheet.Should().Be(expected.Sheet, "it's a reference to the same sheet object.");
+      actual.Children.Should().BeEquivalentTo(expected.Children);
+      actual.Children[0].Should().NotBe(expected.Children[0]);
 
       actual.Points[0].X -= random.NextDouble();
       actual.Points[0].X.Should().NotBe(expected.Points[0].X, "points are cloned not referenced.");
       actual.Points[0].Y -= random.NextDouble();
       actual.Points[0].Y.Should().NotBe(expected.Points[0].Y, "points are cloned not referenced.");
+    }
+  }
+
+  public class MinkowskiDictionaryFixture
+  {
+    [Fact]
+    public void ShouldSerialize()
+    {
+      var sut = new MinkowskiDictionary();
+      var json = sut.ToJson();
+    }
+
+    [Fact]
+    public void ShouldRoundTripSerialize()
+    {
+      var sut = new MinkowskiDictionary();
+      var nfp = new NFP();
+      sut.Add(new MinkowskiKey(1, new double[] { 1, 2 }, 2, new int[] { 3, 4 }, new double[] { 1, 2 }, 5, new double[] { 6, 8 }), nfp);
+      var json = sut.ToJson();
+
+      MinkowskiDictionary.FromJson(json).Should().BeEquivalentTo(sut);
+    }
+
+    [Fact]
+    public void ShouldThrowWhenAddSameItemTwice()
+    {
+      var sut = new MinkowskiDictionary();
+      var nfp = new NFP();
+      Action act = () => sut.Add(new MinkowskiKey(1, new double[] { 1, 2 }, 2, new int[] { 3, 4 }, new double[] { 1, 2 }, 5, new double[] { 6, 8 }), nfp);
+
+      act.Should().NotThrow();
+
+      act.Should().Throw<ArgumentException>().WithMessage("An item with the same key has already been added.");
     }
   }
 }

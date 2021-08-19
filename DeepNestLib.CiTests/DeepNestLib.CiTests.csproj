@@ -202,6 +202,7 @@
     <Compile Include="NestProject\ProjectInfoSerializationFixture.cs" />
     <Compile Include="Placement\PartPlacementScenarioFixture.cs" />
     <Compile Include="Placement\PartPlacementWorkerFixture.cs" />
+    <Compile Include="Placement\SecondGenerationOverlaysIn.cs" />
     <Compile Include="Placement\SheetPlacementJsonFixture.cs" />
     <Compile Include="PmapWorkerFixtureSetup.cs" />
     <Compile Include="PmapWorkerPmapDeepNestFixture.cs" />
@@ -274,6 +275,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Placement\PartPlacementScenarioPartPlacementWorker.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Placement\SecondGenerationOverlaysIn.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Placement\SecondGenerationOverlaysOut.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>

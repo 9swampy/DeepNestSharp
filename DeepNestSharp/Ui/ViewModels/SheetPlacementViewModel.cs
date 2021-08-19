@@ -66,7 +66,7 @@
 
     public override string FileDialogFilter => DeepNestLib.Placement.SheetPlacement.FileDialogFilter;
 
-    public ICommand LoadAllExactCommand => loadAllExactCommand ?? (loadAllExactCommand = new AsyncRelayCommand(OnLoadAllExactAsync, () => this.SheetPlacement.PartPlacements.Any(p => !p.Part.IsExact)));
+    public ICommand LoadAllExactCommand => loadAllExactCommand ?? (loadAllExactCommand = new AsyncRelayCommand(OnLoadAllExactAsync, () => true)); // this.SheetPlacement.PartPlacements.Any(p => !p.Part.IsExact)));
 
     public ICommand LoadPartFileCommand => loadPartFileCommand ?? (loadPartFileCommand = new RelayCommand(OnLoadPartFile, () => new FileInfo(this.SelectedItem.Part.Name).Exists));
 
@@ -138,7 +138,7 @@
       var partPlacementList = this.observableSheetPlacement.PartPlacements.Cast<ObservablePartPlacement>().ToList();
       foreach (var pp in partPlacementList)
       {
-        await pp.LoadExactCommand.ExecuteAsync(null);
+        await pp.OnLoadExact();
       }
 
       this.IsDirty = false;

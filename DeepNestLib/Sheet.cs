@@ -8,22 +8,22 @@
     {
     }
 
-    public Sheet(ISheet sheet)
-      : base(sheet)
+    public Sheet(ISheet sheet, WithChildren withChildren)
+      : base(sheet, withChildren)
     {
       Width = sheet.Width;
       Height = sheet.Height;
     }
 
-    public Sheet(INfp nfp, double width, double height)
-      : base(nfp)
+    public Sheet(INfp nfp, double width, double height, WithChildren withChildren)
+      : base(nfp, withChildren)
     {
       Width = width;
       Height = height;
     }
 
-    public Sheet(INfp nfp)
-      : this(nfp, nfp.WidthCalculated, nfp.HeightCalculated)
+    public Sheet(INfp nfp, WithChildren withChildren)
+      : this(nfp, nfp.WidthCalculated, nfp.HeightCalculated, withChildren)
     {
     }
 
