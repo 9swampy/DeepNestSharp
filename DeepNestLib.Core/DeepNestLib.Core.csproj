@@ -6,9 +6,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="GeneticAlgorithm\_._" />
+    <None Remove="IO\_._" />
+    <None Remove="NestProject\_._" />
+    <None Remove="Placement\_._" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="..\DeepNestLib\Background.cs" Link="Background.cs" />
     <Compile Include="..\DeepNestLib\CacheHelper.cs" Link="CacheHelper.cs" />
     <Compile Include="..\DeepNestLib\ClipCacheItem.cs" Link="ClipCacheItem.cs" />
+    <Compile Include="..\DeepNestLib\ClipCacheItemJsonConverter.cs" Link="ClipCacheItemJsonConverter.cs" />
     <Compile Include="..\DeepNestLib\D3.cs" Link="D3.cs" />
     <Compile Include="..\DeepNestLib\DataInfo.cs" Link="DataInfo.cs" />
     <Compile Include="..\DeepNestLib\DbCache.cs" Link="DbCache.cs" />
@@ -54,9 +62,11 @@
     <Compile Include="..\DeepNestLib\ISvgNestConfig.cs" Link="ISvgNestConfig.cs" />
     <Compile Include="..\DeepNestLib\IWindowUnk.cs" Link="IWindowUnk.cs" />
     <Compile Include="..\DeepNestLib\LineElement.cs" Link="LineElement.cs" />
+    <Compile Include="..\DeepNestLib\LocalContour.cs" Link="LocalContour.cs" />
     <Compile Include="..\DeepNestLib\MessageBoxIcon.cs" Link="MessageBoxIcon.cs" />
     <Compile Include="..\DeepNestLib\MinkowskiCache.cs" Link="MinkowskiCache.cs" />
     <Compile Include="..\DeepNestLib\MinkowskiDictionary.cs" Link="MinkowskiDictionary.cs" />
+    <Compile Include="..\DeepNestLib\MinkowskiDictionaryJsonConverter.cs" Link="MinkowskiDictionaryJsonConverter.cs" />
     <Compile Include="..\DeepNestLib\MinkowskiEqualityComparer.cs" Link="MinkowskiEqualityComparer.cs" />
     <Compile Include="..\DeepNestLib\MinkowskiKey.cs" Link="MinkowskiKey.cs" />
     <Compile Include="..\DeepNestLib\MinkowskiSum.cs" Link="MinkowskiSum.cs" />
@@ -66,6 +76,7 @@
     <Compile Include="..\DeepNestLib\NestingContext.cs" Link="NestingContext.cs" />
     <Compile Include="..\DeepNestLib\NestItem.cs" Link="NestItem.cs" />
     <Compile Include="..\DeepNestLib\NestProject\AnglesEnum.cs" Link="NestProject\AnglesEnum.cs" />
+    <Compile Include="..\DeepNestLib\NestProject\ConfigSheetLoadInfo.cs" Link="NestProject\ConfigSheetLoadInfo.cs" />
     <Compile Include="..\DeepNestLib\NestProject\DetailLoadInfo.cs" Link="NestProject\DetailLoadInfo.cs" />
     <Compile Include="..\DeepNestLib\NestProject\DetailLoadInfoJsonConverter.cs" Link="NestProject\DetailLoadInfoJsonConverter.cs" />
     <Compile Include="..\DeepNestLib\NestProject\IDetailLoadInfo.cs" Link="NestProject\IDetailLoadInfo.cs" />
@@ -87,19 +98,26 @@
     <Compile Include="..\DeepNestLib\NfpPairEqualityComparer.cs" Link="NfpPairEqualityComparer.cs" />
     <Compile Include="..\DeepNestLib\NfpPairEqualityComparerKey.cs" Link="NfpPairEqualityComparerKey.cs" />
     <Compile Include="..\DeepNestLib\NfpPairsFactory.cs" Link="NfpPairsFactory.cs" />
+    <Compile Include="..\DeepNestLib\ParserBase.cs" Link="ParserBase.cs" />
     <Compile Include="..\DeepNestLib\PartPlacementJsonConverter.cs" Link="PartPlacementJsonConverter.cs" />
     <Compile Include="..\DeepNestLib\PlacementTypeEnum.cs" Link="PlacementTypeEnum.cs" />
+    <Compile Include="..\DeepNestLib\Placement\IListInterfaceConverterFactory.cs" Link="Placement\IListInterfaceConverterFactory.cs" />
     <Compile Include="..\DeepNestLib\Placement\INestResult.cs" Link="Placement\INestResult.cs" />
+    <Compile Include="..\DeepNestLib\Placement\InterfaceConverterFactory.cs" Link="Placement\InterfaceConverterFactory.cs" />
+    <Compile Include="..\DeepNestLib\Placement\InterfaceConverter{M,I}.cs" Link="Placement\InterfaceConverter{M,I}.cs" />
     <Compile Include="..\DeepNestLib\Placement\IPartPlacement.cs" Link="Placement\IPartPlacement.cs" />
     <Compile Include="..\DeepNestLib\Placement\IPlacementWorker.cs" Link="Placement\IPlacementWorker.cs" />
     <Compile Include="..\DeepNestLib\Placement\ISheetPlacement.cs" Link="Placement\ISheetPlacement.cs" />
+    <Compile Include="..\DeepNestLib\Placement\ListConverter{M}.cs" Link="Placement\ListConverter{M}.cs" />
     <Compile Include="..\DeepNestLib\Placement\NestResult.cs" Link="Placement\NestResult.cs" />
     <Compile Include="..\DeepNestLib\Placement\NfpHelper.cs" Link="Placement\NfpHelper.cs" />
     <Compile Include="..\DeepNestLib\Placement\PartPlacement.cs" Link="Placement\PartPlacement.cs" />
     <Compile Include="..\DeepNestLib\Placement\PartPlacementWorker.cs" Link="Placement\PartPlacementWorker.cs" />
     <Compile Include="..\DeepNestLib\Placement\PlacementWorker.cs" Link="Placement\PlacementWorker.cs" />
+    <Compile Include="..\DeepNestLib\Placement\SheetNfp.cs" Link="Placement\SheetNfp.cs" />
     <Compile Include="..\DeepNestLib\Placement\SheetPlacement.cs" Link="Placement\SheetPlacement.cs" />
     <Compile Include="..\DeepNestLib\Placement\SheetPlacementCollection.cs" Link="Placement\SheetPlacementCollection.cs" />
+    <Compile Include="..\DeepNestLib\Placement\SheetPlacementJsonConverter.cs" Link="Placement\SheetPlacementJsonConverter.cs" />
     <Compile Include="..\DeepNestLib\PmapWorker.cs" Link="PmapWorker.cs" />
     <Compile Include="..\DeepNestLib\PolygonBase.cs" Link="PolygonBase.cs" />
     <Compile Include="..\DeepNestLib\PolygonSimplificationDictionary.cs" Link="PolygonSimplificationDictionary.cs" />
@@ -149,6 +167,10 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="IO\" />
   </ItemGroup>
 
 </Project>

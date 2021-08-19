@@ -1,8 +1,10 @@
 ﻿namespace DeepNestLib.CiTests.Placement
 {
   using System;
+  using System.Collections;
   using System.Collections.Generic;
   using System.IO;
+  using System.Linq;
   using System.Reflection;
   using System.Text.Json;
   using DeepNestLib.CiTests;
@@ -115,6 +117,127 @@
       var json = sut.ToJson();
 
       PartPlacementWorker.FromJson(json).Should().BeEquivalentTo(sut);
+    }
+
+    [Fact]
+    public void GivenMinkowskiKeyWithItem7DifferingThenHashCodeShouldDiffer()
+    {
+      var item7One = new decimal[] {
+              40.0815659M,
+              -33.7844009M,
+              40.0815659M,
+              16.2155972M,
+              -9.9184322M,
+              16.2155972M,
+              -9.9184322M,
+              -33.7844009M,
+            };
+      var keyOne = new MinkowskiKey(1, new List<double>(), 1, new int[0], new List<double>(), 1, item7One.Select(o => (double)o));
+
+      var item7Two = new decimal[] {
+              -40.0815659M,
+              33.7844009M,
+              -40.0815659M,
+              -16.2155972M,
+              9.9184322M,
+              -16.2155972M,
+              9.9184322M,
+              33.7844009M,
+            };
+      var keyTwo = new MinkowskiKey(1, new List<double>(), 1, new int[0], new List<double>(), 1, item7Two.Select(o => (double)o));
+
+      keyOne.GetHashCode().Should().NotBe(keyTwo.GetHashCode());
+    }
+
+    [Fact]
+    public void GivenMinkowskiKeyWithItem7SameThenHashCodeShouldBeSame()
+    {
+      var item7One = new decimal[] {
+              40.0815659M,
+              -33.7844009M,
+              40.0815659M,
+              16.2155972M,
+              -9.9184322M,
+              16.2155972M,
+              -9.9184322M,
+              -33.7844009M,
+            };
+      var keyOne = new MinkowskiKey(1, new List<double>(), 1, new int[0], new List<double>(), 1, item7One.Select(o => (double)o));
+
+      var item7Two = new decimal[] {
+              40.0815659M,
+              -33.7844009M,
+              40.0815659M,
+              16.2155972M,
+              -9.9184322M,
+              16.2155972M,
+              -9.9184322M,
+              -33.7844009M,
+            };
+      var keyTwo = new MinkowskiKey(1, new List<double>(), 1, new int[0], new List<double>(), 1, item7Two.Select(o => (double)o));
+
+      keyOne.GetHashCode().Should().Be(keyTwo.GetHashCode());
+    }
+
+    [Fact]
+    public void GivenListOfDifferingMinkowskiKeysThenTheyShouldAllHaveDifferentHashCodes()
+    {
+      string json;
+      using (Stream stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Placement.MinkowskiKeyExample.json"))
+      using (StreamReader reader = new StreamReader(stream))
+      {
+        json = reader.ReadToEnd().Replace(" ", string.Empty).Replace("\r\n", string.Empty);
+      }
+
+      var options = new JsonSerializerOptions();
+      options.Converters.Add(new NfpJsonConverter());
+      options.Converters.Add(new MinkowskiDictionaryJsonConverter());
+      var kvpList = JsonSerializer.Deserialize<List<KeyValuePair<MinkowskiKey, INfp>>>(json, options);
+      var hashCodeList = kvpList.Select(o => o.GetHashCode());
+      hashCodeList.Distinct().Count().Should().Be(kvpList.Count);
+    }
+
+    [Fact]
+    public void GivenTwoDifferingMinkowskiKeysThenTheyShouldHaveDifferentHashCodes()
+    {
+      string json;
+      using (Stream stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Placement.MinkowskiKeyExample.json"))
+      using (StreamReader reader = new StreamReader(stream))
+      {
+        json = reader.ReadToEnd().Replace(" ", string.Empty).Replace("\r\n", string.Empty);
+      }
+
+      var options = new JsonSerializerOptions();
+      options.Converters.Add(new NfpJsonConverter());
+      options.Converters.Add(new MinkowskiDictionaryJsonConverter());
+      var kvpList = JsonSerializer.Deserialize<List<KeyValuePair<MinkowskiKey, INfp>>>(json, options);
+
+      var key2 = kvpList[2].Key;
+      var key4 = kvpList[4].Key;
+      key2.Item1.Should().Be(key4.Item1);
+      key2.Item2.Should().BeEquivalentTo(key4.Item2);
+      System.Diagnostics.Debug.Print(string.Join(",", key2.Item2));
+      System.Diagnostics.Debug.Print(string.Join(",", key4.Item2));
+      ((IStructuralEquatable)key2.Item2.Select(o => o.ToString()).ToArray()).GetHashCode(EqualityComparer<string>.Default).Should().Be(((IStructuralEquatable)key4.Item2.Select(o => o.ToString()).ToArray()).GetHashCode(EqualityComparer<string>.Default));
+      key2.Item3.Should().Be(key4.Item3);
+      key2.Item4.Should().BeEquivalentTo(key4.Item4);
+      ((IStructuralEquatable)key2.Item4).GetHashCode(EqualityComparer<int>.Default).Should().Be(((IStructuralEquatable)key4.Item4).GetHashCode(EqualityComparer<int>.Default));
+      key2.Item5.Should().BeEquivalentTo(key4.Item5);
+      ((IStructuralEquatable)key2.Item5.Select(o => o.ToString()).ToArray()).GetHashCode(EqualityComparer<string>.Default).Should().Be(((IStructuralEquatable)key4.Item5.Select(o => o.ToString()).ToArray()).GetHashCode(EqualityComparer<string>.Default));
+      key2.Item6.Should().Be(key4.Item6);
+      key2.Item6.GetHashCode().Should().Be(key4.Item6.GetHashCode());
+
+
+      key2.Item7.Should().NotBeEquivalentTo(key4.Item7);
+      ((IStructuralEquatable)key2.Item7.Select(o => o.ToString()).ToArray()).GetHashCode(EqualityComparer<string>.Default).Should().NotBe(((IStructuralEquatable)key4.Item7.Select(o => o.ToString()).ToArray()).GetHashCode(EqualityComparer<string>.Default));
+
+      key2.GetHashCode().Should().NotBe(key4.GetHashCode());
+    }
+
+    [Fact]
+    public void GivenTwoDecimalArraysWhenSameThenGetHashCodeThenShouldBeSame()
+    {
+
     }
   }
 }

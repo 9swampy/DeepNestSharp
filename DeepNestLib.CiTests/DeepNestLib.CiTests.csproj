@@ -180,6 +180,7 @@
     <Compile Include="DxfParserPart1Fixture.cs" />
     <Compile Include="DxfParserFixture.cs" />
     <Compile Include="EmbededResourcesExtensions.cs" />
+    <Compile Include="ExtensionsSpliceFixture.cs" />
     <Compile Include="FitFourSmallSquaresInOneLargerSquareSheetPerfectlyBoundingBoxFitnessFixture.cs" />
     <Compile Include="FitFourSmallSquaresInOneLargerSquareSheetPerfectlyFixture.cs" />
     <Compile Include="FitSmallSquarePartInLargerSquareSheetFixture.cs" />
@@ -188,9 +189,12 @@
     <Compile Include="GeneticAlgorithm\BoundingBoxFitnessFixture.cs" />
     <Compile Include="GeneticAlgorithm\GravityBoundsFixture.cs" />
     <Compile Include="GeneticAlgorithm\GravityFitnessFixture.cs" />
+    <Compile Include="GeneticAlgorithm\GravityFitnessOneSheetBetterThanTwoFixture.cs" />
     <Compile Include="GeneticAlgorithm\SheetPlacementJsonHelper.cs" />
     <Compile Include="GeneticAlgorithm\SqueezeFitnessFixture.cs" />
     <Compile Include="GetInnerPolygonFixture.cs" />
+    <Compile Include="Minkowski\MinkowskiCacheDebugFixture.cs" />
+    <Compile Include="Minkowski\MinkowskiDictionaryFixture.cs" />
     <Compile Include="NestProject\SvgNestConfigSerializationFixture.cs" />
     <Compile Include="NfpCtorCloneFixture.cs" />
     <Compile Include="NfpExtensions.cs" />
@@ -198,6 +202,7 @@
     <Compile Include="NfpRotateFixture.cs" />
     <Compile Include="PerfectFitnessFixture.cs" />
     <Compile Include="OuterFitPolygonFixture.cs" />
+    <Compile Include="Placement\DecimalArrayHashCodeFixture.cs" />
     <Compile Include="Placement\NfpJsonFixture.cs" />
     <Compile Include="NestProject\ProjectInfoSerializationFixture.cs" />
     <Compile Include="Placement\PartPlacementScenarioFixture.cs" />
@@ -264,6 +269,18 @@
     <EmbeddedResource Include="GeneticAlgorithm\ReadMeExampleTwoSheetsBetterThanOne2.dnr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Minkowski\MinkowskiCache.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Minkowski\MinkowskiCacheA.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Minkowski\MinkowskiCacheB.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Minkowski\MinkowskiCacheRet.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <Content Include="SquareInSquare.dxf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -281,6 +298,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Placement\SecondGenerationOverlaysOut.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Placement\MinkowskiKeyExample.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>

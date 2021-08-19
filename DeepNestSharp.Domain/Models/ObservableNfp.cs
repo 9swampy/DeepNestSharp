@@ -1,7 +1,8 @@
 ﻿namespace DeepNestSharp.Domain.Models
 {
+  using System;
   using System.Collections.Generic;
-using System.ComponentModel;
+  using System.ComponentModel;
   using System.Linq;
   using DeepNestLib;
   using DeepNestLib.NestProject;
@@ -10,7 +11,7 @@ using System.ComponentModel;
   public class ObservableNfp : ObservablePropertyObject, INfp
   {
     private readonly INfp item;
-    
+
     public ObservableNfp(INfp nfp)
     {
       this.item = nfp;
@@ -275,6 +276,11 @@ using System.ComponentModel;
     public INfp ShiftToOrigin()
     {
       return this.item.ShiftToOrigin();
+    }
+
+    bool IEquatable<IPolygon>.Equals(IPolygon other)
+    {
+      return ((IEquatable<IPolygon>)this.item).Equals(other);
     }
   }
 }

@@ -156,6 +156,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClipCacheItemJsonConverter.cs" />
     <Compile Include="GeneticAlgorithm\ISheetPlacementFitness.cs" />
     <Compile Include="IDispatcherService.cs" />
     <Compile Include="IMinMaxXY.cs" />
@@ -166,12 +167,15 @@
     <Compile Include="IO\ProgressDisplayerBase.cs" />
     <Compile Include="IPointXY.cs" />
     <Compile Include="ISheet.cs" />
+    <Compile Include="LocalContour.cs" />
     <Compile Include="MessageBoxIcon.cs" />
+    <Compile Include="MinkowskiDictionaryJsonConverter.cs" />
     <Compile Include="NestExecutionHelper.cs" />
     <Compile Include="NestProject\AnglesEnum.cs" />
     <Compile Include="Background.cs" />
     <Compile Include="CacheHelper.cs" />
     <Compile Include="ClipCacheItem.cs" />
+    <Compile Include="NestProject\ConfigSheetLoadInfo.cs" />
     <Compile Include="NestProject\DetailLoadInfo.cs" />
     <Compile Include="NestProject\DetailLoadInfoJsonConverter.cs" />
     <Compile Include="NestProject\IDetailLoadInfo.cs" />
@@ -235,10 +239,15 @@
     <Compile Include="NfpPairEqualityComparer.cs" />
     <Compile Include="NfpPairEqualityComparerKey.cs" />
     <Compile Include="NfpPairsFactory.cs" />
+    <Compile Include="ParserBase.cs" />
     <Compile Include="PartPlacementJsonConverter.cs" />
     <Compile Include="PlacementTypeEnum.cs" />
     <Compile Include="DoublePrecisionConverter.cs" />
+    <Compile Include="Placement\IListInterfaceConverterFactory.cs" />
+    <Compile Include="Placement\InterfaceConverterFactory.cs" />
+    <Compile Include="Placement\InterfaceConverter{M,I}.cs" />
     <Compile Include="Placement\IPlacementWorker.cs" />
+    <Compile Include="Placement\ListConverter{M}.cs" />
     <Compile Include="Placement\NfpHelper.cs" />
     <Compile Include="Placement\PartPlacementWorker.cs" />
     <Compile Include="Placement\PlacementWorker.cs" />
@@ -246,8 +255,10 @@
     <Compile Include="Placement\IPartPlacement.cs" />
     <Compile Include="Placement\ISheetPlacement.cs" />
     <Compile Include="Placement\PartPlacement.cs" />
+    <Compile Include="Placement\SheetNfp.cs" />
     <Compile Include="Placement\SheetPlacement.cs" />
     <Compile Include="Placement\SheetPlacementCollection.cs" />
+    <Compile Include="Placement\SheetPlacementJsonConverter.cs" />
     <Compile Include="PmapWorker.cs" />
     <Compile Include="PolygonBase.cs" />
     <Compile Include="PolygonSimplificationDictionary.cs" />

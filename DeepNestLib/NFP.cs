@@ -250,7 +250,9 @@
     /// <returns>New <see cref="NFP"/>.</returns>
     public static NFP FromJson(string json)
     {
-      return JsonSerializer.Deserialize<NFP>(json);
+      var options = new JsonSerializerOptions();
+      options.Converters.Add(new NfpJsonConverter());
+      return JsonSerializer.Deserialize<NFP>(json, options);
     }
 
     /// <inheritdoc />
@@ -577,6 +579,32 @@
     public INfp ShiftToOrigin()
     {
       return Shift(-this.MinX, -this.MinY);
+    }
+
+    bool IEquatable<IPolygon>.Equals(IPolygon other)
+    {
+      var thisPolygon = this as IPolygon;
+      if (other != null &&
+          thisPolygon.Points.SequenceEqual(other.Points, new SvgPointCloseEqualityComparer()) &&
+          thisPolygon.Id == other.Id &&
+          thisPolygon.Name == other.Name &&
+          thisPolygon.Rotation == other.Rotation &&
+          thisPolygon.Source == other.Source &&
+          thisPolygon.Children.Count == other.Children.Count)
+      {
+        for (int c = 0; c < thisPolygon.Children.Count; c++)
+        {
+          var childPolygon = thisPolygon.Children[c] as IEquatable<IPolygon>;
+          if (!childPolygon.Equals(other.Children[c]))
+          {
+            return false;
+          }
+        }
+
+        return true;
+      }
+
+      return false;
     }
   }
 }

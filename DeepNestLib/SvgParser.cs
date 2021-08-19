@@ -1,6 +1,5 @@
 ﻿namespace DeepNestLib
 {
-  using DeepNestLib.Placement;
   using System;
   using System.Collections.Generic;
   using System.Drawing;
@@ -11,29 +10,6 @@
   using System.Text;
   using System.Threading.Tasks;
   using System.Xml.Linq;
-
-  public abstract class ParserBase : IExport
-  {
-    public abstract string SaveFileDialogFilter { get; }
-
-    public async Task Export(string path, ISheetPlacement sheetPlacement)
-    {
-      await this.Export(path, sheetPlacement.PartPlacements.Select(
-        o =>
-        {
-          var result = new NFP(o.Part, WithChildren.Included);
-          result.Sheet = sheetPlacement.Sheet;
-          result.X = o.X;
-          result.Y = o.Y;
-          return result;
-        }),
-        new ISheet[] {
-          sheetPlacement.Sheet,
-        }).ConfigureAwait(false);
-    }
-
-    public abstract Task Export(string path, IEnumerable<INfp> polygons, IEnumerable<ISheet> sheets);
-  }
 
   public class SvgParser : ParserBase
   {
@@ -389,27 +365,5 @@
 
       return new NFP(poly);
     }
-  }
-
-  public class LocalContour
-  {
-    public double Len
-    {
-      get
-      {
-        double len = 0;
-        for (int i = 1; i <= Points.Count; i++)
-        {
-          var p1 = Points[i - 1];
-          var p2 = Points[i % Points.Count];
-          len += Math.Sqrt(Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Y - p2.Y, 2));
-        }
-
-        return len;
-      }
-    }
-
-    public List<PointF> Points = new List<PointF>();
-    public bool Enable = true;
   }
 }

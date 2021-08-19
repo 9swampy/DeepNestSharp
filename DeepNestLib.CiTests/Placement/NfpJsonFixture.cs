@@ -84,6 +84,7 @@
 
       actual.Should().BeEquivalentTo(expected, options => options.Excluding(o => o.Width)
                                                                  .Excluding(o => o.Height));
+      ((IEquatable<IPolygon>)actual).Equals(expected).Should().BeTrue();
       actual.Rotation.Should().Be(12);
     }
 

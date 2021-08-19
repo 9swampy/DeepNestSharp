@@ -1,0 +1,104 @@
+{
+  "Fitted": false,
+  "Sheet": null,
+  "Name": "",
+  "X": 0,
+  "Y": 0,
+  "Children": [
+    {
+      "Area": 1500.0000032850692,
+      "Fitted": false,
+      "HeightCalculated": 30,
+      "Length": 5,
+      "WidthCalculated": 50.000000109502302
+    }
+  ],
+  "Id": 0,
+  "Offsetx": null,
+  "Offsety": null,
+  "Source": -1,
+  "PlacementOrder": -1,
+  "Rotation": 0,
+  "Points": [
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": 105,
+      "Y": 134
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": 55,
+      "Y": 134
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": -5,
+      "Y": 134
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": -55,
+      "Y": 134
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": -55,
+      "Y": 84
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": -55,
+      "Y": 46
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": -55,
+      "Y": -4
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": -5,
+      "Y": -4
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": 55,
+      "Y": -4
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": 105,
+      "Y": -4
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": 105,
+      "Y": 46
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": 105,
+      "Y": 84
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": 105,
+      "Y": 134
+    }
+  ],
+  "IsPriority": false,
+  "StrictAngle": 0
+}

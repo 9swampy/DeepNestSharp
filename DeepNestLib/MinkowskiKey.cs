@@ -1,10 +1,12 @@
 ﻿namespace DeepNestLib
 {
   using System;
-using System.Collections.Generic;
-using System.Collections;
+  using System.Collections.Generic;
+  using System.Collections;
   using System.Linq;
   using System.Text.Json.Serialization;
+  using System.Security.Policy;
+  using System.Text.Json;
 
   public class MinkowskiKey : Tuple<int, decimal[], int, int[], decimal[], int, decimal[]>
   {
@@ -77,15 +79,49 @@ using System.Collections;
 
     public override int GetHashCode()
     {
-      return HashCode.Combine(
-        this.Item1,
-        ((IStructuralEquatable)this.Item2).GetHashCode(EqualityComparer<decimal>.Default),
-        this.Item3,
-        ((IStructuralEquatable)this.Item4).GetHashCode(EqualityComparer<int>.Default),
-        ((IStructuralEquatable)this.Item5).GetHashCode(EqualityComparer<decimal>.Default),
-        this.Item6,
-        ((IStructuralEquatable)this.Item7).GetHashCode(EqualityComparer<decimal>.Default));
+      //return base.GetHashCode();
+
+      //var result = new HashCode();
+      //result.Add(this.Item1);
+      //AddHashCode(result, this.Item2);
+      //result.Add(this.Item3);
+      //AddHashCode(result, this.Item4);
+      //AddHashCode(result, this.Item5);
+      //result.Add(this.Item6);
+      //AddHashCode(result, this.Item7);
+      //return result.ToHashCode();
+
+      var result = CombineHashCodes(this.Item1, ((IStructuralEquatable)this.Item2.Select(o => o.ToString()).ToArray()).GetHashCode(EqualityComparer<string>.Default));
+      result = CombineHashCodes(result, this.Item3);
+      result = CombineHashCodes(result, ((IStructuralEquatable)this.Item4.Select(o => o.ToString()).ToArray()).GetHashCode(EqualityComparer<string>.Default));
+      result = CombineHashCodes(result, ((IStructuralEquatable)this.Item5.Select(o => o.ToString()).ToArray()).GetHashCode(EqualityComparer<string>.Default));
+      result = CombineHashCodes(result, this.Item6);
+      result = CombineHashCodes(result, ((IStructuralEquatable)this.Item7.Select(o => o.ToString()).ToArray()).GetHashCode(EqualityComparer<string>.Default));
+      return result;
+
+      //return HashCode.Combine(
+      //  this.Item1.GetHashCode(),
+      //  ((IStructuralEquatable)this.Item2).GetHashCode(EqualityComparer<decimal>.Default),
+      //  this.Item3.GetHashCode(),
+      //  ((IStructuralEquatable)this.Item4).GetHashCode(EqualityComparer<int>.Default),
+      //  ((IStructuralEquatable)this.Item5).GetHashCode(EqualityComparer<decimal>.Default),
+      //  this.Item6.GetHashCode(),
+      //  ((IStructuralEquatable)this.Item7).GetHashCode(EqualityComparer<decimal>.Default));
     }
+
+    internal static int CombineHashCodes(int h1, int h2)
+    {
+      // this is where the magic happens
+      return (((h1 << 5) + h1) ^ h2);
+    }
+
+    //private void AddHashCode<T>(HashCode result, IEnumerable<T> items)
+    //{
+    //  foreach (var item in items)
+    //  {
+    //    result.Add(item, EqualityComparer<T>.Default);
+    //  }
+    //}
 
     public override bool Equals(object obj)
     {
@@ -95,6 +131,16 @@ using System.Collections;
       }
 
       return false;
+    }
+
+    public string ToJson()
+    {
+      return JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
+    }
+
+    public static MinkowskiKey FromJson(string json)
+    {
+      return JsonSerializer.Deserialize<MinkowskiKey>(json);
     }
   }
 }

@@ -3,6 +3,7 @@
   using System;
   using System.Collections.Generic;
   using System.Drawing;
+  using System.IO;
   using System.Linq;
   using System.Text.Json.Serialization;
   using ClipperLib;
@@ -84,9 +85,14 @@
       INfp ret;
       lock (minkowskiSyncLock)
       {
-        if (!MinkowskiCache.TryGetValue(key, out ret))
+        INfp cacheRetrieval;
+        if (!MinkowskiCache.TryGetValue(key, out cacheRetrieval))
+        // MinkowskiCache.TryGetValue(key, out cacheRetrieval);
         {
-          VerboseLogAction?.Invoke($"{a.ToShortString()}-{b.ToShortString()} {key.GetHashCode()} not found in {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)} so calculating. . .");
+          // Ok, so we've found a match in the cache; however there's something wrong with this that's causing overlaying parts.
+          // Let's let it recalculate again and compare the result with the cached.
+
+          VerboseLogAction?.Invoke($"{a.ToShortString()}-{b.ToShortString()} {key} not found in {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)} so calculating. . .");
 #if x64
           // System.Diagnostics.Debug.Print($"{state.CallCounter}.Minkowski_x64");
           long[] longs = arr1.Select(o => (long)o).ToArray();
@@ -171,13 +177,36 @@
             }
           }
 
-          VerboseLogAction?.Invoke($"Add {a.ToShortString()}-{b.ToShortString()} {key} to {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)}. . .");
-          System.Diagnostics.Debug.Print(key.GetHashCode().ToString());
-          MinkowskiCache.Add(key, ret);
+          if (cacheRetrieval == null)
+          {
+            if (MinkowskiCache.Values.Any(o => o.Equals(ret)))
+            {
+              if (ret.Points.Length == 0)
+              {
+                var matchKvp = MinkowskiCache.ToList().First(o => o.Value.Equals(ret));
+                File.WriteAllText(@"C:\Temp\MinkowskiSum\MatchKey.json", matchKvp.Key.ToJson());
+                File.WriteAllText(@"C:\Temp\MinkowskiSum\MatchValue.json", matchKvp.Value.ToJson());
+                File.WriteAllText(@"C:\Temp\MinkowskiSum\MinkowskiCache.json", MinkowskiCache.ToJson());
+                File.WriteAllText(@"C:\Temp\MinkowskiSum\MinkowskiCacheA.json", a.ToJson());
+                File.WriteAllText(@"C:\Temp\MinkowskiSum\MinkowskiCacheB.json", b.ToJson());
+                File.WriteAllText(@"C:\Temp\MinkowskiSum\MinkowskiCacheRet.json", ret.ToJson());
+              }
+
+              System.Diagnostics.Debugger.Break();
+            }
+
+            VerboseLogAction?.Invoke($"Add {a.ToShortString()}-{b.ToShortString()} {key} to {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)}. . .");
+            MinkowskiCache.Add(key, ret);
+          }
+          else if (!ret.Equals(cacheRetrieval))
+          {
+            System.Diagnostics.Debugger.Break();
+          }
         }
         else
         {
           VerboseLogAction?.Invoke($"{a.ToShortString()}-{b.ToShortString()} {key} found in {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)}. . .");
+          ret = new NFP(cacheRetrieval, WithChildren.Included);
         }
       }
 

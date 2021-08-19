@@ -928,6 +928,9 @@
       {
         this.messageService.DisplayMessage(ex);
         State.SetIsErrored();
+#if NCRUNCH
+        throw;
+#endif
       }
     }
 

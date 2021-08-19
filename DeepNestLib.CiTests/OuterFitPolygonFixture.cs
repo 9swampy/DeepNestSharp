@@ -13,7 +13,7 @@
       var sheet = generator.GenerateSquare("sheet", 10, RectangleType.FileLoad).ToNfp();
       var part = generator.GenerateSquare("part", 10, RectangleType.FileLoad).ToNfp();
       var nfp = A.Dummy<NfpHelper>()
-        .GetOuterNfp(sheet, part, MinkowskiCache.NoCache, true);
+        .GetOuterNfp(sheet, part, MinkowskiCache.NoCache, NoFitPolygonType.Inner);
       nfp.Children.Should().BeEmpty("couldn't fit part inside sheet.");
     }
 
@@ -24,7 +24,7 @@
       var sheet = generator.GenerateSquare("sheet", 20, RectangleType.FileLoad).ToNfp();
       var part = generator.GenerateSquare("part", 10, RectangleType.FileLoad).ToNfp();
       var nfp = A.Dummy<NfpHelper>()
-        .GetOuterNfp(sheet, part, MinkowskiCache.NoCache, true);
+        .GetOuterNfp(sheet, part, MinkowskiCache.NoCache, NoFitPolygonType.Inner);
       nfp.Children.Should().BeEmpty("couldn't fit part inside sheet.");
     }
 
@@ -35,7 +35,7 @@
       var sheet = generator.GenerateSquare("sheet", 10, RectangleType.FileLoad).ToNfp();
       var part = generator.GenerateSquare("part", 10, RectangleType.FileLoad).ToNfp();
       var nfp = A.Dummy<NfpHelper>()
-        .GetOuterNfp(sheet, part, MinkowskiCache.NoCache, false);
+        .GetOuterNfp(sheet, part, MinkowskiCache.NoCache, NoFitPolygonType.Outer);
       nfp.Area.Should().Be(400);
     }
   }

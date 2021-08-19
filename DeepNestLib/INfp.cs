@@ -1,10 +1,11 @@
 ﻿namespace DeepNestLib
 {
+using System;
   using System.Collections.Generic;
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
 
-  public interface IPolygon
+  public interface IPolygon : IEquatable<IPolygon>
   {
     IList<INfp> Children { get; set; }
 

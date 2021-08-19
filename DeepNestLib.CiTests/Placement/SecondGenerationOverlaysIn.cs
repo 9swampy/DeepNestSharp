@@ -63,6 +63,30 @@
       sut.ClipCache.Should().BeEquivalentTo(sutOutExpected.ClipCache);
     }
 
+    [Fact]
+    public void FinalNfpShouldBeEquivalent()
+    {
+      sutOutExpected.FinalNfp.Should().NotBeNull();
+      sut.FinalNfp.Should().NotBeNull();
+      sut.FinalNfp.Should().BeEquivalentTo(sutOutExpected.FinalNfp);
+    }
+
+    [Fact]
+    public void SheetNfpShouldBeEquivalent()
+    {
+      sut.SheetNfp.Should().BeEquivalentTo(sutOutExpected.SheetNfp, options => options
+                                    .Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 0.001))
+                                    .WhenTypeIs<double>());
+    }
+
+    [Fact]
+    public void CombinedNfpShouldBeEquivalent()
+    {
+      sut.CombinedNfp.Should().BeEquivalentTo(sutOutExpected.CombinedNfp, options => options
+                                    .Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 0.001))
+                                    .WhenTypeIs<double>());
+    }
+
     private void LogDebug(int i)
     {
       sut.Log[i].Should().Be(sutOutExpected.Log[i]);

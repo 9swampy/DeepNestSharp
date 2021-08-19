@@ -106,7 +106,7 @@
       return res;
     }
 
-    internal INfp[] GetInnerNfp(INfp a, INfp b, MinkowskiCache type, double clipperScale)
+    internal INfp[] GetInnerNfp(INfp a, INfp b, MinkowskiCache minkowskiCache, double clipperScale)
     {
       a.MustNotBeNull();
       b.MustNotBeNull();
@@ -122,7 +122,7 @@
 
       var frame = GetFrame(a);
 
-      var nfp = GetOuterNfp(frame, b, type, true);
+      var nfp = GetOuterNfp(frame, b, minkowskiCache, NoFitPolygonType.Inner);
 
       if (nfp == null || nfp.Children == null || nfp.Children.Count == 0)
       {
@@ -183,7 +183,7 @@
       return f.ToArray();
     }
 
-    internal INfp GetOuterNfp(INfp a, INfp b, MinkowskiCache type, bool inside = false) // todo:?inside def?
+    internal INfp GetOuterNfp(INfp a, INfp b, MinkowskiCache minkowskiCache, NoFitPolygonType nfpType = NoFitPolygonType.Outer)
     {
       INfp[] nfp;
 
@@ -198,9 +198,9 @@
         }
 
         // not found in cache
-        if (inside || (a.Children != null && a.Children.Count > 0))
+        if (nfpType == NoFitPolygonType.Inner || (a.Children != null && a.Children.Count > 0))
         {
-          nfp = ExecuteDllImportMinkowski(a, b, type);
+          nfp = ExecuteDllImportMinkowski(a, b, minkowskiCache);
         }
         else
         {
@@ -220,7 +220,7 @@
           return null;
         }
 
-        if (!inside)
+        if (nfpType == NoFitPolygonType.Outer)
         {
           var doc2 = new DbCacheKey(a.Source, b.Source, a.Rotation, b.Rotation, nfp);
           Window.Insert(doc2);
@@ -271,5 +271,11 @@
   public interface ITestNfpHelper
   {
     IMinkowskiSumService MinkowskiSumService { get; set; }
+  }
+
+  public enum NoFitPolygonType
+  {
+    Outer,
+    Inner,
   }
 }

@@ -21,15 +21,15 @@
   {
     private const bool EnableCaches = true;
 
-    private Dictionary<string, ClipCacheItem> clipCache;
     private readonly INestState state;
     private readonly IList<string> logList = new List<string>();
+    private Dictionary<string, ClipCacheItem> clipCache;
     private IPlacementWorker placementWorker;
     private volatile object processPartLock = new object();
 #if NCRUNCH
     private bool exportExecutions = false;
 #else
-    private bool exportExecutions = true;
+    private bool exportExecutions = false;
 #endif
 
     [JsonConstructor]
@@ -76,6 +76,9 @@
     public SheetNfp SheetNfp { get; private set; }
 
     [JsonInclude]
+    public List<List<IntPoint>> CombinedNfp { get; private set; }
+
+    [JsonInclude]
     public NfpHelper NfpHelper { get; private set; }
 
     NfpHelper ITestPartPlacementWorker.NfpHelper { get => NfpHelper; set => NfpHelper = value; }
@@ -85,19 +88,8 @@
 
     IPlacementWorker ITestPartPlacementWorker.PlacementWorker { get => this.placementWorker; set => this.placementWorker = value; }
 
-    public string ToJson(bool writeIndented = false)
-    {
-      var options = new JsonSerializerOptions();
-      options.Converters.Add(new SvgNestConfigJsonConverter());
-      options.Converters.Add(new SheetJsonConverter());
-      options.Converters.Add(new NfpJsonConverter());
-      options.Converters.Add(new MinkowskiDictionaryJsonConverter());
-      options.Converters.Add(new MinkowskiSumJsonConverter());
-      options.Converters.Add(new PartPlacementJsonConverter());
-      options.Converters.Add(new ClipCacheItemJsonConverter());
-      options.WriteIndented = writeIndented;
-      return System.Text.Json.JsonSerializer.Serialize(this, options);
-    }
+    [JsonInclude]
+    public IList<INfp> FinalNfp { get; private set; }
 
     [JsonInclude]
     public INfp InputPart { get; private set; }
@@ -124,6 +116,8 @@
     {
       lock (processPartLock)
       {
+        SheetNfp = null;
+        CombinedNfp = null;
         InputPart = inputPart;
         logList.Clear();
         if (exportExecutions)
@@ -131,15 +125,10 @@
           Export(inputPartIndex, "In.json", this.ToJson(true));
         }
 
-        var combinedNfp = new List<List<IntPoint>>();
-        double? minwidth = null;
-        double? minarea = null;
-
         var processedPart = new NFP(inputPart, WithChildren.Included) as INfp;
         //var processedPart = inputPart;
         this.VerboseLog($"ProcessPart {inputPart.ToShortString()}.");
 
-        SheetNfp = null;
         if (Placements.Count == 0)
         {
           // try all possible rotations until it fits
@@ -238,11 +227,16 @@
             this.VerboseLog($"Retrieve {clipkey}:{startIndex} from {nameof(ClipCache)}; populate {nameof(clipper)}");
           }
 
+          List<List<IntPoint>> combinedNfp;
           if (!this.TryGetCombinedNfp(this.Config.ClipperScale, Placements, processedPart, clipper, startIndex, out combinedNfp))
           {
             this.VerboseLog($"{nameof(TryGetCombinedNfp)} clipper error.");
             error = true;
             return InnerFlowResult.Continue;
+          }
+          else
+          {
+            CombinedNfp = combinedNfp;
           }
 
           if (EnableCaches)
@@ -251,14 +245,14 @@
             this.ClipCache[clipkey] = new ClipCacheItem()
             {
               index = Placements.Count - 1,
-              nfpp = combinedNfp.Select(z => z.ToArray()).ToArray(),
+              nfpp = CombinedNfp.Select(z => z.ToArray()).ToArray(),
             };
           }
 
           // console.log('save cache', placed.length - 1);
 
           List<INfp> finalNfp;
-          InnerFlowResult clipperForDifferenceResult = this.TryGetDifferenceWithSheetPolygon(this.Config, combinedNfp, processedPart, clipperSheetNfp, out finalNfp);
+          InnerFlowResult clipperForDifferenceResult = this.TryGetDifferenceWithSheetPolygon(this.Config, CombinedNfp, processedPart, clipperSheetNfp, out finalNfp);
           if (clipperForDifferenceResult == InnerFlowResult.Break)
           {
             return InnerFlowResult.Break;
@@ -266,6 +260,10 @@
           else if (clipperForDifferenceResult == InnerFlowResult.Continue)
           {
             return InnerFlowResult.Continue;
+          }
+          else
+          {
+            FinalNfp = finalNfp;
           }
 
 #if NCRUNCH
@@ -291,8 +289,8 @@
           var minx = null;
           var miny = null;
           var nf, area, shiftvector;*/
-          minwidth = null;
-          minarea = null;
+          double? minwidth = null;
+          double? minarea = null;
           double? minx = null;
           double? miny = null;
           INfp nf;
@@ -456,6 +454,21 @@
       }
     }
 
+    public string ToJson(bool writeIndented = false)
+    {
+      var options = new JsonSerializerOptions();
+      options.Converters.Add(new SvgNestConfigJsonConverter());
+      options.Converters.Add(new SheetJsonConverter());
+      options.Converters.Add(new NfpJsonConverter());
+      options.Converters.Add(new MinkowskiDictionaryJsonConverter());
+      options.Converters.Add(new MinkowskiSumJsonConverter());
+      options.Converters.Add(new PartPlacementJsonConverter());
+      options.Converters.Add(new ClipperLibIntPointJsonConverter());
+      options.Converters.Add(new ClipCacheItemJsonConverter());
+      options.WriteIndented = writeIndented;
+      return System.Text.Json.JsonSerializer.Serialize(this, options);
+    }
+
     private void AddPlacement(INfp inputPart, INfp processedPart, PartPlacement position, int inputPartIndex)
     {
       var sheetPlacement = this.placementWorker.AddPlacement(inputPart, Placements, processedPart, position, this.Config.PlacementType, Sheet, MergedLength);
@@ -486,6 +499,7 @@
       options.Converters.Add(new MinkowskiDictionaryJsonConverter());
       options.Converters.Add(new MinkowskiSumJsonConverter());
       options.Converters.Add(new PartPlacementJsonConverter());
+      options.Converters.Add(new ClipperLibIntPointJsonConverter());
       options.Converters.Add(new ClipCacheItemJsonConverter());
       return System.Text.Json.JsonSerializer.Deserialize<PartPlacementWorker>(json, options);
     }
@@ -775,51 +789,5 @@
     NfpHelper NfpHelper { get; set; }
 
     IPlacementWorker PlacementWorker { get; set; }
-  }
-
-  public class SheetNfp
-  {
-    [JsonConstructor]
-    public SheetNfp()
-    {
-    }
-
-    // inner NFP
-    public SheetNfp(NfpHelper nfpHelper, INfp sheet, INfp part, double clipperScale)
-    {
-      InnerNfp = nfpHelper.GetInnerNfp(sheet, part, MinkowskiCache.Cache, clipperScale);
-    }
-
-    /// <summary>
-    /// Gets or sets the element at the specified index.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get or set.</param>
-    /// <returns>The element at the specified index.</returns>
-    public INfp this[int index] { get => InnerNfp[index]; }
-
-    internal bool CanAcceptPart
-    {
-      get
-      {
-        if (InnerNfp != null && InnerNfp.Count() > 0)
-        {
-          if (InnerNfp[0].Length == 0)
-          {
-            throw new ArgumentException();
-          }
-          else
-          {
-            return true;
-          }
-        }
-
-        return false;
-      }
-    }
-
-    public int Length => InnerNfp.Length;
-
-    [JsonInclude]
-    public INfp[] InnerNfp { get; private set; }
   }
 }
