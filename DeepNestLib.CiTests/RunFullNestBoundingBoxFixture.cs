@@ -1,11 +1,9 @@
 ﻿namespace DeepNestLib.CiTests
 {
   using System;
-  using System.Collections.Generic;
   using System.Threading;
   using FakeItEasy;
   using FluentAssertions;
-  using IxMilia.Dxf.Entities;
   using Xunit;
 
   public class RunFullNestBoundingBoxFixture
@@ -14,8 +12,9 @@
     private const double ExpectedFitness = 494512;
     private const double ExpectedFitnessTolerance = 10000;
 
-    private readonly DxfGenerator dxfGenerator = new DxfGenerator();
     private static volatile object testSyncLock = new object();
+    
+    private readonly DxfGenerator dxfGenerator = new DxfGenerator();
     private DefaultSvgNestConfig config;
     private RawDetail loadedRawDetail;
     private NestingContext nestingContext;
@@ -25,6 +24,7 @@
     private int firstSheetIdSrc = new Random().Next();
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="RunFullNestBoundingBoxFixture"/> class.
     /// MinkowskiWrapper.CalculateNfp occasionally sticks; not sure why; seems fine at runtime only nCrunch has the problem.
     /// </summary>
     public RunFullNestBoundingBoxFixture()
@@ -40,7 +40,7 @@
           this.loadedRawDetail = DxfParser.LoadDxfStream(DxfTestFilename);
           this.loadedRawDetail.Should().NotBeNull();
           var progressCapture = new ProgressTestResponse();
-          this.nestingContext = new NestingContext(A.Fake<IMessageService>(), progressCapture, new NestState(config, A.Fake<IDispatcherService>()));
+          this.nestingContext = new NestingContext(A.Fake<IMessageService>(), progressCapture, new NestState(config, A.Fake<IDispatcherService>()), this.config);
           this.hasImportedRawDetail = loadedRawDetail.TryConvertToNfp(A.Dummy<int>(), out this.loadedNfp);
           this.nestingContext.Polygons.Add(this.loadedNfp);
           this.nestingContext.Polygons.Add(this.loadedNfp.Clone());
@@ -94,7 +94,7 @@
     [Fact]
     public void FitnessShouldBeExpected()
     {
-      this.nestingContext.State.TopNestResults.Top.Fitness.Should().BeLessThan(ExpectedFitness+ExpectedFitnessTolerance);
+      this.nestingContext.State.TopNestResults.Top.Fitness.Should().BeLessThan(ExpectedFitness + ExpectedFitnessTolerance);
     }
 
     [Fact]

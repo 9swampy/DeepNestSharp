@@ -50,11 +50,12 @@
               var fileInfo = new FileInfo(arg);
               if (fileInfo.Exists)
               {
-                if (fileInfo.Extension == ".dll")
+                if (fileInfo.Extension == ".dll" ||
+                    fileInfo.Extension == ".exe")
                 {
                   //NOP
                 }
-                else if(fileInfo.Extension == ".dnr")
+                else if (fileInfo.Extension == ".dnr")
                 {
                   mainViewModel.LoadNestResult(fileInfo.FullName);
                 }
@@ -66,18 +67,21 @@
                 {
                   mainViewModel.LoadSheetPlacement(fileInfo.FullName);
                 }
-                else if (fileInfo.Extension == ".dxf")
+                else if (fileInfo.Extension == ".dxf" ||
+                         fileInfo.Extension == ".dnpoly")
                 {
                   mainViewModel.LoadPart(fileInfo.FullName);
                 }
                 else
                 {
                   var message = new StringBuilder();
+                  message.AppendLine($"Unable to load {fileInfo.Name}");
                   message.AppendLine("Files supported include: ");
-                  message.AppendLine("  DeepNestProject (*.dnest)");
-                  message.AppendLine("  DeepNestResult (*.dnr)");
-                  message.AppendLine("  DeepNestSheetPlacement (*.dnsp) and");
-                  message.AppendLine("  AutoCad Drawing Exchange Format (*.dxf)");
+                  message.AppendLine("  DeepNest Project (*.dnest)");
+                  message.AppendLine("  DeepNest Result (*.dnr)");
+                  message.AppendLine("  DeepNest Sheet Placement (*.dnsp)");
+                  message.AppendLine("  AutoCad Drawing Exchange Format (*.dxf) and ");
+                  message.AppendLine("  DeepNest Polygon (*.dnpoly).");
                   if (MessageBox.Show(message.ToString(), "DeepNest", MessageBoxButton.OKCancel) == MessageBoxResult.Cancel)
                   {
                     Application.Current.MainWindow.Close();

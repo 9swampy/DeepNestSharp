@@ -9,21 +9,9 @@
   using ClipperLib;
   using Minkowski;
 
-  internal interface ITestMinkowskiSumService
-  {
-    Action<string> VerboseLog { get; set; }
-  }
-
   public class MinkowskiSum : IMinkowskiSumService
   {
     private static volatile object minkowskiSyncLock = new object();
-
-    [JsonInclude]
-    public MinkowskiDictionary MinkowskiCache { get; private set; } = new MinkowskiDictionary();
-
-    public Action<string> VerboseLogAction { private get; set; }
-
-    public INestStateMinkowski State { private get; set; }
 
     public MinkowskiSum()
     {
@@ -34,17 +22,29 @@
     /// Private because sharing/reusing the cache is dangerous. 
     /// Replacing static global dependencies with factories to facilitate Unit Tests.
     /// </summary>
-    private MinkowskiSum(INestStateMinkowski state)
+    private MinkowskiSum(ISvgNestConfig config, INestStateMinkowski state)
     {
+      this.Config = config;
       this.State = state;
     }
+
+    [JsonInclude]
+    public MinkowskiDictionary MinkowskiCache { get; private set; } = new MinkowskiDictionary();
+
+    public Action<string> VerboseLogAction { private get; set; }
+
+    public INestStateMinkowski State { private get; set; }
+
+    [JsonIgnore]
+    internal ISvgNestConfig Config { private get; set; }
 
     /// <summary>
     /// Create a new instance with a self contained cache.
     /// </summary>
+    /// <param name="config">Singleton config for the nest.</param>
     /// <param name="nestState">Shared NestState (instead of NestState.Default).</param>
     /// <returns><see cref="IMinkowskiSumService"/>.</returns>
-    public static IMinkowskiSumService CreateInstance(INestStateMinkowski nestState) => new MinkowskiSum(nestState);
+    public static IMinkowskiSumService CreateInstance(ISvgNestConfig config, INestStateMinkowski nestState) => new MinkowskiSum(config, nestState);
 
     INfp IMinkowskiSumService.DllImportExecute(INfp a, INfp b, MinkowskiSumCleaning minkowskiSumCleaning)
     {
@@ -87,11 +87,7 @@
       {
         INfp cacheRetrieval;
         if (!MinkowskiCache.TryGetValue(key, out cacheRetrieval))
-        // MinkowskiCache.TryGetValue(key, out cacheRetrieval);
         {
-          // Ok, so we've found a match in the cache; however there's something wrong with this that's causing overlaying parts.
-          // Let's let it recalculate again and compare the result with the cached.
-
           VerboseLogAction?.Invoke($"{a.ToShortString()}-{b.ToShortString()} {key} not found in {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)} so calculating. . .");
 #if x64
           // System.Diagnostics.Debug.Print($"{state.CallCounter}.Minkowski_x64");
@@ -126,11 +122,9 @@
           }
 
           // convert back to answer here
-          bool isa = true;
           List<PointF> apts = new List<PointF>();
 
           List<List<double>> holesval = new List<List<double>>();
-          bool holes = false;
 
           for (int i = 0; i < dat1.Length; i += 2)
           {
@@ -183,6 +177,7 @@
             {
               if (ret.Points.Length == 0)
               {
+                System.Diagnostics.Debugger.Break();
                 var matchKvp = MinkowskiCache.ToList().First(o => o.Value.Equals(ret));
                 File.WriteAllText(@"C:\Temp\MinkowskiSum\MatchKey.json", matchKvp.Key.ToJson());
                 File.WriteAllText(@"C:\Temp\MinkowskiSum\MatchValue.json", matchKvp.Value.ToJson());
@@ -191,16 +186,17 @@
                 File.WriteAllText(@"C:\Temp\MinkowskiSum\MinkowskiCacheB.json", b.ToJson());
                 File.WriteAllText(@"C:\Temp\MinkowskiSum\MinkowskiCacheRet.json", ret.ToJson());
               }
-
-              System.Diagnostics.Debugger.Break();
             }
 
-            VerboseLogAction?.Invoke($"Add {a.ToShortString()}-{b.ToShortString()} {key} to {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)}. . .");
-            MinkowskiCache.Add(key, ret);
+            if (Config.UseMinkowskiCache)
+            {
+              VerboseLogAction?.Invoke($"Add {a.ToShortString()}-{b.ToShortString()} {key} to {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)}. . .");
+              MinkowskiCache.Add(key, ret);
+            }
           }
           else if (!ret.Equals(cacheRetrieval))
           {
-            System.Diagnostics.Debugger.Break();
+            System.Diagnostics.Debug.Print("Ret already exists in cache but key didn't find it!");
           }
         }
         else

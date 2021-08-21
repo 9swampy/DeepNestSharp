@@ -2,10 +2,8 @@
 {
   using System;
   using System.Diagnostics;
-  using System.Reflection;
   using System.Runtime.CompilerServices;
   using System.Text;
-  using System.Threading;
   using System.Threading.Tasks;
   using System.Windows.Input;
   using DeepNestLib;
@@ -106,8 +104,6 @@
 
     public StringBuilder MessageLogBuilder { get; } = new StringBuilder();
 
-    private IProgressDisplayer ProgressDisplayer => progressDisplayer ?? (progressDisplayer = new ProgressDisplayer(this, messageService, mainViewModel.DispatcherService));
-
     public double Progress
     {
       get => progress;
@@ -169,13 +165,15 @@
           {
             var progressDisplayer = ProgressDisplayer;
             var nestState = new NestState(mainViewModel.SvgNestConfigViewModel.SvgNestConfig, mainViewModel.DispatcherService);
-            this.context = new NestingContext(messageService, progressDisplayer, nestState);
+            this.context = new NestingContext(messageService, progressDisplayer, nestState, mainViewModel.SvgNestConfigViewModel.SvgNestConfig);
           }
         }
 
         return this.context;
       }
     }
+
+    private IProgressDisplayer ProgressDisplayer => progressDisplayer ?? (progressDisplayer = new ProgressDisplayer(this, messageService, mainViewModel.DispatcherService));
 
     public async Task<bool> TryStartAsync(INestProjectViewModel nestProjectViewModel)
     {
@@ -209,6 +207,7 @@
           {
             this.IsRunning = false;
           });
+
           this.nestWorkerTask.Start();
         }
 

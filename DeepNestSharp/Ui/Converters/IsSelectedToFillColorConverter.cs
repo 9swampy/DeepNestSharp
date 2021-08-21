@@ -4,7 +4,6 @@
   using System.Windows.Data;
   using System.Windows.Media;
   using DeepNestSharp.Domain.Models;
-  using DeepNestSharp.Ui.Models;
 
   public class IsSelectedToFillColorConverter : IMultiValueConverter
   {

@@ -91,7 +91,9 @@ using System;
     /// </summary>
     /// <returns>A clone.</returns>
     INfp CloneTop();
+
     INfp ShiftToOrigin();
+
     NFP GetHull();
 
     INfp Shift(IPartPlacement shift);

@@ -2,7 +2,6 @@
 {
   using System.IO;
   using System.Reflection;
-  using FakeItEasy;
   using FluentAssertions;
   using Xunit;
 

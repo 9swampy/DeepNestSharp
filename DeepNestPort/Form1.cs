@@ -3,7 +3,6 @@
   using System;
   using System.Collections.Generic;
   using System.ComponentModel;
-  using System.Data;
   using System.Diagnostics;
   using System.Drawing;
   using System.Drawing.Drawing2D;
@@ -114,7 +113,7 @@
         {
           if (this.context == null)
           {
-            this.context = new NestingContext(new MessageBoxService(), new ProgressDisplayer(this, InitialiseUiForStartNest, new MessageBoxService(), () => this.nestState), this.nestState);
+            this.context = new NestingContext(new MessageBoxService(), new ProgressDisplayer(this, InitialiseUiForStartNest, new MessageBoxService(), () => this.nestState), this.nestState, SvgNest.Config);
           }
         }
 
@@ -451,7 +450,7 @@
       {
         var pol = listView1.SelectedItems[0].Tag as NFP;
         context.Polygons.Remove(pol);
-        var b = GeometryUtil.getPolygonBounds(pol);
+        var b = GeometryUtil.GetPolygonBounds(pol);
         Sheet sheet = new Sheet();
         foreach (var item in pol.Points)
         {

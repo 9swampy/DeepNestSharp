@@ -1,13 +1,8 @@
 ﻿namespace DeepNestLib.CiTests
 {
-  using System;
-  using System.Collections.Generic;
-  using System.Diagnostics;
-  using System.IO;
   using System.Linq;
   using FakeItEasy;
   using FluentAssertions;
-  using IxMilia.Dxf.Entities;
   using Xunit;
 
   public class DxfParserPart1Fixture

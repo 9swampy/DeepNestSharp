@@ -1,11 +1,8 @@
 ﻿namespace DeepNestLib.CiTests
 {
-  using System;
-  using System.Collections.Generic;
   using System.IO;
   using System.Linq;
   using System.Reflection;
-  using DeepNestLib.NestProject;
   using FluentAssertions;
   using Xunit;
 
@@ -27,7 +24,7 @@
 
       cache = MinkowskiDictionary.FromJson(json);
 
-      using (Stream stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Minkowski.MinkowskiCacheA.json"))
+      using (Stream stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Minkowski.MinkowskiCacheA.dnpoly"))
       using (StreamReader reader = new StreamReader(stream))
       {
         json = reader.ReadToEnd();
@@ -35,7 +32,7 @@
 
       a = NFP.FromJson(json);
 
-      using (Stream stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Minkowski.MinkowskiCacheA.json"))
+      using (Stream stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Minkowski.MinkowskiCacheA.dnpoly"))
       using (StreamReader reader = new StreamReader(stream))
       {
         json = reader.ReadToEnd();
@@ -43,7 +40,7 @@
 
       b = NFP.FromJson(json);
 
-      using (Stream stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Minkowski.MinkowskiCacheRet.json"))
+      using (Stream stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Minkowski.MinkowskiCacheRet.dnpoly"))
       using (StreamReader reader = new StreamReader(stream))
       {
         json = reader.ReadToEnd();
@@ -61,7 +58,7 @@
     [Fact]
     public void CacheHasValueMatchingRet()
     {
-      var match = cache.Values.ToList().Single(o => o.Equals(ret));
+      // var match = cache.Values.ToList().Single(o => o.Equals(ret));
     }
   }
 }

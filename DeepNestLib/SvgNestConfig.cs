@@ -1,7 +1,6 @@
 ﻿namespace DeepNestLib
 {
   using DeepNestLib.NestProject;
-using System.Text.Json;
 
   public class SvgNestConfig : ISvgNestConfig
   {
@@ -24,6 +23,12 @@ using System.Text.Json;
     public bool ExploreConcave { get; set; } = false;
 
     /// <inheritdoc/>
+    public bool ExportExecutions { get; set; } = false;
+
+    /// <inheritdoc/>
+    public string ExportExecutionPath { get; set; }
+
+    /// <inheritdoc/>
     public int Rotations { get; set; } = 4;
 
     public string ToJson()
@@ -38,9 +43,6 @@ using System.Text.Json;
 
     /// <inheritdoc/>
     public double SheetSpacing { get; set; } = 0;
-
-    /// <inheritdoc/>
-    public bool UseHoles { get; set; } = false;
 
     /// <inheritdoc/>
     public double Tolerance { get; set; } = 2;
@@ -392,5 +394,11 @@ using System.Text.Json;
         Properties.Settings.Default.Upgrade();
       }
     }
+
+    /// <inheritdoc/>
+    public bool UseHoles { get; set; } = false;
+
+    /// <inheritdoc/>
+    public bool UseMinkowskiCache { get; set; } = true;
   }
 }

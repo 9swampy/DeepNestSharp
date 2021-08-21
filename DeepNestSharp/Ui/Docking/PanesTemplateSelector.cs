@@ -10,6 +10,12 @@
     {
     }
 
+    public DataTemplate? NfpCandidateListTemplate
+    {
+      get;
+      set;
+    }
+
     public DataTemplate? SheetPlacementEditorTemplate
     {
       get;
@@ -91,6 +97,17 @@
         else
         {
           return NestResultEditorTemplate;
+        }
+      }
+      else if (item is NfpCandidateListViewModel)
+      {
+        if (NfpCandidateListTemplate == null)
+        {
+          throw new System.InvalidOperationException($"{nameof(NfpCandidateListTemplate)} not set.");
+        }
+        else
+        {
+          return NfpCandidateListTemplate;
         }
       }
       else if (item is SheetPlacementViewModel)

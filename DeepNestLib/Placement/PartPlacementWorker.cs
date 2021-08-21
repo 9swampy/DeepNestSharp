@@ -2,11 +2,8 @@
 {
   using System;
   using System.Collections.Generic;
-  using System.Diagnostics;
   using System.IO;
   using System.Linq;
-  using System.Reflection;
-  using System.Text;
   using System.Text.Json;
   using System.Text.Json.Serialization;
 #if NCRUNCH
@@ -15,7 +12,6 @@
   using ClipperLib;
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
-  using static DeepNestLib.PlacementWorker;
 
   public class PartPlacementWorker : ITestPartPlacementWorker
   {
@@ -26,11 +22,6 @@
     private Dictionary<string, ClipCacheItem> clipCache;
     private IPlacementWorker placementWorker;
     private volatile object processPartLock = new object();
-#if NCRUNCH
-    private bool exportExecutions = false;
-#else
-    private bool exportExecutions = false;
-#endif
 
     [JsonConstructor]
     public PartPlacementWorker(Dictionary<string, ClipCacheItem> clipCache)
@@ -55,7 +46,14 @@
       this.Placements = placements.ToList();
     }
 
-    bool ITestPartPlacementWorker.ExportExecutions { set => exportExecutions = value; }
+    bool ITestPartPlacementWorker.ExportExecutions { set => ExportExecutions = value; }
+
+    [JsonIgnore]
+#if NCRUNCH
+    public bool ExportExecutions { get; private set; } = false;
+#else
+    public bool ExportExecutions { get => Config.ExportExecutions; private set => Config.ExportExecutions = value; }
+#endif
 
     [JsonInclude]
     public List<IPartPlacement> Placements { get; private set; }
@@ -89,7 +87,7 @@
     IPlacementWorker ITestPartPlacementWorker.PlacementWorker { get => this.placementWorker; set => this.placementWorker = value; }
 
     [JsonInclude]
-    public IList<INfp> FinalNfp { get; private set; }
+    public INfpCandidateList FinalNfp { get; private set; }
 
     [JsonInclude]
     public INfp InputPart { get; private set; }
@@ -120,7 +118,7 @@
         CombinedNfp = null;
         InputPart = inputPart;
         logList.Clear();
-        if (exportExecutions)
+        if (ExportExecutions)
         {
           Export(inputPartIndex, "In.json", this.ToJson(true));
         }
@@ -214,7 +212,7 @@
           var clipper = new Clipper();
           string clipkey = "s:" + processedPart.Source + "r:" + processedPart.Rotation;
           var error = false;
-          IntPoint[][] clipperSheetNfp = NfpHelper.InnerNfpToClipperCoordinates(SheetNfp.InnerNfp, this.Config.ClipperScale);
+          IntPoint[][] clipperSheetNfp = NfpHelper.InnerNfpToClipperCoordinates(SheetNfp.Items, this.Config.ClipperScale);
 
           // check if stored in clip cache
           // var startindex = 0;
@@ -263,7 +261,7 @@
           }
           else
           {
-            FinalNfp = finalNfp;
+            FinalNfp = new NfpCandidateList(finalNfp.ToArray(), Sheet, new NFP(processedPart, WithChildren.Included));
           }
 
 #if NCRUNCH
@@ -302,7 +300,7 @@
           PolygonBounds partbounds = null;
           if (this.Config.PlacementType == PlacementTypeEnum.Gravity || this.Config.PlacementType == PlacementTypeEnum.BoundingBox)
           {
-            allbounds = GeometryUtil.getPolygonBounds(allpoints);
+            allbounds = GeometryUtil.GetPolygonBounds(allpoints);
 
             NFP partpoints = new NFP();
             for (int m = 0; m < processedPart.Length; m++)
@@ -310,7 +308,7 @@
               partpoints.AddPoint(new SvgPoint(processedPart[m].X, processedPart[m].Y));
             }
 
-            partbounds = GeometryUtil.getPolygonBounds(partpoints);
+            partbounds = GeometryUtil.GetPolygonBounds(partpoints);
           }
           else
           {
@@ -350,7 +348,7 @@
                 poly.AddPoint(new SvgPoint(partbounds.X + partbounds.Width + shiftvector.X, partbounds.Y + partbounds.Height + shiftvector.Y));
                 poly.AddPoint(new SvgPoint(partbounds.X + shiftvector.X, partbounds.Y + partbounds.Height + shiftvector.Y));
 
-                rectbounds = GeometryUtil.getPolygonBounds(poly);
+                rectbounds = GeometryUtil.GetPolygonBounds(poly);
 
                 // weigh width more, to help compress in direction of gravity
                 if (this.Config.PlacementType == PlacementTypeEnum.Gravity)
@@ -472,18 +470,35 @@
     private void AddPlacement(INfp inputPart, INfp processedPart, PartPlacement position, int inputPartIndex)
     {
       var sheetPlacement = this.placementWorker.AddPlacement(inputPart, Placements, processedPart, position, this.Config.PlacementType, Sheet, MergedLength);
-      if (exportExecutions)
+      if (ExportExecutions)
       {
         Export(inputPartIndex, "Out.json", this.ToJson(true));
         Export(inputPartIndex, $"Out-Parts{sheetPlacement.PartPlacements.Count}.dnsp", sheetPlacement.ToJson(true));
+        if (SheetNfp != null)
+        {
+          Export(inputPartIndex, $"Out-SheetNfp.dnsnfp", SheetNfp.ToJson());
+        }
+
+        if (FinalNfp != null)
+        {
+          Export(inputPartIndex, $"Out-FinalNfp.dnnfps", FinalNfp.ToJson());
+        }
       }
     }
 
     private void Export(int inputPartIndex, string fileNameSuffix, string json)
     {
-      var filePath = $"C:\\Temp\\PartPlacementWorker\\{state.NestCount}-{Sheet.Id}-{inputPartIndex}-{fileNameSuffix}";
-      System.Diagnostics.Debug.Print($"Export {filePath}");
-      File.WriteAllText(filePath, json);
+      var dirInfo = new DirectoryInfo(Config.ExportExecutionPath);
+      if (dirInfo.Exists)
+      {
+        var filePath = Path.Combine(Config.ExportExecutionPath, $"N{state.NestCount}-S{Sheet.Id}-P{inputPartIndex}-{fileNameSuffix}");
+        System.Diagnostics.Debug.Print($"Export {filePath}");
+        File.WriteAllText(filePath, json);
+      }
+      else
+      {
+        System.Diagnostics.Debug.Print($"Export path {Config.ExportExecutionPath} does not exist.");
+      }
     }
 
     internal static PartPlacementWorker FromJson(string json)

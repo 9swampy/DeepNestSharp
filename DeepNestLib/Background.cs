@@ -5,11 +5,7 @@
   using System.Diagnostics;
   using System.Linq;
   using System.Runtime.InteropServices;
-  using System.Text;
   using System.Threading.Tasks;
-  using ClipperLib;
-  using DeepNestLib.Placement;
-  using Light.GuardClauses;
 
   public class Background
   {
@@ -128,7 +124,7 @@
         var nestResult = new PlacementWorker(this.nfpHelper, sheets, parts, config, backgroundStopwatch, state).PlaceParts();
         if (nestResult != null)
         {
-          nestResult.index = index;
+          nestResult.Index = index;
           this.nest.ResponseProcessor(nestResult);
         }
       }
@@ -158,12 +154,12 @@
       if (aChildren.Count > 0)
       {
         var bRotated = b.Rotate(processed.BRotation);
-        var bBounds = GeometryUtil.getPolygonBounds(bRotated);
+        var bBounds = GeometryUtil.GetPolygonBounds(bRotated);
         var cnfp = new List<INfp>();
 
         for (int j = 0; j < aChildren.Count; j++)
         {
-          var cbounds = GeometryUtil.getPolygonBounds(aChildren[j]);
+          var cbounds = GeometryUtil.GetPolygonBounds(aChildren[j]);
           if (cbounds.Width > bBounds.Width && cbounds.Height > bBounds.Height)
           {
             var n = nfpHelper.GetInnerNfp(aChildren[j], bRotated, MinkowskiCache.NoCache, clipperScale);

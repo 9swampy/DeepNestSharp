@@ -1,6 +1,5 @@
 ﻿namespace DeepNestSharp.Ui.Models
 {
-  using System;
   using System.Collections.Generic;
   using System.Collections.ObjectModel;
   using DeepNestLib;
@@ -37,9 +36,11 @@
     {
       this.observablePartPlacements.Clear();
       this.points?.Clear();
+      int order = 0;
       foreach (var partPlacement in item.PartPlacements)
       {
-        var obsPart = new ObservablePartPlacement(partPlacement);
+        var obsPart = new ObservablePartPlacement(partPlacement, order);
+        order++;
         obsPart.PropertyChanged += this.ObsPart_PropertyChanged;
         this.observablePartPlacements.Add(obsPart);
       }

@@ -1,6 +1,7 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
   using System;
+  using System.Linq;
   using System.Threading.Tasks;
   using System.Windows.Input;
   using DeepNestLib;
@@ -15,6 +16,8 @@
   {
     private int selectedDetailLoadInfoIndex;
     private IDetailLoadInfo? selectedDetailLoadInfo;
+    private int selectedSheetLoadInfoIndex;
+    private ISheetLoadInfo selectedSheetLoadInfo;
     private AsyncRelayCommand executeNestCommand;
     private AsyncRelayCommand addPartCommand;
     private RelayCommand addSheetCommand;
@@ -56,7 +59,17 @@
 
     public IRelayCommand<ISheetLoadInfo> RemoveSheetCommand => removeSheetCommand ?? (removeSheetCommand = new RelayCommand<ISheetLoadInfo>(OnRemoveSheet));
 
-    public ICommand ExecuteNestCommand => executeNestCommand ?? (executeNestCommand = new AsyncRelayCommand(OnExecuteNest, () => !MainViewModel.NestMonitorViewModel.IsRunning));
+    public ICommand ExecuteNestCommand => this.executeNestCommand ?? (this.executeNestCommand = new AsyncRelayCommand(this.OnExecuteNest, CanExecuteNest));
+
+    private bool CanExecuteNest()
+    {
+      if (MainViewModel.NestMonitorViewModel.IsRunning)
+      {
+        return false;
+      }
+
+      return !this.ProjectInfo.DetailLoadInfos.Any(o => !o.IsExists);
+    }
 
     public override string FileDialogFilter => DeepNestLib.NestProject.ProjectInfo.FileDialogFilter;
 
@@ -78,11 +91,27 @@
       set => SetProperty(ref selectedDetailLoadInfoIndex, value);
     }
 
+    public ISheetLoadInfo SelectedSheetLoadInfo
+    {
+#pragma warning disable CS8603 // Possible null reference return.
+      get => selectedSheetLoadInfo;
+#pragma warning restore CS8603 // Possible null reference return.
+      set => SetProperty(ref selectedSheetLoadInfo, value, nameof(SelectedSheetLoadInfo));
+    }
+
+    public int SelectedSheetLoadInfoIndex
+    {
+      get => selectedSheetLoadInfoIndex;
+      set => SetProperty(ref selectedSheetLoadInfoIndex, value);
+    }
+
     public override string TextContent { get => this.ProjectInfo.ToJson(); }
 
     protected override void LoadContent()
     {
       this.ProjectInfo.Load(this.MainViewModel.SvgNestConfigViewModel.SvgNestConfig, this.FilePath);
+      this.ExecuteNestCommand.MustNotBeNull();
+      this.executeNestCommand.NotifyCanExecuteChanged();
     }
 
     protected override void NotifyContentUpdated()

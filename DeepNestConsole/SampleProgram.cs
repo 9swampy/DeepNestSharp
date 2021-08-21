@@ -1,19 +1,13 @@
 ﻿namespace DeepNestConsole
 {
   using System;
-  using System.Collections.Generic;
   using System.Diagnostics;
-  using System.Drawing;
-  using System.IO;
   using System.Linq;
-  using System.Text;
-  using System.Threading.Tasks;
-  using System.Xml.Linq;
   using DeepNestLib;
 
   public class SampleProgram
   {
-    internal NestingContext Context { get; } = new NestingContext(new ConsoleMessageService(), null, null);
+    internal NestingContext Context { get; } = new NestingContext(new ConsoleMessageService(), null, null, SvgNest.Config);
 
     private bool IsFinished()
     {

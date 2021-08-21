@@ -2,6 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
+  using System.IO;
   using System.Linq;
   using System.Text;
   using System.Text.Json;
@@ -11,7 +12,7 @@
 
   public class NFP : PolygonBase, INfp, IHiddenNfp, IStringify
   {
-    public const string FileDialogFilter = "AutoCad Drawing Exchange Format (*.dxf)|*.dxf|All files (*.*)|*.*";
+    public const string FileDialogFilter = "AutoCad Drawing Exchange Format (*.dxf)|*.dxf|DeepNest Polygon (*.dnpoly)|*.dnpoly|All files (*.*)|*.*";
     private double rotation;
 
     public NFP(IList<INfp> children)
@@ -253,6 +254,14 @@
       var options = new JsonSerializerOptions();
       options.Converters.Add(new NfpJsonConverter());
       return JsonSerializer.Deserialize<NFP>(json, options);
+    }
+
+    public static NFP LoadFromFile(string fileName)
+    {
+      using (StreamReader inputFile = new StreamReader(fileName))
+      {
+        return FromJson(inputFile.ReadToEnd());
+      }
     }
 
     /// <inheritdoc />

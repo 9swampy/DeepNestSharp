@@ -1,7 +1,6 @@
 ﻿namespace DeepNestSharp.Ui.Services
 {
   using System;
-  using System.Threading;
   using System.Threading.Tasks;
   using System.Windows.Threading;
   using DeepNestLib;

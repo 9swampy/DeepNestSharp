@@ -29,6 +29,9 @@
     private RelayCommand saveLayoutCommand;
     private RelayCommand exitCommand;
     private AsyncRelayCommand loadNestProjectCommand;
+    private AsyncRelayCommand loadPartCommand;
+    private AsyncRelayCommand loadSheetNfpCommand;
+    private AsyncRelayCommand loadNfpCandidatesCommand;
     private AsyncRelayCommand loadSheetPlacementCommand;
     private AsyncRelayCommand loadNestResultCommand;
     private RelayCommand activeDocumentSaveCommand;
@@ -145,6 +148,12 @@
 
     public ICommand LoadSheetPlacementCommand => loadSheetPlacementCommand ?? (loadSheetPlacementCommand = new AsyncRelayCommand(OnLoadSheetPlacementAsync));
 
+    public ICommand LoadPartCommand => loadPartCommand ?? (loadPartCommand = new AsyncRelayCommand(OnLoadPartAsync));
+
+    public ICommand LoadSheetNfpCommand => loadSheetNfpCommand ?? (loadSheetNfpCommand = new AsyncRelayCommand(OnLoadSheetNfpAsync));
+
+    public ICommand LoadNfpCandidatesCommand => loadNfpCandidatesCommand ?? (loadNfpCandidatesCommand = new AsyncRelayCommand(OnLoadNfpCandidatesAsync));
+
     public ICommand LoadNestResultCommand => loadNestResultCommand ?? (loadNestResultCommand = new AsyncRelayCommand(OnLoadNestResultAsync));
 
     public ICommand CreateNestProjectCommand => createNestProjectCommand ?? (createNestProjectCommand = new RelayCommand(OnCreateNestProject));
@@ -179,37 +188,37 @@
 
     public IDispatcherService DispatcherService { get; }
 
+    public IMessageService MessageService => this.messageService;
+
     public async Task OnLoadNestProjectAsync()
     {
       var filePath = await fileIoService.GetOpenFilePathAsync(ProjectInfo.FileDialogFilter).ConfigureAwait(false);
-      if (!string.IsNullOrWhiteSpace(filePath) && fileIoService.Exists(filePath))
-      {
-        OnLoadNestProject(filePath);
-      }
+      OnLoadNestProject(filePath);
     }
 
-    public void OnLoadNestProject(string fileName)
+    public void OnLoadNestProject(string filePath)
     {
       if (DispatcherService.InvokeRequired)
       {
-        DispatcherService.Invoke(() => OnLoadNestProject(fileName));
+        DispatcherService.Invoke(() => OnLoadNestProject(filePath));
       }
       else
       {
-        var loaded = new NestProjectViewModel(this, fileName, fileIoService);
-        loaded.PropertyChanged += this.NestProjectViewModel_PropertyChanged;
-        this.files.Add(loaded);
-        this.ActiveDocument = loaded;
+        string locatedFilePath;
+        if (TryLocateFile(filePath, out locatedFilePath))
+        {
+          var loaded = new NestProjectViewModel(this, locatedFilePath, fileIoService);
+          loaded.PropertyChanged += this.NestProjectViewModel_PropertyChanged;
+          this.files.Add(loaded);
+          this.ActiveDocument = loaded;
+        }
       }
     }
 
     public async Task OnLoadNestResultAsync()
     {
       var filePath = await fileIoService.GetOpenFilePathAsync(NestResult.FileDialogFilter).ConfigureAwait(false);
-      if (!string.IsNullOrWhiteSpace(filePath) && fileIoService.Exists(filePath))
-      {
-        LoadNestResult(filePath);
-      }
+      LoadNestResult(filePath);
     }
 
     public void OnLoadNestResult(INestResult nestResult)
@@ -219,43 +228,71 @@
       this.ActiveDocument = loaded;
     }
 
-    public void LoadNestResult(string fileName)
+    public void LoadNestResult(string filePath)
     {
-      var loaded = new NestResultViewModel(this, fileName);
-      this.files.Add(loaded);
-      this.ActiveDocument = loaded;
-    }
-
-    public async Task LoadPartAsync()
-    {
-      var filePath = await fileIoService.GetOpenFilePathAsync(NFP.FileDialogFilter).ConfigureAwait(false);
-      if (!string.IsNullOrWhiteSpace(filePath))
+      string locatedFilePath;
+      if (TryLocateFile(filePath, out locatedFilePath))
       {
-        LoadPart(filePath);
+        var loaded = new NestResultViewModel(this, locatedFilePath);
+        this.files.Add(loaded);
+        this.ActiveDocument = loaded;
       }
     }
 
-    public void LoadPart(string fileName)
+    public async Task OnLoadPartAsync()
     {
-      var loaded = new PartEditorViewModel(this, fileName);
-      this.files.Add(loaded);
-      this.ActiveDocument = loaded;
+      var filePath = await fileIoService.GetOpenFilePathAsync(NFP.FileDialogFilter).ConfigureAwait(false);
+      LoadPart(filePath);
+    }
+
+    public void LoadPart(string filePath)
+    {
+      string locatedFilePath;
+      if (TryLocateFile(filePath, out locatedFilePath))
+      {
+        var loaded = new PartEditorViewModel(this, locatedFilePath);
+        this.files.Add(loaded);
+        this.ActiveDocument = loaded;
+      }
+    }
+
+    public void LoadNfpCandidates(string filePath)
+    {
+      string locatedFilePath;
+      if (TryLocateFile(filePath, out locatedFilePath))
+      {
+        var loaded = new NfpCandidateListViewModel(this, locatedFilePath);
+        this.files.Add(loaded);
+        this.ActiveDocument = loaded;
+      }
+    }
+
+    public void LoadSheetNfp(string filePath)
+    {
+      string locatedFilePath;
+      if (TryLocateFile(filePath, out locatedFilePath))
+      {
+        var loaded = new NfpCandidateListViewModel(this, locatedFilePath);
+        this.files.Add(loaded);
+        this.ActiveDocument = loaded;
+      }
     }
 
     public async Task OnLoadSheetPlacementAsync()
     {
       var filePath = await fileIoService.GetOpenFilePathAsync(SheetPlacement.FileDialogFilter).ConfigureAwait(false);
-      if (!string.IsNullOrWhiteSpace(filePath) && fileIoService.Exists(filePath))
-      {
-        LoadSheetPlacement(filePath);
-      }
+      LoadSheetPlacement(filePath);
     }
 
-    public void LoadSheetPlacement(string fileName)
+    public void LoadSheetPlacement(string filePath)
     {
-      var loaded = new SheetPlacementViewModel(this, fileName);
-      this.files.Add(loaded);
-      this.ActiveDocument = loaded;
+      string locatedFilePath;
+      if (TryLocateFile(filePath, out locatedFilePath))
+      {
+        var loaded = new SheetPlacementViewModel(this, locatedFilePath);
+        this.files.Add(loaded);
+        this.ActiveDocument = loaded;
+      }
     }
 
     public void LoadSheetPlacement(ISheetPlacement sheetPlacement)
@@ -294,7 +331,7 @@
       var parts = sheetPlacement.PartPlacements.Select(o => o.Part).ToList();
       if (parts.ContainsDxfs() && parts.ContainsSvgs())
       {
-        messageService.DisplayMessageBox("It's not possible to export when your parts were a mix of Svg's and Dxf's.", "DeepNestPort: Not Implemented", MessageBoxIcon.Information);
+        MessageService.DisplayMessageBox("It's not possible to export when your parts were a mix of Svg's and Dxf's.", "DeepNestPort: Not Implemented", MessageBoxIcon.Information);
       }
       else
       {
@@ -333,13 +370,6 @@
       }
     }
 
-    private void OnCreateNestProject()
-    {
-      var newFile = new NestProjectViewModel(this, fileIoService);
-      this.files.Add(newFile);
-      this.ActiveDocument = newFile;
-    }
-
     private static IEnumerable<LayoutContent> GatherLayoutContent(ILayoutElement le)
     {
       if (le is LayoutContent)
@@ -376,6 +406,44 @@
           yield return x;
         }
       }
+    }
+
+    private async Task OnLoadNfpCandidatesAsync()
+    {
+      var filePath = await fileIoService.GetOpenFilePathAsync(NfpCandidateList.FileDialogFilter).ConfigureAwait(false);
+      LoadNfpCandidates(filePath);
+    }
+
+    private async Task OnLoadSheetNfpAsync()
+    {
+      var filePath = await fileIoService.GetOpenFilePathAsync(SheetNfp.FileDialogFilter).ConfigureAwait(false);
+      LoadSheetNfp(filePath);
+    }
+
+    private bool TryLocateFile(string filePath, out string locatedFilePath)
+    {
+      if (!string.IsNullOrWhiteSpace(filePath) && new FileInfo(filePath).Exists)
+      {
+        locatedFilePath = filePath;
+        return true;
+      }
+
+      if (string.IsNullOrWhiteSpace(filePath))
+      {
+        locatedFilePath = filePath;
+        return false;
+      }
+
+      this.MessageService.DisplayMessageBox($"Unable to locate {filePath}.", "File Missing", MessageBoxIcon.Information);
+      locatedFilePath = string.Empty;
+      return false;
+    }
+
+    private void OnCreateNestProject()
+    {
+      var newFile = new NestProjectViewModel(this, fileIoService);
+      this.files.Add(newFile);
+      this.ActiveDocument = newFile;
     }
 
     private bool CanExit()

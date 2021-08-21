@@ -43,8 +43,6 @@
       this.BackgroundTime = backgroundTime;
     }
 
-    private ISheetPlacementFitness SheetPlacementFitness => this.fitness;
-
     public DateTime CreatedAt { get; } = DateTime.Now;
 
     [JsonIgnore]
@@ -124,34 +122,14 @@
       }
     }
 
-    internal int index { get; set; }
+    internal int Index { get; set; }
 
-    public static NestResult FromJson(string json)
-    {
-      var options = new JsonSerializerOptions();
-      // options.Converters.Add(new ListJsonConverter<INfp>());
-      options.Converters.Add(new InterfaceConverterFactory(typeof(NFP), typeof(INfp)));
-      options.Converters.Add(new IListInterfaceConverterFactory(typeof(INfp)));
-      // options.Converters.Add(new IListInterfaceConverterFactory(typeof(NFP)));
-      options.Converters.Add(new WrappableListJsonConverter<ISheetPlacement, SheetPlacement>());
-      options.Converters.Add(new SheetPlacementJsonConverter());
-      options.Converters.Add(new SheetJsonConverter());
-      options.Converters.Add(new NfpJsonConverter());
-      options.Converters.Add(new PartPlacementJsonConverter());
-      return JsonSerializer.Deserialize<NestResult>(json, options);
-    }
-
-    public static NestResult LoadFromFile(string fileName)
-    {
-      using (StreamReader inputFile = new StreamReader(fileName))
-      {
-        return FromJson(inputFile.ReadToEnd());
-      }
-    }
+    private ISheetPlacementFitness SheetPlacementFitness => this.fitness;
 
     public PlacementTypeEnum PlacementType { get; }
 
     public long PlacePartTime { get; }
+
     public long BackgroundTime { get; }
 
     [JsonIgnore]
@@ -174,6 +152,27 @@
 
     public bool IsValid => !(double.IsNaN(this.Fitness) || this.TotalPartsCount > this.TotalParts);
 
+    public static NestResult FromJson(string json)
+    {
+      var options = new JsonSerializerOptions();
+      options.Converters.Add(new InterfaceConverterFactory(typeof(NFP), typeof(INfp)));
+      options.Converters.Add(new IListInterfaceConverterFactory(typeof(INfp)));
+      options.Converters.Add(new WrappableListJsonConverter<ISheetPlacement, SheetPlacement>());
+      options.Converters.Add(new SheetPlacementJsonConverter());
+      options.Converters.Add(new SheetJsonConverter());
+      options.Converters.Add(new NfpJsonConverter());
+      options.Converters.Add(new PartPlacementJsonConverter());
+      return JsonSerializer.Deserialize<NestResult>(json, options);
+    }
+
+    public static NestResult LoadFromFile(string fileName)
+    {
+      using (StreamReader inputFile = new StreamReader(fileName))
+      {
+        return FromJson(inputFile.ReadToEnd());
+      }
+    }
+
     public override string ToString()
     {
       return $"{fitness.Evaluate()}=ƩB{this.SheetPlacementFitness.Bounds:N0}+ƩS{this.SheetPlacementFitness.Sheets:N0}+ƩW{this.SheetPlacementFitness.MaterialWasted:N0}+ƩU{this.SheetPlacementFitness.MaterialUtilization:N0}+U{this.fitness.Unplaced:N0}";
@@ -182,10 +181,6 @@
     public override string ToJson(bool writeIndented = false)
     {
       var options = new JsonSerializerOptions();
-      //options.Converters.Add(new InterfaceConverterFactory(typeof(NFP), typeof(INfp)));
-      //options.Converters.Add(new ListJsonConverter<INfp>());
-      //options.Converters.Add(new IListInterfaceConverterFactory(typeof(NFP)));
-      //options.Converters.Add(new WrappableListJsonConverter<ISheetPlacement, SheetPlacement>());
       options.Converters.Add(new SheetJsonConverter());
       options.Converters.Add(new NfpJsonConverter());
       options.Converters.Add(new PartPlacementJsonConverter());

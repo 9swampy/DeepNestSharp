@@ -8,9 +8,7 @@
   using System.Windows.Shapes;
   using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Ui.Behaviors;
-  using DeepNestSharp.Ui.Models;
   using DeepNestSharp.Ui.ViewModels;
-  using Microsoft.Toolkit.Mvvm.Input;
 
   /// <summary>
   /// Interaction logic for ZoomPreview.xaml.

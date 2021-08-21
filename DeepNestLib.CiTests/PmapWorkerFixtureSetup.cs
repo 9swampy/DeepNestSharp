@@ -1,11 +1,7 @@
 ﻿namespace DeepNestLib.CiTests
 {
   using System;
-  using System.Collections.Generic;
-  using FakeItEasy;
   using FluentAssertions;
-  using IxMilia.Dxf.Entities;
-  using Xunit;
 
   public class PmapWorkerFixtureSetup
   {

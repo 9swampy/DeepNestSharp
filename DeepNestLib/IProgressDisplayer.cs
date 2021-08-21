@@ -26,10 +26,4 @@
 
     void InitialiseLoopProgress(ProgressBar progressBar, string transientMessage, int loopMax);
   }
-
-  public enum ProgressBar
-  {
-    Primary,
-    Secondary
-  }
 }

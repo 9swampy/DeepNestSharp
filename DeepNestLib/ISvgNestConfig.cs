@@ -21,7 +21,13 @@
 
     bool ExploreConcave { get; set; }
 
+    bool ExportExecutions { get; set; }
+
+    string ExportExecutionPath { get; set; }
+
     bool MergeLines { get; set; }
+
+    bool UseMinkowskiCache { get; set; }
 
     int MutationRate { get; set; }
 
@@ -66,6 +72,10 @@
 
     bool UseParallel { get; set; }
 
+    /// <summary>
+    /// If set then parts will be restricted to <see cref="StrictAngles"/>.
+    /// If also set on an individual part, part wins.
+    /// </summary>
     AnglesEnum StrictAngles { get; set; }
 
     int Multiplier { get; set; }

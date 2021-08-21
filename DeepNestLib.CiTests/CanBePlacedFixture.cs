@@ -1,9 +1,5 @@
 ﻿namespace DeepNestLib.CiTests
 {
-  using System;
-  using System.Diagnostics;
-  using System.Linq;
-  using System.Threading;
   using FakeItEasy;
   using FluentAssertions;
   using Xunit;
@@ -15,10 +11,10 @@
     {
       var generator = new DxfGenerator();
       var nfpHelper = new NfpHelper();
-      ((ITestNfpHelper)nfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(A.Fake<INestStateMinkowski>());
+      ((ITestNfpHelper)nfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(A.Fake<ISvgNestConfig>(), A.Fake<INestStateMinkowski>());
       new SheetNfp(
         nfpHelper,
-        generator.GenerateRectangle("Sheet", 1.01, 1.01, RectangleType.FileLoad).ToNfp(),
+        generator.GenerateRectangle("Sheet", 1.01, 1.01, RectangleType.FileLoad).ToSheet(),
         generator.GenerateRectangle("Sheet", 1, 1, RectangleType.FileLoad).ToNfp(),
         100000).CanAcceptPart.Should().BeTrue();
     }
@@ -28,10 +24,10 @@
     {
       var generator = new DxfGenerator();
       var nfpHelper = new NfpHelper();
-      ((ITestNfpHelper)nfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(A.Fake<INestStateMinkowski>());
+      ((ITestNfpHelper)nfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(A.Fake<ISvgNestConfig>(), A.Fake<INestStateMinkowski>());
       new SheetNfp(
         nfpHelper,
-        generator.GenerateRectangle("Sheet", 1, 1, RectangleType.FileLoad).ToNfp(),
+        generator.GenerateRectangle("Sheet", 1, 1, RectangleType.FileLoad).ToSheet(),
         generator.GenerateRectangle("Sheet", 1.01, 1.01, RectangleType.FileLoad).ToNfp(),
         100000).CanAcceptPart.Should().BeFalse();
     }
@@ -41,10 +37,10 @@
     {
       var generator = new DxfGenerator();
       var nfpHelper = new NfpHelper();
-      ((ITestNfpHelper)nfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(A.Fake<INestStateMinkowski>());
+      ((ITestNfpHelper)nfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(A.Fake<ISvgNestConfig>(), A.Fake<INestStateMinkowski>());
       new SheetNfp(
         nfpHelper,
-        generator.GenerateRectangle("Sheet", 1, 1, RectangleType.FileLoad).ToNfp(),
+        generator.GenerateRectangle("Sheet", 1, 1, RectangleType.FileLoad).ToSheet(),
         generator.GenerateRectangle("Sheet", 1, 1, RectangleType.FileLoad).ToNfp(),
         100000).CanAcceptPart.Should().BeFalse();
     }

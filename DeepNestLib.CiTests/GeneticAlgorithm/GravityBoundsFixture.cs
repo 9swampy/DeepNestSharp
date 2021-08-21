@@ -1,9 +1,6 @@
 ﻿namespace DeepNestLib.CiTests.GeneticAlgorithm
 {
   using System;
-  using System.Drawing;
-  using System.IO;
-  using System.Reflection;
   using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
   using FakeItEasy;

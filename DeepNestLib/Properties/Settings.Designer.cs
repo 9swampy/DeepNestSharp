@@ -238,5 +238,41 @@ namespace DeepNestLib.Properties {
                 this["ParallelNests"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public string UseMinkowskiCache {
+            get {
+                return ((string)(this["UseMinkowskiCache"]));
+            }
+            set {
+                this["UseMinkowskiCache"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ExportExecutionPath {
+            get {
+                return ((string)(this["ExportExecutionPath"]));
+            }
+            set {
+                this["ExportExecutionPath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ExportExecutions {
+            get {
+                return ((bool)(this["ExportExecutions"]));
+            }
+            set {
+                this["ExportExecutions"] = value;
+            }
+        }
     }
 }

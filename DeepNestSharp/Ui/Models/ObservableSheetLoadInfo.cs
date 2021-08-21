@@ -1,6 +1,5 @@
 ﻿namespace DeepNestSharp.Ui.Models
 {
-  using DeepNestLib;
   using DeepNestLib.NestProject;
   using DeepNestSharp.Domain.Models;
 

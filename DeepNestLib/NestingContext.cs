@@ -11,17 +11,19 @@
   {
     private readonly IMessageService messageService;
     private readonly IProgressDisplayer progressDisplayer;
+    private readonly ISvgNestConfig config;
     private readonly NestState state;
     private readonly INestStateBackground stateBackground;
     private readonly INestStateNestingContext stateNestingContext;
     private volatile bool isStopped;
     private volatile SvgNest nest;
 
-    public NestingContext(IMessageService messageService, IProgressDisplayer progressDisplayer, NestState state)
+    public NestingContext(IMessageService messageService, IProgressDisplayer progressDisplayer, NestState state, ISvgNestConfig config)
     {
       this.messageService = messageService;
       this.progressDisplayer = progressDisplayer;
       this.State = state;
+      this.config = config;
       this.state = state;
       this.stateNestingContext = state;
       this.stateBackground = state;
@@ -49,7 +51,7 @@
       this.Nest = new SvgNest(
         this.messageService,
         this.progressDisplayer,
-        MinkowskiSum.CreateInstance(state),
+        MinkowskiSum.CreateInstance(this.config, this.state),
         state);
       this.progressDisplayer.DisplayTransientMessage($"Pre-processing. . .");
       this.isStopped = false;
@@ -170,7 +172,7 @@
         {
           if (!this.isStopped)
           {
-            Nest.launchWorkers(partsLocal.ToArray(), sheetsLocal.ToArray(), config, stateBackground);
+            Nest.LaunchWorkers(partsLocal.ToArray(), sheetsLocal.ToArray(), config, stateBackground);
           }
 
           if (state.TopNestResults != null && State.TopNestResults.Count > 0)
@@ -197,22 +199,6 @@
 #if NCRUNCH
         throw;
 #endif
-      }
-    }
-
-    /// <summary>
-    /// This is the only point where simplification feeds in to the process so use this in tests to apply config-simplifications to imports.
-    /// </summary>
-    /// <param name="config">Config to use when simplifying.</param>
-    /// <param name="item">The item that will be modified.</param>
-    private static void OffsetTreeReplace(ISvgNestConfig config, IGrouping<int, INfp> item)
-    {
-      // Don't see the reason to apply to all in the group because later we regroup and just use the first again.
-      var target = item.First();
-      SvgNest.OffsetTree(ref target, 0.5 * config.Spacing, config);
-      foreach (var zitem in item)
-      {
-        zitem.ReplacePoints(item.First().Points);
       }
     }
 
@@ -278,6 +264,22 @@
           var w = maxx - minx;
           x += w + gap;
         }
+      }
+    }
+
+    /// <summary>
+    /// This is the only point where simplification feeds in to the process so use this in tests to apply config-simplifications to imports.
+    /// </summary>
+    /// <param name="config">Config to use when simplifying.</param>
+    /// <param name="item">The item that will be modified.</param>
+    private static void OffsetTreeReplace(ISvgNestConfig config, IGrouping<int, INfp> item)
+    {
+      // Don't see the reason to apply to all in the group because later we regroup and just use the first again.
+      var target = item.First();
+      SvgNest.OffsetTree(ref target, 0.5 * config.Spacing, config);
+      foreach (var zitem in item)
+      {
+        zitem.ReplacePoints(item.First().Points);
       }
     }
 

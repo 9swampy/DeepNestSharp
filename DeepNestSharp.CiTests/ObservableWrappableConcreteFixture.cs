@@ -1,6 +1,5 @@
 ﻿namespace DeepNestSharp.CiTests
 {
-  using System;
   using System.Collections.Generic;
   using DeepNestLib.NestProject;
   using DeepNestSharp.Domain.Models;

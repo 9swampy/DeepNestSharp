@@ -1,14 +1,5 @@
 ﻿namespace DeepNestLib
 {
-  using System;
-  using System.Collections.Generic;
-  using System.Linq;
-  using System.Text;
-  using System.Threading;
-  using ClipperLib;
-  using DeepNestLib.GeneticAlgorithm;
-  using DeepNestLib.Placement;
-
   public class NfpPair
   {
     public INfp A { get; internal set; }

@@ -7,7 +7,7 @@
   using ClipperLib;
   using Light.GuardClauses;
 
-  public class NfpHelper : ITestNfpHelper
+  public class NfpHelper : INfpHelper, ITestNfpHelper
   {
     private static volatile object lockobj = new object();
 
@@ -34,7 +34,7 @@
     IMinkowskiSumService ITestNfpHelper.MinkowskiSumService { get => this.minkowskiSumService; set => this.minkowskiSumService = value; }
 
     // inner nfps can be an array of nfps, outer nfps are always singular
-    public static IntPoint[][] InnerNfpToClipperCoordinates(INfp[] nfp, double clipperScale)
+    public static IntPoint[][] InnerNfpToClipperCoordinates(IList<INfp> nfp, double clipperScale)
     {
       List<IntPoint[]> clipperNfp = new List<IntPoint[]>();
       for (var i = 0; i < nfp.Count(); i++)
@@ -86,27 +86,12 @@
       return clipperNfp.ToArray();
     }
 
-    internal INfp[] ExecuteDllImportMinkowski(INfp a, INfp b, MinkowskiCache minkowskiCache)
+    public INfp[] GetInnerNfp(ISheet sheet, INfp part, MinkowskiCache minkowskiCache, double clipperScale)
     {
-      var key = new StringBuilder(12).Append(a.Source).Append(";").Append(b.Source).Append(";").Append(a.Rotation).Append(";").Append(b.Rotation).ToString();
-      bool cacheAllow = minkowskiCache == MinkowskiCache.Cache;
-
-      if (cacheProcess.ContainsKey(key) && cacheAllow)
-      {
-        return cacheProcess[key];
-      }
-
-      var ret = minkowskiSumService.DllImportExecute(a, b, MinkowskiSumCleaning.None);
-      var res = new INfp[] { ret };
-      if (cacheAllow)
-      {
-        cacheProcess.Add(key, res);
-      }
-
-      return res;
+      return GetInnerNfp((INfp)sheet, part, minkowskiCache, clipperScale);
     }
 
-    internal INfp[] GetInnerNfp(INfp a, INfp b, MinkowskiCache minkowskiCache, double clipperScale)
+    public INfp[] GetInnerNfp(INfp a, INfp b, MinkowskiCache minkowskiCache, double clipperScale)
     {
       a.MustNotBeNull();
       b.MustNotBeNull();
@@ -120,7 +105,7 @@
         return res;
       }
 
-      var frame = GetFrame(a);
+      var frame = GetExpandedFrame(a);
 
       var nfp = GetOuterNfp(frame, b, minkowskiCache, NoFitPolygonType.Inner);
 
@@ -181,6 +166,26 @@
       }
 
       return f.ToArray();
+    }
+
+    internal INfp[] ExecuteDllImportMinkowski(INfp a, INfp b, MinkowskiCache minkowskiCache)
+    {
+      var key = new StringBuilder(12).Append(a.Source).Append(";").Append(b.Source).Append(";").Append(a.Rotation).Append(";").Append(b.Rotation).ToString();
+      bool cacheAllow = minkowskiCache == MinkowskiCache.Cache;
+
+      if (cacheProcess.ContainsKey(key) && cacheAllow)
+      {
+        return cacheProcess[key];
+      }
+
+      var ret = minkowskiSumService.DllImportExecute(a, b, MinkowskiSumCleaning.None);
+      var res = new INfp[] { ret };
+      if (cacheAllow)
+      {
+        cacheProcess.Add(key, res);
+      }
+
+      return res;
     }
 
     internal INfp GetOuterNfp(INfp a, INfp b, MinkowskiCache minkowskiCache, NoFitPolygonType nfpType = NoFitPolygonType.Outer)
@@ -245,9 +250,14 @@
       }
     }
 
-    private static INfp GetFrame(INfp a)
+    /// <summary>
+    /// Expands the frame of the <see cref="INfp"/> passed in.
+    /// </summary>
+    /// <param name="a">Part to expand.</param>
+    /// <returns>Expanded frame.</returns>
+    private static INfp GetExpandedFrame(INfp a)
     {
-      var bounds = GeometryUtil.getPolygonBounds(a);
+      var bounds = GeometryUtil.GetPolygonBounds(a);
 
       // expand bounds by 10%
       bounds.Width *= 1.1;
@@ -266,16 +276,5 @@
 
       return frame;
     }
-  }
-
-  public interface ITestNfpHelper
-  {
-    IMinkowskiSumService MinkowskiSumService { get; set; }
-  }
-
-  public enum NoFitPolygonType
-  {
-    Outer,
-    Inner,
   }
 }

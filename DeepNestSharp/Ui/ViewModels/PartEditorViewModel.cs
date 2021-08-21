@@ -1,6 +1,6 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
-  using System;
+  using System.IO;
   using DeepNestLib;
   using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Ui.Docking;
@@ -60,8 +60,23 @@
 
     protected override void LoadContent()
     {
-      var part = DxfParser.LoadDxfFile(this.FilePath).Result.ToNfp();
-      this.Part = new ObservableNfp(part.Shift(-part?.MinX ?? 0, -part?.MinY ?? 0));
+      var fileInfo = new FileInfo(this.FilePath);
+      if (!fileInfo.Exists)
+      {
+        this.MainViewModel.MessageService.DisplayMessageBox($"File not found: {this.FilePath}.", "File Not Found", MessageBoxIcon.Information);
+        return;
+      }
+
+      if (fileInfo.Extension == ".dxf")
+      {
+        var part = DxfParser.LoadDxfFile(this.FilePath).Result.ToNfp();
+        this.Part = new ObservableNfp(part.Shift(-part?.MinX ?? 0, -part?.MinY ?? 0));
+      }
+      else
+      {
+        var part = NFP.LoadFromFile(this.FilePath);
+        this.Part = new ObservableNfp(part.Shift(-part?.MinX ?? 0, -part?.MinY ?? 0));
+      }
     }
 
     protected override void NotifyContentUpdated()

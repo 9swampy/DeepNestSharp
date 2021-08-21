@@ -97,17 +97,17 @@
     }
 
     // returns the rectangular bounding box of the given polygon
-    public static PolygonBounds getPolygonBounds(INfp polygon)
+    public static PolygonBounds GetPolygonBounds(INfp polygon)
     {
-      return getPolygonBounds(polygon.Points);
+      return GetPolygonBounds(polygon.Points);
     }
 
-    public static PolygonBounds getPolygonBounds(List<SvgPoint> polygon)
+    public static PolygonBounds GetPolygonBounds(List<SvgPoint> polygon)
     {
-      return getPolygonBounds(polygon.ToArray());
+      return GetPolygonBounds(polygon.ToArray());
     }
 
-    public static PolygonBounds getPolygonBounds(SvgPoint[] polygon)
+    public static PolygonBounds GetPolygonBounds(SvgPoint[] polygon)
     {
       if (polygon == null || polygon.Count() < 3)
       {
@@ -149,7 +149,7 @@
 
     public static bool isRectangle(NFP poly, double? tolerance = null)
     {
-      var bb = getPolygonBounds(poly);
+      var bb = GetPolygonBounds(poly);
       if (tolerance == null)
       {
         tolerance = TOL;
@@ -189,7 +189,7 @@
       RectangleF rr = default(RectangleF);
 
       var ret = new PolygonWithBounds(rotated);
-      var bounds = GeometryUtil.getPolygonBounds(ret);
+      var bounds = GeometryUtil.GetPolygonBounds(ret);
       ret.X = bounds.X;
       ret.Y = bounds.Y;
       ret.Width = bounds.Width;

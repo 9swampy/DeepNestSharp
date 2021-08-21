@@ -1,7 +1,6 @@
 ﻿namespace DeepNestLib
 {
   using System;
-  using System.Collections.Generic;
 
   public class PolygonSimplificationKey : Tuple<SvgPoint[], double?, bool, bool>
   {

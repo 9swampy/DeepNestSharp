@@ -1,6 +1,5 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
-  using System;
   using DeepNestLib;
   using DeepNestLib.IO;
 

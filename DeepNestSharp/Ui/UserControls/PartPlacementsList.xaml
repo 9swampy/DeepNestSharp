@@ -39,6 +39,7 @@
       </interactivity:Interaction.Triggers>
       <ListView.View>
         <GridView>
+          <GridViewColumn Header="Order" Width="25" DisplayMemberBinding="{Binding Path=Order, Mode=OneWay}" />
           <GridViewColumn Header="Id" Width="25" DisplayMemberBinding="{Binding Path=Id, Mode=OneWay}" />
           <GridViewColumn Header="Source" Width="50" DisplayMemberBinding="{Binding Path=Source, Mode=OneWay}"/>
           <GridViewColumn Header="Rotation" Width="60" >

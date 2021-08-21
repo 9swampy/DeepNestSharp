@@ -1,9 +1,7 @@
 ﻿namespace DeepNestLib.CiTests
 {
   using System.Diagnostics;
-  using System.IO;
   using System.Linq;
-  using System.Reflection;
   using FakeItEasy;
   using FluentAssertions;
   using Xunit;

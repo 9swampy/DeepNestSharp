@@ -1,13 +1,10 @@
 ﻿namespace DeepNestSharp.Ui.Converters
 {
   using System;
-  using System.Collections.Generic;
   using System.Windows.Data;
   using System.Windows.Media;
   using DeepNestLib;
   using DeepNestLib.Placement;
-  using DeepNestSharp.Ui.Docking;
-  using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
   public class PointsConverter : IValueConverter
   {

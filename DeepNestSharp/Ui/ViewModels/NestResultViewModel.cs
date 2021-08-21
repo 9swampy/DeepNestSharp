@@ -2,13 +2,10 @@
 {
   using System;
   using System.Threading.Tasks;
-  using DeepNestLib;
   using DeepNestLib.Placement;
-  using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Ui.Docking;
   using DeepNestSharp.Ui.Models;
   using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Win32;
 
   public class NestResultViewModel : FileViewModel
   {

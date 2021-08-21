@@ -51,6 +51,22 @@
     }
 
     /// <inheritdoc />
+    [Category("File Settings")]
+    public bool ExportExecutions
+    {
+      get => svgNestConfig.ExportExecutions;
+      set => SetProperty(nameof(ExportExecutions), () => svgNestConfig.ExportExecutions, v => svgNestConfig.ExportExecutions = v, value);
+    }
+
+    /// <inheritdoc />
+    [Category("File Settings")]
+    public string ExportExecutionPath
+    {
+      get => svgNestConfig.ExportExecutionPath;
+      set => SetProperty(nameof(ExportExecutionPath), () => svgNestConfig.ExportExecutionPath, v => svgNestConfig.ExportExecutionPath = v, value);
+    }
+
+    /// <inheritdoc />
     [Category("Unimplemented")]
     public bool ExploreConcave
     {
@@ -199,22 +215,7 @@
     }
 
     /// <inheritdoc />
-    [Category("Unimplemented")]
-    public bool UseHoles
-    {
-      get => svgNestConfig.UseHoles;
-      set => SetProperty(nameof(UseHoles), () => svgNestConfig.UseHoles, v => svgNestConfig.UseHoles = v, value);
-    }
-
-    /// <inheritdoc />
-    [Category("Experimental")]
-    public bool UseParallel
-    {
-      get => svgNestConfig.UseParallel;
-      set => SetProperty(nameof(UseParallel), () => svgNestConfig.UseParallel, v => svgNestConfig.UseParallel = v, value);
-    }
-
-    /// <inheritdoc />
+    [Description("If set then parts will be restricted. If also set on an individual part, part setting wins.")]
     [Category("Experimental")]
     public AnglesEnum StrictAngles
     {
@@ -244,6 +245,31 @@
     {
       get => svgNestConfig.ShowPartPositions;
       set => SetProperty(nameof(ShowPartPositions), () => svgNestConfig.ShowPartPositions, v => svgNestConfig.ShowPartPositions = v, value);
+    }
+
+    /// <inheritdoc />
+    [Category("Unimplemented")]
+    public bool UseHoles
+    {
+      get => svgNestConfig.UseHoles;
+      set => SetProperty(nameof(UseHoles), () => svgNestConfig.UseHoles, v => svgNestConfig.UseHoles = v, value);
+    }
+
+    /// <inheritdoc />
+    [Description("A cache wrapping the C++ MinkowskiSum appears complicit in some invalid overlaying part behaviours.")]
+    [Category("Experimental")]
+    public bool UseMinkowskiCache
+    {
+      get => svgNestConfig.UseMinkowskiCache;
+      set => SetProperty(nameof(UseMinkowskiCache), () => svgNestConfig.UseMinkowskiCache, v => svgNestConfig.UseMinkowskiCache = v, value);
+    }
+
+    /// <inheritdoc />
+    [Category("Experimental")]
+    public bool UseParallel
+    {
+      get => svgNestConfig.UseParallel;
+      set => SetProperty(nameof(UseParallel), () => svgNestConfig.UseParallel, v => svgNestConfig.UseParallel = v, value);
     }
 
     public string ToJson()

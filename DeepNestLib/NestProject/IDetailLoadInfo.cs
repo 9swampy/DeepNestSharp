@@ -21,5 +21,7 @@
     int Quantity { get; set; }
 
     AnglesEnum StrictAngle { get; set; }
+
+    bool IsExists { get; }
   }
 }

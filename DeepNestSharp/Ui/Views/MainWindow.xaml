@@ -42,6 +42,10 @@
         <MenuItem Header="Load Result" Command="{Binding LoadNestResultCommand}" />
         <MenuItem Header="Load Sheet" Command="{Binding LoadSheetPlacementCommand}" />
         <Separator />
+        <MenuItem Header="Load Part" Command="{Binding LoadPartCommand}" />
+        <MenuItem Header="Load Nfp Candidates" Command="{Binding LoadNfpCandidatesCommand}" />
+        <MenuItem Header="Load SheetNfp" Command="{Binding LoadSheetNfpCommand}" />
+        <Separator />
         <MenuItem Header="Save" Command="{Binding ActiveDocumentSaveCommand}" />
         <MenuItem Header="Save As" Command="{Binding ActiveDocumentSaveAsCommand}" />
         <Separator />
@@ -73,6 +77,11 @@
 			Theme="{Binding SelectedTheme.Item2}">
       <DockingManager.LayoutItemTemplateSelector>
         <docking:PanesTemplateSelector>
+          <docking:PanesTemplateSelector.NfpCandidateListTemplate>
+            <DataTemplate>
+              <userControls:NfpCandidateListEditor />
+            </DataTemplate>
+          </docking:PanesTemplateSelector.NfpCandidateListTemplate>
           <docking:PanesTemplateSelector.SheetPlacementEditorTemplate>
             <DataTemplate>
               <userControls:SheetPlacementEditor />

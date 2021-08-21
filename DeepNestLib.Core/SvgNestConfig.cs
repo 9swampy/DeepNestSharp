@@ -14,16 +14,22 @@
     public const int ParallelNestsMin = 1;
     public const int ParallelNestsMax = 30;
 
+    /// <inheritdoc />
     public double Scale { get; set; } = 25;
 
+    /// <inheritdoc />
     public double ClipperScale { get; set; } = 10000000;
 
+    /// <inheritdoc />
     public bool ExploreConcave { get; set; } = false;
 
+    /// <inheritdoc />
     public int Rotations { get; set; } = 4;
 
+    /// <inheritdoc />
     public double SheetSpacing { get; set; } = 0;
 
+    /// <inheritdoc />
     public bool UseHoles { get; set; } = false;
 
     /// <summary>
@@ -36,8 +42,10 @@
     /// </summary>
     public double ToleranceSvg { get; set; } = 0.005;
 
+    /// <inheritdoc />
     public double TimeRatio { get; set; } = 0.5;
 
+    /// <inheritdoc />
     public bool MergeLines { get; set; } = false;
 
     /// <inheritdoc />
@@ -56,6 +64,7 @@
       }
     }
 
+    /// <inheritdoc />
     public double CurveTolerance
     {
       get
@@ -71,6 +80,55 @@
       }
     }
 
+    /// <inheritdoc />
+    public bool DrawSimplification
+    {
+      get
+      {
+        return (bool)Properties.Settings.Default["DrawSimplification"];
+      }
+
+      set
+      {
+        Properties.Settings.Default["DrawSimplification"] = value;
+        Properties.Settings.Default.Save();
+        Properties.Settings.Default.Upgrade();
+      }
+    }
+
+    /// <inheritdoc />
+    public bool ExportExecutions
+    {
+      get
+      {
+        return (bool)Properties.Settings.Default["ExportExecutions"];
+      }
+
+      set
+      {
+        Properties.Settings.Default["ExportExecutions"] = value;
+        Properties.Settings.Default.Save();
+        Properties.Settings.Default.Upgrade();
+      }
+    }
+
+    /// <inheritdoc />
+    public string ExportExecutionPath
+    {
+      get
+      {
+        return (string)Properties.Settings.Default["ExportExecutionPath"];
+      }
+
+      set
+      {
+        Properties.Settings.Default["ExportExecutionPath"] = value;
+        Properties.Settings.Default.Save();
+        Properties.Settings.Default.Upgrade();
+      }
+    }
+
+    /// <inheritdoc />
     public int SaveAsFileTypeIndex
     {
       get
@@ -86,6 +144,7 @@
       }
     }
 
+    /// <inheritdoc />
     public int SheetWidth
     {
       get
@@ -101,6 +160,7 @@
       }
     }
 
+    /// <inheritdoc />
     public int SheetHeight
     {
       get
@@ -116,6 +176,7 @@
       }
     }
 
+    /// <inheritdoc />
     public int SheetQuantity
     {
       get
@@ -131,6 +192,7 @@
       }
     }
 
+    /// <inheritdoc />
     public PlacementTypeEnum PlacementType
     {
       get
@@ -146,6 +208,7 @@
       }
     }
 
+    /// <inheritdoc />
     public bool Simplify
     {
       get
@@ -161,6 +224,7 @@
       }
     }
 
+    /// <inheritdoc />
     public bool OffsetTreePhase
     {
       get
@@ -176,6 +240,7 @@
       }
     }
 
+    /// <inheritdoc />
     public double Spacing
     {
       get
@@ -191,6 +256,7 @@
       }
     }
 
+    /// <inheritdoc />
     public int PopulationSize
     {
       get
@@ -209,6 +275,7 @@
       }
     }
 
+    /// <inheritdoc />
     public int MutationRate
     {
       get
@@ -227,6 +294,7 @@
       }
     }
 
+    /// <inheritdoc />
     public int Multiplier
     {
       get
@@ -245,21 +313,7 @@
       }
     }
 
-    public bool DrawSimplification
-    {
-      get
-      {
-        return (bool)Properties.Settings.Default["DrawSimplification"];
-      }
-
-      set
-      {
-        Properties.Settings.Default["DrawSimplification"] = value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
-      }
-    }
-
+    /// <inheritdoc />
     public AnglesEnum StrictAngles
     {
       get
@@ -282,6 +336,7 @@
       }
     }
 
+    /// <inheritdoc />
     public bool UseParallel
     {
       get
@@ -297,6 +352,7 @@
       }
     }
 
+    /// <inheritdoc />
     public int ParallelNests
     {
       get
@@ -315,6 +371,7 @@
       }
     }
 
+    /// <inheritdoc />
     public bool ShowPartPositions
     {
       get
@@ -325,6 +382,22 @@
       set
       {
         Properties.Settings.Default["ShowPartPositions"] = value;
+        Properties.Settings.Default.Save();
+        Properties.Settings.Default.Upgrade();
+      }
+    }
+
+    /// <inheritdoc />
+    public bool UseMinkowskiCache
+    {
+      get
+      {
+        return (bool)Properties.Settings.Default["UseMinkowskiCache"];
+      }
+
+      set
+      {
+        Properties.Settings.Default["UseMinkowskiCache"] = value;
         Properties.Settings.Default.Save();
         Properties.Settings.Default.Upgrade();
       }

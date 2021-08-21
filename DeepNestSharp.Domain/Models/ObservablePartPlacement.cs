@@ -14,9 +14,10 @@
     private RelayCommand resetCommand;
     private IAsyncRelayCommand loadExactCommand;
 
-    public ObservablePartPlacement(IPartPlacement partPlacement)
+    public ObservablePartPlacement(IPartPlacement partPlacement, int order)
     {
       this.partPlacement = partPlacement;
+      this.Order = order;
       this.originalPosition = new SvgPoint(partPlacement.X, partPlacement.Y);
       this.originalRotation = partPlacement.Rotation;
       this.PropertyChanged += this.ObservablePartPlacement_PropertyChanged;
@@ -142,6 +143,8 @@
 
     /// <inheritdoc/>
     public bool IsExact => Part.IsExact;
+
+    public int Order { get; private set; }
 
     /// <inheritdoc/>
     private void ObservablePartPlacement_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

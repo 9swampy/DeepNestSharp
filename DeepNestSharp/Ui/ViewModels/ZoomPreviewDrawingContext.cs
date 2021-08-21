@@ -1,6 +1,5 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
-  using System;
   using System.Collections.ObjectModel;
   using DeepNestLib;
   using DeepNestLib.Placement;

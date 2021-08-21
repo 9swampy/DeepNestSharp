@@ -1,7 +1,6 @@
 ﻿namespace DeepNestLib.GeneticAlgorithm
 {
   using System;
-  using System.Linq;
   using DeepNestLib.Placement;
 
   public class OriginalFitnessSheet : IOriginalFitnessSheet

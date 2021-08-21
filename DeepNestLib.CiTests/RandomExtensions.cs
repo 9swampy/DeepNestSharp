@@ -1,11 +1,7 @@
 ﻿namespace DeepNestLib.CiTests
 {
   using System;
-  using System.Collections.Generic;
   using System.Linq;
-  using DeepNestLib.NestProject;
-  using FluentAssertions;
-  using Xunit;
 
   public static class RandomExtensions
   {

@@ -6,7 +6,8 @@
   {
     protected override MinkowskiSum Create()
     {
-      return (MinkowskiSum)MinkowskiSum.CreateInstance(NestState.CreateInstance(SvgNest.Config, A.Fake<IDispatcherService>()));
+      var config = new DefaultSvgNestConfig();
+      return (MinkowskiSum)MinkowskiSum.CreateInstance(config, NestState.CreateInstance(config, A.Fake<IDispatcherService>()));
     }
   }
 }

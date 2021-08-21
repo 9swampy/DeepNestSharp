@@ -2,9 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
-  using System.IO;
   using System.Windows.Data;
-  using DeepNestLib;
   using DeepNestLib.Placement;
   using DeepNestSharp.Ui.ViewModels;
 

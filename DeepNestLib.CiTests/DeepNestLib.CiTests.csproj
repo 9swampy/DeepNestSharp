@@ -208,6 +208,7 @@
     <Compile Include="Placement\PartPlacementScenarioFixture.cs" />
     <Compile Include="Placement\PartPlacementWorkerFixture.cs" />
     <Compile Include="Placement\SecondGenerationOverlaysIn.cs" />
+    <Compile Include="Placement\SheetNfpFixture.cs" />
     <Compile Include="Placement\SheetPlacementJsonFixture.cs" />
     <Compile Include="PmapWorkerFixtureSetup.cs" />
     <Compile Include="PmapWorkerPmapDeepNestFixture.cs" />
@@ -272,13 +273,13 @@
     <EmbeddedResource Include="Minkowski\MinkowskiCache.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="Minkowski\MinkowskiCacheA.json">
+    <EmbeddedResource Include="Minkowski\MinkowskiCacheA.dnpoly">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="Minkowski\MinkowskiCacheB.json">
+    <EmbeddedResource Include="Minkowski\MinkowskiCacheB.dnpoly">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="Minkowski\MinkowskiCacheRet.json">
+    <EmbeddedResource Include="Minkowski\MinkowskiCacheRet.dnpoly">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <None Include="packages.config" />

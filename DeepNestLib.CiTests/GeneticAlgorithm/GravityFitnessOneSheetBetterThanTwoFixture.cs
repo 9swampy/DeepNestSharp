@@ -2,7 +2,6 @@
 {
   using System.IO;
   using System.Reflection;
-  using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
   using FluentAssertions;
   using Xunit;

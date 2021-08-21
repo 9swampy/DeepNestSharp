@@ -1,10 +1,7 @@
 ﻿namespace DeepNestLib.NestProject
 {
-  using System;
   using System.Text.Json;
-  using System.Text.Json.Serialization;
   using DeepNestLib;
-  using DeepNestLib.IO;
 
   public sealed class ConfigSheetLoadInfo : SheetLoadInfo
   {
@@ -38,7 +35,7 @@
     {
       var options = new JsonSerializerOptions();
       options.WriteIndented = writeIndented;
-      return JsonSerializer.Serialize(this);
+      return JsonSerializer.Serialize(this, options);
     }
   }
 }

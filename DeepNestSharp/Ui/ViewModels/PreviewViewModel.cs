@@ -347,6 +347,17 @@
             Set(nestResultSheetPlacement);
           }
         }
+        else if (mainViewModel.ActiveDocument is NfpCandidateListViewModel sheetNfpViewModel)
+        {
+          lastActiveViewModel = sheetNfpViewModel;
+          if (sheetNfpViewModel.SelectedItem is INfp sheetNfpItem)
+          {
+            var sheet = new Sheet(sheetNfpViewModel.NfpCandidateList?.Sheet, WithChildren.Included);
+            sheet.Children.Add(sheetNfpItem);
+            sheet.Children.Add(sheetNfpViewModel.NfpCandidateList?.Part);
+            Set(new ObservableNfp(sheet));
+          }
+        }
 
         if (lastActiveViewModel != null)
         {
@@ -414,6 +425,15 @@
         {
           Set(nfp);
         }
+        else if (sender is NfpCandidateListViewModel sheetNfpViewModel &&
+                 e.PropertyName == nameof(NfpCandidateListViewModel.SelectedItem) &&
+                 sheetNfpViewModel.SelectedItem is INfp sheetNfpItem)
+        {
+          var sheet = new Sheet(sheetNfpViewModel.NfpCandidateList?.Sheet, WithChildren.Included);
+          sheet.Children.Add(sheetNfpItem);
+          sheet.Children.Add(sheetNfpViewModel.NfpCandidateList?.Part);
+          Set(new ObservableNfp(sheet));
+        }
       }
     }
 
@@ -469,9 +489,9 @@
     }
 
     /// <summary>
-    /// Adding in children as <see cref="ObservableHoles"/> so can fill differently.
+    /// Adding in children as <see cref="ObservableHoles"/> so can render differently.
     /// </summary>
-    /// <param name="polygon"></param>
+    /// <param name="child">The child hole to add.</param>
     private void Set(ObservableHole child)
     {
       this.DrawingContext.Add(child);

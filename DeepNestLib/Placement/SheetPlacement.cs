@@ -139,7 +139,7 @@
     internal static PolygonBounds CombinedRectBounds(IReadOnlyList<IPartPlacement> partPlacements)
     {
       NFP allpoints = CombinedPoints(partPlacements);
-      return GeometryUtil.getPolygonBounds(allpoints);
+      return GeometryUtil.GetPolygonBounds(allpoints);
     }
 
     internal static NFP CombinedPoints(IReadOnlyList<IPartPlacement> partPlacements)

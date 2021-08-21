@@ -2,6 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
+  using System.IO;
   using System.Linq;
   using System.Threading.Tasks;
   using DeepNestLib;
@@ -32,6 +33,8 @@
     public IList<AnglesEnum> AnglesList => Enum.GetValues(typeof(AnglesEnum)).OfType<AnglesEnum>().ToList();
 
     public override bool IsDirty => this.detailLoadInfo.IsDirty;
+
+    public bool IsExists => this.detailLoadInfo.IsExists;
 
     public bool IsIncluded
     {
@@ -78,8 +81,13 @@
 
     public async Task<INfp> LoadAsync()
     {
-      var raw = await DxfParser.LoadDxfFile(detailLoadInfo.Path);
-      return raw.ToNfp();
+      if (new FileInfo(detailLoadInfo.Path).Exists)
+      {
+        var raw = await DxfParser.LoadDxfFile(detailLoadInfo.Path);
+        return raw.ToNfp();
+      }
+
+      return new NFP();
     }
   }
 }

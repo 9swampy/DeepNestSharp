@@ -1,7 +1,6 @@
 ﻿namespace DeepNestLib.GeneticAlgorithm
 {
   using GeneticSharp.Domain.Chromosomes;
-  using GeneticSharp.Domain.Fitnesses;
   using GeneticSharp.Domain.Randomizations;
 
   public class NestChromosome : ChromosomeBase

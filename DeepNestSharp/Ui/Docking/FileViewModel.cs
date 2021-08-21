@@ -17,7 +17,8 @@
     private RelayCommand? closeCommand;
 
     public FileViewModel()
-    { }
+    {
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FileViewModel"/> class.
@@ -33,16 +34,6 @@
 
       // Set the icon only for open documents (just a test)
       // IconSource = imageSourceConverter.ConvertFromInvariantString(@"pack://application:,,/Images/document.png") as ImageSource;
-    }
-
-    private void LoadFile(string filePath)
-    {
-      if (File.Exists(filePath))
-      {
-        LoadContent();
-        ContentId = filePath;
-        NotifyContentUpdated();
-      }
     }
 
     /// <summary>
@@ -82,7 +73,7 @@
     /// </summary>
     public string FilePath
     {
-      get => filePath;
+      get => filePath ?? string.Empty;
       set
       {
         if (filePath != value)
@@ -100,8 +91,6 @@
     /// Gets the default name for a new file of this type.
     /// </summary>
     public string FileTypeName => GetType().Name.Replace("ViewModel", string.Empty);
-
-    protected MainViewModel MainViewModel { get; }
 
     public abstract string TextContent { get; }
 
@@ -163,6 +152,8 @@
       }
     }
 
+    protected MainViewModel MainViewModel { get; }
+
     protected abstract void NotifyContentUpdated();
 
     protected abstract void SaveState();
@@ -172,6 +163,16 @@
     private bool CanClose()
     {
       return true;
+    }
+
+    private void LoadFile(string filePath)
+    {
+      if (File.Exists(filePath))
+      {
+        LoadContent();
+        ContentId = filePath;
+        NotifyContentUpdated();
+      }
     }
 
     private void OnClose()

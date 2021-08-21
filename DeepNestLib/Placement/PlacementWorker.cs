@@ -4,11 +4,8 @@
   using System.Collections.Generic;
   using System.Diagnostics;
   using System.Linq;
-  using System.Text;
-  using ClipperLib;
   using DeepNestLib.Placement;
   using Light.GuardClauses;
-  using static DeepNestLib.PlacementWorker;
 
   public class PlacementWorker : IPlacementWorker
   {
@@ -48,7 +45,7 @@
     }
 
     /// <summary>
-    /// Gets a value indicating whether the current loop started as a PriorityPLacement. 
+    /// Gets a value indicating whether the current loop started as a PriorityPLacement.
     /// Note as parts get placed this could change; hence we memoise at the start of each placement.
     /// </summary>
     private bool StartedAsPriorityPlacement => unplacedParts.Any(o => o.IsPriority);
@@ -186,6 +183,7 @@
           {
             // Sheet's already used so by definition it's already full of priority parts, no point trying to add more
             requeue.Enqueue(localSheet);
+            localSheet = null;
           }
           else
           {

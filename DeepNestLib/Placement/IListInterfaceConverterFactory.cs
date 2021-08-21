@@ -2,13 +2,8 @@
 {
   using System;
   using System.Collections.Generic;
-  using System.IO;
-  using System.Linq;
   using System.Text.Json;
   using System.Text.Json.Serialization;
-  using DeepNestLib.GeneticAlgorithm;
-  using DeepNestLib.IO;
-  using DeepNestLib.NestProject;
 
   public class IListInterfaceConverterFactory : JsonConverterFactory
   {

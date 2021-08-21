@@ -1,15 +1,12 @@
 ﻿namespace DeepNestLib.CiTests.Placement
 {
-  using System;
   using System.Collections.Generic;
   using System.IO;
   using System.Reflection;
-  using System.Text.Json;
   using DeepNestLib.CiTests;
   using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
-  using Microsoft.CodeAnalysis;
   using Xunit;
 
   public class SecondGenerationOverlaysIn
@@ -39,11 +36,14 @@
       sut = PartPlacementWorker.FromJson(json);
       placementWorker = A.Fake<IPlacementWorker>();
       ((ITestPartPlacementWorker)sut).PlacementWorker = placementWorker;
-      //MinkowskiSum minkowskiSumService = (MinkowskiSum)MinkowskiSum.CreateInstance(A.Fake<INestStateMinkowski>());
+
+      // MinkowskiSum minkowskiSumService = (MinkowskiSum)MinkowskiSum.CreateInstance(A.Fake<INestStateMinkowski>());
       ((MinkowskiSum)((ITestNfpHelper)((ITestPartPlacementWorker)sut).NfpHelper).MinkowskiSumService).VerboseLogAction = s => placementWorker.VerboseLog(s);
       state = A.Fake<INestStateMinkowski>();
       ((MinkowskiSum)((ITestNfpHelper)((ITestPartPlacementWorker)sut).NfpHelper).MinkowskiSumService).State = state;
-      //((ITestNfpHelper)((ITestPartPlacementWorker)sut).NfpHelper).MinkowskiSumService = minkowskiSumService;
+      ((MinkowskiSum)((ITestNfpHelper)((ITestPartPlacementWorker)sut).NfpHelper).MinkowskiSumService).Config = new DefaultSvgNestConfig();
+
+      // ((ITestNfpHelper)((ITestPartPlacementWorker)sut).NfpHelper).MinkowskiSumService = minkowskiSumService;
 
       sut.ProcessPart(sut.InputPart, 1);
     }
@@ -87,12 +87,6 @@
                                     .WhenTypeIs<double>());
     }
 
-    private void LogDebug(int i)
-    {
-      sut.Log[i].Should().Be(sutOutExpected.Log[i]);
-      System.Diagnostics.Debug.Print($"Matched {sut.Log[i]}");
-    }
-
     [Fact]
     public void LogEntriesShouldBeTheSameInOrder()
     {
@@ -112,6 +106,12 @@
     public void ShouldCallBackToAddPlacement()
     {
       A.CallTo(() => placementWorker.AddPlacement(sut.InputPart, A<List<IPartPlacement>>._, A<INfp>._, A<PartPlacement>._, A<PlacementTypeEnum>._, A<ISheet>._, A<double>._)).MustHaveHappened();
+    }
+
+    private void LogDebug(int i)
+    {
+      sut.Log[i].Should().Be(sutOutExpected.Log[i]);
+      System.Diagnostics.Debug.Print($"Matched {sut.Log[i]}");
     }
   }
 }

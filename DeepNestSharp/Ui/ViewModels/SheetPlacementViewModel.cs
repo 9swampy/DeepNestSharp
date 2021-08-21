@@ -11,7 +11,6 @@
   using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Ui.Docking;
   using DeepNestSharp.Ui.Models;
-  using Light.GuardClauses;
   using Microsoft.Toolkit.Mvvm.Input;
 
   public class SheetPlacementViewModel : FileViewModel, ISheetPlacementViewModel

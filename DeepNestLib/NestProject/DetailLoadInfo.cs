@@ -12,6 +12,8 @@
 
     public int Quantity { get; set; } = 1;
 
+    public bool IsExists => new FileInfo(this.Path).Exists;
+
     public bool IsIncluded { get; set; } = true;
 
     public bool IsPriority { get; set; } = false;

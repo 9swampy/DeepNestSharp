@@ -154,21 +154,8 @@
       return clone;
     }
 
-    private double[] shuffleArray(double[] array)
-    {
-      for (var i = array.Length - 1; i > 0; i--)
-      {
-        var j = (int)Math.Floor(r.NextDouble() * (i + 1));
-        var temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-      }
-
-      return array;
-    }
-
     // returns a random individual from the population, weighted to the front of the list (lower fitness value is more likely to be selected)
-    private PopulationItem randomWeightedIndividual(PopulationItem exclude = null)
+    private PopulationItem RandomWeightedIndividual(PopulationItem exclude = null)
     {
       var pop = this.Population.ToList();
 
@@ -247,8 +234,8 @@
       newpopulation.AddRange(this.Population.Take(this.Population.Count() < fittestSurvivors ? this.Population.Count() : fittestSurvivors));
       while (newpopulation.Count() < this.Population.Length)
       {
-        var male = randomWeightedIndividual();
-        var female = randomWeightedIndividual(male);
+        var male = RandomWeightedIndividual();
+        var female = RandomWeightedIndividual(male);
 
         // each mating produces two children
         var children = mate(male, female);

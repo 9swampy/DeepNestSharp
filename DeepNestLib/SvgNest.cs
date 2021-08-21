@@ -6,7 +6,6 @@
   using System.Diagnostics;
 #endif
   using System.Linq;
-  using System.Threading;
   using System.Threading.Tasks;
   using ClipperLib;
   using DeepNestLib.GeneticAlgorithm;
@@ -128,10 +127,6 @@
     /// <summary>
     /// Override specifically added for Tests so the curveTolerance can be passed in.
     /// </summary>
-    /// <param name="polygon"></param>
-    /// <param name="inside"></param>
-    /// <param name="curveTolerance"></param>
-    /// <returns></returns>
     internal static INfp SimplifyFunction(INfp polygon, bool inside, double curveTolerance, bool useHull)
     {
       var markExact = true;
@@ -143,7 +138,7 @@
 
       // give special treatment to line segments above this length (squared)
       var fixedTolerance = 40 * curveTolerance * 40 * curveTolerance;
-      int i, j, k;
+      int i, j;
 
       var hull = polygon.GetHull();
       if (useHull)
@@ -592,7 +587,7 @@
       var result = new List<NFP>();
       for (var i = 0; i < newpaths.Count; i++)
       {
-        result.Add(clipperToSvg(newpaths[i]));
+        result.Add(ClipperToSvg(newpaths[i]));
       }
 
       return result.ToArray();
@@ -647,7 +642,7 @@
         return null;
       }
 
-      return clipperToSvg(clean);
+      return ClipperToSvg(clean);
     }
 
     public static INfp CleanPolygon2(INfp polygon)
@@ -682,7 +677,7 @@
         return null;
       }
 
-      var cleaned = clipperToSvg(clean);
+      var cleaned = ClipperToSvg(clean);
 
       // remove duplicate endpoints
       var start = cleaned[0];
@@ -696,7 +691,7 @@
       return cleaned;
     }
 
-    private static NFP clipperToSvg(IList<IntPoint> polygon)
+    private static NFP ClipperToSvg(IList<IntPoint> polygon)
     {
       List<SvgPoint> ret = new List<SvgPoint>();
 
@@ -708,7 +703,7 @@
       return new NFP(ret);
     }
 
-    private int toTree(PolygonTreeItem[] list, int idstart = 0)
+    private int ToTree(PolygonTreeItem[] list, int idstart = 0)
     {
       List<PolygonTreeItem> parents = new List<PolygonTreeItem>();
       int i, j;
@@ -768,7 +763,7 @@
       {
         if (parents[i].Childs != null)
         {
-          id = this.toTree(parents[i].Childs.ToArray(), id);
+          id = this.ToTree(parents[i].Childs.ToArray(), id);
         }
       }
 
@@ -795,8 +790,8 @@
 #if NCRUNCH
       Trace.WriteLine("payload.Index I don't think is being set right; double check before retrying threaded execution.");
 #endif
-        this.ga.Population[payload.index].Processing = false;
-        this.ga.Population[payload.index].Fitness = payload.Fitness;
+        this.ga.Population[payload.Index].Processing = false;
+        this.ga.Population[payload.Index].Fitness = payload.Fitness;
 
         int currentPlacements = 0;
         string suffix = string.Empty;
@@ -846,12 +841,10 @@
     }
 
     /// <summary>
-    /// Starts next generation if none started or prior finished. Will keep rehitting the outstanding population 
+    /// Starts next generation if none started or prior finished. Will keep rehitting the outstanding population
     /// set up for the generation until all have processed.
     /// </summary>
-    /// <param name="partNestItems"></param>
-    /// <param name="background"></param>
-    public void launchWorkers(NestItem<INfp>[] partNestItems, NestItem<ISheet>[] sheetNestItems, ISvgNestConfig config, INestStateBackground nestStateBackground)
+    public void LaunchWorkers(NestItem<INfp>[] partNestItems, NestItem<ISheet>[] sheetNestItems, ISvgNestConfig config, INestStateBackground nestStateBackground)
     {
       try
       {
@@ -859,7 +852,6 @@
         {
           if (this.ga == null)
           {
-            //State.Reset();
             this.ga = new Procreant(partNestItems, config);
           }
 

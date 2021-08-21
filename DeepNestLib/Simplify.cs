@@ -1,7 +1,6 @@
 ﻿namespace DeepNestLib
 {
   using System.Collections.Generic;
-  using System.Linq;
 
   public class Simplify
   {

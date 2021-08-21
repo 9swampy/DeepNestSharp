@@ -103,14 +103,19 @@
     <Compile Include="..\DeepNestLib\PlacementTypeEnum.cs" Link="PlacementTypeEnum.cs" />
     <Compile Include="..\DeepNestLib\Placement\IListInterfaceConverterFactory.cs" Link="Placement\IListInterfaceConverterFactory.cs" />
     <Compile Include="..\DeepNestLib\Placement\INestResult.cs" Link="Placement\INestResult.cs" />
+    <Compile Include="..\DeepNestLib\Placement\INfpCandidateList.cs" Link="Placement\INfpCandidateList.cs" />
+    <Compile Include="..\DeepNestLib\Placement\INfpHelper.cs" Link="Placement\INfpHelper.cs" />
     <Compile Include="..\DeepNestLib\Placement\InterfaceConverterFactory.cs" Link="Placement\InterfaceConverterFactory.cs" />
     <Compile Include="..\DeepNestLib\Placement\InterfaceConverter{M,I}.cs" Link="Placement\InterfaceConverter{M,I}.cs" />
     <Compile Include="..\DeepNestLib\Placement\IPartPlacement.cs" Link="Placement\IPartPlacement.cs" />
     <Compile Include="..\DeepNestLib\Placement\IPlacementWorker.cs" Link="Placement\IPlacementWorker.cs" />
     <Compile Include="..\DeepNestLib\Placement\ISheetPlacement.cs" Link="Placement\ISheetPlacement.cs" />
+    <Compile Include="..\DeepNestLib\Placement\ITestNfpHelper.cs" Link="Placement\ITestNfpHelper.cs" />
     <Compile Include="..\DeepNestLib\Placement\ListConverter{M}.cs" Link="Placement\ListConverter{M}.cs" />
     <Compile Include="..\DeepNestLib\Placement\NestResult.cs" Link="Placement\NestResult.cs" />
+    <Compile Include="..\DeepNestLib\Placement\NfpCandidateList.cs" Link="Placement\NfpCandidateList.cs" />
     <Compile Include="..\DeepNestLib\Placement\NfpHelper.cs" Link="Placement\NfpHelper.cs" />
+    <Compile Include="..\DeepNestLib\Placement\NoFitPolygonType.cs" Link="Placement\NoFitPolygonType.cs" />
     <Compile Include="..\DeepNestLib\Placement\PartPlacement.cs" Link="Placement\PartPlacement.cs" />
     <Compile Include="..\DeepNestLib\Placement\PartPlacementWorker.cs" Link="Placement\PartPlacementWorker.cs" />
     <Compile Include="..\DeepNestLib\Placement\PlacementWorker.cs" Link="Placement\PlacementWorker.cs" />
@@ -125,6 +130,7 @@
     <Compile Include="..\DeepNestLib\PolygonSimplificationKey.cs" Link="PolygonSimplificationKey.cs" />
     <Compile Include="..\DeepNestLib\PolygonTreeItem.cs" Link="PolygonTreeItem.cs" />
     <Compile Include="..\DeepNestLib\PolygonWithBounds.cs" Link="PolygonWithBounds.cs" />
+    <Compile Include="..\DeepNestLib\ProgressBar.cs" Link="ProgressBar.cs" />
     <Compile Include="..\DeepNestLib\RawDetail.cs" Link="RawDetail.cs" />
     <Compile Include="..\DeepNestLib\ReadOnlyListExtensions.cs" Link="ReadOnlyListExtensions.cs" />
     <Compile Include="..\DeepNestLib\RectangleSheet.cs" Link="RectangleSheet.cs" />

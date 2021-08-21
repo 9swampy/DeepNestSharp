@@ -19,6 +19,14 @@
     "Overlay2ndGen.dnest": {
       "commandName": "Project",
       "commandLineArgs": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\SecondGenerationOverlay.dnest"
+    },
+    "DxfNotFound.dnest": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\DxfNotExistExample.dnest"
+    },
+    "SimpleTest.dnest": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\SimpleTestExample.dnest"
     }
   }
 }
