@@ -357,8 +357,8 @@
       }
 
       // do not include last point if coincident with starting point
-      while (poly.Count > 0 && GeometryUtil._almostEqual(poly[0].X, poly[poly.Count - 1].X, this.Config.ToleranceSvg)
-          && GeometryUtil._almostEqual(poly[0].Y, poly[poly.Count - 1].Y, this.Config.ToleranceSvg))
+      while (poly.Count > 0 && GeometryUtil.AlmostEqual(poly[0].X, poly[poly.Count - 1].X, this.Config.ToleranceSvg)
+          && GeometryUtil.AlmostEqual(poly[0].Y, poly[poly.Count - 1].Y, this.Config.ToleranceSvg))
       {
         poly.RemoveAt(0);
       }

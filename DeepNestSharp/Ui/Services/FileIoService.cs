@@ -53,7 +53,7 @@
       }
     }
 
-    public string GetSaveFilePath(string fileDialogFilter, string fileName = null, string initialDirectory = null)
+    public string GetSaveFilePath(string fileDialogFilter, string? fileName = null, string? initialDirectory = null)
     {
       var dlg = new SaveFileDialog()
       {

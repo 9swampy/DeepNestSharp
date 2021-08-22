@@ -342,11 +342,11 @@
               continue;
             }
 
-            if ((GeometryUtil._almostEqual(s1.X, s2.X) || GeometryUtil._almostEqual(s1.Y, s2.Y)) && // we only really care about vertical and horizontal lines
-            GeometryUtil._withinDistance(p1, s1, 2 * tolerance) &&
-            GeometryUtil._withinDistance(p2, s2, 2 * tolerance) &&
-            (!GeometryUtil._withinDistance(p1, s1, curveTolerance / 1000) ||
-            !GeometryUtil._withinDistance(p2, s2, curveTolerance / 1000)))
+            if ((GeometryUtil.AlmostEqual(s1.X, s2.X) || GeometryUtil.AlmostEqual(s1.Y, s2.Y)) && // we only really care about vertical and horizontal lines
+            GeometryUtil.WithinDistance(p1, s1, 2 * tolerance) &&
+            GeometryUtil.WithinDistance(p2, s2, 2 * tolerance) &&
+            (!GeometryUtil.WithinDistance(p1, s1, curveTolerance / 1000) ||
+            !GeometryUtil.WithinDistance(p2, s2, curveTolerance / 1000)))
             {
               p1.X = s1.X;
               p1.Y = s1.Y;
@@ -512,7 +512,7 @@
     {
       for (var i = 0; i < p.Length; i++)
       {
-        if (GeometryUtil._withinDistance(v, p[i], curveTolerance / 1000))
+        if (GeometryUtil.WithinDistance(v, p[i], curveTolerance / 1000))
         {
           return i;
         }
@@ -570,7 +570,7 @@
     // note that this returns an array of polygons
     public static INfp[] polygonOffsetDeepNest(INfp polygon, double offset)
     {
-      if (offset == 0 || GeometryUtil._almostEqual(offset, 0))
+      if (offset == 0 || GeometryUtil.AlmostEqual(offset, 0))
       {
         return new[] { polygon };
       }
@@ -682,8 +682,8 @@
       // remove duplicate endpoints
       var start = cleaned[0];
       var end = cleaned[cleaned.Length - 1];
-      if (start == end || (GeometryUtil._almostEqual(start.X, end.X)
-          && GeometryUtil._almostEqual(start.Y, end.Y)))
+      if (start == end || (GeometryUtil.AlmostEqual(start.X, end.X)
+          && GeometryUtil.AlmostEqual(start.Y, end.Y)))
       {
         cleaned.ReplacePoints(cleaned.Points.Take(cleaned.Points.Count() - 1));
       }

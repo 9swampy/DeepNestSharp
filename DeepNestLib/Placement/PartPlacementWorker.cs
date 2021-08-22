@@ -181,7 +181,7 @@
               if (position == null ||
                   ((SheetNfp[j][k].X - processedPart[0].X) < position.X) ||
                   (
-                  GeometryUtil._almostEqual(SheetNfp[j][k].X - processedPart[0].X, position.X)
+                  GeometryUtil.AlmostEqual(SheetNfp[j][k].X - processedPart[0].X, position.X)
                   && ((SheetNfp[j][k].Y - processedPart[0].Y) < position.Y)))
               {
                 position = new PartPlacement(processedPart)
@@ -400,8 +400,8 @@
               this.VerboseLog("evalmerge");
               if (minarea == null ||
                   area < minarea ||
-                  (GeometryUtil._almostEqual(minarea, area) && (minx == null || shiftvector.X < minx)) ||
-                  (GeometryUtil._almostEqual(minarea, area) && (minx != null && GeometryUtil._almostEqual(shiftvector.X, minx) && shiftvector.Y < miny)))
+                  (GeometryUtil.AlmostEqual(minarea, area) && (minx == null || shiftvector.X < minx)) ||
+                  (GeometryUtil.AlmostEqual(minarea, area) && (minx != null && GeometryUtil.AlmostEqual(shiftvector.X, minx) && shiftvector.Y < miny)))
               {
                 this.VerboseLog($"evalmerge-entered minarea={minarea ?? -1:0.000000} x={shiftvector?.X ?? -1:0.000000} y={shiftvector?.Y ?? -1:0.000000}");
                 minarea = area;

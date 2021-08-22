@@ -8,7 +8,9 @@
     private readonly ISvgNestConfig config;
 
     public ConfigSheetLoadInfo(ISvgNestConfig config)
+#pragma warning disable CS0618 // Type or member is obsolete
       : base()
+#pragma warning restore CS0618 // Type or member is obsolete
     {
       this.config = config;
     }

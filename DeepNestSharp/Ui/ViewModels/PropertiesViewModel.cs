@@ -9,7 +9,7 @@
   {
     private readonly MainViewModel mainViewModel;
 
-    private SheetPlacementViewModel lastSheetPlacementViewModel;
+    private SheetPlacementViewModel? lastSheetPlacementViewModel;
     private object selectedObject;
 
     /// <summary>

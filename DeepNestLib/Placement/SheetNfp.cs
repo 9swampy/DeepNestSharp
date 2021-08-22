@@ -49,7 +49,7 @@
       }
     }
 
-    public static SheetNfp FromJson(string json)
+    public static new SheetNfp FromJson(string json)
     {
       var options = new JsonSerializerOptions();
       options.Converters.Add(new SheetJsonConverter());
@@ -58,7 +58,7 @@
       return new SheetNfp(nfpCandidateList);
     }
 
-    public static SheetNfp LoadFromFile(string fileName)
+    public static new SheetNfp LoadFromFile(string fileName)
     {
       using (StreamReader inputFile = new StreamReader(fileName))
       {

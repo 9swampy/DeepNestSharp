@@ -8,7 +8,7 @@
   public partial class GeometryUtil
   {
     // returns true if points are within the given distance
-    public static bool _withinDistance(SvgPoint p1, SvgPoint p2, double distance)
+    public static bool WithinDistance(SvgPoint p1, SvgPoint p2, double distance)
     {
       var dx = p1.X - p2.X;
       var dy = p1.Y - p2.Y;
@@ -157,12 +157,12 @@
 
       for (var i = 0; i < poly.Points.Length; i++)
       {
-        if (!_almostEqual(poly.Points[i].X, bb.X) && !_almostEqual(poly.Points[i].X, bb.X + bb.Width))
+        if (!AlmostEqual(poly.Points[i].X, bb.X) && !AlmostEqual(poly.Points[i].X, bb.X + bb.Width))
         {
           return false;
         }
 
-        if (!_almostEqual(poly.Points[i].Y, bb.Y) && !_almostEqual(poly.Points[i].Y, bb.Y + bb.Height))
+        if (!AlmostEqual(poly.Points[i].Y, bb.Y) && !AlmostEqual(poly.Points[i].Y, bb.Y + bb.Height))
         {
           return false;
         }
@@ -197,7 +197,7 @@
       return ret;
     }
 
-    public static bool _almostEqual(double a, double b, double? tolerance = null)
+    public static bool AlmostEqual(double a, double b, double? tolerance = null)
     {
       if (tolerance == null)
       {
@@ -207,9 +207,9 @@
       return Math.Abs(a - b) < tolerance;
     }
 
-    public static bool _almostEqual(double? a, double? b, double? tolerance = null)
+    public static bool AlmostEqual(double? a, double? b, double? tolerance = null)
     {
-      return _almostEqual(a.Value, b.Value, tolerance);
+      return AlmostEqual(a.Value, b.Value, tolerance);
     }
 
     // returns true if point already exists in the given nfp
@@ -224,7 +224,7 @@
       {
         for (var j = 0; j < nfp[i].Length; j++)
         {
-          if (_almostEqual(p.X, nfp[i][j].X) && _almostEqual(p.Y, nfp[i][j].Y))
+          if (AlmostEqual(p.X, nfp[i][j].X) && AlmostEqual(p.Y, nfp[i][j].Y))
           {
             return true;
           }
@@ -235,9 +235,9 @@
     }
 
     // normalize vector into a unit vector
-    public static SvgPoint _normalizeVector(SvgPoint v)
+    public static SvgPoint NormalizeVector(SvgPoint v)
     {
-      if (_almostEqual((v.X * v.X) + (v.Y * v.Y), 1))
+      if (AlmostEqual((v.X * v.X) + (v.Y * v.Y), 1))
       {
         return v; // given vector was already a unit vector
       }
@@ -250,7 +250,7 @@
 
     public static double? pointDistance(SvgPoint p, SvgPoint s1, SvgPoint s2, SvgPoint normal, bool infinite = false)
     {
-      normal = _normalizeVector(normal);
+      normal = NormalizeVector(normal);
 
       var dir = new SvgPoint(normal.Y, -normal.X);
 
@@ -264,17 +264,17 @@
 
       if (!infinite)
       {
-        if (((pdot < s1dot || _almostEqual(pdot, s1dot)) && (pdot < s2dot || _almostEqual(pdot, s2dot))) || ((pdot > s1dot || _almostEqual(pdot, s1dot)) && (pdot > s2dot || _almostEqual(pdot, s2dot))))
+        if (((pdot < s1dot || AlmostEqual(pdot, s1dot)) && (pdot < s2dot || AlmostEqual(pdot, s2dot))) || ((pdot > s1dot || AlmostEqual(pdot, s1dot)) && (pdot > s2dot || AlmostEqual(pdot, s2dot))))
         {
           return null; // dot doesn't collide with segment, or lies directly on the vertex
         }
 
-        if ((_almostEqual(pdot, s1dot) && _almostEqual(pdot, s2dot)) && (pdotnorm > s1dotnorm && pdotnorm > s2dotnorm))
+        if ((AlmostEqual(pdot, s1dot) && AlmostEqual(pdot, s2dot)) && (pdotnorm > s1dotnorm && pdotnorm > s2dotnorm))
         {
           return Math.Min(pdotnorm - s1dotnorm, pdotnorm - s2dotnorm);
         }
 
-        if ((_almostEqual(pdot, s1dot) && _almostEqual(pdot, s2dot)) && (pdotnorm < s1dotnorm && pdotnorm < s2dotnorm))
+        if ((AlmostEqual(pdot, s1dot) && AlmostEqual(pdot, s2dot)) && (pdotnorm < s1dotnorm && pdotnorm < s2dotnorm))
         {
           return -Math.Min(s1dotnorm - pdotnorm, s2dotnorm - pdotnorm);
         }
@@ -287,12 +287,12 @@
 
     // returns true if p lies on the line segment defined by AB, but not at any endpoints
     // may need work!
-    public static bool _onSegment(SvgPoint a, SvgPoint b, SvgPoint p)
+    public static bool OnSegment(SvgPoint a, SvgPoint b, SvgPoint p)
     {
       // vertical line
-      if (_almostEqual(a.X, b.X) && _almostEqual(p.X, a.X))
+      if (AlmostEqual(a.X, b.X) && AlmostEqual(p.X, a.X))
       {
-        if (!_almostEqual(p.Y, b.Y) && !_almostEqual(p.Y, a.Y) && p.Y < Math.Max(b.Y, a.Y) && p.Y > Math.Min(b.Y, a.Y))
+        if (!AlmostEqual(p.Y, b.Y) && !AlmostEqual(p.Y, a.Y) && p.Y < Math.Max(b.Y, a.Y) && p.Y > Math.Min(b.Y, a.Y))
         {
           return true;
         }
@@ -303,9 +303,9 @@
       }
 
       // horizontal line
-      if (_almostEqual(a.Y, b.Y) && _almostEqual(p.Y, a.Y))
+      if (AlmostEqual(a.Y, b.Y) && AlmostEqual(p.Y, a.Y))
       {
-        if (!_almostEqual(p.X, b.X) && !_almostEqual(p.X, a.X) && p.X < Math.Max(b.X, a.X) && p.X > Math.Min(b.X, a.X))
+        if (!AlmostEqual(p.X, b.X) && !AlmostEqual(p.X, a.X) && p.X < Math.Max(b.X, a.X) && p.X > Math.Min(b.X, a.X))
         {
           return true;
         }
@@ -322,7 +322,7 @@
       }
 
       // exclude end points
-      if ((_almostEqual(p.X, a.X) && _almostEqual(p.Y, a.Y)) || (_almostEqual(p.X, b.X) && _almostEqual(p.Y, b.Y)))
+      if ((AlmostEqual(p.X, a.X) && AlmostEqual(p.Y, a.Y)) || (AlmostEqual(p.X, b.X) && AlmostEqual(p.Y, b.Y)))
       {
         return false;
       }
@@ -336,14 +336,14 @@
 
       var dot = ((p.X - a.X) * (b.X - a.X)) + ((p.Y - a.Y) * (b.Y - a.Y));
 
-      if (dot < 0 || _almostEqual(dot, 0))
+      if (dot < 0 || AlmostEqual(dot, 0))
       {
         return false;
       }
 
       var len2 = ((b.X - a.X) * (b.X - a.X)) + ((b.Y - a.Y) * (b.Y - a.Y));
 
-      if (dot > len2 || _almostEqual(dot, len2))
+      if (dot > len2 || AlmostEqual(dot, len2))
       {
         return false;
       }
@@ -452,17 +452,17 @@
         var xj = polygon.Points[j].X + offsetx;
         var yj = polygon.Points[j].Y + offsety;
 
-        if (_almostEqual(xi, point.X) && _almostEqual(yi, point.Y))
+        if (AlmostEqual(xi, point.X) && AlmostEqual(yi, point.Y))
         {
           return null; // no result
         }
 
-        if (_onSegment(new SvgPoint(xi, yi), new SvgPoint(xj, yj), point))
+        if (OnSegment(new SvgPoint(xi, yi), new SvgPoint(xj, yj), point))
         {
           return null; // exactly on the segment
         }
 
-        if (_almostEqual(xi, xj) && _almostEqual(yi, yj))
+        if (AlmostEqual(xi, xj) && AlmostEqual(yi, yj))
         { // ignore very small lines
           continue;
         }
@@ -505,23 +505,23 @@
           var nextaindex = (i + 1 == a.Length - 1) ? 0 : i + 2;
 
           // go even further back if we happen to hit on a loop end point
-          if (b[prevbindex] == b[j] || (_almostEqual(b[prevbindex].X, b[j].X) && _almostEqual(b[prevbindex].Y, b[j].Y)))
+          if (b[prevbindex] == b[j] || (AlmostEqual(b[prevbindex].X, b[j].X) && AlmostEqual(b[prevbindex].Y, b[j].Y)))
           {
             prevbindex = (prevbindex == 0) ? b.Length - 1 : prevbindex - 1;
           }
 
-          if (a[prevaindex] == a[i] || (_almostEqual(a[prevaindex].X, a[i].X) && _almostEqual(a[prevaindex].Y, a[i].Y)))
+          if (a[prevaindex] == a[i] || (AlmostEqual(a[prevaindex].X, a[i].X) && AlmostEqual(a[prevaindex].Y, a[i].Y)))
           {
             prevaindex = (prevaindex == 0) ? a.Length - 1 : prevaindex - 1;
           }
 
           // go even further forward if we happen to hit on a loop end point
-          if (b[nextbindex] == b[j + 1] || (_almostEqual(b[nextbindex].X, b[j + 1].X) && _almostEqual(b[nextbindex].Y, b[j + 1].Y)))
+          if (b[nextbindex] == b[j + 1] || (AlmostEqual(b[nextbindex].X, b[j + 1].X) && AlmostEqual(b[nextbindex].Y, b[j + 1].Y)))
           {
             nextbindex = (nextbindex == b.Length - 1) ? 0 : nextbindex + 1;
           }
 
-          if (a[nextaindex] == a[i + 1] || (_almostEqual(a[nextaindex].X, a[i + 1].X) && _almostEqual(a[nextaindex].Y, a[i + 1].Y)))
+          if (a[nextaindex] == a[i + 1] || (AlmostEqual(a[nextaindex].X, a[i + 1].X) && AlmostEqual(a[nextaindex].Y, a[i + 1].Y)))
           {
             nextaindex = (nextaindex == a.Length - 1) ? 0 : nextaindex + 1;
           }
@@ -532,7 +532,7 @@
           var a3 = new SvgPoint(a[nextaindex].X + aOffsetx, a[nextaindex].Y + aOffsety);
           var b3 = new SvgPoint(b[nextbindex].X + bOffsetx, b[nextbindex].Y + bOffsety);
 
-          if (_onSegment(a1, a2, b1) || (_almostEqual(a1.X, b1.X) && _almostEqual(a1.Y, b1.Y)))
+          if (OnSegment(a1, a2, b1) || (AlmostEqual(a1.X, b1.X) && AlmostEqual(a1.Y, b1.Y)))
           {
             // if a point is on a segment, it could intersect or it could not. Check via the neighboring points
             var b0in = pointInPolygon(b0, a);
@@ -547,7 +547,7 @@
             }
           }
 
-          if (_onSegment(a1, a2, b2) || (_almostEqual(a2.X, b2.X) && _almostEqual(a2.Y, b2.Y)))
+          if (OnSegment(a1, a2, b2) || (AlmostEqual(a2.X, b2.X) && AlmostEqual(a2.Y, b2.Y)))
           {
             // if a point is on a segment, it could intersect or it could not. Check via the neighboring points
             var b1in = pointInPolygon(b1, a);
@@ -563,7 +563,7 @@
             }
           }
 
-          if (_onSegment(b1, b2, a1) || (_almostEqual(a1.X, b2.X) && _almostEqual(a1.Y, b2.Y)))
+          if (OnSegment(b1, b2, a1) || (AlmostEqual(a1.X, b2.X) && AlmostEqual(a1.Y, b2.Y)))
           {
             // if a point is on a segment, it could intersect or it could not. Check via the neighboring points
             var a0in = pointInPolygon(a0, b);
@@ -579,7 +579,7 @@
             }
           }
 
-          if (_onSegment(b1, b2, a2) || (_almostEqual(a2.X, b1.X) && _almostEqual(a2.Y, b1.Y)))
+          if (OnSegment(b1, b2, a2) || (AlmostEqual(a2.X, b1.X) && AlmostEqual(a2.Y, b1.Y)))
           {
             // if a point is on a segment, it could intersect or it could not. Check via the neighboring points
             var a1in = pointInPolygon(a1, b);
@@ -754,7 +754,7 @@
 
             // only slide until no longer negative
             // todo: clean this up
-            if (d != null && !_almostEqual(d, 0) && d > 0)
+            if (d != null && !AlmostEqual(d, 0) && d > 0)
             {
             }
             else
@@ -764,7 +764,7 @@
 
             var vd2 = (vx * vx) + (vy * vy);
 
-            if (d * d < vd2 && !_almostEqual(d * d, vd2))
+            if (d * d < vd2 && !AlmostEqual(d * d, vd2))
             {
               var vd = Math.Sqrt((vx * vx) + (vy * vy));
               vx *= d.Value / vd;
@@ -847,7 +847,7 @@
       var EFmin = Math.Min(dotE, dotF);
 
       // segments that will merely touch at one point
-      if (_almostEqual(ABmax, EFmin, TOL) || _almostEqual(ABmin, EFmax, TOL))
+      if (AlmostEqual(ABmax, EFmin, TOL) || AlmostEqual(ABmin, EFmax, TOL))
       {
         return null;
       }
@@ -879,7 +879,7 @@
       var crossABF = ((f.Y - a.Y) * (b.X - a.X)) - ((f.X - a.X) * (b.Y - a.Y));
 
       // lines are colinear
-      if (_almostEqual(crossABE, 0) && _almostEqual(crossABF, 0))
+      if (AlmostEqual(crossABE, 0) && AlmostEqual(crossABF, 0))
       {
         var ABnorm = new SvgPoint(b.Y - a.Y, a.X - b.X);
         var EFnorm = new SvgPoint(f.Y - e.Y, e.X - f.X);
@@ -899,7 +899,7 @@
           var normdot = (ABnorm.Y * direction.Y) + (ABnorm.X * direction.X);
 
           // the segments merely slide along eachother
-          if (_almostEqual(normdot, 0, TOL))
+          if (AlmostEqual(normdot, 0, TOL))
           {
             return null;
           }
@@ -916,21 +916,21 @@
       var distances = new List<double>();
 
       // coincident points
-      if (_almostEqual(dotA, dotE))
+      if (AlmostEqual(dotA, dotE))
       {
         distances.Add(crossA - crossE);
       }
-      else if (_almostEqual(dotA, dotF))
+      else if (AlmostEqual(dotA, dotF))
       {
         distances.Add(crossA - crossF);
       }
       else if (dotA > EFmin && dotA < EFmax)
       {
         var d = pointDistance(a, e, f, reverse);
-        if (d != null && _almostEqual(d, 0))
+        if (d != null && AlmostEqual(d, 0))
         { // A currently touches EF, but AB is moving away from EF
           var dB = pointDistance(b, e, f, reverse, true);
-          if (dB < 0 || _almostEqual(dB * overlap, 0))
+          if (dB < 0 || AlmostEqual(dB * overlap, 0))
           {
             d = null;
           }
@@ -942,11 +942,11 @@
         }
       }
 
-      if (_almostEqual(dotB, dotE))
+      if (AlmostEqual(dotB, dotE))
       {
         distances.Add(crossB - crossE);
       }
-      else if (_almostEqual(dotB, dotF))
+      else if (AlmostEqual(dotB, dotF))
       {
         distances.Add(crossB - crossF);
       }
@@ -954,10 +954,10 @@
       {
         var d = pointDistance(b, e, f, reverse);
 
-        if (d != null && _almostEqual(d, 0))
+        if (d != null && AlmostEqual(d, 0))
         { // crossA>crossB A currently touches EF, but AB is moving away from EF
           var dA = pointDistance(a, e, f, reverse, true);
-          if (dA < 0 || _almostEqual(dA * overlap, 0))
+          if (dA < 0 || AlmostEqual(dA * overlap, 0))
           {
             d = null;
           }
@@ -972,10 +972,10 @@
       if (dotE > ABmin && dotE < ABmax)
       {
         var d = pointDistance(e, a, b, direction);
-        if (d != null && _almostEqual(d, 0))
+        if (d != null && AlmostEqual(d, 0))
         { // crossF<crossE A currently touches EF, but AB is moving away from EF
           var dF = pointDistance(f, a, b, direction, true);
-          if (dF < 0 || _almostEqual(dF * overlap, 0))
+          if (dF < 0 || AlmostEqual(dF * overlap, 0))
           {
             d = null;
           }
@@ -990,10 +990,10 @@
       if (dotF > ABmin && dotF < ABmax)
       {
         var d = pointDistance(f, a, b, direction);
-        if (d != null && _almostEqual(d, 0))
+        if (d != null && AlmostEqual(d, 0))
         { // && crossE<crossF A currently touches EF, but AB is moving away from EF
           var dE = pointDistance(e, a, b, direction, true);
-          if (dE < 0 || _almostEqual(dE * overlap, 0))
+          if (dE < 0 || AlmostEqual(dE * overlap, 0))
           {
             d = null;
           }
@@ -1047,7 +1047,7 @@
       // var p, s1, s2;
       double? d;
 
-      var dir = _normalizeVector(new SvgPoint(direction.x, direction.y));
+      var dir = NormalizeVector(new SvgPoint(direction.x, direction.y));
 
       var normal = new SvgPoint(
           dir.Y,
@@ -1067,7 +1067,7 @@
           B1 = new SvgPoint(edgeB[i].X + Boffsetx, edgeB[i].Y + Boffsety);
           B2 = new SvgPoint(edgeB[i + 1].X + Boffsetx, edgeB[i + 1].Y + Boffsety);
 
-          if ((_almostEqual(A1.X, A2.X) && _almostEqual(A1.Y, A2.Y)) || (_almostEqual(B1.X, B2.X) && _almostEqual(B1.Y, B2.Y)))
+          if ((AlmostEqual(A1.X, A2.X) && AlmostEqual(A1.Y, A2.Y)) || (AlmostEqual(B1.X, B2.X) && AlmostEqual(B1.Y, B2.Y)))
           {
             continue; // ignore extremely small lines
           }
@@ -1076,7 +1076,7 @@
 
           if (d != null && (distance == null || d < distance))
           {
-            if (!ignoreNegative || d > 0 || _almostEqual(d, 0))
+            if (!ignoreNegative || d > 0 || AlmostEqual(d, 0))
             {
               distance = d;
             }
@@ -1194,16 +1194,16 @@
             for (j = 0; j < b.Length; j++)
             {
               var nextj = (j == b.Length - 1) ? 0 : j + 1;
-              if (_almostEqual(a[i].X, b[j].X + b.Offsetx) && _almostEqual(a[i].Y, b[j].Y + b.Offsety))
+              if (AlmostEqual(a[i].X, b[j].X + b.Offsetx) && AlmostEqual(a[i].Y, b[j].Y + b.Offsety))
               {
                 touching.Add(new TouchingItem(0, i, j));
               }
-              else if (_onSegment(a[i], a[nexti],
+              else if (OnSegment(a[i], a[nexti],
                   new SvgPoint(b[j].X + b.Offsetx.Value, b[j].Y + b.Offsety.Value)))
               {
                 touching.Add(new TouchingItem(1, nexti, j));
               }
-              else if (_onSegment(
+              else if (OnSegment(
                   new SvgPoint(
                    b[j].X + b.Offsetx.Value, b[j].Y + b.Offsety.Value),
                   new SvgPoint(
@@ -1351,7 +1351,7 @@
             }
           }
 
-          if (translate == null || _almostEqual(maxd, 0))
+          if (translate == null || AlmostEqual(maxd, 0))
           {
             // didn't close the loop, something went wrong here
             nfp = null;
@@ -1365,7 +1365,7 @@
 
           // trim
           var vlength2 = (translate.x * translate.x) + (translate.y * translate.y);
-          if (maxd * maxd < vlength2 && !_almostEqual(maxd * maxd, vlength2))
+          if (maxd * maxd < vlength2 && !AlmostEqual(maxd * maxd, vlength2))
           {
             var scale = (double)Math.Sqrt((maxd * maxd) / vlength2);
             translate.x *= scale;
@@ -1375,7 +1375,7 @@
           referencex += translate.x;
           referencey += translate.y;
 
-          if (_almostEqual(referencex, startx) && _almostEqual(referencey, starty))
+          if (AlmostEqual(referencex, startx) && AlmostEqual(referencey, starty))
           {
             // we've made a full loop
             break;
@@ -1387,7 +1387,7 @@
           {
             for (i = 0; i < nfp.Length - 1; i++)
             {
-              if (_almostEqual(referencex, nfp[i].X) && _almostEqual(referencey, nfp[i].Y))
+              if (AlmostEqual(referencex, nfp[i].X) && AlmostEqual(referencey, nfp[i].Y))
               {
                 looped = true;
               }
