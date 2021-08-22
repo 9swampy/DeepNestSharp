@@ -14,7 +14,7 @@
     private readonly IMinkowskiSumService minkowskiSumService;
     private readonly INestStateBackground state;
     private readonly NfpHelper nfpHelper;
-    
+
     // run the placement synchronously
     private IWindowUnk window = new WindowUnk();
 

@@ -1,7 +1,7 @@
 ﻿namespace DeepNestLib.CiTests
 {
-  using DeepNestLib.NestProject;
   using System;
+  using DeepNestLib.NestProject;
 
   public class DefaultSvgNestConfig : SvgNestConfig, ISvgNestConfig
   {

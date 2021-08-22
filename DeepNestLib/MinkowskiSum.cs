@@ -19,7 +19,7 @@
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MinkowskiSum"/> class.
-    /// Private because sharing/reusing the cache is dangerous. 
+    /// Private because sharing/reusing the cache is dangerous.
     /// Replacing static global dependencies with factories to facilitate Unit Tests.
     /// </summary>
     private MinkowskiSum(ISvgNestConfig config, INestStateMinkowski state)

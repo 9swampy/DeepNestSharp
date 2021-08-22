@@ -20,7 +20,7 @@
     {
       get => svgNestConfig.ClipperScale;
       set => SetProperty(nameof(ClipperScale), () => svgNestConfig.ClipperScale, v => svgNestConfig.ClipperScale = v, value);
-}
+    }
 
     [Description("Gets or sets whether to clip the simplified polygon used in nesting by the hull. " +
       "This often improves the fit to the original part but may slightly increase the number " +

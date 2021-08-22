@@ -1,9 +1,9 @@
 ﻿namespace DeepNestLib
 {
-  using DeepNestLib.Placement;
   using System.Collections.Generic;
   using System.Linq;
   using System.Threading.Tasks;
+  using DeepNestLib.Placement;
 
   public abstract class ParserBase : IExport
   {

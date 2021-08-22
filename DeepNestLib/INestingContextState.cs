@@ -2,7 +2,7 @@
 {
   using System.Collections.Generic;
   using DeepNestLib.Placement;
-  
+
   public interface INestingContextState
   {
     INestResult Current { get; }

@@ -33,7 +33,7 @@
 
       public override void Write(Utf8JsonWriter writer, IList<TInnerCommonInterface, TInnerConcrete> value, JsonSerializerOptions options)
       {
-        JsonSerializer.Serialize<WrappableList<TInnerCommonInterface, TInnerConcrete>>(writer, (WrappableList< TInnerCommonInterface, TInnerConcrete>)value, options);
+        JsonSerializer.Serialize<WrappableList<TInnerCommonInterface, TInnerConcrete>>(writer, (WrappableList<TInnerCommonInterface, TInnerConcrete>)value, options);
       }
     }
   }

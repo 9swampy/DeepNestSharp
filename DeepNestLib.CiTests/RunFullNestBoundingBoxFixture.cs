@@ -13,7 +13,7 @@
     private const double ExpectedFitnessTolerance = 10000;
 
     private static volatile object testSyncLock = new object();
-    
+
     private readonly DxfGenerator dxfGenerator = new DxfGenerator();
     private DefaultSvgNestConfig config;
     private RawDetail loadedRawDetail;

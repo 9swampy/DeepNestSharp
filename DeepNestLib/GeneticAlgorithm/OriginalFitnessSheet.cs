@@ -69,7 +69,7 @@
               materialWasted *= 1.25;
             }
 
-            materialWasted = Math.Max(0, materialWasted.Value /2);
+            materialWasted = Math.Max(0, materialWasted.Value / 2);
           }
         }
 

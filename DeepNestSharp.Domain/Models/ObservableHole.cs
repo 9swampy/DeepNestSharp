@@ -1,7 +1,7 @@
 ﻿namespace DeepNestSharp.Domain.Models
 {
   using DeepNestLib;
-  
+
   public class ObservableHole : ObservableNfp
   {
     /// <summary>

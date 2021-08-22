@@ -489,7 +489,7 @@
         points[i] = new double[] { this[i].X, this[i].Y };
       }
 
-      var hullpoints = D3.polygonHull(points);
+      var hullpoints = D3.PolygonHull(points);
       if (hullpoints == null)
       {
         return new NFP(this.Points);

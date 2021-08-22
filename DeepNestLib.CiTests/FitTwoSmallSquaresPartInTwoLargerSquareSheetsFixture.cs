@@ -1,7 +1,7 @@
 ﻿namespace DeepNestLib.CiTests
 {
   using System;
-using System.Diagnostics;
+  using System.Diagnostics;
   using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;

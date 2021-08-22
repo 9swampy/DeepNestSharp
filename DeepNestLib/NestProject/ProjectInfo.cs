@@ -1,10 +1,10 @@
 namespace DeepNestLib.NestProject
 {
-  using Light.GuardClauses;
   using System;
   using System.IO;
   using System.Text.Json;
   using System.Text.Json.Serialization;
+  using Light.GuardClauses;
 
   public class ProjectInfo : IProjectInfo
   {
