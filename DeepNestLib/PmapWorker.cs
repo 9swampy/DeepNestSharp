@@ -51,11 +51,6 @@
       return ret.ToArray();
     }
 
-    private void ProcessAndCaptureResult(NfpPair item, Action<NfpPair> captureResultAction)
-    {
-      captureResultAction(this.Process(item));
-    }
-
     internal NfpPair Process(NfpPair pair)
     {
       var a = pair.A.Rotate(pair.ARotation, WithChildren.Excluded);
@@ -73,9 +68,14 @@
 
       pair.A = null;
       pair.B = null;
-      pair.nfp = clipperNfp;
+      pair.Nfp = clipperNfp;
       progressDisplayer.IncrementLoopProgress(ProgressBar.Secondary);
       return pair;
+    }
+
+    private void ProcessAndCaptureResult(NfpPair item, Action<NfpPair> captureResultAction)
+    {
+      captureResultAction(this.Process(item));
     }
   }
 }

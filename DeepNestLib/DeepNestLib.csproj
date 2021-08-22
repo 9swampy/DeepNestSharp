@@ -157,6 +157,7 @@
   <ItemGroup>
     <Compile Include="ClipCacheItemJsonConverter.cs" />
     <Compile Include="GeneticAlgorithm\ISheetPlacementFitness.cs" />
+    <Compile Include="Geometry\PolygonBounds.cs" />
     <Compile Include="IDispatcherService.cs" />
     <Compile Include="IMinMaxXY.cs" />
     <Compile Include="INestingContext.cs" />
@@ -164,7 +165,9 @@
     <Compile Include="INestState.cs" />
     <Compile Include="InnerFlowResult.cs" />
     <Compile Include="IO\ProgressDisplayerBase.cs" />
+    <Compile Include="IPlacement.cs" />
     <Compile Include="IPointXY.cs" />
+    <Compile Include="IPolygon.cs" />
     <Compile Include="ISheet.cs" />
     <Compile Include="ITestMinkowskiSumService.cs" />
     <Compile Include="LocalContour.cs" />
@@ -201,7 +204,7 @@
     <Compile Include="GeneticAlgorithm\OriginalFitnessSheet.cs" />
     <Compile Include="GeneticAlgorithm\OriginalFitness.cs" />
     <Compile Include="GeneticAlgorithm\Procreant.cs" />
-    <Compile Include="GeometryUtil.cs" />
+    <Compile Include="Geometry\GeometryUtil.cs" />
     <Compile Include="IDataInfo.cs" />
     <Compile Include="IDbCache.cs" />
     <Compile Include="IDeprecatedClipper.cs" />
@@ -269,7 +272,7 @@
     <Compile Include="PolygonSimplificationDictionary.cs" />
     <Compile Include="PolygonSimplificationKey.cs" />
     <Compile Include="PolygonTreeItem.cs" />
-    <Compile Include="PolygonWithBounds.cs" />
+    <Compile Include="Geometry\PolygonWithBounds.cs" />
     <Compile Include="GeneticAlgorithm\PopulationItem.cs" />
     <Compile Include="ProgressBar.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -294,6 +297,7 @@
     <Compile Include="TopNestResultsCollection.cs" />
     <Compile Include="WindowUnk.cs" />
     <Compile Include="WindowUnkJsonConverter.cs" />
+    <Compile Include="WithChildren.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\clipper_library\clipper_library.csproj">
@@ -377,6 +381,7 @@
       <Link>Dxfs\OneSquare.svg</Link>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.VisualStudio.Threading.Analyzers.16.10.56\build\Microsoft.VisualStudio.Threading.Analyzers.targets" Condition="Exists('..\packages\Microsoft.VisualStudio.Threading.Analyzers.16.10.56\build\Microsoft.VisualStudio.Threading.Analyzers.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

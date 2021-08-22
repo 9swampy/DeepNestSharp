@@ -119,7 +119,7 @@
       var pos = box.PointToClient(Cursor.Position);
 
       sx = -((pos.X / zold) - sx - (pos.X / zoom));
-      sy = ((pos.Y / zold) + sy - (pos.Y / zoom));
+      sy = (pos.Y / zold) + sy - (pos.Y / zoom);
     }
 
     private void Pb_MouseMove(object sender, MouseEventArgs e)
@@ -134,8 +134,8 @@
 
       var p = box.PointToClient(Cursor.Position);
       var pos = box.PointToClient(Cursor.Position);
-      var posx = ((pos.X / zoom) - sx);
-      var posy = ((-pos.Y / zoom) - sy);
+      var posx = (pos.X / zoom) - sx;
+      var posy = (-pos.Y / zoom) - sy;
     }
 
     private void PictureBox1_MouseDown(object sender, MouseEventArgs e)
@@ -235,7 +235,7 @@
       var x = (dx / 2) + minx;
       var y = (dy / 2) + miny;
 
-      sx = (((w / 2f) / zoom) - x);
+      sx = ((w / 2f) / zoom) - x;
       sy = -(((h / 2f) / zoom) + y);
 
       var test = Transform(new PointF(x, y));
@@ -500,7 +500,7 @@
     private void AddApproximation(RawDetail raw)
     {
       var part = raw.ToNfp();
-      var simplification = SvgNest.simplifyFunction(part, false, SvgNest.Config);
+      var simplification = SvgNest.SimplifyFunction(part, false, SvgNest.Config);
       this.Draw(simplification, Pens.Red);
       var pointsChange = $"{part.Points.Length} => {simplification.Points.Length} points";
       this.DrawLabel(pointsChange, Brushes.Black, Color.Orange, 5, (int)(10 + this.GetLabelHeight()));

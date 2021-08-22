@@ -2,6 +2,7 @@
 {
   using System;
   using DeepNestLib.GeneticAlgorithm;
+  using DeepNestLib.Geometry;
   using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;

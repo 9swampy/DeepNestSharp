@@ -4,6 +4,7 @@
   using System.Collections.ObjectModel;
   using DeepNestLib;
   using DeepNestLib.GeneticAlgorithm;
+  using DeepNestLib.Geometry;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain.Models;
   using Microsoft.Toolkit.Mvvm.ComponentModel;

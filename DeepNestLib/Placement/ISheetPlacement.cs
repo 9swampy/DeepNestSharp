@@ -2,6 +2,7 @@
 {
   using System.Collections.Generic;
   using DeepNestLib.GeneticAlgorithm;
+  using DeepNestLib.Geometry;
 
   public interface ISheetPlacement : IMinMaxXY
   {

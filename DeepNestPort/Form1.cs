@@ -13,6 +13,7 @@
   using System.Windows.Forms;
   using System.Xml.Linq;
   using DeepNestLib;
+  using DeepNestLib.Geometry;
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
 
@@ -521,7 +522,7 @@
 
       if (si is FileInfo)
       {
-        var f = (si as FileInfo);
+        var f = si as FileInfo;
         QntDialog q = new QntDialog();
         if (q.ShowDialog() == DialogResult.OK)
         {
@@ -629,7 +630,7 @@
         QntDialog qd = new QntDialog();
         if (qd.ShowDialog() == DialogResult.OK)
         {
-          var nfp = (listView1.SelectedItems[0].Tag as NFP);
+          var nfp = listView1.SelectedItems[0].Tag as NFP;
           for (int i = 0; i < qd.Qnt; i++)
           {
             var r = nfp.Clone();

@@ -10,6 +10,7 @@
   using System.Text;
 #endif
   using ClipperLib;
+  using DeepNestLib.Geometry;
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
 
@@ -211,7 +212,7 @@
           this.VerboseLog($"Placement #{Placements.Count}. . .");
           var clipper = new Clipper();
           string clipkey = "s:" + processedPart.Source + "r:" + processedPart.Rotation;
-          var error = false;
+          bool error;
           IntPoint[][] clipperSheetNfp = NfpHelper.InnerNfpToClipperCoordinates(SheetNfp.Items, this.Config.ClipperScale);
 
           // check if stored in clip cache
@@ -370,7 +371,7 @@
                   localpoints.AddPoint(new SvgPoint(processedPart[m].X + shiftvector.X, processedPart[m].Y + shiftvector.Y));
                 }
 
-                area = Math.Abs(GeometryUtil.polygonArea(localpoints.GetHull()));
+                area = Math.Abs(GeometryUtil.PolygonArea(localpoints.GetHull()));
                 shiftvector.Hull = localpoints.GetHull();
                 shiftvector.HullSheet = Sheet.GetHull();
               }

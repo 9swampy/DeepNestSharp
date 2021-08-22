@@ -8,7 +8,7 @@
     // for 3D version, see 3d branch (configurability would draw significant performance overhead)
 
     // square distance between 2 points
-    public static double getSqDist(SvgPoint p1, SvgPoint p2)
+    public static double GetSqDist(SvgPoint p1, SvgPoint p2)
     {
       var dx = p1.X - p2.X;
       var dy = p1.Y - p2.Y;
@@ -17,7 +17,7 @@
     }
 
     // square distance from a point to a segment
-    public static double getSqSegDist(SvgPoint p, SvgPoint p1, SvgPoint p2)
+    public static double GetSqSegDist(SvgPoint p, SvgPoint p1, SvgPoint p2)
     {
       var x = p1.X;
       var y = p1.Y;
@@ -49,7 +49,7 @@
     // rest of the code doesn't care about point format
 
     // basic distance-based simplification
-    private static SvgPoint[] simplifyRadialDist(SvgPoint[] points, double? sqTolerance)
+    private static SvgPoint[] SimplifyRadialDist(SvgPoint[] points, double? sqTolerance)
     {
       var prevPoint = points[0];
       var newPoints = new NFP();
@@ -61,7 +61,7 @@
       {
         point = points[i];
 
-        if (point.Marked || getSqDist(point, prevPoint) > sqTolerance)
+        if (point.Marked || GetSqDist(point, prevPoint) > sqTolerance)
         {
           newPoints.AddPoint(point);
           prevPoint = point;
@@ -76,14 +76,14 @@
       return newPoints.Points;
     }
 
-    public static void simplifyDPStep(SvgPoint[] points, int first, int last, double? sqTolerance, ref NFP simplified)
+    public static void SimplifyDPStep(SvgPoint[] points, int first, int last, double? sqTolerance, ref NFP simplified)
     {
       var maxSqDist = sqTolerance;
       var index = -1;
       var marked = false;
       for (var i = first + 1; i < last; i++)
       {
-        var sqDist = getSqSegDist(points[i], points[first], points[last]);
+        var sqDist = GetSqSegDist(points[i], points[first], points[last]);
 
         if (sqDist > maxSqDist)
         {
@@ -105,13 +105,13 @@
       {
         if (index - first > 1)
         {
-          simplifyDPStep(points, first, index, sqTolerance, ref simplified);
+          SimplifyDPStep(points, first, index, sqTolerance, ref simplified);
         }
 
         ((IHiddenNfp)simplified).Push(points[index]);
         if (last - index > 1)
         {
-          simplifyDPStep(points, index, last, sqTolerance, ref simplified);
+          SimplifyDPStep(points, index, last, sqTolerance, ref simplified);
         }
       }
     }
@@ -128,7 +128,7 @@
 
       var simplified = new NFP();
       simplified.AddPoint(points[0]);
-      simplifyDPStep(points, 0, last, sqTolerance, ref simplified);
+      SimplifyDPStep(points, 0, last, sqTolerance, ref simplified);
       ((IHiddenNfp)simplified).Push(points[last]);
 
       return simplified.Points;
@@ -142,7 +142,7 @@
     /// <param name="doSimplifyRadialDist">If .f then the simplifyRadialDist algorithym is skipped.</param>
     /// <param name="doSimplifyDouglasPeucker">If .f then the simplifyDouglasPeucker algorithym is skipped.</param>
     /// <returns></returns>
-    public static NFP simplify(IEnumerable<SvgPoint> points, double? tolerance, bool doSimplifyRadialDist, bool doSimplifyDouglasPeucker)
+    public static NFP SimplifyPolygon(IEnumerable<SvgPoint> points, double? tolerance, bool doSimplifyRadialDist, bool doSimplifyDouglasPeucker)
     {
       SvgPoint[] resultSource = points.DeepClone();
       if (resultSource.Length > 2)
@@ -151,7 +151,7 @@
 
         if (doSimplifyRadialDist)
         {
-          resultSource = simplifyRadialDist(resultSource, sqTolerance);
+          resultSource = SimplifyRadialDist(resultSource, sqTolerance);
         }
 
         if (doSimplifyDouglasPeucker)

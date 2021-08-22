@@ -7,6 +7,7 @@
   using System.Linq;
   using System.Text.Json.Serialization;
   using ClipperLib;
+  using DeepNestLib.Geometry;
   using Minkowski;
 
   public class MinkowskiSum : IMinkowskiSumService
@@ -237,7 +238,7 @@
       for (int i = 0; i < solution.Count(); i++)
       {
         var n = solution[i].ToArray().ToNestCoordinates(10000000);
-        var sarea = -GeometryUtil.polygonArea(n);
+        var sarea = -GeometryUtil.PolygonArea(n);
         if (largestArea == null ||
             (minkowskiSumPick == MinkowskiSumPick.Largest && largestArea < sarea) ||
             (minkowskiSumPick == MinkowskiSumPick.Smallest && largestArea > sarea))

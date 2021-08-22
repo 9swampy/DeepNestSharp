@@ -32,8 +32,8 @@
       this.Id = source.Id;
       this.IsPriority = source.IsPriority;
       this.Name = source.Name;
-      this.Offsetx = source.Offsetx;
-      this.Offsety = source.Offsety;
+      this.OffsetX = source.OffsetX;
+      this.OffsetY = source.OffsetY;
       this.PlacementOrder = source.PlacementOrder;
       this.Rotation = source.Rotation;
       this.Sheet = source.Sheet;
@@ -153,11 +153,11 @@
 
     [JsonConverter(typeof(DoublePrecisionConverter))]
     /// <inheritdoc />
-    public double? Offsetx { get; set; }
+    public double? OffsetX { get; set; }
 
     [JsonConverter(typeof(DoublePrecisionConverter))]
     /// <inheritdoc />
-    public double? Offsety { get; set; }
+    public double? OffsetY { get; set; }
 
     /// <inheritdoc />
     public int Source { get; set; } = -1;

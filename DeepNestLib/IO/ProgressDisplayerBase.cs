@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace DeepNestLib.IO
+﻿namespace DeepNestLib.IO
 {
+  using System;
+
   public abstract class ProgressDisplayerBase
   {
     private double loopIndex;

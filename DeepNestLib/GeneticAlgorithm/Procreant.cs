@@ -3,6 +3,7 @@
   using System;
   using System.Collections.Generic;
   using System.Linq;
+  using DeepNestLib.Geometry;
   using DeepNestLib.NestProject;
 
   public class Procreant
@@ -78,7 +79,7 @@
         }
       }
 
-      adam = adam.OrderByDescending(z => Math.Abs(GeometryUtil.polygonArea(z))).ToList();
+      adam = adam.OrderByDescending(z => Math.Abs(GeometryUtil.PolygonArea(z))).ToList();
       /*List<NFP> shuffle = new List<NFP>();
       Random r = new Random(DateTime.Now.Millisecond);
       while (adam.Any())
@@ -186,7 +187,7 @@
     }
 
     // single point crossover
-    private PopulationItem[] mate(PopulationItem male, PopulationItem female)
+    private PopulationItem[] Mate(PopulationItem male, PopulationItem female)
     {
       var cutpoint = (int)Math.Round(Math.Min(Math.Max(r.NextDouble(), 0.1), 0.9) * (male.Parts.Count - 1));
 
@@ -238,7 +239,7 @@
         var female = RandomWeightedIndividual(male);
 
         // each mating produces two children
-        var children = mate(male, female);
+        var children = Mate(male, female);
 
         // slightly mutate children
         newpopulation.Add(this.Mutate(children[0]));

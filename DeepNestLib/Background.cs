@@ -1,5 +1,6 @@
 ﻿namespace DeepNestLib
 {
+  using DeepNestLib.Geometry;
   using System;
   using System.Collections.Generic;
   using System.Diagnostics;
@@ -22,7 +23,7 @@
     /// Initializes a new instance of the <see cref="Background"/> class.
     /// Needs to be totally self contained so it can calculate multiple nests in parallel.
     /// </summary>
-    /// <param name="progressDisplayer">Callback access to the executing UI</param>
+    /// <param name="progressDisplayer">Callback access to the executing UI.</param>
     /// <param name="nest">Passed in because have had issues with nest.ResponseProcessor accepting responses after a new nest has already been started.</param>
     /// <param name="minkowskiSumService">MinkowskiSumService used to inject algorithms to calculate the No-Fit-Polygons critical to DeepNest.</param>
     public Background(IProgressDisplayer progressDisplayer, SvgNest nest, IMinkowskiSumService minkowskiSumService, INestStateBackground state)
@@ -84,7 +85,6 @@
 
         // preprocess
         List<NfpPair> pairs = new NfpPairsFactory(window).Generate(config.UseParallel, parts);
-        //List<NfpPair> pairs = new List<NfpPair>();
 
         // console.log('pairs: ', pairs.length);
         // console.time('Total');
@@ -170,10 +170,10 @@
           }
         }
 
-        processed.nfp.Children = cnfp;
+        processed.Nfp.Children = cnfp;
       }
 
-      DbCacheKey doc = new DbCacheKey(processed.Asource, processed.Bsource, processed.ARotation, processed.BRotation, new[] { processed.nfp });
+      DbCacheKey doc = new DbCacheKey(processed.Asource, processed.Bsource, processed.ARotation, processed.BRotation, new[] { processed.Nfp });
 
       /*var doc = {
               A: processed[i].Asource,

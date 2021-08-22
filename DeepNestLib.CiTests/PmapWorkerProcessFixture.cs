@@ -47,31 +47,31 @@
     [Fact]
     public void ShouldSetNfp()
     {
-      processed.nfp.Should().NotBeNull();
+      processed.Nfp.Should().NotBeNull();
     }
 
     [Fact]
     public void ShouldSetNfpHeight()
     {
-      processed.nfp.HeightCalculated.Should().Be(22);
+      processed.Nfp.HeightCalculated.Should().Be(22);
     }
 
     [Fact]
     public void ShouldSetNfpWidth()
     {
-      processed.nfp.WidthCalculated.Should().Be(22);
+      processed.Nfp.WidthCalculated.Should().Be(22);
     }
 
     [Fact]
     public void ShouldSetNfpArea()
     {
-      processed.nfp.Area.Should().Be(484);
+      processed.Nfp.Area.Should().Be(484);
     }
 
     [Fact]
     public void ShouldSetPointsRealRun()
     {
-      processed.nfp.Points.Should().BeEquivalentTo(expectedPoints1, options => options
+      processed.Nfp.Points.Should().BeEquivalentTo(expectedPoints1, options => options
         .Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 1))
         .WhenTypeIs<double>());
     }

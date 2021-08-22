@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-
-namespace DeepNestSharp.Domain
+﻿namespace DeepNestSharp.Domain
 {
+  using System.Threading.Tasks;
+
   public interface IFileIoService
   {
     Task<string> GetOpenFilePathAsync(string filter);

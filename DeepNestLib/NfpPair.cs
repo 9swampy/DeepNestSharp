@@ -6,7 +6,7 @@
 
     public INfp B { get; internal set; }
 
-    public INfp nfp { get; internal set; }
+    public INfp Nfp { get; internal set; }
 
     public double ARotation { get; internal set; }
 

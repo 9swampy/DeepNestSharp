@@ -9,6 +9,7 @@
   using System.Threading.Tasks;
   using ClipperLib;
   using DeepNestLib.GeneticAlgorithm;
+  using DeepNestLib.Geometry;
   using DeepNestLib.Placement;
 
   public partial class SvgNest
@@ -85,7 +86,7 @@
 
     public static ISvgNestConfig Config { get; } = new SvgNestConfig();
 
-    public static bool pointInPolygon(SvgPoint point, INfp polygon)
+    public static bool PointInPolygon(SvgPoint point, INfp polygon)
     {
       // scaling is deliberately coarse to filter out points that lie *on* the polygon
       var p = SvgToClipper2(polygon, 1000);
@@ -95,18 +96,18 @@
     }
 
     // returns true if any complex vertices fall outside the simple polygon
-    private static bool exterior(INfp simple, INfp complex, bool inside, double curveTolerance)
+    private static bool Exterior(INfp simple, INfp complex, bool inside, double curveTolerance)
     {
       // find all protruding vertices
       for (var i = 0; i < complex.Length; i++)
       {
         var v = complex[i];
-        if (!inside && !pointInPolygon(v, simple) && find(v, simple, curveTolerance) == null)
+        if (!inside && !PointInPolygon(v, simple) && Find(v, simple, curveTolerance) == null)
         {
           return true;
         }
 
-        if (inside && pointInPolygon(v, simple) && find(v, simple, curveTolerance) != null)
+        if (inside && PointInPolygon(v, simple) && Find(v, simple, curveTolerance) != null)
         {
           return true;
         }
@@ -119,7 +120,7 @@
 
     private static volatile object cacheSyncLock = new object();
 
-    public static INfp simplifyFunction(INfp polygon, bool inside, ISvgNestConfig config)
+    public static INfp SimplifyFunction(INfp polygon, bool inside, ISvgNestConfig config)
     {
       return SimplifyFunction(polygon, inside, config.CurveTolerance, config.Simplify);
     }
@@ -202,7 +203,7 @@
           }
         }
 
-        simple = Simplify.simplify(copy.Points, tolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker);
+        simple = Simplify.SimplifyPolygon(copy.Points, tolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker);
 
         // now a polygon again
         // simple.pop();
@@ -218,14 +219,14 @@
         simple = polygon;
       }
 
-      var offsets = polygonOffsetDeepNest(simple, inside ? -tolerance : tolerance);
+      var offsets = PolygonOffsetDeepNest(simple, inside ? -tolerance : tolerance);
 
       INfp offset = null;
       double offsetArea = 0;
       List<INfp> holes = new List<INfp>();
       for (i = 0; i < offsets.Length; i++)
       {
-        var area = GeometryUtil.polygonArea(offsets[i]);
+        var area = GeometryUtil.PolygonArea(offsets[i]);
         if (offset == null || area < offsetArea)
         {
           offset = offsets[i];
@@ -250,7 +251,7 @@
       {
         var delta = j * (tolerance / numshells);
         delta = inside ? -delta : delta;
-        var shell = polygonOffsetDeepNest(simple, delta);
+        var shell = PolygonOffsetDeepNest(simple, delta);
         if (shell.Count() > 0)
         {
           shells[j] = shell.First();
@@ -283,7 +284,7 @@
           var test = offset.CloneTop();
           test.Points[i] = new SvgPoint(target.X, target.Y);
 
-          if (!exterior(test, polygon, inside, curveTolerance))
+          if (!Exterior(test, polygon, inside, curveTolerance))
           {
             o.X = target.X;
             o.Y = target.Y;
@@ -300,7 +301,7 @@
                 target = GetTarget(o, shell, 2 * delta);
                 test = offset.CloneTop();
                 test.Points[i] = new SvgPoint(target.X, target.Y);
-                if (!exterior(test, polygon, inside, curveTolerance))
+                if (!Exterior(test, polygon, inside, curveTolerance))
                 {
                   o.X = target.X;
                   o.Y = target.Y;
@@ -375,7 +376,7 @@
             for (i = 0; i < combined.Count; i++)
             {
               var n = combined[i].ToArray().ToNestCoordinates(10000000);
-              var sarea = -GeometryUtil.polygonArea(n);
+              var sarea = -GeometryUtil.PolygonArea(n);
               if (largestArea == null || largestArea < sarea)
               {
                 offset = n;
@@ -459,8 +460,8 @@
       for (i = 0; i < offset.Length; i++)
       {
         var seg = new SvgPoint[] { offset[i], offset[i + 1 == offset.Length ? 0 : i + 1] };
-        var index1 = find(seg[0], polygon, curveTolerance);
-        var index2 = find(seg[1], polygon, curveTolerance);
+        var index1 = Find(seg[0], polygon, curveTolerance);
+        var index2 = Find(seg[1], polygon, curveTolerance);
         if (index1 == null)
         {
           index1 = 0;
@@ -492,8 +493,8 @@
         seg.AddPoint(simple[i]);
         seg.AddPoint(simple[i + 1 == simple.Length ? 0 : i + 1]);
 
-        var index1 = find(seg[0], polygon, curveTolerance);
-        var index2 = find(seg[1], polygon, curveTolerance);
+        var index1 = Find(seg[0], polygon, curveTolerance);
+        var index2 = Find(seg[1], polygon, curveTolerance);
 
         if (IsExactMatch(polygon, index1, index2))
         {
@@ -508,7 +509,7 @@
       return index1 + 1 == index2 || index2 + 1 == index1 || (index1 == 0 && index2 == polygon.Length - 1) || (index2 == 0 && index1 == polygon.Length - 1);
     }
 
-    private static int? find(SvgPoint v, INfp p, double curveTolerance)
+    private static int? Find(SvgPoint v, INfp p, double curveTolerance)
     {
       for (var i = 0; i < p.Length; i++)
       {
@@ -524,11 +525,11 @@
     // offset tree recursively
     public static void OffsetTree(ref INfp t, double offset, ISvgNestConfig config, bool? inside = null)
     {
-      var simple = simplifyFunction(t, (inside == null) ? false : inside.Value, config);
+      var simple = SimplifyFunction(t, (inside == null) ? false : inside.Value, config);
       var offsetpaths = new INfp[] { simple };
       if (Math.Abs(offset) > 0)
       {
-        offsetpaths = polygonOffsetDeepNest(simple, offset);
+        offsetpaths = PolygonOffsetDeepNest(simple, offset);
       }
 
       if (offsetpaths.Count() > 0)
@@ -568,7 +569,7 @@
 
     // use the clipper library to return an offset to the given polygon. Positive offset expands the polygon, negative contracts
     // note that this returns an array of polygons
-    public static INfp[] polygonOffsetDeepNest(INfp polygon, double offset)
+    public static INfp[] PolygonOffsetDeepNest(INfp polygon, double offset)
     {
       if (offset == 0 || GeometryUtil.AlmostEqual(offset, 0))
       {
@@ -724,7 +725,7 @@
             continue;
           }
 
-          if (GeometryUtil.pointInPolygon(p.Polygon.Points[0], list[j].Polygon).Value)
+          if (GeometryUtil.PointInPolygon(p.Polygon.Points[0], list[j].Polygon).Value)
           {
             if (list[j].Childs == null)
             {

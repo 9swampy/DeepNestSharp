@@ -1,71 +1,19 @@
 ﻿namespace DeepNestLib
 {
-  using System;
   using System.Collections.Generic;
-  using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
-
-  public interface IPolygon : IEquatable<IPolygon>
-  {
-    IList<INfp> Children { get; set; }
-
-    int Id { get; set; }
-
-    /// <summary>
-    /// Gets whether every point in the polygon is exact, true to the original import.
-    /// </summary>
-    bool IsExact { get; }
-
-    string Name { get; set; }
-
-    SvgPoint[] Points { get; }
-
-    /// <summary>
-    /// Gets or sets a value indicating the rotation of the part in degrees clockwise.
-    /// If the number is over 360˚ then it will be reduced by 360˚ repeatedly until it is.
-    /// Use the Rotate method to actually alter the part. Use of this property is inconsistent,
-    /// sometimes it's used to store a desired rotation to be applied; sometimes to record the
-    /// amount the part has been rotated? Needs clarification of purpose...
-    /// </summary>
-    double Rotation { get; set; }
-
-    int Source { get; set; }
-
-    SvgPoint this[int ind] { get; }
-
-    void AddPoint(SvgPoint point);
-  }
-
-  public interface IPlacement
-  {
-    bool IsPriority { get; set; }
-
-    double? Offsetx { get; set; }
-
-    double? Offsety { get; set; }
-
-    int PlacementOrder { get; set; }
-
-    INfp Sheet { get; set; }
-
-    AnglesEnum StrictAngle { get; set; }
-
-    double X { get; set; }
-
-    double Y { get; set; }
-  }
 
   public interface INfp : IMinMaxXY, IPolygon, IPlacement
   {
     /// <summary>
-    /// The gross outer area, not discounting for any holes.
+    /// Gets the gross outer area, not discounting for any holes.
     /// </summary>
     double Area { get; }
 
     bool Fitted { get; }
 
     /// <summary>
-    /// Overall height.
+    /// Gets overall height.
     /// </summary>
     double HeightCalculated { get; }
 
@@ -135,11 +83,5 @@
     string ToShortString();
 
     string ToOpenScadPolygon();
-  }
-
-  public enum WithChildren
-  {
-    Included,
-    Excluded,
   }
 }

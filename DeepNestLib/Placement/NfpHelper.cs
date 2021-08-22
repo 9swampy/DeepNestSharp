@@ -5,6 +5,7 @@
   using System.Text;
   using System.Text.Json.Serialization;
   using ClipperLib;
+  using DeepNestLib.Geometry;
   using Light.GuardClauses;
 
   public class NfpHelper : INfpHelper, ITestNfpHelper
@@ -58,7 +59,7 @@
       {
         for (var j = 0; j < nfp.Children.Count; j++)
         {
-          if (GeometryUtil.polygonArea(nfp.Children[j]) < 0)
+          if (GeometryUtil.PolygonArea(nfp.Children[j]) < 0)
           {
             nfp.Children[j].Reverse();
           }
@@ -69,7 +70,7 @@
         }
       }
 
-      if (GeometryUtil.polygonArea(nfp) > 0)
+      if (GeometryUtil.PolygonArea(nfp) > 0)
       {
         nfp.Reverse();
       }
@@ -157,7 +158,7 @@
         f.Add(finalNfp[i].ToArray().ToNestCoordinates(clipperScale));
       }
 
-      if (a.Source != null && b.Source != null)
+      if (a?.Source != null && b?.Source != null)
       {
         // insert into db
         // console.log('inserting inner: ', A.source, B.source, B.rotation, f);

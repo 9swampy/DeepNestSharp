@@ -70,7 +70,7 @@
 #endif
     {
 #if x64
-      long[] longs = (new[] { 1 }).Select(o => (long)o).ToArray();
+      long[] longs = new[] { 1 }.Select(o => (long)o).ToArray();
       Minkowski.MinkowskiWrapper.setData(1, new[] { 1d }, 1, longs, new[] { 1d }, 1, new[] { 1d });
 #else
       Minkowski.MinkowskiWrapper.setData(1, new[] { 1d }, 1, new[] { 1 }, new[] { 1d }, 1, new[] { 1d });

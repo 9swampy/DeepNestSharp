@@ -14,8 +14,8 @@
     }
   ],
   "Id": 0,
-  "Offsetx": null,
-  "Offsety": null,
+  "OffsetX": null,
+  "OffsetY": null,
   "Source": -1,
   "PlacementOrder": -1,
   "Rotation": 0,

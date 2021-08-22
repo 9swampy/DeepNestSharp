@@ -92,18 +92,18 @@
 
     /// <inheritdoc/>
     [Description("The X offset (Set and used by the export process)."), Category("Placement")]
-    public double? Offsetx
+    public double? OffsetX
     {
-      get => this.item.Offsetx;
-      set => SetProperty(nameof(Offsetx), () => this.item.Offsetx, v => this.item.Offsetx = v, value);
+      get => this.item.OffsetX;
+      set => SetProperty(nameof(OffsetX), () => this.item.OffsetX, v => this.item.OffsetX = v, value);
     }
 
     /// <inheritdoc/>
     [Description("The Y offset (Set and used by the export process)."), Category("Placement")]
-    public double? Offsety
+    public double? OffsetY
     {
-      get => this.item.Offsety;
-      set => SetProperty(nameof(Offsety), () => this.item.Offsety, v => this.item.Offsety = v, value);
+      get => this.item.OffsetY;
+      set => SetProperty(nameof(OffsetY), () => this.item.OffsetY, v => this.item.OffsetY = v, value);
     }
 
     /// <inheritdoc/>

@@ -1,4 +1,5 @@
-﻿/*******************************************************************************
+﻿#define use_lines
+/*******************************************************************************
 *                                                                              *
 * Author    :  Angus Johnson                                                   *
 * Version   :  6.4.2                                                           *
@@ -31,41 +32,40 @@
 *                                                                              *
 *******************************************************************************/
 
-/*******************************************************************************
-*                                                                              *
-* This is a translation of the Delphi Clipper library and the naming style     *
-* used has retained a Delphi flavour.                                          *
-*                                                                              *
-*******************************************************************************/
-
-//use_int32: When enabled 32bit ints are used instead of 64bit ints. This
-//improve performance but coordinate values are limited to the range +/- 46340
-//#define use_int32
-
-//use_xyz: adds a Z member to IntPoint. Adds a minor cost to performance.
-//#define use_xyz
-
-//use_lines: Enables open path clipping. Adds a very minor cost to performance.
-#define use_lines
-
-
-using System;
-using System.Collections.Generic;
 //using System.Text;          //for Int128.AsString() & StringBuilder
 //using System.IO;            //debugging with streamReader & StreamWriter
 //using System.Windows.Forms; //debugging to clipboard
 
 namespace ClipperLib
 {
+  /*******************************************************************************
+  *                                                                              *
+  * This is a translation of the Delphi Clipper library and the naming style     *
+  * used has retained a Delphi flavour.                                          *
+  *                                                                              *
+  *******************************************************************************/
+
+  //use_int32: When enabled 32bit ints are used instead of 64bit ints. This
+  //improve performance but coordinate values are limited to the range +/- 46340
+  //#define use_int32
+
+  //use_xyz: adds a Z member to IntPoint. Adds a minor cost to performance.
+  //#define use_xyz
+
+  //use_lines: Enables open path clipping. Adds a very minor cost to performance.
+
+
+  using System;
+  using System.Collections.Generic;
 
 #if use_int32
   using cInt = Int32;
 #else
-  using cInt = Int64;
+  using cInt = System.Int64;
 #endif
 
-  using Path = List<IntPoint>;
-  using Paths = List<List<IntPoint>>;
+  using Path = System.Collections.Generic.List<IntPoint>;
+  using Paths = System.Collections.Generic.List<System.Collections.Generic.List<IntPoint>>;
 
   public struct DoublePoint
   {

@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <None Remove="GeneticAlgorithm\_._" />
+    <None Remove="Geometry\_._" />
     <None Remove="IO\_._" />
     <None Remove="NestProject\_._" />
     <None Remove="Placement\_._" />
@@ -35,7 +36,9 @@
     <Compile Include="..\DeepNestLib\GeneticAlgorithm\OriginalFitnessSheet.cs" Link="GeneticAlgorithm\OriginalFitnessSheet.cs" />
     <Compile Include="..\DeepNestLib\GeneticAlgorithm\PopulationItem.cs" Link="GeneticAlgorithm\PopulationItem.cs" />
     <Compile Include="..\DeepNestLib\GeneticAlgorithm\Procreant.cs" Link="GeneticAlgorithm\Procreant.cs" />
-    <Compile Include="..\DeepNestLib\GeometryUtil.cs" Link="GeometryUtil.cs" />
+    <Compile Include="..\DeepNestLib\Geometry\GeometryUtil.cs" Link="Geometry\GeometryUtil.cs" />
+    <Compile Include="..\DeepNestLib\Geometry\PolygonBounds.cs" Link="Geometry\PolygonBounds.cs" />
+    <Compile Include="..\DeepNestLib\Geometry\PolygonWithBounds.cs" Link="Geometry\PolygonWithBounds.cs" />
     <Compile Include="..\DeepNestLib\IDataInfo.cs" Link="IDataInfo.cs" />
     <Compile Include="..\DeepNestLib\IDbCache.cs" Link="IDbCache.cs" />
     <Compile Include="..\DeepNestLib\IDeprecatedClipper.cs" Link="IDeprecatedClipper.cs" />
@@ -55,7 +58,9 @@
     <Compile Include="..\DeepNestLib\IO\ISaveable.cs" Link="IO/ISaveable.cs" />
     <Compile Include="..\DeepNestLib\IO\ProgressDisplayerBase.cs" Link="IO/ProgressDisplayerBase.cs" />
     <Compile Include="..\DeepNestLib\IO\Saveable.cs" Link="IO/Saveable.cs" />
+    <Compile Include="..\DeepNestLib\IPlacement.cs" Link="IPlacement.cs" />
     <Compile Include="..\DeepNestLib\IPointXY.cs" Link="IPointXY.cs" />
+    <Compile Include="..\DeepNestLib\IPolygon.cs" Link="IPolygon.cs" />
     <Compile Include="..\DeepNestLib\IProgressDisplayer.cs" Link="IProgressDisplayer.cs" />
     <Compile Include="..\DeepNestLib\ISheet.cs" Link="ISheet.cs" />
     <Compile Include="..\DeepNestLib\IStringify.cs" Link="IStringify.cs" />
@@ -129,7 +134,6 @@
     <Compile Include="..\DeepNestLib\PolygonSimplificationEqualityComparer.cs" Link="PolygonSimplificationEqualityComparer.cs" />
     <Compile Include="..\DeepNestLib\PolygonSimplificationKey.cs" Link="PolygonSimplificationKey.cs" />
     <Compile Include="..\DeepNestLib\PolygonTreeItem.cs" Link="PolygonTreeItem.cs" />
-    <Compile Include="..\DeepNestLib\PolygonWithBounds.cs" Link="PolygonWithBounds.cs" />
     <Compile Include="..\DeepNestLib\ProgressBar.cs" Link="ProgressBar.cs" />
     <Compile Include="..\DeepNestLib\RawDetail.cs" Link="RawDetail.cs" />
     <Compile Include="..\DeepNestLib\ReadOnlyListExtensions.cs" Link="ReadOnlyListExtensions.cs" />
@@ -144,6 +148,7 @@
     <Compile Include="..\DeepNestLib\TopNestResultsCollection.cs" Link="TopNestResultsCollection.cs" />
     <Compile Include="..\DeepNestLib\WindowUnk.cs" Link="WindowUnk.cs" />
     <Compile Include="..\DeepNestLib\WindowUnkJsonConverter.cs" Link="WindowUnkJsonConverter.cs" />
+    <Compile Include="..\DeepNestLib\WithChildren.cs" Link="WithChildren.cs" />
   </ItemGroup>
 
   <ItemGroup>

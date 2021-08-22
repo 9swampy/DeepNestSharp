@@ -90,7 +90,7 @@
     internal static int CombineHashCodes(int h1, int h2)
     {
       // this is where the magic happens
-      return (((h1 << 5) + h1) ^ h2);
+      return ((h1 << 5) + h1) ^ h2;
     }
 
     public override bool Equals(object obj)

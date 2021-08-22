@@ -28,8 +28,8 @@
       expected.IsPriority = random.NextBool();
       expected.IsPriority = random.NextBool();
       expected.Name = random.NextString();
-      expected.Offsetx = random.NextDouble();
-      expected.Offsety = random.NextDouble();
+      expected.OffsetX = random.NextDouble();
+      expected.OffsetY = random.NextDouble();
       expected.PlacementOrder = random.Next();
       expected.Rotation = random.NextDouble();
       expected.Sheet = Sheet.NewSheet(random.Next(), random.Next(), random.Next());

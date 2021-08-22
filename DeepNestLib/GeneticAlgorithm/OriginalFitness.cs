@@ -2,6 +2,7 @@
 {
   using System;
   using System.Linq;
+  using DeepNestLib.Geometry;
   using DeepNestLib.Placement;
 
   public class OriginalFitness : ISheetPlacementFitness
@@ -85,7 +86,7 @@
     {
       get
       {
-        var result = nestResult.UnplacedParts.Sum(o => 50 * Math.Abs(GeometryUtil.polygonArea(o)));
+        var result = nestResult.UnplacedParts.Sum(o => 50 * Math.Abs(GeometryUtil.PolygonArea(o)));
         if (nestResult.UnplacedParts.Any(o => o.IsPriority))
         {
           result *= 2;

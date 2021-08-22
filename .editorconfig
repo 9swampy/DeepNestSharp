@@ -9,7 +9,7 @@ dotnet_diagnostic.SA1101.severity = suggestion
 dotnet_diagnostic.SA1600.severity =suggestion
 
 # IDE0065: Misplaced using directive
-csharp_using_directive_placement = inside_namespace
+csharp_using_directive_placement =inside_namespace:error
 
 # SA1633: File should have header
 dotnet_diagnostic.SA1633.severity = none
@@ -51,6 +51,14 @@ dotnet_diagnostic.CS1717.severity = error
 
 # CS8618: Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 dotnet_diagnostic.CS8618.severity = suggestion
+dotnet_diagnostic.SA1005.severity=suggestion
+
+# IDE0065: Misplaced using directive
+dotnet_diagnostic.IDE0065.severity = error
+
+# SA1516: Elements should be separated by blank line
+dotnet_diagnostic.SA1516.severity = warning
+dotnet_diagnostic.CA1805.severity=suggestion
 
 [*.{cs,vb}]
 dotnet_diagnostic.CA1707.severity=warning
@@ -60,3 +68,4 @@ dotnet_analyzer_diagnostic.category-StyleCop.CSharp.OrderingRules.severity = war
 
 # Default severity for analyzer diagnostics with category 'Style'
 dotnet_analyzer_diagnostic.category-Style.severity = suggestion
+dotnet_diagnostic.CA1710.severity=suggestion

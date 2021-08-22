@@ -7,6 +7,7 @@
   using System.Text.Json;
   using System.Text.Json.Serialization;
   using DeepNestLib.GeneticAlgorithm;
+  using DeepNestLib.Geometry;
   using DeepNestLib.IO;
 
   /// <summary>

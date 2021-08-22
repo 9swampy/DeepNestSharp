@@ -1,5 +1,6 @@
 ﻿namespace DeepNestLib
 {
+  using DeepNestLib.Geometry;
   using System;
   using System.Collections.Generic;
   using System.Drawing;
@@ -182,11 +183,9 @@
     public override string SaveFileDialogFilter => "Svg files (*.svg)|*.svg";
 
     // return a polygon from the given SVG element in the form of an array of points
-    public NFP polygonify(XElement element)
+    public NFP Polygonify(XElement element)
     {
       List<SvgPoint> poly = new List<SvgPoint>();
-      int i;
-
       switch (element.Name.LocalName)
       {
         case "polygon":
