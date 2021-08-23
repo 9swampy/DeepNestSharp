@@ -49,8 +49,6 @@
 
     public ZoomPreviewDrawingContext ZoomDrawingContext { get; } = new ZoomPreviewDrawingContext();
     
-    //public ObservableCollection<object> DrawingContext { get; } = new ObservableCollection<object>();
-
     public ICommand FitAllCommand
     {
       get
@@ -95,7 +93,6 @@
       set
       {
         hoverPartPlacement = value;
-        //OnPropertyChanged(nameof(DrawingContext));
         OnPropertyChanged(nameof(ZoomDrawingContext));
         OnPropertyChanged(nameof(SelectedPartPlacement));
         OnPropertyChanged(nameof(HoverPartPlacement));
@@ -152,7 +149,6 @@
       {
         SetProperty(ref dragStart, value, nameof(DragStart));
         OnPropertyChanged(nameof(IsDragging));
-        //OnPropertyChanged(nameof(DrawingContext));
         OnPropertyChanged(nameof(ZoomDrawingContext));
       }
     }
@@ -297,7 +293,6 @@
     internal void RaiseDrawingContext()
     {
       // System.Diagnostics.Debug.Print("Force RaiseDrawingContext");
-      //OnPropertyChanged(nameof(DrawingContext));
       OnPropertyChanged(nameof(ZoomDrawingContext));
       if (lastActiveViewModel is SheetPlacementViewModel sheetPlacementViewModel)
       {
@@ -389,7 +384,6 @@
 
     private void ResetDrawingContext()
     {
-      //this.DrawingContext.Clear();
       this.ZoomDrawingContext.Clear();
     }
 
@@ -444,19 +438,16 @@
     private void Set(ObservableSheetPlacement item)
     {
       ResetDrawingContext();
-      //this.DrawingContext.Add(item);
       this.ZoomDrawingContext.Set(item);
       foreach (var partPlacement in item.PartPlacements)
       {
         INfp part = partPlacement.Part;
-        //this.DrawingContext.Add(partPlacement);
         foreach (var child in part.Children)
         {
           Set(new ObservableHole(child.Shift(partPlacement)));
         }
       }
 
-      //OnPropertyChanged(nameof(DrawingContext));
       OnPropertyChanged(nameof(ZoomDrawingContext));
     }
 
@@ -474,7 +465,6 @@
     /// <param name="polygon">Ultimate parent of the part.</param>
     private void Set(ObservableNfp polygon)
     {
-      //this.DrawingContext.Add(polygon);
       this.ZoomDrawingContext.For(polygon);
       foreach (var child in polygon.Children)
       {
@@ -488,7 +478,6 @@
         }
       }
 
-      //OnPropertyChanged(nameof(DrawingContext));
       OnPropertyChanged(nameof(ZoomDrawingContext));
     }
 
