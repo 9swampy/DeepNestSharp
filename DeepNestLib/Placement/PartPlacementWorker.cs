@@ -23,6 +23,7 @@
     private Dictionary<string, ClipCacheItem> clipCache;
     private IPlacementWorker placementWorker;
     private volatile object processPartLock = new object();
+    private int exportIndex = 0;
 
     [JsonConstructor]
     public PartPlacementWorker(Dictionary<string, ClipCacheItem> clipCache)
@@ -260,10 +261,6 @@
           {
             return InnerFlowResult.Continue;
           }
-          else
-          {
-            FinalNfp = new NfpCandidateList(finalNfp.ToArray(), Sheet, new NFP(processedPart, WithChildren.Included));
-          }
 
 #if NCRUNCH
             try
@@ -432,6 +429,7 @@
 
           if (position != null)
           {
+            FinalNfp = new NfpCandidateList(finalNfp.ToArray(), Sheet, new NFP(processedPart, WithChildren.Included).Shift(position));
             AddPlacement(inputPart, processedPart, position, inputPartIndex);
             if (position.MergedLength.HasValue)
             {
@@ -475,12 +473,20 @@
       {
         Export(inputPartIndex, "Out.json", this.ToJson(true));
         Export(inputPartIndex, $"Out-Parts{sheetPlacement.PartPlacements.Count}.dnsp", sheetPlacement.ToJson(true));
-        if (SheetNfp != null)
+        if (SheetNfp == null)
+        {
+          Export(inputPartIndex, $"Out-SheetNfpNone.dnsnfp", string.Empty);
+        }
+        else
         {
           Export(inputPartIndex, $"Out-SheetNfp.dnsnfp", SheetNfp.ToJson());
         }
 
-        if (FinalNfp != null)
+        if (FinalNfp == null)
+        {
+          Export(inputPartIndex, $"Out-FinalNfpNone.dnnfps", string.Empty);
+        }
+        else
         {
           Export(inputPartIndex, $"Out-FinalNfp.dnnfps", FinalNfp.ToJson());
         }
@@ -492,7 +498,7 @@
       var dirInfo = new DirectoryInfo(Config.ExportExecutionPath);
       if (dirInfo.Exists)
       {
-        var filePath = Path.Combine(Config.ExportExecutionPath, $"N{state.NestCount}-S{Sheet.Id}-P{inputPartIndex}-{fileNameSuffix}");
+        var filePath = Path.Combine(Config.ExportExecutionPath, $"N{state.NestCount}-S{Sheet.Id}-{exportIndex}-P{inputPartIndex}-{fileNameSuffix}");
         System.Diagnostics.Debug.Print($"Export {filePath}");
         File.WriteAllText(filePath, json);
       }
@@ -500,6 +506,8 @@
       {
         System.Diagnostics.Debug.Print($"Export path {Config.ExportExecutionPath} does not exist.");
       }
+
+      exportIndex++;
     }
 
     internal static PartPlacementWorker FromJson(string json)

@@ -272,6 +272,17 @@
       set => SetProperty(nameof(UseParallel), () => svgNestConfig.UseParallel, v => svgNestConfig.UseParallel = v, value);
     }
 
+    /// <inheritdoc />
+    [Description("Priority is the notion that some parts should be placed first before any others. " +
+      "This has worked well where all parts can fit on a single sheet but it's bee problematic and " +
+      "can cause parts to overlay on top of each other. Use with caution. .")]
+    [Category("Experimental")]
+    public bool UsePriority
+    {
+      get => svgNestConfig.UsePriority;
+      set => SetProperty(nameof(UsePriority), () => svgNestConfig.UsePriority, v => svgNestConfig.UsePriority = v, value);
+    }
+
     public string ToJson()
     {
       return svgNestConfig.ToJson();

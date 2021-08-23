@@ -8,7 +8,9 @@
              mc:Ignorable="d" 
                         d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
+    <BooleanToVisibilityConverter x:Key="BoolToVis" />
     <converters:IsExistsToListViewItemBackgroundColor x:Key="IsExistsToListViewItemBackgroundColor" />
+    <converters:BooleanToWidthConverter x:Key="BooleanToWidthConverter" />
   </UserControl.Resources>
   <Grid>
     <Grid.RowDefinitions>
@@ -73,7 +75,7 @@
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          <GridViewColumn Header="Priority" Width="auto">
+          <GridViewColumn Header="Priority" Width="{Binding Path=UsePriority, Converter={StaticResource BooleanToWidthConverter}}" >
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel HorizontalAlignment="Center">

@@ -403,6 +403,22 @@
       }
     }
 
+    /// <inheritdoc />
+    public bool UsePriority
+    {
+      get
+      {
+        return (bool)Properties.Settings.Default["UsePriority"];
+      }
+
+      set
+      {
+        Properties.Settings.Default["UsePriority"] = value;
+        Properties.Settings.Default.Save();
+        Properties.Settings.Default.Upgrade();
+      }
+    }
+
     public string ToJson()
     {
       return SvgNestConfigJsonConverter.ToJson(this);

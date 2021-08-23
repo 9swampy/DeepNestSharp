@@ -107,6 +107,8 @@
 
     public override string TextContent { get => this.ProjectInfo.ToJson(); }
 
+    public bool UsePriority => this.MainViewModel.SvgNestConfigViewModel.SvgNestConfig.UsePriority;
+
     protected override void LoadContent()
     {
       this.ProjectInfo.Load(this.MainViewModel.SvgNestConfigViewModel.SvgNestConfig, this.FilePath);

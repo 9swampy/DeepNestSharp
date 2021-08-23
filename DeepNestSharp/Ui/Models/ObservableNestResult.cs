@@ -10,7 +10,7 @@
   public class ObservableNestResult : ObservablePropertyObject, INestResult
   {
     private readonly ObservableCollection<ISheetPlacement, SheetPlacement, ObservableSheetPlacement> observableSheetPlacements;
-    private INestResult? item;
+    private INestResult item;
 
     public ObservableNestResult()
     {

@@ -9,5 +9,7 @@
     IDetailLoadInfo SelectedDetailLoadInfo { get; set; }
 
     int SelectedDetailLoadInfoIndex { get; set; }
+
+    bool UsePriority { get; }
   }
 }

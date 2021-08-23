@@ -431,7 +431,8 @@
         {
           var sheet = new Sheet(sheetNfpViewModel.NfpCandidateList?.Sheet, WithChildren.Included);
           sheet.Children.Add(sheetNfpItem);
-          sheet.Children.Add(sheetNfpViewModel.NfpCandidateList?.Part);
+          var part = new NFP(sheetNfpViewModel.NfpCandidateList?.Part, WithChildren.Included);
+          sheet.Children.Add(part);
           Set(new ObservableNfp(sheet));
         }
       }

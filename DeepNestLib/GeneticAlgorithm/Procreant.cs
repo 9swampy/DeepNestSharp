@@ -32,13 +32,13 @@
       var angles = new List<double>();
       for (var i = 0; i < adam.Length; i++)
       {
-        if (config.StrictAngles == AnglesEnum.Vertical)
+        if (adam[i].StrictAngle == AnglesEnum.Vertical || (adam[i].StrictAngle == AnglesEnum.None && Config.StrictAngles == AnglesEnum.Vertical))
         {
-          angles.Add(strictVerticalAngles[i % strictVerticalAngles.Length]);
+          angles.Add(strictVerticalAngles[random.Next() % strictVerticalAngles.Length]);
         }
-        else if (config.StrictAngles == AnglesEnum.Horizontal)
+        else if (adam[i].StrictAngle == AnglesEnum.Horizontal || (adam[i].StrictAngle == AnglesEnum.None && Config.StrictAngles == AnglesEnum.Horizontal))
         {
-          angles.Add(strictHorizontalAngles[i % strictHorizontalAngles.Length]);
+          angles.Add(strictHorizontalAngles[random.Next() % strictHorizontalAngles.Length]);
         }
         else
         {

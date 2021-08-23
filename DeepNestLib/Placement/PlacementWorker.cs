@@ -72,7 +72,7 @@
           break;
         }
 
-        var isPriorityPlacement = StartedAsPriorityPlacement;
+        var isPriorityPlacement = config.UsePriority && StartedAsPriorityPlacement;
         if (isPriorityPlacement)
         {
           VerboseLog("Priority Placement.");

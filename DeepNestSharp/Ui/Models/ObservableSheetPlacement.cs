@@ -37,7 +37,7 @@
     {
       this.observablePartPlacements.Clear();
       this.points?.Clear();
-      int order = 0;
+      var order = 0;
       foreach (var partPlacement in item.PartPlacements)
       {
         var obsPart = new ObservablePartPlacement(partPlacement, order);
@@ -51,7 +51,7 @@
       OnPropertyChanged(nameof(Sheet));
     }
 
-    private void ObsPart_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void ObsPart_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
       if (sender is ObservablePartPlacement obsPart &&
           !obsPart.IsDragging &&

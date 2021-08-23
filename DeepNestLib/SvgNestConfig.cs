@@ -400,5 +400,8 @@
 
     /// <inheritdoc/>
     public bool UseMinkowskiCache { get; set; } = true;
+
+    /// <inheritdoc/>
+    public bool UsePriority { get; set; } = true;
   }
 }
