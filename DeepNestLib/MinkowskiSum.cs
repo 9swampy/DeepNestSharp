@@ -223,8 +223,9 @@
 
     NFP IMinkowskiSumService.ClipperExecute(SvgPoint[] a, SvgPoint[] b, MinkowskiSumPick minkowskiSumPick)
     {
-      var ac = DeepNestClipper.ScaleUpPaths(a, 10000000);
-      var bc = DeepNestClipper.ScaleUpPaths(b, 10000000);
+      var scaler = 10000000;
+      var ac = DeepNestClipper.ScaleUpPaths(a, scaler);
+      var bc = DeepNestClipper.ScaleUpPaths(b, scaler);
       for (var i = 0; i < bc.Length; i++)
       {
         bc[i].X *= -1;
@@ -237,7 +238,7 @@
       double? largestArea = null;
       for (int i = 0; i < solution.Count(); i++)
       {
-        var n = solution[i].ToArray().ToNestCoordinates(10000000);
+        var n = solution[i].ToArray().ToNestCoordinates(scaler);
         var sarea = -GeometryUtil.PolygonArea(n);
         if (largestArea == null ||
             (minkowskiSumPick == MinkowskiSumPick.Largest && largestArea < sarea) ||
