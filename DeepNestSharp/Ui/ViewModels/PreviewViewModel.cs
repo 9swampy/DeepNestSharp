@@ -352,10 +352,7 @@
           lastActiveViewModel = sheetNfpViewModel;
           if (sheetNfpViewModel.SelectedItem is INfp sheetNfpItem)
           {
-            var sheet = new Sheet(sheetNfpViewModel.NfpCandidateList?.Sheet, WithChildren.Included);
-            sheet.Children.Add(sheetNfpItem);
-            sheet.Children.Add(sheetNfpViewModel.NfpCandidateList?.Part);
-            Set(new ObservableNfp(sheet));
+            Set(sheetNfpViewModel, sheetNfpItem);
           }
         }
 
@@ -396,7 +393,7 @@
       this.ZoomDrawingContext.Clear();
     }
 
-    private void ActiveViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void ActiveViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
       if (sender == mainViewModel.ActiveDocument)
       {
@@ -429,13 +426,19 @@
                  e.PropertyName == nameof(NfpCandidateListViewModel.SelectedItem) &&
                  sheetNfpViewModel.SelectedItem is INfp sheetNfpItem)
         {
-          var sheet = new Sheet(sheetNfpViewModel.NfpCandidateList?.Sheet, WithChildren.Included);
-          sheet.Children.Add(sheetNfpItem);
-          var part = new NFP(sheetNfpViewModel.NfpCandidateList?.Part, WithChildren.Included);
-          sheet.Children.Add(part);
-          Set(new ObservableNfp(sheet));
+          Set(sheetNfpViewModel, sheetNfpItem);
         }
       }
+    }
+
+    private void Set(NfpCandidateListViewModel sheetNfpViewModel, INfp sheetNfpItem)
+    {
+      var sheet = new Sheet(sheetNfpViewModel.NfpCandidateList?.Sheet, WithChildren.Included);
+      sheet.Children.Add(sheetNfpItem);
+      var part = new NFP(sheetNfpViewModel.NfpCandidateList?.Part, WithChildren.Included);
+      Set(new ObservableNfp(sheet));
+      this.ZoomDrawingContext.AppendChild(new ObservableFrame(part));
+      this.ZoomDrawingContext.AppendChild(new ObservablePoint(part));
     }
 
     private void Set(ObservableSheetPlacement item)

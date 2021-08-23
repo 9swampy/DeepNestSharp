@@ -5,11 +5,16 @@
   using System.Windows.Media;
   using DeepNestLib;
   using DeepNestLib.Placement;
+  using DeepNestSharp.Domain.Models;
 
   public class PointsConverter : IValueConverter
   {
     public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
     {
+      if (value is ObservablePoint obsPoint)
+      {
+        return new System.Windows.Point(obsPoint[0].X, obsPoint[0].Y);
+      }
       if (value is INfp item)
       {
         var result = new PointCollection(item.Length);

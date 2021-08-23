@@ -79,6 +79,16 @@
               <DataTemplate DataType="{x:Type domainModels:ObservableHole}">
                 <Polygon Points="{Binding Converter={StaticResource PointsConverter}}" Fill="White" Stroke="DeepPink" StrokeThickness="0.2" />
               </DataTemplate>
+              <DataTemplate DataType="{x:Type domainModels:ObservableFrame}">
+                <Polygon Points="{Binding Converter={StaticResource PointsConverter}}" Stroke="DarkOrange" StrokeThickness="0.4" />
+              </DataTemplate>
+              <DataTemplate DataType="{x:Type domainModels:ObservablePoint}">
+                <Path Name="Point" Fill="DarkOrange">
+                  <Path.Data>
+                    <EllipseGeometry Center="{Binding Converter={StaticResource PointsConverter}}" RadiusX="1.5" RadiusY="1.5"/>
+                  </Path.Data>
+                </Path>
+              </DataTemplate>
             </ItemsControl.Resources>
           </ItemsControl>
         </Viewbox>

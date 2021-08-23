@@ -540,22 +540,13 @@
       return resultBuilder.ToString();
     }
 
-    /// <summary>
-    /// Shifts the polygon and all it's children iteratively by the specified PartPlacement(X,Y) offset.
-    /// </summary>
-    /// <param name="shift"></param>
-    /// <returns></returns>
+    /// <inheritdoc />
     public INfp Shift(IPartPlacement shift)
     {
       return Shift(shift.X, shift.Y);
     }
 
-    /// <summary>
-    /// Shifts the polygon and all it's children iteratively by the specified X,Y offset.
-    /// </summary>
-    /// <param name="x">Distance to shift on X axis.</param>
-    /// <param name="y">Distance to shift on Y axis.</param>
-    /// <returns>A partial clone of the polygon.</returns>
+    /// <inheritdoc />
     public INfp Shift(double x, double y)
     {
       NFP shifted = new NFP();

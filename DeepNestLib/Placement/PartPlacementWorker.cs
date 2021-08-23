@@ -174,22 +174,23 @@
         if (Placements.Count == 0)
         {
           this.VerboseLog("First placement, put it on the bottom left corner. . .");
-
-          // first placement, put it on the bottom left corner
-          for (int j = 0; j < SheetNfp.Length; j++)
+          var processedPartOrigin = processedPart[0];
+          for (int nfpCandidateIndex = 0; nfpCandidateIndex < SheetNfp.Length; nfpCandidateIndex++)
           {
-            for (int k = 0; k < SheetNfp[j].Length; k++)
+            var nfpCandidate = SheetNfp[nfpCandidateIndex];
+            for (int pointIndex = 0; pointIndex < nfpCandidate.Points.Length; pointIndex++)
             {
+              var nfpPoint = nfpCandidate.Points[pointIndex];
+              var proposedX = nfpPoint.X - processedPartOrigin.X;
+              var proposedY = nfpPoint.Y - processedPartOrigin.Y;
               if (position == null ||
-                  ((SheetNfp[j][k].X - processedPart[0].X) < position.X) ||
-                  (
-                  GeometryUtil.AlmostEqual(SheetNfp[j][k].X - processedPart[0].X, position.X)
-                  && ((SheetNfp[j][k].Y - processedPart[0].Y) < position.Y)))
+                  proposedX < position.X ||
+                  (GeometryUtil.AlmostEqual(proposedX, position.X) && proposedY < position.Y))
               {
                 position = new PartPlacement(processedPart)
                 {
-                  X = SheetNfp[j][k].X - processedPart[0].X,
-                  Y = SheetNfp[j][k].Y - processedPart[0].Y,
+                  X = proposedX,
+                  Y = proposedY,
                   Id = processedPart.Id,
                   Rotation = processedPart.Rotation,
                   Source = processedPart.Source,
@@ -206,6 +207,7 @@
             // console.log(sheetNfp);
           }
 
+          SheetNfp = new SheetNfp(SheetNfp.Items, Sheet, processedPart.Shift(position));
           AddPlacement(inputPart, processedPart, position, inputPartIndex);
         }
         else if (SheetNfp != null && SheetNfp.CanAcceptPart)
@@ -429,7 +431,7 @@
 
           if (position != null)
           {
-            FinalNfp = new NfpCandidateList(finalNfp.ToArray(), Sheet, new NFP(processedPart, WithChildren.Included).Shift(position));
+            FinalNfp = new NfpCandidateList(finalNfp.ToArray(), Sheet, processedPart.Shift(position));
             AddPlacement(inputPart, processedPart, position, inputPartIndex);
             if (position.MergedLength.HasValue)
             {

@@ -44,8 +44,19 @@
 
     NFP GetHull();
 
+    /// <summary>
+    /// Shifts the polygon and all it's children iteratively by the specified PartPlacement(X,Y) offset.
+    /// </summary>
+    /// <param name="shift">The amount to shift.</param>
+    /// <returns>A partial clone of the polygon.</returns>
     INfp Shift(IPartPlacement shift);
 
+    /// <summary>
+    /// Shifts the polygon and all it's children iteratively by the specified X,Y offset.
+    /// </summary>
+    /// <param name="x">Distance to shift on X axis.</param>
+    /// <param name="y">Distance to shift on Y axis.</param>
+    /// <returns>A partial clone of the polygon.</returns>
     INfp Shift(double x, double y);
 
     /// <summary>

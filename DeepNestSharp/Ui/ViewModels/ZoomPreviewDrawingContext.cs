@@ -73,6 +73,10 @@
       {
         AppendChild(observableHole);
       }
+      else if (c is ObservablePoint observablePoint)
+      {
+        AppendChild(observablePoint);
+      }
       else
       {
         AppendChild(new ObservableHole(c));
@@ -90,6 +94,24 @@
       {
         AppendChild(new ObservableHole(c));
       }
+    }
+
+    /// <summary>
+    /// Adding in children as <see cref="ObservablePoints"/> so can fill differently.
+    /// </summary>
+    /// <param name="child">Child to add; presumption's it will be a Point.</param>
+    internal void AppendChild(ObservablePoint child)
+    {
+      this.Add(child);
+    }
+
+    /// <summary>
+    /// Adding in children as <see cref="ObservableFrame"/> so can fill differently.
+    /// </summary>
+    /// <param name="child">Child to add; presumption's it will be a Frame.</param>
+    internal void AppendChild(ObservableFrame child)
+    {
+      this.Add(child);
     }
   }
 }
