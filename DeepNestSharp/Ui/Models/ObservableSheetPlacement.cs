@@ -57,7 +57,11 @@
           !obsPart.IsDragging &&
           (e.PropertyName == nameof(ObservablePartPlacement.X) || e.PropertyName == nameof(ObservablePartPlacement.Y)))
       {
-        Set(sheetPlacement);
+        if (this.sheetPlacement != sheetPlacement)
+        {
+          Set(sheetPlacement);
+        }
+
         OnPropertyChanged(nameof(PartPlacements));
       }
     }

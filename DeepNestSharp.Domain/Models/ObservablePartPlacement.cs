@@ -44,18 +44,7 @@
       set => SetProperty(nameof(Id), () => partPlacement.Id, v => partPlacement.Id = v, value);
     }
 
-    public ICommand ResetCommand
-    {
-      get
-      {
-        if (resetCommand == null)
-        {
-          resetCommand = new RelayCommand(OnReset, () => IsDirty);
-        }
-
-        return resetCommand;
-      }
-    }
+    public ICommand ResetCommand => resetCommand ?? (resetCommand = new RelayCommand(OnReset, () => IsDirty));
 
     public IAsyncRelayCommand LoadExactCommand
     {
