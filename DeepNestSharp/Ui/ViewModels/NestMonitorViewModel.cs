@@ -48,7 +48,7 @@
 
     public ICommand ContinueNestCommand => continueNestCommand ?? (continueNestCommand = new RelayCommand(OnContinueNest, () => false));
 
-    public ZoomPreviewDrawingContext DrawingContext { get; } = new ZoomPreviewDrawingContext();
+    public ZoomPreviewDrawingContext ZoomDrawingContext { get; } = new ZoomPreviewDrawingContext();
 
     public bool IsRunning
     {
@@ -135,7 +135,7 @@
       {
         if (value == null)
         {
-          DrawingContext.Clear();
+          ZoomDrawingContext.Clear();
           if (!this.TopNestResults.IsEmpty)
           {
             _ = Task.Factory.StartNew(() =>
@@ -147,8 +147,8 @@
         else
         {
           SetProperty(ref selectedItem, value);
-          DrawingContext.For(value.UsedSheets[0]);
-          OnPropertyChanged(nameof(DrawingContext));
+          ZoomDrawingContext.For(value.UsedSheets[0]);
+          OnPropertyChanged(nameof(ZoomDrawingContext));
         }
       }
     }

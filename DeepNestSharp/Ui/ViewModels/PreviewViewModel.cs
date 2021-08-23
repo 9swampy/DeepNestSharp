@@ -48,8 +48,8 @@
     public FileViewModel? ActiveDocument => mainViewModel.ActiveDocument;
 
     public ZoomPreviewDrawingContext ZoomDrawingContext { get; } = new ZoomPreviewDrawingContext();
-
-    public ObservableCollection<object> DrawingContext { get; } = new ObservableCollection<object>();
+    
+    //public ObservableCollection<object> DrawingContext { get; } = new ObservableCollection<object>();
 
     public ICommand FitAllCommand
     {
@@ -95,7 +95,7 @@
       set
       {
         hoverPartPlacement = value;
-        OnPropertyChanged(nameof(DrawingContext));
+        //OnPropertyChanged(nameof(DrawingContext));
         OnPropertyChanged(nameof(ZoomDrawingContext));
         OnPropertyChanged(nameof(SelectedPartPlacement));
         OnPropertyChanged(nameof(HoverPartPlacement));
@@ -152,7 +152,7 @@
       {
         SetProperty(ref dragStart, value, nameof(DragStart));
         OnPropertyChanged(nameof(IsDragging));
-        OnPropertyChanged(nameof(DrawingContext));
+        //OnPropertyChanged(nameof(DrawingContext));
         OnPropertyChanged(nameof(ZoomDrawingContext));
       }
     }
@@ -199,7 +199,7 @@
     {
       get
       {
-        return new Point(DrawingContext.Extremum(MinMax.Min, XY.X), DrawingContext.Extremum(MinMax.Min, XY.Y));
+        return new Point(ZoomDrawingContext.Extremum(MinMax.Min, XY.X), ZoomDrawingContext.Extremum(MinMax.Min, XY.Y));
       }
     }
 
@@ -207,7 +207,7 @@
     {
       get
       {
-        return new Point(DrawingContext.Extremum(MinMax.Max, XY.X), DrawingContext.Extremum(MinMax.Max, XY.Y));
+        return new Point(ZoomDrawingContext.Extremum(MinMax.Max, XY.X), ZoomDrawingContext.Extremum(MinMax.Max, XY.Y));
       }
     }
 
@@ -215,7 +215,7 @@
     {
       get
       {
-        return DrawingContext.Extremum(MinMax.Max, XY.X) - DrawingContext.Extremum(MinMax.Min, XY.X);
+        return ZoomDrawingContext.Extremum(MinMax.Max, XY.X) - ZoomDrawingContext.Extremum(MinMax.Min, XY.X);
       }
     }
 
@@ -223,7 +223,7 @@
     {
       get
       {
-        return DrawingContext.Extremum(MinMax.Max, XY.Y) - DrawingContext.Extremum(MinMax.Min, XY.Y);
+        return ZoomDrawingContext.Extremum(MinMax.Max, XY.Y) - ZoomDrawingContext.Extremum(MinMax.Min, XY.Y);
       }
     }
 
@@ -297,7 +297,7 @@
     internal void RaiseDrawingContext()
     {
       // System.Diagnostics.Debug.Print("Force RaiseDrawingContext");
-      OnPropertyChanged(nameof(DrawingContext));
+      //OnPropertyChanged(nameof(DrawingContext));
       OnPropertyChanged(nameof(ZoomDrawingContext));
       if (lastActiveViewModel is SheetPlacementViewModel sheetPlacementViewModel)
       {
@@ -378,7 +378,7 @@
 
     private void PreviewViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-      if (e.PropertyName == nameof(DrawingContext))
+      if (e.PropertyName == nameof(ZoomDrawingContext))
       {
         OnPropertyChanged(nameof(UpperBound));
         OnPropertyChanged(nameof(LowerBound));
@@ -389,7 +389,7 @@
 
     private void ResetDrawingContext()
     {
-      this.DrawingContext.Clear();
+      //this.DrawingContext.Clear();
       this.ZoomDrawingContext.Clear();
     }
 
@@ -444,19 +444,19 @@
     private void Set(ObservableSheetPlacement item)
     {
       ResetDrawingContext();
-      this.DrawingContext.Add(item);
+      //this.DrawingContext.Add(item);
       this.ZoomDrawingContext.Set(item);
       foreach (var partPlacement in item.PartPlacements)
       {
         INfp part = partPlacement.Part;
-        this.DrawingContext.Add(partPlacement);
+        //this.DrawingContext.Add(partPlacement);
         foreach (var child in part.Children)
         {
           Set(new ObservableHole(child.Shift(partPlacement)));
         }
       }
 
-      OnPropertyChanged(nameof(DrawingContext));
+      //OnPropertyChanged(nameof(DrawingContext));
       OnPropertyChanged(nameof(ZoomDrawingContext));
     }
 
@@ -474,7 +474,7 @@
     /// <param name="polygon">Ultimate parent of the part.</param>
     private void Set(ObservableNfp polygon)
     {
-      this.DrawingContext.Add(polygon);
+      //this.DrawingContext.Add(polygon);
       this.ZoomDrawingContext.For(polygon);
       foreach (var child in polygon.Children)
       {
@@ -488,7 +488,7 @@
         }
       }
 
-      OnPropertyChanged(nameof(DrawingContext));
+      //OnPropertyChanged(nameof(DrawingContext));
       OnPropertyChanged(nameof(ZoomDrawingContext));
     }
 
@@ -498,13 +498,13 @@
     /// <param name="child">The child hole to add.</param>
     private void Set(ObservableHole child)
     {
-      this.DrawingContext.Add(child);
+      this.ZoomDrawingContext.Add(child);
       foreach (var c in child.Children)
       {
         Set(new ObservableHole(c));
       }
 
-      OnPropertyChanged(nameof(DrawingContext));
+      OnPropertyChanged(nameof(ZoomDrawingContext));
     }
   }
 }
