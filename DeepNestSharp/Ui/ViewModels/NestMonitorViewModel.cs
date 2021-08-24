@@ -16,7 +16,7 @@
   {
     private static volatile object syncLock = new object();
 
-    private readonly MainViewModel mainViewModel;
+    private readonly IMainViewModel mainViewModel;
     private readonly IMessageService messageService;
     private bool isRunning;
     private bool isStopping;
@@ -39,7 +39,7 @@
     private RelayCommand<INestResult>? loadNestResultCommand;
     private bool isSecondaryProgressVisible;
 
-    public NestMonitorViewModel(MainViewModel mainViewModel, IMessageService messageService)
+    public NestMonitorViewModel(IMainViewModel mainViewModel, IMessageService messageService)
       : base("Monitor")
     {
       this.mainViewModel = mainViewModel;
@@ -48,7 +48,7 @@
 
     public ICommand ContinueNestCommand => continueNestCommand ?? (continueNestCommand = new RelayCommand(OnContinueNest, () => false));
 
-    public ZoomPreviewDrawingContext ZoomDrawingContext { get; } = new ZoomPreviewDrawingContext();
+    public IZoomPreviewDrawingContext ZoomDrawingContext { get; } = new ZoomPreviewDrawingContext();
 
     public bool IsRunning
     {

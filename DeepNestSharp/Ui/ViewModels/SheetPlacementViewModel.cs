@@ -26,7 +26,7 @@
     /// Initializes a new instance of the <see cref="SheetPlacementViewModel"/> class.
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
-    public SheetPlacementViewModel(MainViewModel mainViewModel)
+    public SheetPlacementViewModel(IMainViewModel mainViewModel)
       : base(mainViewModel)
     {
     }
@@ -35,7 +35,7 @@
     /// Initializes a new instance of the <see cref="SheetPlacementViewModel"/> class.
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
-    public SheetPlacementViewModel(MainViewModel mainViewModel, ISheetPlacement sheetPlacement)
+    public SheetPlacementViewModel(IMainViewModel mainViewModel, ISheetPlacement sheetPlacement)
       : this(mainViewModel)
     {
       if (sheetPlacement is ObservableSheetPlacement observableSheetPlacement)
@@ -55,7 +55,7 @@
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
     /// <param name="filePath">Path to the file to open.</param>
-    public SheetPlacementViewModel(MainViewModel mainViewModel, string filePath)
+    public SheetPlacementViewModel(IMainViewModel mainViewModel, string filePath)
       : base(mainViewModel, filePath)
     {
     }

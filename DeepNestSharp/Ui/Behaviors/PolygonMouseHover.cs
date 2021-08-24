@@ -9,7 +9,7 @@
 
   public class PolygonMouseHover : Behavior<FrameworkElement>
   {
-    private MainViewModel? mainViewModel;
+    private IMainViewModel? mainViewModel;
     private ObservablePartPlacement? partPlacement;
 
     protected override void OnAttached()
@@ -17,7 +17,7 @@
       base.OnAttached();
       if (this.AssociatedObject.GetVisualParent<Window>() is Window window &&
           this.AssociatedObject.DataContext is ObservablePartPlacement partPlacement &&
-          window.DataContext is MainViewModel mainViewModel)
+          window.DataContext is IMainViewModel mainViewModel)
       {
         this.mainViewModel = mainViewModel;
         this.partPlacement = partPlacement;

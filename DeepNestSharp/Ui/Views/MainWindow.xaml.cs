@@ -6,7 +6,7 @@
 
   public partial class MainWindow : Window
   {
-    public MainWindow(MainViewModel viewModel)
+    public MainWindow(IMainViewModel viewModel)
     {
       InitializeComponent();
       this.DataContext = viewModel;
@@ -15,7 +15,7 @@
       this.Unloaded += new RoutedEventHandler(MainWindow_Unloaded);
     }
 
-    public MainViewModel ViewModel => (MainViewModel)DataContext;
+    public IMainViewModel ViewModel => (IMainViewModel)DataContext;
 
     private void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {

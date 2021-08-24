@@ -17,7 +17,7 @@
   public class PreviewViewModel : ToolViewModel, IPreviewViewModel
   {
     private const double Gap = 10;
-    private readonly MainViewModel mainViewModel;
+    private readonly IMainViewModel mainViewModel;
     private FileViewModel? lastActiveViewModel;
     private IPartPlacement? hoverPartPlacement;
     private Point mousePosition;
@@ -36,7 +36,7 @@
     /// Initializes a new instance of the <see cref="PreviewViewModel"/> class.
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
-    public PreviewViewModel(MainViewModel mainViewModel)
+    public PreviewViewModel(IMainViewModel mainViewModel)
       : base("Preview")
     {
       this.mainViewModel = mainViewModel;
@@ -61,7 +61,7 @@
       }
     }
 
-    public MainViewModel MainViewModel => mainViewModel;
+    public IMainViewModel MainViewModel => mainViewModel;
 
     public IPartPlacement? SelectedPartPlacement
     {
@@ -307,7 +307,7 @@
         lastActiveViewModel = null;
       }
 
-      if (sender is MainViewModel mainViewModel)
+      if (sender is IMainViewModel mainViewModel)
       {
         ResetDrawingContext();
 

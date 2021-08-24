@@ -19,7 +19,7 @@
     /// Initializes a new instance of the <see cref="NestResultViewModel"/> class.
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
-    public NestResultViewModel(MainViewModel mainViewModel)
+    public NestResultViewModel(IMainViewModel mainViewModel)
       : base(mainViewModel)
     {
     }
@@ -29,12 +29,12 @@
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
     /// <param name="filePath">Path to the file to open.</param>
-    public NestResultViewModel(MainViewModel mainViewModel, string filePath)
+    public NestResultViewModel(IMainViewModel mainViewModel, string filePath)
       : base(mainViewModel, filePath)
     {
     }
 
-    public NestResultViewModel(MainViewModel mainViewModel, INestResult nestResult)
+    public NestResultViewModel(IMainViewModel mainViewModel, INestResult nestResult)
       : this(mainViewModel)
     {
       if (nestResult is ObservableNestResult obs)

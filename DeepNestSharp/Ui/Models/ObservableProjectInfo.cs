@@ -10,7 +10,7 @@
 
   public class ObservableProjectInfo : ObservableObject, IProjectInfo
   {
-    private readonly MainViewModel mainViewModel;
+    private readonly IMainViewModel mainViewModel;
     private readonly IProjectInfo wrappedProjectInfo;
     private ObservableCollection<IDetailLoadInfo, DetailLoadInfo, ObservableDetailLoadInfo>? detailLoadInfos;
     private ObservableCollection<ISheetLoadInfo, SheetLoadInfo, ObservableSheetLoadInfo>? sheetLoadInfos;
@@ -20,7 +20,7 @@
     /// Initializes a new instance of the <see cref="ObservableProjectInfo"/> class.
     /// </summary>
     /// <param name="projectInfo">The ProjectInfo to wrap.</param>
-    public ObservableProjectInfo(MainViewModel mainViewModel)
+    public ObservableProjectInfo(IMainViewModel mainViewModel)
     {
       this.mainViewModel = mainViewModel;
       this.wrappedProjectInfo = new ProjectInfo(mainViewModel.SvgNestConfigViewModel.SvgNestConfig);

@@ -6,7 +6,7 @@
 
   public class PropertiesViewModel : ToolViewModel, IPropertiesViewModel
   {
-    private readonly MainViewModel mainViewModel;
+    private readonly IMainViewModel mainViewModel;
 
     private SheetPlacementViewModel? lastSheetPlacementViewModel;
     private object selectedObject;
@@ -15,7 +15,7 @@
     /// Initializes a new instance of the <see cref="PropertiesViewModel"/> class.
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
-    public PropertiesViewModel(MainViewModel mainViewModel)
+    public PropertiesViewModel(IMainViewModel mainViewModel)
       : base("Properties")
     {
       this.mainViewModel = mainViewModel;
@@ -43,7 +43,7 @@
         lastSheetPlacementViewModel = null;
       }
 
-      if (sender is MainViewModel mainViewModel)
+      if (sender is IMainViewModel mainViewModel)
       {
         SelectedObject = null;
 

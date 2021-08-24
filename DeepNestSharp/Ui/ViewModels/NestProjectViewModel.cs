@@ -33,7 +33,7 @@
     /// Initializes a new instance of the <see cref="NestProjectViewModel"/> class.
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
-    public NestProjectViewModel(MainViewModel mainViewModel, IFileIoService fileIoService)
+    public NestProjectViewModel(IMainViewModel mainViewModel, IFileIoService fileIoService)
       : base(mainViewModel)
     {
       Initialise(mainViewModel, fileIoService);
@@ -44,7 +44,7 @@
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
     /// <param name="filePath">Path to the file to open.</param>
-    public NestProjectViewModel(MainViewModel mainViewModel, string filePath, IFileIoService fileIoService)
+    public NestProjectViewModel(IMainViewModel mainViewModel, string filePath, IFileIoService fileIoService)
       : base(mainViewModel, filePath)
     {
       Initialise(mainViewModel, fileIoService);
@@ -124,7 +124,7 @@
       OnPropertyChanged(nameof(SelectedDetailLoadInfo));
     }
 
-    private void Initialise(MainViewModel mainViewModel, IFileIoService fileIoService)
+    private void Initialise(IMainViewModel mainViewModel, IFileIoService fileIoService)
     {
       this.ProjectInfo.MustBe(observableProjectInfo);
       if (this.observableProjectInfo != null)

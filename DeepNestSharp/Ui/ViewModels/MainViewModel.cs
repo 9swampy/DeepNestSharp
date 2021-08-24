@@ -20,7 +20,7 @@
   using Microsoft.Toolkit.Mvvm.ComponentModel;
   using Microsoft.Toolkit.Mvvm.Input;
 
-  public class MainViewModel : ObservableRecipient
+  public class MainViewModel : ObservableRecipient, IMainViewModel
   {
     private readonly IFileIoService fileIoService;
     private readonly IMessageService messageService;
@@ -44,7 +44,7 @@
     private Tuple<string, Theme>? selectedTheme;
     private FileViewModel? activeDocument;
     private IPropertiesViewModel? propertiesViewModel;
-    private NestMonitorViewModel? nestMonitorViewModel;
+    private INestMonitorViewModel? nestMonitorViewModel;
 
     public MainViewModel(IMessageService messageService, IDispatcherService dispatcherService, ISvgNestConfig config, IFileIoService fileIoService)
     {
@@ -105,7 +105,7 @@
 
     public ReadOnlyObservableCollection<FileViewModel> Files { get; }
 
-    public NestMonitorViewModel NestMonitorViewModel
+    public INestMonitorViewModel NestMonitorViewModel
     {
       get
       {
@@ -144,7 +144,7 @@
       }
     }
 
-    public SvgNestConfigViewModel SvgNestConfigViewModel { get; }
+    public ISvgNestConfigViewModel SvgNestConfigViewModel { get; }
 
     public ICommand LoadSheetPlacementCommand => loadSheetPlacementCommand ?? (loadSheetPlacementCommand = new AsyncRelayCommand(OnLoadSheetPlacementAsync));
 
@@ -184,7 +184,7 @@
       }
     }
 
-    public DockingManager? DockManager { get; internal set; }
+    public DockingManager? DockManager { get; set; }
 
     public IDispatcherService DispatcherService { get; }
 
@@ -302,7 +302,7 @@
       this.ActiveDocument = loaded;
     }
 
-    internal void Close(FileViewModel fileToClose)
+    public void Close(FileViewModel fileToClose)
     {
       if (fileToClose.IsDirty)
       {
@@ -321,7 +321,7 @@
       files.Remove(fileToClose);
     }
 
-    internal async Task ExportSheetPlacementAsync(ISheetPlacement? sheetPlacement)
+    public async Task ExportSheetPlacementAsync(ISheetPlacement? sheetPlacement)
     {
       if (sheetPlacement == null)
       {
@@ -344,7 +344,7 @@
       }
     }
 
-    internal void Save(FileViewModel? fileToSave, bool saveAsFlag = false)
+    public void Save(FileViewModel? fileToSave, bool saveAsFlag = false)
     {
       if (fileToSave != null)
       {

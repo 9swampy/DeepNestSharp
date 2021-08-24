@@ -26,7 +26,7 @@
     bool IsExperimental { get; set; }
     bool IsTransformSet { get; }
     Point LowerBound { get; }
-    MainViewModel MainViewModel { get; }
+    IMainViewModel MainViewModel { get; }
     Point MousePosition { get; }
     IPartPlacement? SelectedPartPlacement { get; set; }
     Transform? Transform { get; }

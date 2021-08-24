@@ -4,11 +4,12 @@
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain;
   using DeepNestSharp.Ui.Docking;
+  using System.ComponentModel;
   using System.Text;
   using System.Threading.Tasks;
   using System.Windows.Input;
 
-  public interface INestMonitorViewModel : IToolViewModel
+  public interface INestMonitorViewModel : IToolViewModel, INotifyPropertyChanged
   {
     ICommand ContinueNestCommand { get; }
     bool IsRunning { get; }
@@ -27,7 +28,8 @@
     INestState State { get; }
     ICommand StopNestCommand { get; }
     TopNestResultsCollection TopNestResults { get; }
-    ZoomPreviewDrawingContext ZoomDrawingContext { get; }
+    IZoomPreviewDrawingContext ZoomDrawingContext { get; }
+    bool IsActive { get; set; }
 
     void Stop();
     Task<bool> TryStartAsync(INestProjectViewModel nestProjectViewModel);

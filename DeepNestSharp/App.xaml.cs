@@ -29,7 +29,7 @@
              services.AddTransient<INestProjectViewModel, NestProjectViewModel>();
              services.AddSingleton(SvgNest.Config);
              services.AddSingleton<IDispatcherService>(new DispatcherService(this.Dispatcher));
-             services.AddSingleton<MainViewModel>();
+             services.AddSingleton<IMainViewModel, MainViewModel>();
              services.AddSingleton<MainWindow>();
            }).Build();
 
@@ -44,7 +44,7 @@
           var args = Environment.GetCommandLineArgs();
           if (args != null && args.Length > 0)
           {
-            var mainViewModel = services.GetRequiredService<MainViewModel>();
+            var mainViewModel = services.GetRequiredService<IMainViewModel>();
             foreach (var arg in args)
             {
               var fileInfo = new FileInfo(arg);

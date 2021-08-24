@@ -15,7 +15,7 @@
     /// Initializes a new instance of the <see cref="PartEditorViewModel"/> class.
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
-    public PartEditorViewModel(MainViewModel mainViewModel)
+    public PartEditorViewModel(IMainViewModel mainViewModel)
       : base(mainViewModel)
     {
     }
@@ -25,7 +25,7 @@
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
     /// <param name="filePath">Path to the file to open.</param>
-    public PartEditorViewModel(MainViewModel mainViewModel, string filePath)
+    public PartEditorViewModel(IMainViewModel mainViewModel, string filePath)
       : base(mainViewModel, filePath)
     {
     }

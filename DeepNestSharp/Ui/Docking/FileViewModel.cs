@@ -24,7 +24,7 @@
     /// Initializes a new instance of the <see cref="FileViewModel"/> class.
     /// Use this to access an existing file.
     /// </summary>
-    public FileViewModel(MainViewModel mainViewModel, string filePath)
+    public FileViewModel(IMainViewModel mainViewModel, string filePath)
     {
       this.MainViewModel = mainViewModel;
       FilePath = filePath;
@@ -40,7 +40,7 @@
     /// Initializes a new instance of the <see cref="FileViewModel"/> class.
     /// Use this to access an new file.
     /// </summary>
-    public FileViewModel(MainViewModel mainViewModel)
+    public FileViewModel(IMainViewModel mainViewModel)
     {
       this.MainViewModel = mainViewModel;
       IsDirty = true;
@@ -152,7 +152,7 @@
       }
     }
 
-    protected MainViewModel MainViewModel { get; }
+    protected IMainViewModel MainViewModel { get; }
 
     protected abstract void NotifyContentUpdated();
 

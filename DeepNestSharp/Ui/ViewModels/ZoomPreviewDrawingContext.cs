@@ -5,7 +5,7 @@
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain.Models;
 
-  public class ZoomPreviewDrawingContext : ObservableCollection<object>
+  public class ZoomPreviewDrawingContext : ObservableCollection<object>, IZoomPreviewDrawingContext
   {
     public double Width { get; private set; }
 
@@ -16,7 +16,7 @@
       For(sheetPlacement);
     }
 
-    public ZoomPreviewDrawingContext For(ISheetPlacement sheetPlacement)
+    public IZoomPreviewDrawingContext For(ISheetPlacement sheetPlacement)
     {
       Set(new ObservableSheetPlacement((SheetPlacement)sheetPlacement));
       return this;
@@ -27,7 +27,7 @@
       For(sheetPlacement);
     }
 
-    public ZoomPreviewDrawingContext For(ObservableSheetPlacement sheetPlacement)
+    public IZoomPreviewDrawingContext For(ObservableSheetPlacement sheetPlacement)
     {
       this.Clear();
       this.Width = sheetPlacement.Sheet.WidthCalculated;

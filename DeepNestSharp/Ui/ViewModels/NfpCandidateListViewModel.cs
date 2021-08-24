@@ -15,7 +15,7 @@
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public NfpCandidateListViewModel(MainViewModel mainViewModel)
+    public NfpCandidateListViewModel(IMainViewModel mainViewModel)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
       : base(mainViewModel)
     {
@@ -26,7 +26,7 @@
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
     /// <param name="filePath">Path to the file to open.</param>
-    public NfpCandidateListViewModel(MainViewModel mainViewModel, string filePath)
+    public NfpCandidateListViewModel(IMainViewModel mainViewModel, string filePath)
       : base(mainViewModel, filePath)
     {
     }
