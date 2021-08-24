@@ -58,7 +58,7 @@
     [Fact]
     public void ShouldSetPoints()
     {
-      processed.Nfp.Points.Should().BeEquivalentTo(expectedPoints2, options => options.Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 1))
+      processed.Nfp.Points.Should().BeEquivalentTo(ExpectedPoints2, options => options.Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 1))
                                     .WhenTypeIs<double>());
     }
   }

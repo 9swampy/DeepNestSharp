@@ -1,56 +1,59 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
+  using System.Windows.Input;
   using DeepNestLib;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain.Docking;
   using DeepNestSharp.Domain.ViewModels;
-  using DeepNestSharp.Ui.Docking;
-  using System.Windows;
-  using System.Windows.Controls;
-  using System.Windows.Input;
-  using System.Windows.Media;
-
-  public struct SimplePoint : IPointXY
-  {
-    public SimplePoint(double x, double y)
-    {
-      this.X = x;
-      this.Y = y;
-    }
-
-    public double X { get; }
-    public double Y { get; }
-  }
 
   public interface IPreviewViewModel : IToolViewModel
   {
-    IFileViewModel? ActiveDocument { get; }
-    IPointXY? Actual { get; }
-    Canvas? Canvas { get; }
+    IFileViewModel ActiveDocument { get; }
+
+    IPointXY Actual { get; }
+
     IPointXY CanvasOffset { get; }
-    IPointXY? CanvasPosition { get; }
+
+    IPointXY CanvasPosition { get; }
+
     double CanvasScale { get; set; }
+
     double CanvasScaleMax { get; }
+
     double CanvasScaleMin { get; }
+
     IPointXY DragOffset { get; }
-    IPointXY? DragStart { get; }
+
+    IPointXY DragStart { get; }
+
     ICommand FitAllCommand { get; }
+
     double HeightBound { get; }
-    IPartPlacement? HoverPartPlacement { get; set; }
+
+    IPartPlacement HoverPartPlacement { get; set; }
+
     bool IsDragging { get; }
+
     bool IsExperimental { get; set; }
-    bool IsTransformSet { get; }
+
     IPointXY LowerBound { get; }
+
     IMainViewModel MainViewModel { get; }
+
     IPointXY MousePosition { get; }
-    IPartPlacement? SelectedPartPlacement { get; set; }
-    Transform? Transform { get; }
+
+    IPartPlacement SelectedPartPlacement { get; set; }
+
     IPointXY UpperBound { get; }
-    IPointXY? Viewport { get; }
+
+    IPointXY Viewport { get; }
+
     double WidthBound { get; }
+
     IZoomPreviewDrawingContext ZoomDrawingContext { get; }
 
     double LimitAbsoluteScale(double proposed);
+
     double LimitScaleTransform(double proposed);
   }
 }

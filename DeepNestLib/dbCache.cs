@@ -35,7 +35,7 @@
         {
           if (!Window.nfpCache.ContainsKey(obj.Key))
           {
-            Window.nfpCache.Add(obj.Key, CacheHelper.CloneNfp(obj.nfp, inner).ToList());
+            Window.nfpCache.Add(obj.Key, CacheHelper.CloneNfp(obj.Nfp, inner).ToList());
           }
           else
           {

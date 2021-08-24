@@ -104,8 +104,8 @@
     <Reference Include="Microsoft.Bcl.HashCode, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.HashCode.1.1.1\lib\net461\Microsoft.Bcl.HashCode.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis, Version=3.10.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.CodeAnalysis.Common.3.10.0\lib\netstandard2.0\Microsoft.CodeAnalysis.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis, Version=3.11.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.Common.3.11.0\lib\netstandard2.0\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
     <Reference Include="NCrunch.Framework, Version=4.7.0.4, Culture=neutral, PublicKeyToken=01d101bf6f3e0aea, processorArchitecture=MSIL">
       <HintPath>..\packages\NCrunch.Framework.4.7.0.4\lib\net35\NCrunch.Framework.dll</HintPath>
@@ -201,9 +201,10 @@
     <Compile Include="NfpExtensions.cs" />
     <Compile Include="NfpFixture.cs" />
     <Compile Include="NfpRotateFixture.cs" />
-    <Compile Include="PerfectFitnessFixture.cs" />
     <Compile Include="OuterFitPolygonFixture.cs" />
+    <Compile Include="PerfectBoundingBoxFitnessFixture.cs" />
     <Compile Include="Placement\DecimalArrayHashCodeFixture.cs" />
+    <Compile Include="Placement\NestResultJsonFixture.cs" />
     <Compile Include="Placement\NfpJsonFixture.cs" />
     <Compile Include="NestProject\ProjectInfoSerializationFixture.cs" />
     <Compile Include="Placement\PartPlacementScenarioFixture.cs" />

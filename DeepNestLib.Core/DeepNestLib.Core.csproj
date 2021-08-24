@@ -72,8 +72,8 @@
     <Compile Include="..\DeepNestLib\MinkowskiCache.cs" Link="MinkowskiCache.cs" />
     <Compile Include="..\DeepNestLib\MinkowskiDictionary.cs" Link="MinkowskiDictionary.cs" />
     <Compile Include="..\DeepNestLib\MinkowskiDictionaryJsonConverter.cs" Link="MinkowskiDictionaryJsonConverter.cs" />
-    <Compile Include="..\DeepNestLib\MinkowskiEqualityComparer.cs" Link="MinkowskiEqualityComparer.cs" />
     <Compile Include="..\DeepNestLib\MinkowskiKey.cs" Link="MinkowskiKey.cs" />
+    <Compile Include="..\DeepNestLib\MinkowskiKeyEqualityComparer.cs" Link="MinkowskiKeyEqualityComparer.cs" />
     <Compile Include="..\DeepNestLib\MinkowskiSum.cs" Link="MinkowskiSum.cs" />
     <Compile Include="..\DeepNestLib\MinkowskiSumCleaning.cs" Link="MinkowskiSumCleaning.cs" />
     <Compile Include="..\DeepNestLib\MinkowskiSumPick.cs" Link="MinkowskiSumPick.cs" />
@@ -111,7 +111,7 @@
     <Compile Include="..\DeepNestLib\Placement\INfpCandidateList.cs" Link="Placement\INfpCandidateList.cs" />
     <Compile Include="..\DeepNestLib\Placement\INfpHelper.cs" Link="Placement\INfpHelper.cs" />
     <Compile Include="..\DeepNestLib\Placement\InterfaceConverterFactory.cs" Link="Placement\InterfaceConverterFactory.cs" />
-    <Compile Include="..\DeepNestLib\Placement\InterfaceConverter{M,I}.cs" Link="Placement\InterfaceConverter{M,I}.cs" />
+    <Compile Include="..\DeepNestLib\Placement\InterfaceConverter{TConcrete,TInterface}.cs" Link="Placement\InterfaceConverter{TConcrete,TInterface}.cs" />
     <Compile Include="..\DeepNestLib\Placement\IPartPlacement.cs" Link="Placement\IPartPlacement.cs" />
     <Compile Include="..\DeepNestLib\Placement\IPlacementWorker.cs" Link="Placement\IPlacementWorker.cs" />
     <Compile Include="..\DeepNestLib\Placement\ISheetPlacement.cs" Link="Placement\ISheetPlacement.cs" />
@@ -156,6 +156,10 @@
     <PackageReference Include="GeneticSharp.Extensions" Version="2.6.0" />
     <PackageReference Include="IxMilia.Dxf" Version="0.8.1" />
     <PackageReference Include="Light.GuardClauses" Version="9.0.0" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
     <PackageReference Include="System.Text.Json" Version="5.0.2" />
   </ItemGroup>

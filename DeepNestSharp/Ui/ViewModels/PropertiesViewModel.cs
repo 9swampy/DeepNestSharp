@@ -1,6 +1,7 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
   using System.ComponentModel;
+  using DeepNestSharp.Domain;
   using DeepNestSharp.Domain.Docking;
   using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Domain.ViewModels;
@@ -9,7 +10,7 @@
   {
     private readonly IMainViewModel mainViewModel;
 
-    private SheetPlacementViewModel? lastSheetPlacementViewModel;
+    private ISheetPlacementViewModel? lastSheetPlacementViewModel;
     private object selectedObject;
 
     /// <summary>
@@ -48,7 +49,7 @@
       {
         SelectedObject = null;
 
-        if (mainViewModel.ActiveDocument is SheetPlacementViewModel sheetPlacementViewModel &&
+        if (mainViewModel.ActiveDocument is ISheetPlacementViewModel sheetPlacementViewModel &&
             sheetPlacementViewModel.SheetPlacement is ObservableSheetPlacement sheetPlacement)
         {
           lastSheetPlacementViewModel = sheetPlacementViewModel;
@@ -56,7 +57,7 @@
           sheetPlacementViewModel.PropertyChanged += SheetPlacementViewModel_PropertyChanged;
           Set(sheetPlacementViewModel);
         }
-        else if (mainViewModel.ActiveDocument is NestProjectViewModel nestProjectViewModel)
+        else if (mainViewModel.ActiveDocument is INestProjectViewModel nestProjectViewModel)
         {
           nestProjectViewModel.PropertyChanged += NestProjectViewModel_PropertyChanged;
           if (nestProjectViewModel.SelectedDetailLoadInfo is ObservableDetailLoadInfo detailLoadInfo)
@@ -82,14 +83,14 @@
     {
       if (sender == mainViewModel.ActiveDocument &&
           e.PropertyName == "SelectedDetailLoadInfo" &&
-          sender is NestProjectViewModel nestProjectViewModel &&
+          sender is INestProjectViewModel nestProjectViewModel &&
           nestProjectViewModel.SelectedDetailLoadInfo is ObservableDetailLoadInfo detailLoadInfo)
       {
         SelectedObject = detailLoadInfo;
       }
     }
 
-    private void Set(SheetPlacementViewModel sheetPlacementViewModel)
+    private void Set(ISheetPlacementViewModel sheetPlacementViewModel)
     {
       if (sheetPlacementViewModel.SelectedItem == null)
       {
@@ -101,11 +102,11 @@
       }
     }
 
-    private void SheetPlacementViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void SheetPlacementViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
       if (sender == mainViewModel.ActiveDocument &&
           e.PropertyName == "SelectedItem" &&
-          sender is SheetPlacementViewModel sheetPlacementViewModel &&
+          sender is ISheetPlacementViewModel sheetPlacementViewModel &&
           sheetPlacementViewModel.SheetPlacement is ObservableSheetPlacement sheetPlacement)
       {
         Set(sheetPlacementViewModel);

@@ -23,13 +23,13 @@
     [Fact]
     public void ShouldGenerateFirstPartExpected()
     {
-      firstPart.Points.Should().BeEquivalentTo(expectedInPoints);
+      firstPart.Points.Should().BeEquivalentTo(ExpectedInPoints);
     }
 
     [Fact]
     public void ShouldGenerateSecondPartExpected()
     {
-      secondPart.Points.Should().BeEquivalentTo(expectedInPoints);
+      secondPart.Points.Should().BeEquivalentTo(ExpectedInPoints);
     }
 
     [Fact]
@@ -71,7 +71,7 @@
     [Fact]
     public void ShouldSetPointsRealRun()
     {
-      processed.Nfp.Points.Should().BeEquivalentTo(expectedPoints1, options => options
+      processed.Nfp.Points.Should().BeEquivalentTo(ExpectedPoints1, options => options
         .Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 1))
         .WhenTypeIs<double>());
     }

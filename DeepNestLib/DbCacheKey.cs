@@ -13,7 +13,7 @@
       B = b;
       ARotation = aRotation;
       BRotation = bRotation;
-      nfp = nfps.ToArray();
+      Nfp = nfps.ToArray();
     }
 
     public DbCacheKey(int? a, int? b, double aRotation, double bRotation)
@@ -33,7 +33,7 @@
 
     public double BRotation { get; }
 
-    public INfp[] nfp { get; }
+    public INfp[] Nfp { get; }
 
     public int Type { get; }
 

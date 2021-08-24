@@ -122,7 +122,8 @@
     [Fact]
     public void GivenMinkowskiKeyWithItem7DifferingThenHashCodeShouldDiffer()
     {
-      var item7One = new decimal[] {
+      var item7One = new decimal[] 
+            {
               40.0815659M,
               -33.7844009M,
               40.0815659M,
@@ -152,7 +153,8 @@
     [Fact]
     public void GivenMinkowskiKeyWithItem7SameThenHashCodeShouldBeSame()
     {
-      var item7One = new decimal[] {
+      var item7One = new decimal[] 
+            {
               40.0815659M,
               -33.7844009M,
               40.0815659M,
@@ -164,7 +166,8 @@
             };
       var keyOne = new MinkowskiKey(1, new List<double>(), 1, new int[0], new List<double>(), 1, item7One.Select(o => (double)o));
 
-      var item7Two = new decimal[] {
+      var item7Two = new decimal[] 
+            {
               40.0815659M,
               -33.7844009M,
               40.0815659M,
@@ -227,7 +230,6 @@
       key2.Item6.Should().Be(key4.Item6);
       key2.Item6.GetHashCode().Should().Be(key4.Item6.GetHashCode());
 
-
       key2.Item7.Should().NotBeEquivalentTo(key4.Item7);
       ((IStructuralEquatable)key2.Item7.Select(o => o.ToString()).ToArray()).GetHashCode(EqualityComparer<string>.Default).Should().NotBe(((IStructuralEquatable)key4.Item7.Select(o => o.ToString()).ToArray()).GetHashCode(EqualityComparer<string>.Default));
 
@@ -237,7 +239,6 @@
     [Fact]
     public void GivenTwoDecimalArraysWhenSameThenGetHashCodeThenShouldBeSame()
     {
-
     }
   }
 }

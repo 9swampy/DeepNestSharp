@@ -82,5 +82,4 @@
       actual.Should().BeEquivalentTo(expected.ToArray());
     }
   }
-
 }

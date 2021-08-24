@@ -46,7 +46,10 @@
     /// </summary>
     /// <param name="message">A message to write.</param>
     /// <filterpriority>2</filterpriority>
-    public override void WriteLine(string message) { OnWriteLine(GetStackFrame(), message); }
+    public override void WriteLine(string message)
+    {
+      OnWriteLine(GetStackFrame(), message);
+    }
 
     private static StackFrame GetStackFrame()
     {

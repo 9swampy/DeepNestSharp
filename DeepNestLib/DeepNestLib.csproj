@@ -173,6 +173,7 @@
     <Compile Include="LocalContour.cs" />
     <Compile Include="MessageBoxIcon.cs" />
     <Compile Include="MinkowskiDictionaryJsonConverter.cs" />
+    <Compile Include="MinkowskiKeyEqualityComparer.cs" />
     <Compile Include="NestExecutionHelper.cs" />
     <Compile Include="NestProject\AnglesEnum.cs" />
     <Compile Include="Background.cs" />
@@ -222,7 +223,6 @@
     <Compile Include="LineElement.cs" />
     <Compile Include="MinkowskiCache.cs" />
     <Compile Include="MinkowskiDictionary.cs" />
-    <Compile Include="MinkowskiEqualityComparer.cs" />
     <Compile Include="MinkowskiKey.cs" />
     <Compile Include="MinkowskiSum.cs" />
     <Compile Include="MinkowskiSumCleaning.cs" />
@@ -250,7 +250,7 @@
     <Compile Include="Placement\INfpCandidateList.cs" />
     <Compile Include="Placement\INfpHelper.cs" />
     <Compile Include="Placement\InterfaceConverterFactory.cs" />
-    <Compile Include="Placement\InterfaceConverter{M,I}.cs" />
+    <Compile Include="Placement\InterfaceConverter{TConcrete,TInterface}.cs" />
     <Compile Include="Placement\IPlacementWorker.cs" />
     <Compile Include="Placement\ITestNfpHelper.cs" />
     <Compile Include="Placement\ListConverter{M}.cs" />

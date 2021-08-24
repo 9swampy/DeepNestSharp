@@ -3,6 +3,7 @@
   public interface IDockingManagerFacade
   {
     void LoadLayout();
+
     void SaveLayout();
   }
 }

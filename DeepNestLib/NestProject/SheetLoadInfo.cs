@@ -8,14 +8,10 @@
 
   public class SheetLoadInfo : Saveable, ISheetLoadInfo
   {
-    [Obsolete("Only use from ConfigSheetLoadInfo to bypass the constructor - could just pass the config in but if we do it would be less transparent; no other reason to keep it long term is there?")]
-    protected SheetLoadInfo()
-    {
-    }
-
     public SheetLoadInfo(ISvgNestConfig config)
       : this(config.SheetWidth, config.SheetHeight, config.SheetQuantity)
-    { }
+    {
+    }
 
     [JsonConstructor]
     public SheetLoadInfo(int width, int height, int quantity)
@@ -23,6 +19,11 @@
       this.Width = width;
       this.Height = height;
       this.Quantity = quantity;
+    }
+
+    [Obsolete("Only use from ConfigSheetLoadInfo to bypass the constructor - could just pass the config in but if we do it would be less transparent; no other reason to keep it long term is there?")]
+    protected SheetLoadInfo()
+    {
     }
 
     public virtual int Width { get; set; }

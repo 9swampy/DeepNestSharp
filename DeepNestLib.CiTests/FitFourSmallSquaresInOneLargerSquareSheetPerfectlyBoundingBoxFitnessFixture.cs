@@ -72,7 +72,6 @@
       this.nestResult.UnplacedParts.Should().BeEmpty();
     }
 
-
     [Fact]
     public void GivenBoundsPenaltyShouldBeInLineWithSheetsPenaltyThenScenario1BoundsShouldBeComingCloseToSheets()
     {

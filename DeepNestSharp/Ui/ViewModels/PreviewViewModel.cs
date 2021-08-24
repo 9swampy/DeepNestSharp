@@ -2,8 +2,6 @@
 {
   using System;
   using System.ComponentModel;
-  using System.Windows;
-  using System.Windows.Controls;
   using System.Windows.Input;
   using System.Windows.Media;
   using DeepNestLib;
@@ -16,7 +14,6 @@
 
   public class PreviewViewModel : ToolViewModel, IPreviewViewModel
   {
-    private const double Gap = 10;
     private readonly IMainViewModel mainViewModel;
     private IFileViewModel? lastActiveViewModel;
     private IPartPlacement? hoverPartPlacement;
@@ -24,7 +21,7 @@
     private IPointXY dragOffset;
     private IPointXY? dragStart;
     private double canvasScale = 1;
-    private IPointXY canvasOffset = new SimplePoint(0, 0);
+    private IPointXY canvasOffset = new SvgPoint(0, 0);
     private IPointXY? viewport;
     private Transform? transform;
     private RelayCommand? fitAllCommand = null;
@@ -161,8 +158,6 @@
       }
     }
 
-    public bool IsTransformSet => this.Transform != null;
-
     public double CanvasScaleMax => 10;
 
     public double CanvasScaleMin => 0.5;
@@ -173,7 +168,7 @@
       internal set
       {
         canvasOffset = value;
-        if (this.Transform is MatrixTransform matrixTransform)
+        if (this.transform is MatrixTransform matrixTransform)
         {
           var mat = matrixTransform.Matrix;
           mat.Translate(canvasOffset.X - mat.OffsetX, canvasOffset.Y - mat.OffsetY);
@@ -182,12 +177,6 @@
 
         OnPropertyChanged(nameof(CanvasOffset));
       }
-    }
-
-    public Canvas? Canvas
-    {
-      get;
-      internal set;
     }
 
     public IPointXY LowerBound
@@ -237,16 +226,6 @@
       internal set
       {
         SetProperty(ref viewport, value, nameof(Viewport));
-      }
-    }
-
-    public Transform? Transform
-    {
-      get => transform;
-      internal set
-      {
-        SetProperty(ref transform, value, nameof(Transform));
-        OnPropertyChanged(nameof(IsTransformSet));
       }
     }
 
@@ -309,13 +288,13 @@
 
       if (sender is IMainViewModel mainViewModel)
       {
-        ResetDrawingContext();
+        this.ZoomDrawingContext.Clear();
 
         if (mainViewModel.ActiveDocument is SheetPlacementViewModel sheetPlacementViewModel &&
             sheetPlacementViewModel.SheetPlacement is ObservableSheetPlacement sheetPlacement)
         {
           lastActiveViewModel = sheetPlacementViewModel;
-          Set(sheetPlacement);
+          this.ZoomDrawingContext.For(sheetPlacement);
         }
         else if (mainViewModel.ActiveDocument is NestProjectViewModel nestProjectViewModel)
         {
@@ -330,7 +309,7 @@
           lastActiveViewModel = partViewModel;
           if (partViewModel.Part is ObservableNfp nfp)
           {
-            Set(nfp);
+            this.ZoomDrawingContext.For(nfp);
           }
         }
         else if (mainViewModel.ActiveDocument is NestResultViewModel nestResultViewModel)
@@ -338,7 +317,7 @@
           lastActiveViewModel = nestResultViewModel;
           if (nestResultViewModel.SelectedItem is ObservableSheetPlacement nestResultSheetPlacement)
           {
-            Set(nestResultSheetPlacement);
+            this.ZoomDrawingContext.For(nestResultSheetPlacement);
           }
         }
         else if (mainViewModel.ActiveDocument is NfpCandidateListViewModel sheetNfpViewModel)
@@ -349,6 +328,8 @@
             Set(sheetNfpViewModel, sheetNfpItem);
           }
         }
+
+        OnPropertyChanged(nameof(ZoomDrawingContext));
 
         if (lastActiveViewModel != null)
         {
@@ -381,11 +362,6 @@
       }
     }
 
-    private void ResetDrawingContext()
-    {
-      this.ZoomDrawingContext.Clear();
-    }
-
     private void ActiveViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
       if (sender == mainViewModel.ActiveDocument)
@@ -395,13 +371,13 @@
              e.PropertyName == nameof(SheetPlacementViewModel.SheetPlacement)) &&
             sheetPlacementViewModel.SheetPlacement is ObservableSheetPlacement sheetPlacement)
         {
-          Set(sheetPlacement);
+          this.ZoomDrawingContext.For(sheetPlacement);
         }
         else if (sender is NestResultViewModel nestResultViewModel &&
                  e.PropertyName == nameof(NestResultViewModel.SelectedItem) &&
                  nestResultViewModel.SelectedItem is ObservableSheetPlacement nestResultSheetPlacement)
         {
-          Set(nestResultSheetPlacement);
+          this.ZoomDrawingContext.For(nestResultSheetPlacement);
         }
         else if (sender is NestProjectViewModel nestProjectViewModel &&
                  e.PropertyName == nameof(NestProjectViewModel.SelectedDetailLoadInfo) &&
@@ -413,7 +389,7 @@
                  e.PropertyName == nameof(PartEditorViewModel.Part) &&
                  partViewModel.Part is ObservableNfp nfp)
         {
-          Set(nfp);
+          this.ZoomDrawingContext.For(nfp);
         }
         else if (sender is NfpCandidateListViewModel sheetNfpViewModel &&
                  e.PropertyName == nameof(NfpCandidateListViewModel.SelectedItem) &&
@@ -421,63 +397,34 @@
         {
           Set(sheetNfpViewModel, sheetNfpItem);
         }
+
+        OnPropertyChanged(nameof(ZoomDrawingContext));
       }
     }
 
+    /// <summary>
+    /// Clear DrawingContext and set for Sheet with Part as a Frame including Point of origin.
+    /// </summary>
+    /// <param name="sheetNfpViewModel"></param>
+    /// <param name="sheetNfpItem"></param>
     private void Set(NfpCandidateListViewModel sheetNfpViewModel, INfp sheetNfpItem)
     {
       var sheet = new Sheet(sheetNfpViewModel.NfpCandidateList?.Sheet, WithChildren.Included);
       sheet.Children.Add(sheetNfpItem);
       var part = new NFP(sheetNfpViewModel.NfpCandidateList?.Part, WithChildren.Included);
-      Set(new ObservableNfp(sheet));
+      this.ZoomDrawingContext.For(new ObservableNfp(sheet));
       this.ZoomDrawingContext.AppendChild(new ObservableFrame(part));
       this.ZoomDrawingContext.AppendChild(new ObservablePoint(part));
     }
 
-    private void Set(ObservableSheetPlacement item)
-    {
-      ResetDrawingContext();
-      this.ZoomDrawingContext.Set(item);
-      foreach (var partPlacement in item.PartPlacements)
-      {
-        INfp part = partPlacement.Part;
-        foreach (var child in part.Children)
-        {
-          Set(new ObservableHole(child.Shift(partPlacement)));
-        }
-      }
-
-      OnPropertyChanged(nameof(ZoomDrawingContext));
-    }
-
+    /// <summary>
+    /// Clear DrawingContext and set for Part as a Frame including Point of origin.
+    /// </summary>
     private void Set(ObservableDetailLoadInfo item)
     {
-      ResetDrawingContext();
       var polygon = item.LoadAsync().Result;
       var shiftedPart = polygon.Shift(-polygon.MinX, -polygon.MinY);
-      Set(new ObservableNfp(shiftedPart));
-    }
-
-    /// <summary>
-    /// Top level for each part added should be Observable.
-    /// </summary>
-    /// <param name="polygon">Ultimate parent of the part.</param>
-    private void Set(ObservableNfp polygon)
-    {
-      this.ZoomDrawingContext.For(polygon);
-      foreach (var child in polygon.Children)
-      {
-        if (child is ObservableNfp observableChild)
-        {
-          throw new InvalidOperationException("In the abscence of tests prevent this, not anticipated - wouldn't it mess rendering?");
-        }
-        else
-        {
-          this.ZoomDrawingContext.AppendChild(new ObservableHole(child));
-        }
-      }
-
-      OnPropertyChanged(nameof(ZoomDrawingContext));
+      this.ZoomDrawingContext.For(new ObservableNfp(shiftedPart));
     }
   }
 }

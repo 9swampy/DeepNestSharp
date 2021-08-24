@@ -446,7 +446,6 @@
 
     private void moveToSheetsToolStripMenuItem_Click(object sender, EventArgs e)
     {
-
       if (listView1.SelectedItems.Count > 0)
       {
         var pol = listView1.SelectedItems[0].Tag as NFP;
@@ -894,7 +893,6 @@
 
     private void button15_Click(object sender, EventArgs e)
     {
-
       Random r = new Random();
       for (int i = 0; i < 10; i++)
       {
@@ -924,7 +922,6 @@
 
     private void button16_Click(object sender, EventArgs e)
     {
-
       Random r = new Random();
       for (int i = 0; i < 10; i++)
       {
@@ -1095,7 +1092,6 @@
 
     private void button2_Click(object sender, EventArgs e)
     {
-
       Random r = new Random();
 
       var xx = r.Next(2000) + 100;
@@ -1406,12 +1402,10 @@
 
     private void radioButton1_CheckedChanged(object sender, EventArgs e)
     {
-
     }
 
     private void radioButton2_CheckedChanged(object sender, EventArgs e)
     {
-
     }
 
     private void toolStripButton8_Click(object sender, EventArgs e)

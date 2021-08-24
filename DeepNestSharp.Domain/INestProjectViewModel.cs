@@ -1,8 +1,9 @@
 ﻿namespace DeepNestSharp.Domain
 {
+  using System.ComponentModel;
   using DeepNestLib.NestProject;
 
-  public interface INestProjectViewModel
+  public interface INestProjectViewModel : INotifyPropertyChanged
   {
     IProjectInfo ProjectInfo { get; }
 

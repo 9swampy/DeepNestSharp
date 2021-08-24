@@ -6,7 +6,8 @@
   {
     public PolygonSimplificationKey(SvgPoint[] points, double? dataB, bool dataC, bool dataD)
       : base(points, dataB, dataC, dataD)
-    { }
+    {
+    }
 
     public SvgPoint[] Points => Item1;
 

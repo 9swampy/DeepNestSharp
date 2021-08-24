@@ -7,7 +7,7 @@
 
   public class SquareWithHoleFixture
   {
-    INfp squareWithHole;
+    private readonly INfp squareWithHole;
 
     public SquareWithHoleFixture()
     {

@@ -39,11 +39,11 @@
 
         if (this.TranformMode == TransformMode.Render)
         {
-          previewViewModel.Transform = this.transform = this.canvas.RenderTransform = new MatrixTransform();
+          this.transform = this.canvas.RenderTransform = new MatrixTransform();
         }
         else
         {
-          previewViewModel.Transform = this.transform = this.canvas.LayoutTransform = new MatrixTransform();
+          this.transform = this.canvas.LayoutTransform = new MatrixTransform();
         }
 
         this.grid.MouseWheel += AssociatedObject_MouseWheel;

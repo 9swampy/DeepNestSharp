@@ -18,15 +18,10 @@
 
     public IZoomPreviewDrawingContext For(ISheetPlacement sheetPlacement)
     {
-      Set(new ObservableSheetPlacement((SheetPlacement)sheetPlacement));
-      return this;
+      return For(new ObservableSheetPlacement((SheetPlacement)sheetPlacement));
     }
 
-    public void Set(ObservableSheetPlacement sheetPlacement)
-    {
-      For(sheetPlacement);
-    }
-
+    /// <inheritdoc />
     public IZoomPreviewDrawingContext For(ObservableSheetPlacement sheetPlacement)
     {
       this.Clear();
@@ -46,12 +41,14 @@
       return this;
     }
 
+    /// <inheritdoc />
     public IZoomPreviewDrawingContext For(INfp part)
     {
       For(new ObservableNfp(part));
       return this;
     }
 
+    /// <inheritdoc />
     public IZoomPreviewDrawingContext For(ObservableNfp part)
     {
       this.Clear();
@@ -76,16 +73,17 @@
       {
         AppendChild(observablePoint);
       }
+      else if (c is ObservableFrame observableFrame)
+      {
+        AppendChild(observableFrame);
+      }
       else
       {
         AppendChild(new ObservableHole(c));
       }
     }
 
-    /// <summary>
-    /// Adding in children as <see cref="ObservableHoles"/> so can fill differently.
-    /// </summary>
-    /// <param name="child">Child to add; presumption's it will be a Hole.</param>
+    /// <inheritdoc />
     public void AppendChild(ObservableHole child)
     {
       this.Add(child);
@@ -95,19 +93,13 @@
       }
     }
 
-    /// <summary>
-    /// Adding in children as <see cref="ObservablePoints"/> so can fill differently.
-    /// </summary>
-    /// <param name="child">Child to add; presumption's it will be a Point.</param>
+    /// <inheritdoc />
     public void AppendChild(ObservablePoint child)
     {
       this.Add(child);
     }
 
-    /// <summary>
-    /// Adding in children as <see cref="ObservableFrame"/> so can fill differently.
-    /// </summary>
-    /// <param name="child">Child to add; presumption's it will be a Frame.</param>
+    /// <inheritdoc />
     public void AppendChild(ObservableFrame child)
     {
       this.Add(child);

@@ -22,10 +22,8 @@
       if (this.DataContext is PreviewViewModel viewModel &&
           sender is Preview preview &&
           preview.GetVisualParent<Window>() is Window window &&
-          preview.GetChildOfType<Canvas>() is Canvas canvas &&
           preview.GetChildOfType<ScrollViewer>() is ScrollViewer scrollViewer)
       {
-        viewModel.Canvas = canvas;
         scrollViewer.SizeChanged += this.ScrollViewer_SizeChanged;
         //scrollViewer.LayoutUpdated += this.ScrollViewer_LayoutUpdated;
         window.StateChanged += this.Window_StateChanged;
