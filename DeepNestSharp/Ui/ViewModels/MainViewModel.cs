@@ -8,9 +8,7 @@
   using System.Threading.Tasks;
   using System.Windows;
   using System.Windows.Input;
-  using AvalonDock;
   using AvalonDock.Layout;
-  using AvalonDock.Layout.Serialization;
   using AvalonDock.Themes;
   using DeepNestLib;
   using DeepNestLib.NestProject;
@@ -18,7 +16,6 @@
   using DeepNestSharp.Domain;
   using DeepNestSharp.Domain.Docking;
   using DeepNestSharp.Domain.ViewModels;
-  using DeepNestSharp.Ui.Docking;
   using Microsoft.Toolkit.Mvvm.ComponentModel;
   using Microsoft.Toolkit.Mvvm.Input;
 
@@ -43,7 +40,7 @@
     private IToolViewModel[] tools;
 
     private PreviewViewModel? previewViewModel;
-    private Tuple<string, Theme>? selectedTheme;
+    private Tuple<string, ThemeProxy>? selectedTheme;
     private IFileViewModel? activeDocument;
     private IPropertiesViewModel? propertiesViewModel;
     private INestMonitorViewModel? nestMonitorViewModel;
@@ -55,9 +52,9 @@
       files = new ObservableCollection<IFileViewModel>();
       Files = new ReadOnlyObservableCollection<IFileViewModel>(files);
 
-      this.Themes = new List<Tuple<string, Theme>>
+      this.Themes = new List<Tuple<string, ThemeProxy>>
       {
-        new Tuple<string, Theme>(nameof(GenericTheme), new GenericTheme()),
+        new Tuple<string, ThemeProxy>(nameof(GenericTheme), new ThemeProxy(new GenericTheme())),
 
         // new Tuple<string, Theme>(nameof(AeroTheme),new AeroTheme()),
         // new Tuple<string, Theme>(nameof(ExpressionDarkTheme),new ExpressionDarkTheme()),
@@ -79,9 +76,9 @@
 
     public event EventHandler? ActiveDocumentChanged;
 
-    public List<Tuple<string, Theme>> Themes { get; set; }
+    public List<Tuple<string, ThemeProxy>> Themes { get; set; }
 
-    public Tuple<string, Theme>? SelectedTheme
+    public Tuple<string, ThemeProxy>? SelectedTheme
     {
       get => selectedTheme;
 
@@ -186,7 +183,7 @@
       }
     }
 
-    public DockingManager? DockManager { get; set; }
+    public IDockingManagerFacade? DockManager { get; set; }
 
     public IDispatcherService DispatcherService { get; }
 
@@ -470,31 +467,7 @@
 
     private void OnLoadLayout()
     {
-      // Walk down the layout and gather the LayoutContent elements.
-      // AD bails out when it tries to invoke RemoveViewFromLogicalChild
-      // on them.
-      /*var l = GatherLayoutContent(DockManager.Layout).ToArray();
-      // Remove the views by force
-      foreach (var x in l)
-      {
-        DockManager.GetType()
-            .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
-            .Where(m => m.Name.Equals("RemoveViewFromLogicalChild"))
-            .First()
-            .Invoke(DockManager, new object[] { x });
-      }*/
-
-      var layoutSerializer = new XmlLayoutSerializer(DockManager);
-      /*layoutSerializer.LayoutSerializationCallback += (s, e) =>
-      //{
-      //  object o = e.Content;
-      };*/
-
-      var configFile = new FileInfo(@".\AvalonDock.Layout.config");
-      if (configFile.Exists)
-      {
-        layoutSerializer.Deserialize(configFile.FullName);
-      }
+      this.DockManager?.LoadLayout();
     }
 
     private void MainViewModel_ActiveDocumentChanged(object? sender, EventArgs e)
@@ -514,8 +487,7 @@
 
     private void OnSaveLayout()
     {
-      var layoutSerializer = new XmlLayoutSerializer(DockManager);
-      layoutSerializer.Serialize(@".\AvalonDock.Layout.config");
+      this.DockManager?.SaveLayout();
     }
   }
 }

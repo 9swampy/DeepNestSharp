@@ -2,6 +2,7 @@
 {
   using System.IO;
   using System.Windows;
+  using DeepNestSharp.Ui.Docking;
   using DeepNestSharp.Ui.ViewModels;
 
   public partial class MainWindow : Window
@@ -10,7 +11,7 @@
     {
       InitializeComponent();
       this.DataContext = viewModel;
-      viewModel.DockManager = this.dockManager;
+      viewModel.DockManager = new DockingManagerFacade(this.dockManager);
       this.Loaded += new RoutedEventHandler(MainWindow_Loaded);
       this.Unloaded += new RoutedEventHandler(MainWindow_Unloaded);
     }

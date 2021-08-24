@@ -1,17 +1,14 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
-  using AvalonDock;
-  using AvalonDock.Themes;
-  using DeepNestLib;
-  using DeepNestLib.Placement;
-  using DeepNestSharp.Domain.Docking;
-  using DeepNestSharp.Domain.ViewModels;
-  using DeepNestSharp.Ui.Docking;
   using System;
   using System.Collections.Generic;
   using System.Collections.ObjectModel;
   using System.Threading.Tasks;
   using System.Windows.Input;
+  using DeepNestLib;
+  using DeepNestLib.Placement;
+  using DeepNestSharp.Domain.Docking;
+  using DeepNestSharp.Domain.ViewModels;  
 
   public interface IMainViewModel
   {
@@ -20,7 +17,7 @@
     ICommand ActiveDocumentSaveCommand { get; }
     ICommand CreateNestProjectCommand { get; }
     IDispatcherService DispatcherService { get; }
-    DockingManager? DockManager { get; set; }
+    IDockingManagerFacade? DockManager { get; set; }
     ICommand ExitCommand { get; }
     ReadOnlyObservableCollection<IFileViewModel> Files { get; }
     ICommand LoadLayoutCommand { get; }
@@ -35,9 +32,9 @@
     IPreviewViewModel PreviewViewModel { get; }
     IPropertiesViewModel PropertiesViewModel { get; }
     ICommand SaveLayoutCommand { get; }
-    Tuple<string, Theme>? SelectedTheme { get; set; }
+    Tuple<string, ThemeProxy>? SelectedTheme { get; set; }
     ISvgNestConfigViewModel SvgNestConfigViewModel { get; }
-    List<Tuple<string, Theme>> Themes { get; set; }
+    List<Tuple<string, ThemeProxy>> Themes { get; set; }
     IEnumerable<IToolViewModel> Tools { get; }
 
     event EventHandler? ActiveDocumentChanged;
