@@ -1,4 +1,4 @@
-﻿namespace DeepNestSharp.Ui.ViewModels
+﻿namespace DeepNestSharp.Domain.ViewModels
 {
   using System.ComponentModel;
   using System.Text;
@@ -8,7 +8,6 @@
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain;
   using DeepNestSharp.Domain.Docking;
-  using DeepNestSharp.Domain.ViewModels;
 
   public interface INestMonitorViewModel : IToolViewModel, INotifyPropertyChanged
   {
@@ -38,7 +37,7 @@
 
     int SelectedIndex { get; set; }
 
-    INestResult? SelectedItem { get; set; }
+    INestResult SelectedItem { get; set; }
 
     INestState State { get; }
 

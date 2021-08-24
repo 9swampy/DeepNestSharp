@@ -9,6 +9,7 @@
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain;
   using DeepNestSharp.Domain.Models;
+  using DeepNestSharp.Domain.ViewModels;
   using DeepNestSharp.Ui.Docking;
   using Microsoft.Toolkit.Mvvm.Input;
 

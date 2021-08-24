@@ -2,14 +2,14 @@
 
 namespace DeepNestSharp.Domain.Models
 {
-  using DeepNestLib.NestProject;
   using System;
   using System.Collections.Generic;
   using System.Collections.ObjectModel;
-  using Light.GuardClauses;
-  using System.Linq;
   using System.ComponentModel;
+  using System.Linq;
   using DeepNestLib.IO;
+  using DeepNestLib.NestProject;
+  using Light.GuardClauses;
 
   public class ObservableCollection<TCommonInterface, TIn, TOut> : ObservableCollection<TOut>, IList<TCommonInterface, TIn>, ISaveable, INotifyPropertyChanged
     where TIn : class, TCommonInterface, ISaveable

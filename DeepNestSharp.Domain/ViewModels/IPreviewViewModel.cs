@@ -1,10 +1,9 @@
-﻿namespace DeepNestSharp.Ui.ViewModels
+﻿namespace DeepNestSharp.Domain.ViewModels
 {
   using System.Windows.Input;
   using DeepNestLib;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain.Docking;
-  using DeepNestSharp.Domain.ViewModels;
 
   public interface IPreviewViewModel : IToolViewModel
   {

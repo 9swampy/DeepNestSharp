@@ -12,7 +12,7 @@
       return JsonSerializer.Deserialize<TConcrete>(ref reader, options);
     }
 
-    public override void Write(Utf8JsonWriter writer, TInterface value, JsonSerializerOptions options) 
+    public override void Write(Utf8JsonWriter writer, TInterface value, JsonSerializerOptions options)
     {
     }
   }

@@ -1,4 +1,4 @@
-﻿namespace DeepNestSharp.Ui.ViewModels
+﻿namespace DeepNestSharp.Domain.ViewModels
 {
   using System.IO;
   using DeepNestLib;
@@ -8,7 +8,7 @@
 
   public class PartEditorViewModel : FileViewModel
   {
-    private INfp? part;
+    private INfp part;
     private RelayCommand<string> rotateCommand;
 
     /// <summary>
@@ -30,7 +30,7 @@
     {
     }
 
-    public INfp? Part
+    public INfp Part
     {
       get
       {
@@ -47,7 +47,7 @@
 
     public IRelayCommand<string> RotateCommand => rotateCommand ?? (rotateCommand = new RelayCommand<string>(OnRotate));
 
-    private void OnRotate(string? degrees)
+    private void OnRotate(string degrees)
     {
       double castDegrees;
       if (degrees != null && double.TryParse(degrees, out castDegrees))

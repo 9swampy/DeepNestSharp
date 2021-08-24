@@ -6,6 +6,7 @@
   using System.Windows;
   using DeepNestLib;
   using DeepNestSharp.Domain;
+  using DeepNestSharp.Domain.ViewModels;
   using DeepNestSharp.Ui.Services;
   using DeepNestSharp.Ui.ViewModels;
   using Microsoft.Extensions.DependencyInjection;

@@ -1,9 +1,9 @@
 ﻿namespace DeepNestSharp.Ui.UserControls
 {
-  using DeepNestSharp.Domain.ViewModels;
   using System;
   using System.Windows;
   using System.Windows.Controls;
+  using DeepNestSharp.Domain.ViewModels;
 
   /// <summary>
   /// Interaction logic for SvgNestConfigEditor.xaml.

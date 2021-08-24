@@ -1,4 +1,4 @@
-﻿namespace DeepNestSharp.Ui.ViewModels
+﻿namespace DeepNestSharp.Domain.ViewModels
 {
   using System.IO;
   using DeepNestLib;
@@ -6,7 +6,7 @@
 
   public class NfpCandidateListViewModel : FileViewModel
   {
-    private INfpCandidateList? nfpCandidateList;
+    private INfpCandidateList nfpCandidateList;
     private int selectedIndex;
     private INfp selectedItem;
 
@@ -31,7 +31,7 @@
     {
     }
 
-    public INfpCandidateList? NfpCandidateList
+    public INfpCandidateList NfpCandidateList
     {
       get
       {

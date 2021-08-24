@@ -5,7 +5,7 @@
   using System.Windows.Input;
   using System.Windows.Interactivity;
   using DeepNestSharp.Domain.Models;
-  using DeepNestSharp.Ui.ViewModels;
+  using DeepNestSharp.Domain.ViewModels;
 
   public class PolygonMouseHover : Behavior<FrameworkElement>
   {

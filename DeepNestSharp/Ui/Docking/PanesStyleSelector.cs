@@ -1,8 +1,8 @@
 ﻿namespace DeepNestSharp.Ui.Docking
 {
-  using DeepNestSharp.Domain.Docking;
   using System.Windows;
   using System.Windows.Controls;
+  using DeepNestSharp.Domain.Docking;
 
   internal class PanesStyleSelector : StyleSelector
   {

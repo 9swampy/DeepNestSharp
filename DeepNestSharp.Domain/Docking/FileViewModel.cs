@@ -3,8 +3,8 @@
   using System.IO;
   using System.Windows.Input;
   using DeepNestSharp.Domain.Docking;
+  using DeepNestSharp.Domain.ViewModels;
   //using System.Windows.Media;
-  using DeepNestSharp.Ui.ViewModels;
   using Microsoft.Toolkit.Mvvm.Input;
 
   public abstract class FileViewModel : PaneViewModel, IFileViewModel

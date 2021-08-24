@@ -1,4 +1,4 @@
-﻿namespace DeepNestSharp.Ui.ViewModels
+﻿namespace DeepNestSharp.Domain.ViewModels
 {
   using System;
   using System.Collections.Generic;
@@ -8,7 +8,6 @@
   using DeepNestLib;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain.Docking;
-  using DeepNestSharp.Domain.ViewModels;
 
   public interface IMainViewModel
   {

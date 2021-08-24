@@ -4,7 +4,7 @@
   using DeepNestLib;
   using DeepNestLib.NestProject;
   using DeepNestSharp.Domain.Models;
-  using DeepNestSharp.Ui.ViewModels;
+  using DeepNestSharp.Domain.ViewModels;
   using Light.GuardClauses;
   using Microsoft.Toolkit.Mvvm.ComponentModel;
 

@@ -3,7 +3,7 @@
   using System.Windows;
   using System.Windows.Interactivity;
   using DeepNestSharp.Domain.Models;
-  using DeepNestSharp.Ui.ViewModels;
+  using DeepNestSharp.Domain.ViewModels;
 
   public class PolygonMouseDrag : Behavior<FrameworkElement>
   {

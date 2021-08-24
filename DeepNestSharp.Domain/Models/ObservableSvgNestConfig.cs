@@ -1,8 +1,8 @@
 ﻿namespace DeepNestSharp.Domain.Models
 {
+  using System.ComponentModel;
   using DeepNestLib;
   using DeepNestLib.NestProject;
-  using System.ComponentModel;
 
   public class ObservableSvgNestConfig : ObservablePropertyObject, ISvgNestConfig
   {

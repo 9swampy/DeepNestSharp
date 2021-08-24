@@ -1,4 +1,4 @@
-﻿namespace DeepNestSharp.Ui.ViewModels
+﻿namespace DeepNestSharp.Domain.ViewModels
 {
   using System;
   using System.Threading.Tasks;
@@ -88,7 +88,7 @@
       NotifyContentUpdated();
     }
 
-    private void NestResult_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void NestResult_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
       NotifyContentUpdated();
     }
@@ -103,12 +103,12 @@
       // Don't do anything, DeepNestSharp only consumes and can be used to inspect Part files.
     }
 
-    private async Task OnExportSheetPlacementAsync(ISheetPlacement? sheetPlacement)
+    private async Task OnExportSheetPlacementAsync(ISheetPlacement sheetPlacement)
     {
       await MainViewModel.ExportSheetPlacementAsync(sheetPlacement).ConfigureAwait(false);
     }
 
-    private void OnLoadSheetPlacement(ISheetPlacement? sheetPlacement)
+    private void OnLoadSheetPlacement(ISheetPlacement sheetPlacement)
     {
       if (sheetPlacement != null)
       {
