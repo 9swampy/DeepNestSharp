@@ -95,7 +95,7 @@
       return wrappedProjectInfo.ToJson();
     }
 
-    internal void SaveState()
+    public void SaveState()
     {
       detailLoadInfos?.SaveState();
     }

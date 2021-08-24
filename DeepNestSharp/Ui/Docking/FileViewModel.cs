@@ -6,7 +6,7 @@
   using DeepNestSharp.Ui.ViewModels;
   using Microsoft.Toolkit.Mvvm.Input;
 
-  public abstract class FileViewModel : PaneViewModel
+  public abstract class FileViewModel : PaneViewModel, IFileViewModel
   {
     //private static ImageSourceConverter imageSourceConverter = new ImageSourceConverter();
 
