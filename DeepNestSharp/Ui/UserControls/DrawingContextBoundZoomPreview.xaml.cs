@@ -6,6 +6,7 @@
   using System.Windows.Controls;
   using System.Windows.Input;
   using System.Windows.Shapes;
+  using DeepNestLib;
   using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Ui.Behaviors;
   using DeepNestSharp.Ui.ViewModels;
@@ -124,7 +125,7 @@
         BringToFront(canvas, polygon);
         if (IsDragModifierPressed && vm.MainViewModel.ActiveDocument is SheetPlacementViewModel)
         {
-          vm.DragStart = mousePos;
+          vm.DragStart = new SvgPoint(mousePos.X, mousePos.Y);
           scrollViewer.Cursor = Cursors.Hand;
           partPlacementStartPos = new Point(vm.SelectedPartPlacement.X, vm.SelectedPartPlacement.Y);
           Debug.Print($"Drag start set@{vm.DragStart?.X},{vm.DragStart?.Y}. {vm.IsDragging}");
@@ -228,7 +229,8 @@
       System.Diagnostics.Debug.Print("Polygon_MouseUp");
       if (DataContext is PreviewViewModel vm)
       {
-        vm.MousePosition = e.GetPosition(scrollViewer);
+        var mousePos = e.GetPosition(scrollViewer);
+        vm.MousePosition = new SvgPoint(mousePos.X, mousePos.Y);
         MouseUpHandler(vm);
       }
     }
@@ -239,16 +241,18 @@
           itemsControl.GetChildOfType<Canvas>() is Canvas canvas &&
           DataContext is PreviewViewModel vm)
       {
-        vm.MousePosition = e.GetPosition(scrollViewer);
-        vm.CanvasPosition = e.GetPosition(canvas);
+        var mousePos = e.GetPosition(scrollViewer);
+        vm.MousePosition = new SvgPoint(mousePos.X, mousePos.Y);
+        var canvasPos = e.GetPosition(canvas);
+        vm.CanvasPosition = new SvgPoint(canvasPos.X, canvasPos.Y);
         if (vm.IsDragging &&
             vm.DragStart != null &&
             capturePartPlacement != null)
         {
           if (IsDragModifierPressed)
           {
-            var dragStart = vm.DragStart.Value;
-            vm.DragOffset = new Point((vm.MousePosition.X - dragStart.X) / scaleTransform.ScaleX, (vm.MousePosition.Y - dragStart.Y) / scaleTransform.ScaleY);
+            var dragStart = vm.DragStart;
+            vm.DragOffset = new SvgPoint((vm.MousePosition.X - dragStart.X) / scaleTransform.ScaleX, (vm.MousePosition.Y - dragStart.Y) / scaleTransform.ScaleY);
 
             // System.Diagnostics.Debug.Print($"DragOffset={vm.DragOffset:N2}");
             capturePartPlacement.X = partPlacementStartPos.X + vm.DragOffset.X;
@@ -274,10 +278,10 @@
     {
       System.Diagnostics.Debug.Print("Handle MouseUp");
       scrollViewer.Cursor = Cursors.Arrow;
-      if (vm.IsDragging && IsDragModifierPressed && vm.DragStart.HasValue)
+      if (vm.IsDragging && IsDragModifierPressed && vm.DragStart != null)
       {
-        var dragStart = vm.DragStart.Value;
-        vm.DragOffset = new Point((vm.MousePosition.X - dragStart.X) / scaleTransform.ScaleX, (vm.MousePosition.Y - dragStart.Y) / scaleTransform.ScaleY);
+        var dragStart = vm.DragStart;
+        vm.DragOffset = new SvgPoint((vm.MousePosition.X - dragStart.X) / scaleTransform.ScaleX, (vm.MousePosition.Y - dragStart.Y) / scaleTransform.ScaleY);
         System.Diagnostics.Debug.Print($"Drag commit@{vm.DragOffset.X:N2},{vm.DragOffset.Y:N2}");
         if (capturePartPlacement != null)
         {

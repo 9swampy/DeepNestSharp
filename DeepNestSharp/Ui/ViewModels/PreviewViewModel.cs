@@ -20,16 +20,16 @@
     private readonly IMainViewModel mainViewModel;
     private IFileViewModel? lastActiveViewModel;
     private IPartPlacement? hoverPartPlacement;
-    private Point mousePosition;
-    private Point dragOffset;
-    private Point? dragStart;
+    private IPointXY mousePosition;
+    private IPointXY dragOffset;
+    private IPointXY? dragStart;
     private double canvasScale = 1;
-    private Point canvasOffset = new Point(0, 0);
-    private Point? viewport;
+    private IPointXY canvasOffset = new SimplePoint(0, 0);
+    private IPointXY? viewport;
     private Transform? transform;
     private RelayCommand? fitAllCommand = null;
-    private Point? actual;
-    private Point? canvasPosition;
+    private IPointXY? actual;
+    private IPointXY? canvasPosition;
     private bool isExperimental;
 
     /// <summary>
@@ -98,7 +98,7 @@
       }
     }
 
-    public Point MousePosition
+    public IPointXY MousePosition
     {
       get => mousePosition;
       internal set
@@ -108,7 +108,7 @@
       }
     }
 
-    public Point? CanvasPosition
+    public IPointXY? CanvasPosition
     {
       get => canvasPosition;
       internal set
@@ -119,7 +119,7 @@
 
     public bool IsDragging
     {
-      get => dragStart.HasValue;
+      get => dragStart != null;
     }
 
     public bool IsExperimental
@@ -132,7 +132,7 @@
       }
     }
 
-    public Point DragOffset
+    public IPointXY DragOffset
     {
       get => dragOffset;
       internal set
@@ -141,7 +141,7 @@
       }
     }
 
-    public Point? DragStart
+    public IPointXY? DragStart
     {
       get => dragStart;
       internal set
@@ -167,7 +167,7 @@
 
     public double CanvasScaleMin => 0.5;
 
-    public Point CanvasOffset
+    public IPointXY CanvasOffset
     {
       get => canvasOffset;
       internal set
@@ -190,19 +190,19 @@
       internal set;
     }
 
-    public Point LowerBound
+    public IPointXY LowerBound
     {
       get
       {
-        return new Point(ZoomDrawingContext.Extremum(MinMax.Min, XY.X), ZoomDrawingContext.Extremum(MinMax.Min, XY.Y));
+        return new SvgPoint(ZoomDrawingContext.Extremum(MinMax.Min, XY.X), ZoomDrawingContext.Extremum(MinMax.Min, XY.Y));
       }
     }
 
-    public Point UpperBound
+    public IPointXY UpperBound
     {
       get
       {
-        return new Point(ZoomDrawingContext.Extremum(MinMax.Max, XY.X), ZoomDrawingContext.Extremum(MinMax.Max, XY.Y));
+        return new SvgPoint(ZoomDrawingContext.Extremum(MinMax.Max, XY.X), ZoomDrawingContext.Extremum(MinMax.Max, XY.Y));
       }
     }
 
@@ -222,7 +222,7 @@
       }
     }
 
-    public Point? Actual
+    public IPointXY? Actual
     {
       get => actual;
       internal set
@@ -231,7 +231,7 @@
       }
     }
 
-    public Point? Viewport
+    public IPointXY? Viewport
     {
       get => viewport;
       internal set

@@ -2,6 +2,7 @@
 {
   using System.Windows;
   using System.Windows.Controls;
+  using DeepNestLib;
   using DeepNestSharp.Ui.Behaviors;
   using DeepNestSharp.Ui.ViewModels;
 
@@ -68,8 +69,8 @@
 
     private static void SetViewport(PreviewViewModel viewModel, ScrollViewer scrollViewer)
     {
-      viewModel.Viewport = new Point(scrollViewer.ViewportWidth, scrollViewer.ViewportHeight);
-      viewModel.Actual = new Point(scrollViewer.ActualWidth, scrollViewer.ActualHeight);
+      viewModel.Viewport = new SvgPoint(scrollViewer.ViewportWidth, scrollViewer.ViewportHeight);
+      viewModel.Actual = new SvgPoint(scrollViewer.ActualWidth, scrollViewer.ActualHeight);
     }
   }
 }

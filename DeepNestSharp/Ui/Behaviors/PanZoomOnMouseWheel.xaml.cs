@@ -6,6 +6,7 @@
   using System.Windows.Input;
   using System.Windows.Interactivity;
   using System.Windows.Media;
+  using DeepNestLib;
   using DeepNestSharp.Ui.ViewModels;
 
   public class PanZoomOnMouseWheel : Behavior<FrameworkElement>
@@ -93,7 +94,7 @@
         matrixTransform.Matrix = mat;
 
         previewViewModel.CanvasScale = mat.M11;
-        previewViewModel.CanvasOffset = new Point(mat.OffsetX, mat.OffsetY);
+        previewViewModel.CanvasOffset = new SvgPoint(mat.OffsetX, mat.OffsetY);
 
         // https://stackoverflow.com/questions/26140303/wpf-zoom-scrollbar/26141271
         e.Handled = true;

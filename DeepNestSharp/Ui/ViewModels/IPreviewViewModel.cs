@@ -1,5 +1,6 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
+  using DeepNestLib;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain.Docking;
   using DeepNestSharp.Domain.ViewModels;
@@ -9,31 +10,43 @@
   using System.Windows.Input;
   using System.Windows.Media;
 
+  public struct SimplePoint : IPointXY
+  {
+    public SimplePoint(double x, double y)
+    {
+      this.X = x;
+      this.Y = y;
+    }
+
+    public double X { get; }
+    public double Y { get; }
+  }
+
   public interface IPreviewViewModel : IToolViewModel
   {
     IFileViewModel? ActiveDocument { get; }
-    Point? Actual { get; }
+    IPointXY? Actual { get; }
     Canvas? Canvas { get; }
-    Point CanvasOffset { get; }
-    Point? CanvasPosition { get; }
+    IPointXY CanvasOffset { get; }
+    IPointXY? CanvasPosition { get; }
     double CanvasScale { get; set; }
     double CanvasScaleMax { get; }
     double CanvasScaleMin { get; }
-    Point DragOffset { get; }
-    Point? DragStart { get; }
+    IPointXY DragOffset { get; }
+    IPointXY? DragStart { get; }
     ICommand FitAllCommand { get; }
     double HeightBound { get; }
     IPartPlacement? HoverPartPlacement { get; set; }
     bool IsDragging { get; }
     bool IsExperimental { get; set; }
     bool IsTransformSet { get; }
-    Point LowerBound { get; }
+    IPointXY LowerBound { get; }
     IMainViewModel MainViewModel { get; }
-    Point MousePosition { get; }
+    IPointXY MousePosition { get; }
     IPartPlacement? SelectedPartPlacement { get; set; }
     Transform? Transform { get; }
-    Point UpperBound { get; }
-    Point? Viewport { get; }
+    IPointXY UpperBound { get; }
+    IPointXY? Viewport { get; }
     double WidthBound { get; }
     IZoomPreviewDrawingContext ZoomDrawingContext { get; }
 
