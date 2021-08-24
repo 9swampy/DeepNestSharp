@@ -46,13 +46,13 @@
       return this;
     }
 
-    internal ZoomPreviewDrawingContext For(INfp part)
+    public IZoomPreviewDrawingContext For(INfp part)
     {
       For(new ObservableNfp(part));
       return this;
     }
 
-    internal ZoomPreviewDrawingContext For(ObservableNfp part)
+    public IZoomPreviewDrawingContext For(ObservableNfp part)
     {
       this.Clear();
       this.Width = part.WidthCalculated;
@@ -86,7 +86,7 @@
     /// Adding in children as <see cref="ObservableHoles"/> so can fill differently.
     /// </summary>
     /// <param name="child">Child to add; presumption's it will be a Hole.</param>
-    private void AppendChild(ObservableHole child)
+    public void AppendChild(ObservableHole child)
     {
       this.Add(child);
       foreach (var c in child.Children)
@@ -99,7 +99,7 @@
     /// Adding in children as <see cref="ObservablePoints"/> so can fill differently.
     /// </summary>
     /// <param name="child">Child to add; presumption's it will be a Point.</param>
-    internal void AppendChild(ObservablePoint child)
+    public void AppendChild(ObservablePoint child)
     {
       this.Add(child);
     }
@@ -108,7 +108,7 @@
     /// Adding in children as <see cref="ObservableFrame"/> so can fill differently.
     /// </summary>
     /// <param name="child">Child to add; presumption's it will be a Frame.</param>
-    internal void AppendChild(ObservableFrame child)
+    public void AppendChild(ObservableFrame child)
     {
       this.Add(child);
     }

@@ -33,7 +33,7 @@
     Point UpperBound { get; }
     Point? Viewport { get; }
     double WidthBound { get; }
-    ZoomPreviewDrawingContext ZoomDrawingContext { get; }
+    IZoomPreviewDrawingContext ZoomDrawingContext { get; }
 
     double LimitAbsoluteScale(double proposed);
     double LimitScaleTransform(double proposed);

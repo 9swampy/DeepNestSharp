@@ -4,10 +4,11 @@
   using System.Collections.ObjectModel;
   using System.Linq;
   using DeepNestLib;
+  using DeepNestSharp.Ui.ViewModels;
 
   public static class MaxMinXYExtensions
   {
-    public static double Extremum(this ObservableCollection<object> drawingContext, MinMax minMax, XY xy)
+    public static double Extremum(this IZoomPreviewDrawingContext drawingContext, MinMax minMax, XY xy)
     {
       Func<IMinMaxXY, double> accessor;
       if (minMax == MinMax.Min)
@@ -35,7 +36,7 @@
       return drawingContext.MaximumXY(accessor);
     }
 
-    private static double MaximumXY(this ObservableCollection<object> drawingContext, Func<IMinMaxXY, double> accessor)
+    private static double MaximumXY(this IZoomPreviewDrawingContext drawingContext, Func<IMinMaxXY, double> accessor)
     {
       if (drawingContext.Count == 0)
       {
@@ -53,7 +54,7 @@
       });
     }
 
-    private static double MinimumXY(this ObservableCollection<object> drawingContext, Func<IMinMaxXY, double> accessor)
+    private static double MinimumXY(this IZoomPreviewDrawingContext drawingContext, Func<IMinMaxXY, double> accessor)
     {
       if (drawingContext.Count == 0)
       {

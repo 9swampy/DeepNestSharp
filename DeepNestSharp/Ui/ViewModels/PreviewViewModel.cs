@@ -46,7 +46,7 @@
 
     public FileViewModel? ActiveDocument => mainViewModel.ActiveDocument;
 
-    public ZoomPreviewDrawingContext ZoomDrawingContext { get; } = new ZoomPreviewDrawingContext();
+    public IZoomPreviewDrawingContext ZoomDrawingContext { get; } = new ZoomPreviewDrawingContext();
 
     public ICommand FitAllCommand
     {
@@ -473,23 +473,8 @@
         }
         else
         {
-          Set(new ObservableHole(child));
+          this.ZoomDrawingContext.AppendChild(new ObservableHole(child));
         }
-      }
-
-      OnPropertyChanged(nameof(ZoomDrawingContext));
-    }
-
-    /// <summary>
-    /// Adding in children as <see cref="ObservableHoles"/> so can render differently.
-    /// </summary>
-    /// <param name="child">The child hole to add.</param>
-    private void Set(ObservableHole child)
-    {
-      this.ZoomDrawingContext.Add(child);
-      foreach (var c in child.Children)
-      {
-        Set(new ObservableHole(c));
       }
 
       OnPropertyChanged(nameof(ZoomDrawingContext));
