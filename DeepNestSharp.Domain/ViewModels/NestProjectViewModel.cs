@@ -7,6 +7,7 @@
   using DeepNestLib;
   using DeepNestLib.NestProject;
   using DeepNestSharp.Domain;
+  using DeepNestSharp.Domain.Services;
   using DeepNestSharp.Domain.ViewModels;
   using DeepNestSharp.Ui.Docking;
   using DeepNestSharp.Ui.Models;

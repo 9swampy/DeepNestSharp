@@ -22,5 +22,15 @@
                         $"{text}/n" +
                         $"--------------------------------------------------------------");
     }
+
+    public MessageBoxResult DisplayOkCancel(string text, string caption, MessageBoxIcon icon)
+    {
+      throw new NotImplementedException();
+    }
+
+    public MessageBoxResult DisplayYesNoCancel(string text, string caption, MessageBoxIcon icon)
+    {
+      throw new NotImplementedException();
+    }
   }
 }

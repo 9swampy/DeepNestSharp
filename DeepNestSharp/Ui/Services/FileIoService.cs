@@ -4,7 +4,7 @@
   using System.Linq;
   using System.Threading.Tasks;
   using DeepNestLib;
-  using DeepNestSharp.Domain;
+  using DeepNestSharp.Domain.Services;
   using Microsoft.Win32;
 
   public class FileIoService : IFileIoService

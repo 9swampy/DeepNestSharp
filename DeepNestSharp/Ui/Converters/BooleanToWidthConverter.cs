@@ -7,8 +7,8 @@
 
   public class BooleanToWidthConverter : IValueConverter
   {
-    private const double Column_Width = 40.0;
-    private const string Column_Width_Auto = "auto";
+    private const double ColumnWidth = 40.0;
+    private const string ColumnWidthAuto = "auto";
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
@@ -16,10 +16,10 @@
       {
         bool isVisible = (bool)value;
 
-        return isVisible ? Column_Width : 0;
+        return isVisible ? ColumnWidth : 0;
       }
 
-      return Column_Width_Auto;
+      return ColumnWidthAuto;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

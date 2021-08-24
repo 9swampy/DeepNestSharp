@@ -69,6 +69,7 @@
     <Compile Include="..\DeepNestLib\LineElement.cs" Link="LineElement.cs" />
     <Compile Include="..\DeepNestLib\LocalContour.cs" Link="LocalContour.cs" />
     <Compile Include="..\DeepNestLib\MessageBoxIcon.cs" Link="MessageBoxIcon.cs" />
+    <Compile Include="..\DeepNestLib\MessageBoxResult.cs" Link="MessageBoxResult.cs" />
     <Compile Include="..\DeepNestLib\MinkowskiCache.cs" Link="MinkowskiCache.cs" />
     <Compile Include="..\DeepNestLib\MinkowskiDictionary.cs" Link="MinkowskiDictionary.cs" />
     <Compile Include="..\DeepNestLib\MinkowskiDictionaryJsonConverter.cs" Link="MinkowskiDictionaryJsonConverter.cs" />

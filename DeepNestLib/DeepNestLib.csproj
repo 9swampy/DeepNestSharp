@@ -172,6 +172,7 @@
     <Compile Include="ITestMinkowskiSumService.cs" />
     <Compile Include="LocalContour.cs" />
     <Compile Include="MessageBoxIcon.cs" />
+    <Compile Include="MessageBoxResult.cs" />
     <Compile Include="MinkowskiDictionaryJsonConverter.cs" />
     <Compile Include="MinkowskiKeyEqualityComparer.cs" />
     <Compile Include="NestExecutionHelper.cs" />

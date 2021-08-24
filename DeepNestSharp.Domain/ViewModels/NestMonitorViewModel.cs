@@ -10,6 +10,7 @@
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain;
   using DeepNestSharp.Domain.Docking;
+  using DeepNestSharp.Domain.Services;
   using DeepNestSharp.Domain.ViewModels;
   using Microsoft.Toolkit.Mvvm.Input;
 
@@ -19,6 +20,7 @@
 
     private readonly IMainViewModel mainViewModel;
     private readonly IMessageService messageService;
+    private readonly IMouseCursorService mouseCursorService;
     private bool isRunning;
     private bool isStopping;
     private NestExecutionHelper nestExecutionHelper = new NestExecutionHelper();
@@ -40,11 +42,12 @@
     private RelayCommand<INestResult>? loadNestResultCommand;
     private bool isSecondaryProgressVisible;
 
-    public NestMonitorViewModel(IMainViewModel mainViewModel, IMessageService messageService)
+    public NestMonitorViewModel(IMainViewModel mainViewModel, IMessageService messageService, IMouseCursorService mouseCursorService)
       : base("Monitor")
     {
       this.mainViewModel = mainViewModel;
       this.messageService = messageService;
+      this.mouseCursorService = mouseCursorService;
     }
 
     public ICommand ContinueNestCommand => continueNestCommand ?? (continueNestCommand = new RelayCommand(OnContinueNest, () => false));
@@ -270,7 +273,7 @@
 
     private void OnStopNest()
     {
-      Mouse.OverrideCursor = Cursors.Wait;
+      this.mouseCursorService.OverrideCursor = Cursors.Wait;
       this.Stop();
     }
 
@@ -325,8 +328,8 @@
         {
           await nestMonitorViewModel.mainViewModel.DispatcherService.InvokeAsync(() =>
           {
-            Mouse.OverrideCursor = null;
-            nestMonitorViewModel.IsStopping = false;
+            this.nestMonitorViewModel.mouseCursorService.OverrideCursor = null;
+            this.nestMonitorViewModel.IsStopping = false;
           });
 
           Debug.Print("Finally-Execute");

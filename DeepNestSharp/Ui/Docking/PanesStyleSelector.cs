@@ -18,7 +18,7 @@
       set;
     }
 
-    public override System.Windows.Style SelectStyle(object item, DependencyObject container)
+    public override Style SelectStyle(object item, DependencyObject container)
     {
       if (item is ToolViewModel)
       {

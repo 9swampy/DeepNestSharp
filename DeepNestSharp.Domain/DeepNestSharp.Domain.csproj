@@ -30,4 +30,8 @@
     <ProjectReference Include="..\DeepNestLib.Core\DeepNestLib.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Converters\" />
+  </ItemGroup>
+
 </Project>

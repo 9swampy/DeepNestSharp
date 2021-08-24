@@ -5,7 +5,7 @@
   using System.Text;
   using System.Windows;
   using DeepNestLib;
-  using DeepNestSharp.Domain;
+  using DeepNestSharp.Domain.Services;
   using DeepNestSharp.Domain.ViewModels;
   using DeepNestSharp.Ui.Services;
   using DeepNestSharp.Ui.ViewModels;
@@ -25,12 +25,13 @@
            .ConfigureServices((hostContext, services) =>
            {
              services.AddScoped<ISettingsService, SettingsService>();
+             services.AddScoped<IMouseCursorService, MouseCursorService>();
              services.AddScoped<IFileIoService, FileIoService>();
              services.AddScoped<IMessageService, MessageBoxService>();
              services.AddTransient<INestProjectViewModel, NestProjectViewModel>();
              services.AddSingleton(SvgNest.Config);
              services.AddSingleton<IDispatcherService>(new DispatcherService(this.Dispatcher));
-             services.AddSingleton<IMainViewModel, MainViewModel>();
+             services.AddSingleton<IMainViewModel, DockingMainViewModel>();
              services.AddSingleton<MainWindow>();
            }).Build();
 
@@ -83,7 +84,7 @@
                   message.AppendLine("  DeepNest Sheet Placement (*.dnsp)");
                   message.AppendLine("  AutoCad Drawing Exchange Format (*.dxf) and ");
                   message.AppendLine("  DeepNest Polygon (*.dnpoly).");
-                  if (MessageBox.Show(message.ToString(), "DeepNest", MessageBoxButton.OKCancel) == MessageBoxResult.Cancel)
+                  if (MessageBox.Show(message.ToString(), "DeepNest", MessageBoxButton.OKCancel) == System.Windows.MessageBoxResult.Cancel)
                   {
                     Application.Current.MainWindow.Close();
                   }

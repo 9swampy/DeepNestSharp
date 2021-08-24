@@ -13,15 +13,24 @@
   using DeepNestLib;
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
-  using DeepNestSharp.Domain;
   using DeepNestSharp.Domain.Docking;
+  using DeepNestSharp.Domain.Services;
   using DeepNestSharp.Domain.ViewModels;
   using Microsoft.Toolkit.Mvvm.ComponentModel;
   using Microsoft.Toolkit.Mvvm.Input;
 
+  public class DockingMainViewModel : MainViewModel
+  {
+    public DockingMainViewModel(IMessageService messageService, IDispatcherService dispatcherService, ISvgNestConfig config, IFileIoService fileIoService, IMouseCursorService mouseCursorService)
+      : base(messageService, dispatcherService, config, fileIoService, mouseCursorService)
+    {
+    }
+  }
+
   public class MainViewModel : ObservableRecipient, IMainViewModel
   {
     private readonly IFileIoService fileIoService;
+    private readonly IMouseCursorService mouseCursorService;
     private readonly IMessageService messageService;
     private readonly ObservableCollection<IFileViewModel> files;
     private RelayCommand loadLayoutCommand;
@@ -45,7 +54,7 @@
     private IPropertiesViewModel? propertiesViewModel;
     private INestMonitorViewModel? nestMonitorViewModel;
 
-    public MainViewModel(IMessageService messageService, IDispatcherService dispatcherService, ISvgNestConfig config, IFileIoService fileIoService)
+    public MainViewModel(IMessageService messageService, IDispatcherService dispatcherService, ISvgNestConfig config, IFileIoService fileIoService, IMouseCursorService mouseCursorService)
     {
       SvgNestConfigViewModel = new SvgNestConfigViewModel(config);
 
@@ -70,7 +79,7 @@
       this.messageService = messageService;
       this.DispatcherService = dispatcherService;
       this.fileIoService = fileIoService;
-
+      this.mouseCursorService = mouseCursorService;
       this.ActiveDocumentChanged += this.MainViewModel_ActiveDocumentChanged;
     }
 
@@ -110,7 +119,7 @@
       {
         if (nestMonitorViewModel == null)
         {
-          nestMonitorViewModel = new NestMonitorViewModel(this, new MessageBoxService());
+          nestMonitorViewModel = new NestMonitorViewModel(this, this.messageService, mouseCursorService);
         }
 
         return nestMonitorViewModel;
@@ -296,7 +305,7 @@
 
     public void LoadSheetPlacement(ISheetPlacement sheetPlacement)
     {
-      var loaded = new SheetPlacementViewModel(this, sheetPlacement);
+      var loaded = new SheetPlacementViewModel(this, sheetPlacement, mouseCursorService);
       this.files.Add(loaded);
       this.ActiveDocument = loaded;
     }
@@ -305,13 +314,13 @@
     {
       if (fileToClose.IsDirty)
       {
-        var res = MessageBox.Show(string.Format("Save changes for file '{0}'?", fileToClose.FileName), "DeepNestSharp", MessageBoxButton.YesNoCancel);
-        if (res == MessageBoxResult.Cancel)
+        var res = messageService.DisplayYesNoCancel(string.Format("Save changes for file '{0}'?", fileToClose.FileName), "DeepNestSharp", MessageBoxIcon.Question);
+        if (res == DeepNestLib.MessageBoxResult.Cancel)
         {
           return;
         }
 
-        if (res == MessageBoxResult.Yes)
+        if (res == DeepNestLib.MessageBoxResult.Yes)
         {
           Save(fileToClose);
         }

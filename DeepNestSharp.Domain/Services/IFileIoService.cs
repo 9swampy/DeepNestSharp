@@ -1,4 +1,4 @@
-﻿namespace DeepNestSharp.Domain
+﻿namespace DeepNestSharp.Domain.Services
 {
   using System.Threading.Tasks;
 

@@ -1,5 +1,6 @@
 ﻿namespace DeepNestLib
 {
+  using System;
   using System.Collections.Generic;
   using System.Linq;
   using System.Text;
@@ -191,63 +192,74 @@
 
     internal INfp GetOuterNfp(INfp a, INfp b, MinkowskiCache minkowskiCache, NoFitPolygonType nfpType = NoFitPolygonType.Outer)
     {
-      INfp[] nfp;
-
-      var key = new DbCacheKey(a.Source, b.Source, a.Rotation, b.Rotation);
-
-      lock (lockobj)
+      try
       {
-        var doc = Window.Find(key);
-        if (doc != null)
-        {
-          return doc.First();
-        }
+        INfp[] nfp;
 
-        // not found in cache
-        if (nfpType == NoFitPolygonType.Inner || (a.Children != null && a.Children.Count > 0))
-        {
-          nfp = ExecuteDllImportMinkowski(a, b, minkowskiCache);
-        }
-        else
-        {
-          NFP clipperNfp = minkowskiSumService.ClipperExecute(a, b, MinkowskiSumPick.Smallest);
-          nfp = new NFP[] { new NFP(clipperNfp.Points) };
-        }
+        var key = new DbCacheKey(a.Source, b.Source, a.Rotation, b.Rotation);
 
-        if (nfp == null || nfp.Length == 0)
+        lock (lockobj)
         {
-          // console.log('holy shit', nfp, A, B, JSON.stringify(A), JSON.stringify(B));
-          return null;
-        }
+          var doc = Window.Find(key);
+          if (doc != null)
+          {
+            return doc.First();
+          }
 
-        INfp nfps = nfp.FirstOrDefault();
-        if (nfps == null || nfps.Length == 0)
-        {
-          return null;
-        }
+          // not found in cache
+          if (nfpType == NoFitPolygonType.Inner || (a.Children != null && a.Children.Count > 0))
+          {
+            nfp = ExecuteDllImportMinkowski(a, b, minkowskiCache);
+          }
+          else
+          {
+            NFP clipperNfp = minkowskiSumService.ClipperExecute(a, b, MinkowskiSumPick.Smallest);
+            nfp = new NFP[] { new NFP(clipperNfp.Points) };
+          }
 
-        if (nfpType == NoFitPolygonType.Outer)
-        {
-          var doc2 = new DbCacheKey(a.Source, b.Source, a.Rotation, b.Rotation, nfp);
-          Window.Insert(doc2);
-        }
+          if (nfp == null || nfp.Length == 0)
+          {
+            // console.log('holy shit', nfp, A, B, JSON.stringify(A), JSON.stringify(B));
+            return null;
+          }
 
-        /*
-        if (!inside && typeof A.source !== 'undefined' && typeof B.source !== 'undefined')
-        {
-            // insert into db
-            doc = {
-                A: A.source,
-        B: B.source,
-        Arotation: A.rotation,
-        Brotation: B.rotation,
-        nfp: nfp
+          INfp nfps = nfp.FirstOrDefault();
+          if (nfps == null || nfps.Length == 0)
+          {
+            return null;
+          }
 
-      };
-            window.db.insert(doc);
+          if (nfpType == NoFitPolygonType.Outer)
+          {
+            var doc2 = new DbCacheKey(a.Source, b.Source, a.Rotation, b.Rotation, nfp);
+            Window.Insert(doc2);
+          }
+
+          /*
+          if (!inside && typeof A.source !== 'undefined' && typeof B.source !== 'undefined')
+          {
+              // insert into db
+              doc = {
+                  A: A.source,
+          B: B.source,
+          Arotation: A.rotation,
+          Brotation: B.rotation,
+          nfp: nfp
+
+        };
+              window.db.insert(doc);
+          }
+          */
+          return nfps;
         }
-        */
-        return nfps;
+      }
+      catch (BadImageFormatException)
+      {
+        throw;
+      }
+      catch (System.Exception ex)
+      {
+        throw;
       }
     }
 

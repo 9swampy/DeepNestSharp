@@ -7,14 +7,15 @@
   using System.Threading.Tasks;
   using System.Windows.Input;
   using DeepNestLib.Placement;
-  using DeepNestSharp.Domain;
   using DeepNestSharp.Domain.Models;
+  using DeepNestSharp.Domain.Services;
   using DeepNestSharp.Domain.ViewModels;
   using DeepNestSharp.Ui.Docking;
   using Microsoft.Toolkit.Mvvm.Input;
 
   public class SheetPlacementViewModel : FileViewModel, ISheetPlacementViewModel
   {
+    private readonly IMouseCursorService mouseCursorService;
     private int selectedIndex;
     private IPartPlacement? selectedItem;
     private ObservableSheetPlacement? observableSheetPlacement;
@@ -22,22 +23,22 @@
     private AsyncRelayCommand? loadAllExactCommand;
     private AsyncRelayCommand? exportSheetPlacementCommand;
 
-
     /// <summary>
     /// Initializes a new instance of the <see cref="SheetPlacementViewModel"/> class.
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
-    public SheetPlacementViewModel(IMainViewModel mainViewModel)
+    public SheetPlacementViewModel(IMainViewModel mainViewModel, IMouseCursorService mouseCursorService)
       : base(mainViewModel)
     {
+      this.mouseCursorService = mouseCursorService;
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SheetPlacementViewModel"/> class.
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
-    public SheetPlacementViewModel(IMainViewModel mainViewModel, ISheetPlacement sheetPlacement)
-      : this(mainViewModel)
+    public SheetPlacementViewModel(IMainViewModel mainViewModel, ISheetPlacement sheetPlacement, IMouseCursorService mouseCursorService)
+      : this(mainViewModel, mouseCursorService)
     {
       if (sheetPlacement is ObservableSheetPlacement observableSheetPlacement)
       {
@@ -133,7 +134,7 @@
 
     private async Task OnLoadAllExactAsync()
     {
-      Mouse.OverrideCursor = Cursors.Wait;
+      mouseCursorService.OverrideCursor = Domain.Cursors.Wait;
       var partPlacementList = this.observableSheetPlacement.PartPlacements.Cast<ObservablePartPlacement>().ToList();
       foreach (var pp in partPlacementList)
       {
@@ -143,7 +144,7 @@
       this.IsDirty = false;
       NotifyContentUpdated();
       loadAllExactCommand?.NotifyCanExecuteChanged();
-      Mouse.OverrideCursor = null;
+      mouseCursorService.OverrideCursor = Domain.Cursors.Null;
     }
 
     private void OnLoadPartFile()

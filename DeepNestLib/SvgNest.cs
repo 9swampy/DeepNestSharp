@@ -917,6 +917,24 @@
           }
         }
       }
+      catch (DllNotFoundException)
+      {
+        DisplayMinkowskiDllError();
+        State.SetIsErrored();
+      }
+      catch (BadImageFormatException badImageEx)
+      {
+        if (badImageEx.StackTrace.Contains("Minkowski"))
+        {
+          DisplayMinkowskiDllError();
+        }
+        else
+        {
+          this.messageService.DisplayMessage(badImageEx);
+        }
+
+        State.SetIsErrored();
+      }
       catch (Exception ex)
       {
         this.messageService.DisplayMessage(ex);
@@ -925,6 +943,19 @@
         throw;
 #endif
       }
+    }
+
+    private void DisplayMinkowskiDllError()
+    {
+      this.messageService.DisplayMessageBox(
+                  "An error has occurred attempting to execute the C++ Minkowski DllImport.\r\n" +
+                  "\r\n" +
+                  "Try using another build (x86/x64) or recreate the Minkowski.Dlls on your own system.\r\n" +
+                  "\r\n" +
+                  "You can continue to use the import/edit/export functionality but unless you fix " +
+                  "the problem you will be unable to execute any nests.",
+                  "DeepNestSharp Error!",
+                  MessageBoxIcon.Error);
     }
 
     private void ProcessPopulation(int start, int end, ISvgNestConfig config, ISheet[] sheets, int[] sheetids, int[] sheetsources, List<List<INfp>> sheetchildren, INestStateBackground nestStateBackground)
