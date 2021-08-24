@@ -3,8 +3,8 @@
   using System;
   using System.Threading.Tasks;
   using DeepNestLib.Placement;
+  using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Ui.Docking;
-  using DeepNestSharp.Ui.Models;
   using Microsoft.Toolkit.Mvvm.Input;
 
   public class NestResultViewModel : FileViewModel

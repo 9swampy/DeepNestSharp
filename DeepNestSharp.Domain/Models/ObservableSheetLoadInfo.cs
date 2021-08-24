@@ -1,7 +1,6 @@
-﻿namespace DeepNestSharp.Ui.Models
+﻿namespace DeepNestSharp.Domain.Models
 {
   using DeepNestLib.NestProject;
-  using DeepNestSharp.Domain.Models;
 
   public class ObservableSheetLoadInfo : ObservablePropertyObject, IWrapper<ISheetLoadInfo, SheetLoadInfo>, ISheetLoadInfo
   {

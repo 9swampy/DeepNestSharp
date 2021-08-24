@@ -3,7 +3,6 @@
   using System.ComponentModel;
   using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Ui.Docking;
-  using DeepNestSharp.Ui.Models;
 
   public class PropertiesViewModel : ToolViewModel
   {

@@ -1,11 +1,10 @@
-﻿namespace DeepNestSharp.Ui.Models
+﻿namespace DeepNestSharp.Domain.Models
 {
   using System;
   using System.Collections.Generic;
   using DeepNestLib;
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
-  using DeepNestSharp.Domain.Models;
 
   public class ObservableNestResult : ObservablePropertyObject, INestResult
   {

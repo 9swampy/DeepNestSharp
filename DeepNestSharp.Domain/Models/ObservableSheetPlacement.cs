@@ -1,4 +1,4 @@
-﻿namespace DeepNestSharp.Ui.Models
+﻿namespace DeepNestSharp.Domain.Models
 {
   using System.Collections.Generic;
   using System.Collections.ObjectModel;
@@ -6,14 +6,12 @@
   using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Geometry;
   using DeepNestLib.Placement;
-  using DeepNestSharp.Domain.Models;
   using Microsoft.Toolkit.Mvvm.ComponentModel;
 
   public class ObservableSheetPlacement : ObservableObject, ISheetPlacement, IWrapper<ISheetPlacement, SheetPlacement>
   {
     private readonly SheetPlacement sheetPlacement;
     private readonly ObservableCollection<ObservablePartPlacement> observablePartPlacements;
-    private System.Windows.Media.PointCollection points;
 
     private ObservableSheetPlacement()
     {
@@ -36,7 +34,7 @@
     private void Set(ISheetPlacement item)
     {
       this.observablePartPlacements.Clear();
-      this.points?.Clear();
+      //this.points?.Clear();
       var order = 0;
       foreach (var partPlacement in item.PartPlacements)
       {
@@ -90,23 +88,6 @@
 
     public PlacementTypeEnum PlacementType => sheetPlacement?.PlacementType ?? PlacementTypeEnum.Gravity;
 
-    public System.Windows.Media.PointCollection Points
-    {
-      get
-      {
-        if (points == null || points.Count == 0)
-        {
-          points = new System.Windows.Media.PointCollection();
-          foreach (var p in this.Sheet.Points)
-          {
-            points.Add(new System.Windows.Point(p.X, p.Y));
-          }
-        }
-
-        return points;
-      }
-    }
-
     public PolygonBounds RectBounds => sheetPlacement.RectBounds;
 
     public ISheet Sheet => sheetPlacement?.Sheet;
@@ -124,7 +105,7 @@
       return this.sheetPlacement.ToJson(writeIndented);
     }
 
-    internal void SaveState()
+    public void SaveState()
     {
       /*Havn't coded yet... but let's not throw just continue IsDirty.
       observablePartPlacements[0].SaveState();*/

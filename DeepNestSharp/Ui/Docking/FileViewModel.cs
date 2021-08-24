@@ -2,13 +2,13 @@
 {
   using System.IO;
   using System.Windows.Input;
-  using System.Windows.Media;
+  //using System.Windows.Media;
   using DeepNestSharp.Ui.ViewModels;
   using Microsoft.Toolkit.Mvvm.Input;
 
   public abstract class FileViewModel : PaneViewModel
   {
-    private static ImageSourceConverter imageSourceConverter = new ImageSourceConverter();
+    //private static ImageSourceConverter imageSourceConverter = new ImageSourceConverter();
 
     private string? filePath;
     private bool isDirty = false;

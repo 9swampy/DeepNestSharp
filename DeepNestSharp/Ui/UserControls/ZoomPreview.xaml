@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:converters="clr-namespace:DeepNestSharp.Ui.Converters"
-             xmlns:models="clr-namespace:DeepNestSharp.Ui.Models"
              xmlns:domainModels="clr-namespace:DeepNestSharp.Domain.Models;assembly=DeepNestSharp.Domain"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -64,7 +63,7 @@
                   </interactivity:Interaction.Behaviors>-->
                 </Polygon>
               </DataTemplate>
-              <DataTemplate DataType="{x:Type models:ObservableSheetPlacement}">
+              <DataTemplate DataType="{x:Type domainModels:ObservableSheetPlacement}">
                 <Polygon Points="{Binding Sheet, Converter={StaticResource PointsConverter}}" Fill="White" Stroke="Black" StrokeThickness="0.4" />
               </DataTemplate>
               <DataTemplate DataType="{x:Type domainModels:ObservableNfp}">
