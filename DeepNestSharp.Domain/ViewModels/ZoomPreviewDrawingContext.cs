@@ -1,4 +1,4 @@
-﻿namespace DeepNestSharp.Ui.ViewModels
+﻿namespace DeepNestSharp.Domain.ViewModels
 {
   using System.Collections.ObjectModel;
   using DeepNestLib;

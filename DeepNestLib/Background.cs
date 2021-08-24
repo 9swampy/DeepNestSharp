@@ -1,12 +1,12 @@
 ﻿namespace DeepNestLib
 {
-  using DeepNestLib.Geometry;
   using System;
   using System.Collections.Generic;
   using System.Diagnostics;
   using System.Linq;
   using System.Runtime.InteropServices;
   using System.Threading.Tasks;
+  using DeepNestLib.Geometry;
 
   public class Background
   {

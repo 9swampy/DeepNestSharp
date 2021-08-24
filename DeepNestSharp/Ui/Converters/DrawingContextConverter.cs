@@ -4,7 +4,7 @@
   using System.Collections.Generic;
   using System.Windows.Data;
   using DeepNestLib.Placement;
-  using DeepNestSharp.Ui.ViewModels;
+  using DeepNestSharp.Domain.ViewModels;
 
   public class DrawingContextConverter : IValueConverter
   {

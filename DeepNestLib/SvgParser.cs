@@ -1,6 +1,5 @@
 ﻿namespace DeepNestLib
 {
-  using DeepNestLib.Geometry;
   using System;
   using System.Collections.Generic;
   using System.Drawing;
@@ -11,6 +10,7 @@
   using System.Text;
   using System.Threading.Tasks;
   using System.Xml.Linq;
+  using DeepNestLib.Geometry;
 
   public class SvgParser : ParserBase
   {

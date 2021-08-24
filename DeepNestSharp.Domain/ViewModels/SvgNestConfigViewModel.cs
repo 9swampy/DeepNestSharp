@@ -1,8 +1,8 @@
-﻿namespace DeepNestSharp.Ui.ViewModels
+﻿namespace DeepNestSharp.Domain.ViewModels
 {
   using DeepNestLib;
+  using DeepNestSharp.Domain.Docking;
   using DeepNestSharp.Domain.Models;
-  using DeepNestSharp.Ui.Docking;
   using System;
 
   public class SvgNestConfigViewModel : ToolViewModel, ISvgNestConfigViewModel

@@ -1,6 +1,6 @@
-﻿namespace DeepNestSharp.Ui.ViewModels
+﻿namespace DeepNestSharp.Domain.ViewModels
 {
-  using DeepNestSharp.Ui.Docking;
+  using DeepNestSharp.Domain.Docking;
 
   public interface IPropertiesViewModel : IToolViewModel
   {

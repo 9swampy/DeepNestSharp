@@ -3,7 +3,8 @@
   using DeepNestLib;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain;
-  using DeepNestSharp.Ui.Docking;
+  using DeepNestSharp.Domain.Docking;
+  using DeepNestSharp.Domain.ViewModels;
   using System.ComponentModel;
   using System.Text;
   using System.Threading.Tasks;

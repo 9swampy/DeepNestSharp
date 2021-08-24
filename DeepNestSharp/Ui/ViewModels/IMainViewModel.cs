@@ -4,6 +4,8 @@
   using AvalonDock.Themes;
   using DeepNestLib;
   using DeepNestLib.Placement;
+  using DeepNestSharp.Domain.Docking;
+  using DeepNestSharp.Domain.ViewModels;
   using DeepNestSharp.Ui.Docking;
   using System;
   using System.Collections.Generic;
@@ -13,14 +15,14 @@
 
   public interface IMainViewModel
   {
-    FileViewModel? ActiveDocument { get; set; }
+    IFileViewModel? ActiveDocument { get; set; }
     ICommand ActiveDocumentSaveAsCommand { get; }
     ICommand ActiveDocumentSaveCommand { get; }
     ICommand CreateNestProjectCommand { get; }
     IDispatcherService DispatcherService { get; }
     DockingManager? DockManager { get; set; }
     ICommand ExitCommand { get; }
-    ReadOnlyObservableCollection<FileViewModel> Files { get; }
+    ReadOnlyObservableCollection<IFileViewModel> Files { get; }
     ICommand LoadLayoutCommand { get; }
     ICommand LoadNestProjectCommand { get; }
     ICommand LoadNestResultCommand { get; }
@@ -52,8 +54,8 @@
     Task OnLoadNestResultAsync();
     Task OnLoadPartAsync();
     Task OnLoadSheetPlacementAsync();
-    void Close(FileViewModel fileViewModel);
-    void Save(FileViewModel fileViewModel, bool v);
+    void Close(IFileViewModel fileViewModel);
+    void Save(IFileViewModel fileViewModel, bool v);
     Task ExportSheetPlacementAsync(ISheetPlacement? sheetPlacement);
   }
 }

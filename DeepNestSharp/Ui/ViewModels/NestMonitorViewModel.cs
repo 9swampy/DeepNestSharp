@@ -9,7 +9,8 @@
   using DeepNestLib;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain;
-  using DeepNestSharp.Ui.Docking;
+  using DeepNestSharp.Domain.Docking;
+  using DeepNestSharp.Domain.ViewModels;
   using Microsoft.Toolkit.Mvvm.Input;
 
   public class NestMonitorViewModel : ToolViewModel, INestMonitorViewModel

@@ -1,8 +1,9 @@
-﻿using System.Windows.Input;
-
-namespace DeepNestSharp.Ui.Docking
+﻿namespace DeepNestSharp.Domain.Docking
 {
-  public interface IFileViewModel
+  using System.ComponentModel;
+  using System.Windows.Input;
+
+  public interface IFileViewModel : INotifyPropertyChanged
   {
     ICommand CloseCommand { get; }
     string FileDialogFilter { get; }

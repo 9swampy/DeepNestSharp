@@ -2,6 +2,7 @@
 {
   using System.Windows;
   using System.Windows.Controls;
+  using DeepNestSharp.Domain.ViewModels;
   using DeepNestSharp.Ui.ViewModels;
 
   internal class PanesTemplateSelector : DataTemplateSelector

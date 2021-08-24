@@ -1,6 +1,8 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
   using DeepNestLib.Placement;
+  using DeepNestSharp.Domain.Docking;
+  using DeepNestSharp.Domain.ViewModels;
   using DeepNestSharp.Ui.Docking;
   using System.Windows;
   using System.Windows.Controls;
@@ -9,7 +11,7 @@
 
   public interface IPreviewViewModel : IToolViewModel
   {
-    FileViewModel? ActiveDocument { get; }
+    IFileViewModel? ActiveDocument { get; }
     Point? Actual { get; }
     Canvas? Canvas { get; }
     Point CanvasOffset { get; }

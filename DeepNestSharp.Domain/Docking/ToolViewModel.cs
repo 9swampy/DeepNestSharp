@@ -1,4 +1,4 @@
-﻿namespace DeepNestSharp.Ui.Docking
+﻿namespace DeepNestSharp.Domain.Docking
 {
   public class ToolViewModel : PaneViewModel, IToolViewModel
   {

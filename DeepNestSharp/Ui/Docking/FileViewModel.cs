@@ -2,6 +2,7 @@
 {
   using System.IO;
   using System.Windows.Input;
+  using DeepNestSharp.Domain.Docking;
   //using System.Windows.Media;
   using DeepNestSharp.Ui.ViewModels;
   using Microsoft.Toolkit.Mvvm.Input;

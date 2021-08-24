@@ -1,10 +1,9 @@
 ﻿namespace DeepNestSharp.Domain
 {
   using System;
-  using System.Collections.ObjectModel;
   using System.Linq;
   using DeepNestLib;
-  using DeepNestSharp.Ui.ViewModels;
+  using DeepNestSharp.Domain.ViewModels;
 
   public static class MaxMinXYExtensions
   {

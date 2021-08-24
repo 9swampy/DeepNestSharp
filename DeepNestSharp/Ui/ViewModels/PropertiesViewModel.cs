@@ -1,8 +1,9 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
   using System.ComponentModel;
+  using DeepNestSharp.Domain.Docking;
   using DeepNestSharp.Domain.Models;
-  using DeepNestSharp.Ui.Docking;
+  using DeepNestSharp.Domain.ViewModels;
 
   public class PropertiesViewModel : ToolViewModel, IPropertiesViewModel
   {

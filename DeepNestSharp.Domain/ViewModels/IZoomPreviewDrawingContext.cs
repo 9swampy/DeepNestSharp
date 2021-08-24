@@ -1,9 +1,8 @@
-﻿namespace DeepNestSharp.Ui.ViewModels
+﻿namespace DeepNestSharp.Domain.ViewModels
 {
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain.Models;
   using System.Collections.Generic;
-  using System.Collections.ObjectModel;
 
   public interface IZoomPreviewDrawingContext : ICollection<object>, IList<object>  //, INotifyCollectionChanged, INotifyPropertyChanged
   {

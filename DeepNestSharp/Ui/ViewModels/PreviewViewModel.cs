@@ -1,7 +1,6 @@
 ﻿namespace DeepNestSharp.Ui.ViewModels
 {
   using System;
-  using System.Collections.ObjectModel;
   using System.ComponentModel;
   using System.Windows;
   using System.Windows.Controls;
@@ -10,7 +9,9 @@
   using DeepNestLib;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain;
+  using DeepNestSharp.Domain.Docking;
   using DeepNestSharp.Domain.Models;
+  using DeepNestSharp.Domain.ViewModels;
   using DeepNestSharp.Ui.Docking;
   using Microsoft.Toolkit.Mvvm.Input;
 
@@ -18,7 +19,7 @@
   {
     private const double Gap = 10;
     private readonly IMainViewModel mainViewModel;
-    private FileViewModel? lastActiveViewModel;
+    private IFileViewModel? lastActiveViewModel;
     private IPartPlacement? hoverPartPlacement;
     private Point mousePosition;
     private Point dragOffset;
@@ -44,7 +45,7 @@
       this.PropertyChanged += this.PreviewViewModel_PropertyChanged;
     }
 
-    public FileViewModel? ActiveDocument => mainViewModel.ActiveDocument;
+    public IFileViewModel? ActiveDocument => mainViewModel.ActiveDocument;
 
     public IZoomPreviewDrawingContext ZoomDrawingContext { get; } = new ZoomPreviewDrawingContext();
 

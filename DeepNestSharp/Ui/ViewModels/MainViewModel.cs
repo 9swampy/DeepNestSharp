@@ -16,6 +16,8 @@
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain;
+  using DeepNestSharp.Domain.Docking;
+  using DeepNestSharp.Domain.ViewModels;
   using DeepNestSharp.Ui.Docking;
   using Microsoft.Toolkit.Mvvm.ComponentModel;
   using Microsoft.Toolkit.Mvvm.Input;
@@ -24,7 +26,7 @@
   {
     private readonly IFileIoService fileIoService;
     private readonly IMessageService messageService;
-    private readonly ObservableCollection<FileViewModel> files;
+    private readonly ObservableCollection<IFileViewModel> files;
     private RelayCommand loadLayoutCommand;
     private RelayCommand saveLayoutCommand;
     private RelayCommand exitCommand;
@@ -42,7 +44,7 @@
 
     private PreviewViewModel? previewViewModel;
     private Tuple<string, Theme>? selectedTheme;
-    private FileViewModel? activeDocument;
+    private IFileViewModel? activeDocument;
     private IPropertiesViewModel? propertiesViewModel;
     private INestMonitorViewModel? nestMonitorViewModel;
 
@@ -50,8 +52,8 @@
     {
       SvgNestConfigViewModel = new SvgNestConfigViewModel(config);
 
-      files = new ObservableCollection<FileViewModel>();
-      Files = new ReadOnlyObservableCollection<FileViewModel>(files);
+      files = new ObservableCollection<IFileViewModel>();
+      Files = new ReadOnlyObservableCollection<IFileViewModel>(files);
 
       this.Themes = new List<Tuple<string, Theme>>
       {
@@ -103,7 +105,7 @@
       }
     }
 
-    public ReadOnlyObservableCollection<FileViewModel> Files { get; }
+    public ReadOnlyObservableCollection<IFileViewModel> Files { get; }
 
     public INestMonitorViewModel NestMonitorViewModel
     {
@@ -170,7 +172,7 @@
 
     public ICommand SaveLayoutCommand => saveLayoutCommand ?? (loadLayoutCommand = new RelayCommand(OnLoadLayout, CanLoadLayout));
 
-    public FileViewModel? ActiveDocument
+    public IFileViewModel? ActiveDocument
     {
       get => activeDocument;
       set
@@ -302,7 +304,7 @@
       this.ActiveDocument = loaded;
     }
 
-    public void Close(FileViewModel fileToClose)
+    public void Close(IFileViewModel fileToClose)
     {
       if (fileToClose.IsDirty)
       {
@@ -344,7 +346,7 @@
       }
     }
 
-    public void Save(FileViewModel? fileToSave, bool saveAsFlag = false)
+    public void Save(IFileViewModel? fileToSave, bool saveAsFlag = false)
     {
       if (fileToSave != null)
       {
@@ -503,7 +505,7 @@
 
     private void NestProjectViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-      if (e.PropertyName == $"{nameof(FileViewModel.IsDirty)}")
+      if (e.PropertyName == $"{nameof(IFileViewModel.IsDirty)}")
       {
         activeDocumentSaveCommand?.NotifyCanExecuteChanged();
         activeDocumentSaveAsCommand?.NotifyCanExecuteChanged();

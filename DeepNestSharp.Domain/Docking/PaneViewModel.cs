@@ -1,4 +1,4 @@
-﻿namespace DeepNestSharp.Ui.Docking
+﻿namespace DeepNestSharp.Domain.Docking
 {
   //using System.Windows.Media;
   using Microsoft.Toolkit.Mvvm.ComponentModel;
