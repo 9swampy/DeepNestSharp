@@ -68,7 +68,7 @@
     public bool IsSecondaryProgressVisible
     {
       get => isSecondaryProgressVisible;
-      internal set => SetProperty(ref isSecondaryProgressVisible, value);
+      set => SetProperty(ref isSecondaryProgressVisible, value);
     }
 
     public bool IsStopping
@@ -88,7 +88,7 @@
     public string LastLogMessage
     {
       get => lastLogMessage;
-      internal set => SetProperty(ref lastLogMessage, value);
+      set => SetProperty(ref lastLogMessage, value);
     }
 
     public ICommand LoadSheetPlacementCommand => loadSheetPlacementCommand ?? (loadSheetPlacementCommand = new RelayCommand(OnLoadSheetPlacement, () => false));
@@ -108,13 +108,13 @@
     public double Progress
     {
       get => progress;
-      internal set => SetProperty(ref progress, value);
+      set => SetProperty(ref progress, value);
     }
 
     public double ProgressSecondary
     {
       get => progressSecondary;
-      internal set => SetProperty(ref progressSecondary, value);
+      set => SetProperty(ref progressSecondary, value);
     }
 
     public ICommand RestartNestCommand => restartNestCommand ?? (restartNestCommand = new RelayCommand(OnRestartNest, () => false));
@@ -226,7 +226,7 @@
       }
     }
 
-    internal void UpdateNestsList()
+    public void UpdateNestsList()
     {
       OnPropertyChanged(nameof(TopNestResults));
     }

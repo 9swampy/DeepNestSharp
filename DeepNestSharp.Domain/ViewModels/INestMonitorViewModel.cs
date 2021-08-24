@@ -15,11 +15,11 @@
 
     bool IsRunning { get; }
 
-    bool IsSecondaryProgressVisible { get; }
+    bool IsSecondaryProgressVisible { get; set; }
 
     bool IsStopping { get; }
 
-    string LastLogMessage { get; }
+    string LastLogMessage { get; set; }
 
     ICommand LoadNestResultCommand { get; }
 
@@ -29,9 +29,9 @@
 
     StringBuilder MessageLogBuilder { get; }
 
-    double Progress { get; }
+    double Progress { get; set; }
 
-    double ProgressSecondary { get; }
+    double ProgressSecondary { get; set; }
 
     ICommand RestartNestCommand { get; }
 
@@ -52,5 +52,7 @@
     void Stop();
 
     Task<bool> TryStartAsync(INestProjectViewModel nestProjectViewModel);
+
+    void UpdateNestsList();
   }
 }

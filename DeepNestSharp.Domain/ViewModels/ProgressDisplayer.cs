@@ -2,14 +2,15 @@
 {
   using DeepNestLib;
   using DeepNestLib.IO;
+  using DeepNestSharp.Domain.ViewModels;
 
-  internal class ProgressDisplayer : ProgressDisplayerBase, IProgressDisplayer
+  public class ProgressDisplayer : ProgressDisplayerBase, IProgressDisplayer
   {
     private readonly IMessageService messageService;
     private readonly IDispatcherService dispatcherService;
-    private readonly NestMonitorViewModel nestMonitorViewModel;
+    private readonly INestMonitorViewModel nestMonitorViewModel;
 
-    public ProgressDisplayer(NestMonitorViewModel nestMonitorViewModel, IMessageService messageService, IDispatcherService dispatcherService)
+    public ProgressDisplayer(INestMonitorViewModel nestMonitorViewModel, IMessageService messageService, IDispatcherService dispatcherService)
       : base(() => nestMonitorViewModel.State)
     {
       this.messageService = messageService;

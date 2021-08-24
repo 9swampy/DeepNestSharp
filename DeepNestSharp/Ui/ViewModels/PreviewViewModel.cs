@@ -64,7 +64,7 @@
     {
       get
       {
-        if (this.mainViewModel.ActiveDocument is SheetPlacementViewModel sheetPlacementViewModel)
+        if (this.mainViewModel.ActiveDocument is ISheetPlacementViewModel sheetPlacementViewModel)
         {
           return sheetPlacementViewModel.SelectedItem;
         }
@@ -74,7 +74,7 @@
 
       set
       {
-        if (this.mainViewModel.ActiveDocument is SheetPlacementViewModel sheetPlacementViewModel)
+        if (this.mainViewModel.ActiveDocument is ISheetPlacementViewModel sheetPlacementViewModel)
         {
           sheetPlacementViewModel.SelectedItem = value;
           OnPropertyChanged(nameof(SelectedPartPlacement));
@@ -161,23 +161,6 @@
     public double CanvasScaleMax => 10;
 
     public double CanvasScaleMin => 0.5;
-
-    public IPointXY CanvasOffset
-    {
-      get => canvasOffset;
-      internal set
-      {
-        canvasOffset = value;
-        if (this.transform is MatrixTransform matrixTransform)
-        {
-          var mat = matrixTransform.Matrix;
-          mat.Translate(canvasOffset.X - mat.OffsetX, canvasOffset.Y - mat.OffsetY);
-          matrixTransform.Matrix = mat;
-        }
-
-        OnPropertyChanged(nameof(CanvasOffset));
-      }
-    }
 
     public IPointXY LowerBound
     {
@@ -296,7 +279,7 @@
           lastActiveViewModel = sheetPlacementViewModel;
           this.ZoomDrawingContext.For(sheetPlacement);
         }
-        else if (mainViewModel.ActiveDocument is NestProjectViewModel nestProjectViewModel)
+        else if (mainViewModel.ActiveDocument is INestProjectViewModel nestProjectViewModel)
         {
           lastActiveViewModel = nestProjectViewModel;
           if (nestProjectViewModel.SelectedDetailLoadInfo is ObservableDetailLoadInfo detailLoadInfo)

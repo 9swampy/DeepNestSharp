@@ -143,7 +143,7 @@
         MainViewModel.DispatcherService.Invoke(() => NestMonitorViewModel_PropertyChanged(sender, e));
       }
 
-      if (e.PropertyName == $"{nameof(NestMonitorViewModel.IsRunning)}")
+      if (e.PropertyName == $"{nameof(INestMonitorViewModel.IsRunning)}")
       {
         MainViewModel.DispatcherService.Invoke(() => executeNestCommand?.NotifyCanExecuteChanged());
       }

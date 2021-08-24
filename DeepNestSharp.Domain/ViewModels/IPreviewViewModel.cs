@@ -11,8 +11,6 @@
 
     IPointXY Actual { get; }
 
-    IPointXY CanvasOffset { get; }
-
     IPointXY CanvasPosition { get; }
 
     double CanvasScale { get; set; }

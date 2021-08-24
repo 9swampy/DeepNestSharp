@@ -7,6 +7,6 @@
   {
     ISheetPlacement SheetPlacement { get; }
 
-    IPartPlacement SelectedItem { get; }
+    IPartPlacement SelectedItem { get; set; }
   }
 }

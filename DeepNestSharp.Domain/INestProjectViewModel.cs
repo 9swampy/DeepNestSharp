@@ -2,8 +2,9 @@
 {
   using System.ComponentModel;
   using DeepNestLib.NestProject;
+  using DeepNestSharp.Domain.Docking;
 
-  public interface INestProjectViewModel : INotifyPropertyChanged
+  public interface INestProjectViewModel : INotifyPropertyChanged, IFileViewModel
   {
     IProjectInfo ProjectInfo { get; }
 

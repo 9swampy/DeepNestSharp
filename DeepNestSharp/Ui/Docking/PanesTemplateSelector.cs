@@ -2,6 +2,7 @@
 {
   using System.Windows;
   using System.Windows.Controls;
+  using DeepNestSharp.Domain;
   using DeepNestSharp.Domain.ViewModels;
   using DeepNestSharp.Ui.ViewModels;
 
@@ -78,7 +79,7 @@
           return NestMonitorTemplate;
         }
       }
-      else if (item is NestProjectViewModel)
+      else if (item is INestProjectViewModel)
       {
         if (NestProjectEditorTemplate == null)
         {

@@ -72,7 +72,7 @@
     {
       if (sender == mainViewModel.ActiveDocument &&
           e.PropertyName == "SelectedItem" &&
-          sender is SheetPlacementViewModel sheetPlacementViewModel &&
+          sender is ISheetPlacementViewModel sheetPlacementViewModel &&
           sheetPlacementViewModel.SheetPlacement is ObservableSheetPlacement sheetPlacement)
       {
         Set(sheetPlacementViewModel);
