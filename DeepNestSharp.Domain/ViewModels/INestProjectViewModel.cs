@@ -1,4 +1,4 @@
-﻿namespace DeepNestSharp.Domain
+﻿namespace DeepNestSharp.Domain.ViewModels
 {
   using System.ComponentModel;
   using DeepNestLib.NestProject;

@@ -3,7 +3,6 @@
   using System;
   using System.ComponentModel;
   using System.Windows.Input;
-  using System.Windows.Media;
   using DeepNestLib;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain;
@@ -21,9 +20,7 @@
     private IPointXY dragOffset;
     private IPointXY? dragStart;
     private double canvasScale = 1;
-    private IPointXY canvasOffset = new SvgPoint(0, 0);
     private IPointXY? viewport;
-    private Transform? transform;
     private RelayCommand? fitAllCommand = null;
     private IPointXY? actual;
     private IPointXY? canvasPosition;
@@ -98,7 +95,7 @@
     public IPointXY MousePosition
     {
       get => mousePosition;
-      internal set
+      set
       {
         mousePosition = value;
         OnPropertyChanged(nameof(MousePosition));
@@ -108,7 +105,7 @@
     public IPointXY? CanvasPosition
     {
       get => canvasPosition;
-      internal set
+      set
       {
         SetProperty(ref canvasPosition, value, nameof(CanvasPosition));
       }
@@ -132,7 +129,7 @@
     public IPointXY DragOffset
     {
       get => dragOffset;
-      internal set
+      set
       {
         SetProperty(ref dragOffset, value, nameof(DragOffset));
       }
@@ -141,7 +138,7 @@
     public IPointXY? DragStart
     {
       get => dragStart;
-      internal set
+      set
       {
         SetProperty(ref dragStart, value, nameof(DragStart));
         OnPropertyChanged(nameof(IsDragging));
@@ -197,7 +194,7 @@
     public IPointXY? Actual
     {
       get => actual;
-      internal set
+      set
       {
         SetProperty(ref actual, value, nameof(Actual));
       }
@@ -206,7 +203,7 @@
     public IPointXY? Viewport
     {
       get => viewport;
-      internal set
+      set
       {
         SetProperty(ref viewport, value, nameof(Viewport));
       }
@@ -245,17 +242,17 @@
       return proposed;
     }
 
-    internal void RaiseSelectItem()
+    public void RaiseSelectItem()
     {
       System.Diagnostics.Debug.Print("Force RaiseSelectItem");
       OnPropertyChanged(nameof(SelectedPartPlacement));
     }
 
-    internal void RaiseDrawingContext()
+    public void RaiseDrawingContext()
     {
       // System.Diagnostics.Debug.Print("Force RaiseDrawingContext");
       OnPropertyChanged(nameof(ZoomDrawingContext));
-      if (lastActiveViewModel is SheetPlacementViewModel sheetPlacementViewModel)
+      if (lastActiveViewModel is ISheetPlacementViewModel sheetPlacementViewModel)
       {
         sheetPlacementViewModel?.RaiseDrawingContext();
       }
@@ -273,7 +270,7 @@
       {
         this.ZoomDrawingContext.Clear();
 
-        if (mainViewModel.ActiveDocument is SheetPlacementViewModel sheetPlacementViewModel &&
+        if (mainViewModel.ActiveDocument is ISheetPlacementViewModel sheetPlacementViewModel &&
             sheetPlacementViewModel.SheetPlacement is ObservableSheetPlacement sheetPlacement)
         {
           lastActiveViewModel = sheetPlacementViewModel;
@@ -330,8 +327,8 @@
     private void OnFitAll()
     {
       CanvasScale = Math.Min(
-        (Actual?.X) / (ZoomDrawingContext.Extremum(MinMax.Max, XY.X) - ZoomDrawingContext.Extremum(MinMax.Min, XY.X)) ?? 5,
-        (Actual?.Y) / (ZoomDrawingContext.Extremum(MinMax.Max, XY.Y) - ZoomDrawingContext.Extremum(MinMax.Min, XY.Y)) ?? 5);
+        Actual?.X / (ZoomDrawingContext.Extremum(MinMax.Max, XY.X) - ZoomDrawingContext.Extremum(MinMax.Min, XY.X)) ?? 5,
+        Actual?.Y / (ZoomDrawingContext.Extremum(MinMax.Max, XY.Y) - ZoomDrawingContext.Extremum(MinMax.Min, XY.Y)) ?? 5);
     }
 
     private void PreviewViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -349,9 +346,9 @@
     {
       if (sender == mainViewModel.ActiveDocument)
       {
-        if (sender is SheetPlacementViewModel sheetPlacementViewModel &&
-            (e.PropertyName == nameof(SheetPlacementViewModel.SelectedItem) ||
-             e.PropertyName == nameof(SheetPlacementViewModel.SheetPlacement)) &&
+        if (sender is ISheetPlacementViewModel sheetPlacementViewModel &&
+            (e.PropertyName == nameof(ISheetPlacementViewModel.SelectedItem) ||
+             e.PropertyName == nameof(ISheetPlacementViewModel.SheetPlacement)) &&
             sheetPlacementViewModel.SheetPlacement is ObservableSheetPlacement sheetPlacement)
         {
           this.ZoomDrawingContext.For(sheetPlacement);

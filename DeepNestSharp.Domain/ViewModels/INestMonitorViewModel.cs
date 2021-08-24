@@ -6,7 +6,6 @@
   using System.Windows.Input;
   using DeepNestLib;
   using DeepNestLib.Placement;
-  using DeepNestSharp.Domain;
   using DeepNestSharp.Domain.Docking;
 
   public interface INestMonitorViewModel : IToolViewModel, INotifyPropertyChanged

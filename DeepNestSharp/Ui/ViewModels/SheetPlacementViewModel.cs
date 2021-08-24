@@ -95,7 +95,7 @@
 
     public override string TextContent => this.SheetPlacement.ToJson();
 
-    internal void RaiseDrawingContext()
+    public void RaiseDrawingContext()
     {
       // This makes the drag render holes correctly but seriously kills the drag.
       OnPropertyChanged(nameof(SelectedItem));
