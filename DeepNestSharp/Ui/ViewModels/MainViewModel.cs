@@ -40,7 +40,7 @@
     private IToolViewModel[] tools;
 
     private PreviewViewModel? previewViewModel;
-    private Tuple<string, ThemeProxy>? selectedTheme;
+    private Tuple<string, Theme>? selectedTheme;
     private IFileViewModel? activeDocument;
     private IPropertiesViewModel? propertiesViewModel;
     private INestMonitorViewModel? nestMonitorViewModel;
@@ -52,9 +52,9 @@
       files = new ObservableCollection<IFileViewModel>();
       Files = new ReadOnlyObservableCollection<IFileViewModel>(files);
 
-      this.Themes = new List<Tuple<string, ThemeProxy>>
+      this.Themes = new List<Tuple<string, Theme>>
       {
-        new Tuple<string, ThemeProxy>(nameof(GenericTheme), new ThemeProxy(new GenericTheme())),
+        new Tuple<string, Theme>(nameof(GenericTheme), new GenericTheme()),
 
         // new Tuple<string, Theme>(nameof(AeroTheme),new AeroTheme()),
         // new Tuple<string, Theme>(nameof(ExpressionDarkTheme),new ExpressionDarkTheme()),
@@ -76,9 +76,9 @@
 
     public event EventHandler? ActiveDocumentChanged;
 
-    public List<Tuple<string, ThemeProxy>> Themes { get; set; }
+    public List<Tuple<string, Theme>> Themes { get; set; }
 
-    public Tuple<string, ThemeProxy>? SelectedTheme
+    public Tuple<string, Theme>? SelectedTheme
     {
       get => selectedTheme;
 

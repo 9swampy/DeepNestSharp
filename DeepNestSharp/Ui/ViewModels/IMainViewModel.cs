@@ -32,12 +32,12 @@
     IPreviewViewModel PreviewViewModel { get; }
     IPropertiesViewModel PropertiesViewModel { get; }
     ICommand SaveLayoutCommand { get; }
-    Tuple<string, ThemeProxy>? SelectedTheme { get; set; }
+
     ISvgNestConfigViewModel SvgNestConfigViewModel { get; }
-    List<Tuple<string, ThemeProxy>> Themes { get; set; }
+
     IEnumerable<IToolViewModel> Tools { get; }
 
-    event EventHandler? ActiveDocumentChanged;
+    event EventHandler ActiveDocumentChanged;
 
     void LoadNestResult(string filePath);
     void LoadNfpCandidates(string filePath);

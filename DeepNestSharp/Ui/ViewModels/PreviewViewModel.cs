@@ -12,7 +12,6 @@
   using DeepNestSharp.Domain.Docking;
   using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Domain.ViewModels;
-  using DeepNestSharp.Ui.Docking;
   using Microsoft.Toolkit.Mvvm.Input;
 
   public class PreviewViewModel : ToolViewModel, IPreviewViewModel

@@ -34,6 +34,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Ui\ViewModels\ThemeProxy.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="..\MinkowskiDlls\minkowski.dll" Link="minkowski.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
