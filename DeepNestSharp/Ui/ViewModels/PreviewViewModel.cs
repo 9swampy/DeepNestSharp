@@ -14,7 +14,7 @@
   using DeepNestSharp.Ui.Docking;
   using Microsoft.Toolkit.Mvvm.Input;
 
-  public class PreviewViewModel : ToolViewModel
+  public class PreviewViewModel : ToolViewModel, IPreviewViewModel
   {
     private const double Gap = 10;
     private readonly MainViewModel mainViewModel;
@@ -47,7 +47,7 @@
     public FileViewModel? ActiveDocument => mainViewModel.ActiveDocument;
 
     public ZoomPreviewDrawingContext ZoomDrawingContext { get; } = new ZoomPreviewDrawingContext();
-    
+
     public ICommand FitAllCommand
     {
       get

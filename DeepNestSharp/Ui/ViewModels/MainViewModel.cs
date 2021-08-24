@@ -38,12 +38,12 @@
     private RelayCommand activeDocumentSaveAsCommand;
     private RelayCommand createNestProjectCommand;
 
-    private ToolViewModel[] tools;
+    private IToolViewModel[] tools;
 
     private PreviewViewModel? previewViewModel;
     private Tuple<string, Theme>? selectedTheme;
     private FileViewModel? activeDocument;
-    private PropertiesViewModel? propertiesViewModel;
+    private IPropertiesViewModel? propertiesViewModel;
     private NestMonitorViewModel? nestMonitorViewModel;
 
     public MainViewModel(IMessageService messageService, IDispatcherService dispatcherService, ISvgNestConfig config, IFileIoService fileIoService)
@@ -90,13 +90,13 @@
       }
     }
 
-    public IEnumerable<ToolViewModel> Tools
+    public IEnumerable<IToolViewModel> Tools
     {
       get
       {
         if (tools == null)
         {
-          tools = new ToolViewModel[] { PreviewViewModel, SvgNestConfigViewModel, PropertiesViewModel, NestMonitorViewModel };
+          tools = new IToolViewModel[] { PreviewViewModel, SvgNestConfigViewModel, PropertiesViewModel, NestMonitorViewModel };
         }
 
         return tools;
@@ -118,7 +118,7 @@
       }
     }
 
-    public PreviewViewModel PreviewViewModel
+    public IPreviewViewModel PreviewViewModel
     {
       get
       {
@@ -131,7 +131,7 @@
       }
     }
 
-    public PropertiesViewModel PropertiesViewModel
+    public IPropertiesViewModel PropertiesViewModel
     {
       get
       {

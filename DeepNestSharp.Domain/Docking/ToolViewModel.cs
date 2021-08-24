@@ -1,6 +1,6 @@
 ﻿namespace DeepNestSharp.Ui.Docking
 {
-  public class ToolViewModel : PaneViewModel
+  public class ToolViewModel : PaneViewModel, IToolViewModel
   {
     private bool isVisible = true;
 

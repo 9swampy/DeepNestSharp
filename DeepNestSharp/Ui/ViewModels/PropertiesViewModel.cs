@@ -4,7 +4,7 @@
   using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Ui.Docking;
 
-  public class PropertiesViewModel : ToolViewModel
+  public class PropertiesViewModel : ToolViewModel, IPropertiesViewModel
   {
     private readonly MainViewModel mainViewModel;
 

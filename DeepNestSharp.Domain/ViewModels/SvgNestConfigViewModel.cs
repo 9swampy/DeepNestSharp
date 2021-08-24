@@ -5,7 +5,7 @@
   using DeepNestSharp.Ui.Docking;
   using System;
 
-  public class SvgNestConfigViewModel : ToolViewModel
+  public class SvgNestConfigViewModel : ToolViewModel, ISvgNestConfigViewModel
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="SvgNestConfigViewModel"/> class.

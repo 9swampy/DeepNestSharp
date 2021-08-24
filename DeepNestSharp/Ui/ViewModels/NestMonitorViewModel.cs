@@ -12,7 +12,7 @@
   using DeepNestSharp.Ui.Docking;
   using Microsoft.Toolkit.Mvvm.Input;
 
-  public class NestMonitorViewModel : ToolViewModel
+  public class NestMonitorViewModel : ToolViewModel, INestMonitorViewModel
   {
     private static volatile object syncLock = new object();
 
