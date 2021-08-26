@@ -6,6 +6,7 @@
   using DeepNestLib.CiTests;
   using DeepNestLib.Placement;
   using FakeItEasy;
+  using FluentAssertions;
   using Xunit;
 
   public class PartPlacementScenarioFixture

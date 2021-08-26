@@ -38,7 +38,9 @@
     /// <returns>New <see cref="Sheet"/>.</returns>
     public static new Sheet FromJson(string json)
     {
-      return JsonSerializer.Deserialize<Sheet>(json);
+      var options = new JsonSerializerOptions();
+      options.Converters.Add(new NfpJsonConverter());
+      return JsonSerializer.Deserialize<Sheet>(json, options);
     }
 
     public static Sheet NewSheet(int nameSuffix, int w = 3000, int h = 1500)
@@ -54,7 +56,10 @@
 
     public override string ToJson()
     {
-      return JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
+      var options = new JsonSerializerOptions();
+      options.Converters.Add(new NfpJsonConverter());
+      options.WriteIndented = true;
+      return JsonSerializer.Serialize(this, options);
     }
   }
 }

@@ -19,8 +19,8 @@
     public NfpCandidateList(INfp[] items, ISheet sheet, INfp part)
     {
       Items = items;
-      Sheet = sheet;
-      Part = part;
+      Sheet = new Sheet(sheet, WithChildren.Included);
+      Part = new NFP(part, WithChildren.Included);
     }
 
     // inner NFP
@@ -37,7 +37,8 @@
     [JsonInclude]
     public INfp Part { get; private set; }
 
-    public int Length => Items.Length;
+    [JsonIgnore]
+    public int NumberOfNfps => Items.Length;
 
     [JsonInclude]
     public INfp[] Items { get; private set; }

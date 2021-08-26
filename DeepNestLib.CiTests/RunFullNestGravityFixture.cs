@@ -52,11 +52,11 @@
 
           this.nestingContext.StartNest();
           int i = 0;
-          while (i < 100 && this.nestingContext.State.TopNestResults.Count < terminateNestResultCount)
+          while (i < 50 && this.nestingContext.State.TopNestResults.Count < terminateNestResultCount)
           {
             i++;
             this.nestingContext.NestIterate(this.config);
-            progressCapture.Are.WaitOne(1000);
+            progressCapture.Are.WaitOne(100);
             if (this.nestingContext.State.TopNestResults.Count >= terminateNestResultCount &&
                 this.nestingContext.State.TopNestResults.Top.Fitness <= ExpectedFitness + ExpectedFitnessTolerance)
             {

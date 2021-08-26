@@ -37,13 +37,10 @@
       placementWorker = A.Fake<IPlacementWorker>();
       ((ITestPartPlacementWorker)sut).PlacementWorker = placementWorker;
 
-      // MinkowskiSum minkowskiSumService = (MinkowskiSum)MinkowskiSum.CreateInstance(A.Fake<INestStateMinkowski>());
       ((MinkowskiSum)((ITestNfpHelper)((ITestPartPlacementWorker)sut).NfpHelper).MinkowskiSumService).VerboseLogAction = s => placementWorker.VerboseLog(s);
       state = A.Fake<INestStateMinkowski>();
       ((MinkowskiSum)((ITestNfpHelper)((ITestPartPlacementWorker)sut).NfpHelper).MinkowskiSumService).State = state;
-      ((MinkowskiSum)((ITestNfpHelper)((ITestPartPlacementWorker)sut).NfpHelper).MinkowskiSumService).Config = new DefaultSvgNestConfig();
-
-      // ((ITestNfpHelper)((ITestPartPlacementWorker)sut).NfpHelper).MinkowskiSumService = minkowskiSumService;
+      ((MinkowskiSum)((ITestNfpHelper)((ITestPartPlacementWorker)sut).NfpHelper).MinkowskiSumService).UseMinkowskiCache = true;
 
       sut.ProcessPart(sut.InputPart, 1);
     }
@@ -51,7 +48,7 @@
     [Fact]
     public void LogEntriesHaveBeenSameUpTo()
     {
-      for (int i = 0; i < 7; i++)
+      for (int i = 0; i < sutOutExpected.Log.Count; i++)
       {
         sutOutExpected.Log[i].Should().Be(sut.Log[i]);
       }
@@ -66,8 +63,6 @@
     [Fact]
     public void FinalNfpShouldBeEquivalent()
     {
-      sutOutExpected.FinalNfp.Should().NotBeNull();
-      sut.FinalNfp.Should().NotBeNull();
       sut.FinalNfp.Should().BeEquivalentTo(sutOutExpected.FinalNfp);
     }
 

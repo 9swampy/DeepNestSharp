@@ -509,7 +509,10 @@
     /// <inheritdoc />
     public virtual string ToJson()
     {
-      return JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
+      var options = new JsonSerializerOptions();
+      options.Converters.Add(new NfpJsonConverter());
+      options.WriteIndented = true;
+      return JsonSerializer.Serialize(this, options);
     }
 
     /// <inheritdoc />

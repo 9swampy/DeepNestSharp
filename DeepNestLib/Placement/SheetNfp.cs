@@ -33,7 +33,7 @@
     {
       get
       {
-        if (this.Length > 0)
+        if (this.NumberOfNfps > 0)
         {
           if (this[0].Length == 0)
           {

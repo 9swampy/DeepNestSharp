@@ -52,7 +52,7 @@
 
           this.nestingContext.StartNest();
           int i = 0;
-          while (i < 100 && this.nestingContext.State.TopNestResults.Count < terminateNestResultCount)
+          while (i < 50 && this.nestingContext.State.TopNestResults.Count < terminateNestResultCount)
           {
             i++;
             this.nestingContext.NestIterate(this.config);

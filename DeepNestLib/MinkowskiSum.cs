@@ -14,6 +14,7 @@
   {
     private static volatile object minkowskiSyncLock = new object();
 
+    [JsonConstructor]
     public MinkowskiSum()
     {
     }
@@ -23,9 +24,9 @@
     /// Private because sharing/reusing the cache is dangerous.
     /// Replacing static global dependencies with factories to facilitate Unit Tests.
     /// </summary>
-    private MinkowskiSum(ISvgNestConfig config, INestStateMinkowski state)
+    private MinkowskiSum(bool useMinkowskiCache, INestStateMinkowski state)
     {
-      this.Config = config;
+      this.UseMinkowskiCache = useMinkowskiCache;
       this.State = state;
     }
 
@@ -37,7 +38,7 @@
     public INestStateMinkowski State { private get; set; }
 
     [JsonIgnore]
-    internal ISvgNestConfig Config { private get; set; }
+    internal bool UseMinkowskiCache { private get; set; }
 
     /// <summary>
     /// Create a new instance with a self contained cache.
@@ -45,14 +46,23 @@
     /// <param name="config">Singleton config for the nest.</param>
     /// <param name="nestState">Shared NestState (instead of NestState.Default).</param>
     /// <returns><see cref="IMinkowskiSumService"/>.</returns>
-    public static IMinkowskiSumService CreateInstance(ISvgNestConfig config, INestStateMinkowski nestState) => new MinkowskiSum(config, nestState);
+    public static IMinkowskiSumService CreateInstance(ISvgNestConfig config, INestStateMinkowski nestState) => new MinkowskiSum(config.UseMinkowskiCache, nestState);
 
-    INfp IMinkowskiSumService.DllImportExecute(INfp a, INfp b, MinkowskiSumCleaning minkowskiSumCleaning)
+    /// <summary>
+    /// Create a new instance with a self contained cache.
+    /// </summary>
+    /// <param name="useMinkowskiCache">A value indicating whether to cache the results.</param>
+    /// <param name="nestState">Shared NestState (instead of NestState.Default).</param>
+    /// <returns><see cref="IMinkowskiSumService"/>.</returns>
+    public static IMinkowskiSumService CreateInstance(bool useMinkowskiCache, INestStateMinkowski nestState) => new MinkowskiSum(useMinkowskiCache, nestState);
+
+    INfp[] IMinkowskiSumService.DllImportExecute(INfp path, INfp pattern, MinkowskiSumCleaning minkowskiSumCleaning)
     {
+      var b = new NFP(pattern, WithChildren.Included);
       Dictionary<string, List<PointF>> dic1 = new Dictionary<string, List<PointF>>();
       Dictionary<string, List<double>> dic2 = new Dictionary<string, List<double>>();
       dic2.Add("A", new List<double>());
-      foreach (var item in a.Points)
+      foreach (var item in path.Points)
       {
         var target = dic2["A"];
         target.Add(item.X);
@@ -69,7 +79,7 @@
 
       List<double> hdat = new List<double>();
 
-      foreach (var item in a.Children)
+      foreach (var item in path.Children)
       {
         foreach (var pitem in item.Points)
         {
@@ -80,16 +90,16 @@
 
       var aa = dic2["A"];
       var bb = dic2["B"];
-      var arr1 = a.Children.Select(z => z.Points.Count() * 2).ToArray();
+      var arr1 = path.Children.Select(z => z.Points.Count() * 2).ToArray();
 
-      var key = new MinkowskiKey(aa.Count, aa, a.Children.Count, arr1, hdat, bb.Count, bb);
+      var key = new MinkowskiKey(aa.Count, aa, path.Children.Count, arr1, hdat, bb.Count, bb);
       INfp ret;
       lock (minkowskiSyncLock)
       {
         INfp cacheRetrieval;
         if (!MinkowskiCache.TryGetValue(key, out cacheRetrieval))
         {
-          VerboseLogAction?.Invoke($"{a.ToShortString()}-{b.ToShortString()} {key} not found in {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)} so calculating. . .");
+          VerboseLogAction?.Invoke($"{path.ToShortString()}-{b.ToShortString()} {key} not found in {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)} so calculating. . .");
 #if x64
           // System.Diagnostics.Debug.Print($"{state.CallCounter}.Minkowski_x64");
           long[] longs = arr1.Select(o => (long)o).ToArray();
@@ -182,16 +192,17 @@
                 var matchKvp = MinkowskiCache.ToList().First(o => o.Value.Equals(ret));
                 File.WriteAllText(@"C:\Temp\MinkowskiSum\MatchKey.json", matchKvp.Key.ToJson());
                 File.WriteAllText(@"C:\Temp\MinkowskiSum\MatchValue.json", matchKvp.Value.ToJson());
-                File.WriteAllText(@"C:\Temp\MinkowskiSum\MinkowskiCache.json", MinkowskiCache.ToJson());
-                File.WriteAllText(@"C:\Temp\MinkowskiSum\MinkowskiCacheA.json", a.ToJson());
-                File.WriteAllText(@"C:\Temp\MinkowskiSum\MinkowskiCacheB.json", b.ToJson());
-                File.WriteAllText(@"C:\Temp\MinkowskiSum\MinkowskiCacheRet.json", ret.ToJson());
+                var nameSuffix = "Sum2";
+                File.WriteAllText($"C:\\Temp\\MinkowskiSum\\Minkowski{nameSuffix}.dnpoly", MinkowskiCache.ToJson());
+                File.WriteAllText($"C:\\Temp\\MinkowskiSum\\Minkowski{nameSuffix}A.dnpoly", path.ToJson());
+                File.WriteAllText($"C:\\Temp\\MinkowskiSum\\Minkowski{nameSuffix}B.dnpoly", b.ToJson());
+                File.WriteAllText($"C:\\Temp\\MinkowskiSum\\Minkowski{nameSuffix}Ret.dnpoly", ret.ToJson());
               }
             }
 
-            if (Config.UseMinkowskiCache)
+            if (UseMinkowskiCache)
             {
-              VerboseLogAction?.Invoke($"Add {a.ToShortString()}-{b.ToShortString()} {key} to {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)}. . .");
+              VerboseLogAction?.Invoke($"Add {path.ToShortString()}-{b.ToShortString()} {key} to {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)}. . .");
               MinkowskiCache.Add(key, ret);
             }
           }
@@ -202,7 +213,7 @@
         }
         else
         {
-          VerboseLogAction?.Invoke($"{a.ToShortString()}-{b.ToShortString()} {key} found in {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)}. . .");
+          VerboseLogAction?.Invoke($"{path.ToShortString()}-{b.ToShortString()} {key} found in {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)}. . .");
           ret = new NFP(cacheRetrieval, WithChildren.Included);
         }
       }
@@ -213,7 +224,7 @@
         ret = SvgNest.CleanPolygon2(ret);
       }
 
-      return ret;
+      return new INfp[] { ret };
     }
 
     NFP IMinkowskiSumService.ClipperExecute(INfp a, INfp b, MinkowskiSumPick minkowskiSumPick)

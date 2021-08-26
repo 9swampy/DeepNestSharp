@@ -18,8 +18,8 @@
   {
     private const bool EnableCaches = true;
 
-    private readonly INestState state;
     private readonly IList<string> logList = new List<string>();
+    private INestState state;
     private Dictionary<string, ClipCacheItem> clipCache;
     private IPlacementWorker placementWorker;
     private volatile object processPartLock = new object();
@@ -112,6 +112,8 @@
       }
     }
 
+    INestState ITestPartPlacementWorker.State { get => this.state; set => this.state = value; }
+
     public InnerFlowResult ProcessPart(INfp inputPart, int inputPartIndex)
     {
       lock (processPartLock)
@@ -156,6 +158,11 @@
           if (!SheetNfp.CanAcceptPart)
           {
             this.VerboseLog($"{processedPart.ToShortString()} could not be placed even if sheet empty (only do this for the first part on each sheet).");
+            if (ExportExecutions)
+            {
+              Export(inputPartIndex, $"Out-UnplaceableSheetNfp.dnsnfp", SheetNfp.ToJson());
+            }
+
             return InnerFlowResult.Continue;
           }
         }
@@ -175,7 +182,7 @@
         {
           this.VerboseLog("First placement, put it on the bottom left corner. . .");
           var processedPartOrigin = processedPart[0];
-          for (int nfpCandidateIndex = 0; nfpCandidateIndex < SheetNfp.Length; nfpCandidateIndex++)
+          for (int nfpCandidateIndex = 0; nfpCandidateIndex < SheetNfp.NumberOfNfps; nfpCandidateIndex++)
           {
             var nfpCandidate = SheetNfp[nfpCandidateIndex];
             for (int pointIndex = 0; pointIndex < nfpCandidate.Points.Length; pointIndex++)
@@ -497,19 +504,22 @@
 
     private void Export(int inputPartIndex, string fileNameSuffix, string json)
     {
-      var dirInfo = new DirectoryInfo(Config.ExportExecutionPath);
-      if (dirInfo.Exists)
+      if (exportIndex <= 50)
       {
-        var filePath = Path.Combine(Config.ExportExecutionPath, $"N{state.NestCount}-S{Sheet.Id}-{exportIndex}-P{inputPartIndex}-{fileNameSuffix}");
-        System.Diagnostics.Debug.Print($"Export {filePath}");
-        File.WriteAllText(filePath, json);
-      }
-      else
-      {
-        System.Diagnostics.Debug.Print($"Export path {Config.ExportExecutionPath} does not exist.");
-      }
+        var dirInfo = new DirectoryInfo(Config.ExportExecutionPath);
+        if (dirInfo.Exists)
+        {
+          var filePath = Path.Combine(Config.ExportExecutionPath, $"N{state.NestCount}-S{Sheet.Id}-{exportIndex}-P{inputPartIndex}-{fileNameSuffix}");
+          System.Diagnostics.Debug.Print($"Export {filePath}");
+          File.WriteAllText(filePath, json);
+        }
+        else
+        {
+          System.Diagnostics.Debug.Print($"Export path {Config.ExportExecutionPath} does not exist.");
+        }
 
-      exportIndex++;
+        exportIndex++;
+      }
     }
 
     internal static PartPlacementWorker FromJson(string json)
@@ -815,5 +825,7 @@
     NfpHelper NfpHelper { get; set; }
 
     IPlacementWorker PlacementWorker { get; set; }
+
+    INestState State { get; set; }
   }
 }

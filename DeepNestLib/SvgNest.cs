@@ -796,16 +796,16 @@
 
         int currentPlacements = 0;
         string suffix = string.Empty;
-        if (!payload.IsValid)
+        if (!payload.IsValid || payload.UsedSheets.Count == 0)
         {
           this.State.IncrementRejected();
           suffix = " Rejected";
         }
         else if (this.State.TopNestResults.TryAdd(payload))
         {
-          currentPlacements = this.State.TopNestResults.Top.UsedSheets[0].PartPlacements.Count;
           if (this.State.TopNestResults.Contains(payload))
           {
+            currentPlacements = this.State.TopNestResults.Top.UsedSheets[0].PartPlacements.Count;
             if (this.State.TopNestResults.IndexOf(payload) < this.State.TopNestResults.EliteSurvivors)
             {
               suffix = " Elite";

@@ -3,6 +3,7 @@
   using System;
   using System.Collections.Generic;
   using System.Diagnostics;
+  using System.Linq;
   using FakeItEasy;
   using FluentAssertions;
   using IxMilia.Dxf.Entities;
@@ -40,7 +41,7 @@
       sw.Restart();
       for (int i = 0; i < iterations; i++)
       {
-        dllImportResult = minkowskiSumService.DllImportExecute(firstPart, secondPart, MinkowskiSumCleaning.Cleaned);
+        dllImportResult = minkowskiSumService.DllImportExecute(firstPart, secondPart, MinkowskiSumCleaning.Cleaned).Single();
       }
 
       sw.Stop();

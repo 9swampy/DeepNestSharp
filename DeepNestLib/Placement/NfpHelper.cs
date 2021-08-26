@@ -50,7 +50,12 @@
       return clipperNfp.ToArray();
     }
 
-    // returns clipper nfp. Remember that clipper nfp are a list of polygons, not a tree!
+    /// <summary>
+    /// Generates a clipper nfp. Remember that clipper nfp are a list of polygons, not a tree.
+    /// </summary>
+    /// <param name="nfp"></param>
+    /// <param name="clipperScale"></param>
+    /// <returns></returns>
     public static IntPoint[][] NfpToClipperCoordinates(INfp nfp, double clipperScale)
     {
       List<IntPoint[]> clipperNfp = new List<IntPoint[]>();
@@ -93,12 +98,12 @@
       return GetInnerNfp((INfp)sheet, part, minkowskiCache, clipperScale);
     }
 
-    public INfp[] GetInnerNfp(INfp a, INfp b, MinkowskiCache minkowskiCache, double clipperScale)
+    public INfp[] GetInnerNfp(INfp sheet, INfp part, MinkowskiCache minkowskiCache, double clipperScale)
     {
-      a.MustNotBeNull();
-      b.MustNotBeNull();
+      sheet.MustNotBeNull();
+      part.MustNotBeNull();
 
-      var key = new DbCacheKey(a.Source, b.Source, 0, b.Rotation);
+      var key = new DbCacheKey(sheet.Source, part.Source, 0, part.Rotation);
 
       // var doc = window.db.find({ A: A.source, B: B.source, Arotation: 0, Brotation: B.rotation }, true);
       var res = Window.Find(key, true);
@@ -107,9 +112,9 @@
         return res;
       }
 
-      var frame = GetExpandedFrame(a);
+      var frame = GetExpandedFrame(sheet);
 
-      var nfp = GetOuterNfp(frame, b, minkowskiCache, NoFitPolygonType.Inner);
+      var nfp = GetOuterNfp(frame, part, minkowskiCache, NoFitPolygonType.Inner);
 
       if (nfp == null || nfp.Children == null || nfp.Children.Count == 0)
       {
@@ -117,11 +122,11 @@
       }
 
       List<INfp> holes = new List<INfp>();
-      if (a.Children != null && a.Children.Count > 0)
+      if (sheet.Children != null && sheet.Children.Count > 0)
       {
-        for (var i = 0; i < a.Children.Count; i++)
+        for (var i = 0; i < sheet.Children.Count; i++)
         {
-          var hnfp = GetOuterNfp(a.Children[i], b, MinkowskiCache.NoCache);
+          var hnfp = GetOuterNfp(sheet.Children[i], part, MinkowskiCache.NoCache);
           if (hnfp != null)
           {
             holes.Add(hnfp);
@@ -159,20 +164,20 @@
         f.Add(finalNfp[i].ToArray().ToNestCoordinates(clipperScale));
       }
 
-      if (a?.Source != null && b?.Source != null)
+      if (sheet?.Source != null && part?.Source != null)
       {
         // insert into db
         // console.log('inserting inner: ', A.source, B.source, B.rotation, f);
-        var doc = new DbCacheKey(a.Source, b.Source, 0, b.Rotation, f.ToArray());
-        Window.Insert(doc, true);
+        var keyItem = new DbCacheKey(sheet.Source, part.Source, 0, part.Rotation, f.ToArray());
+        Window.Insert(keyItem, true);
       }
 
       return f.ToArray();
     }
 
-    internal INfp[] ExecuteDllImportMinkowski(INfp a, INfp b, MinkowskiCache minkowskiCache)
+    internal INfp[] ExecuteDllImportMinkowski(INfp path, INfp pattern, MinkowskiCache minkowskiCache)
     {
-      var key = new StringBuilder(12).Append(a.Source).Append(";").Append(b.Source).Append(";").Append(a.Rotation).Append(";").Append(b.Rotation).ToString();
+      var key = new StringBuilder(12).Append(path.Source).Append(";").Append(pattern.Source).Append(";").Append(path.Rotation).Append(";").Append(pattern.Rotation).ToString();
       bool cacheAllow = minkowskiCache == MinkowskiCache.Cache;
 
       if (cacheProcess.ContainsKey(key) && cacheAllow)
@@ -180,8 +185,7 @@
         return cacheProcess[key];
       }
 
-      var ret = minkowskiSumService.DllImportExecute(a, b, MinkowskiSumCleaning.None);
-      var res = new INfp[] { ret };
+      var res = minkowskiSumService.DllImportExecute(path, pattern, MinkowskiSumCleaning.None);
       if (cacheAllow)
       {
         cacheProcess.Add(key, res);
@@ -194,7 +198,7 @@
     {
       try
       {
-        INfp[] nfp;
+        INfp[] nfpList;
 
         var key = new DbCacheKey(a.Source, b.Source, a.Rotation, b.Rotation);
 
@@ -209,29 +213,29 @@
           // not found in cache
           if (nfpType == NoFitPolygonType.Inner || (a.Children != null && a.Children.Count > 0))
           {
-            nfp = ExecuteDllImportMinkowski(a, b, minkowskiCache);
+            nfpList = ExecuteDllImportMinkowski(a, b, minkowskiCache);
           }
           else
           {
             NFP clipperNfp = minkowskiSumService.ClipperExecute(a, b, MinkowskiSumPick.Smallest);
-            nfp = new NFP[] { new NFP(clipperNfp.Points) };
+            nfpList = new NFP[] { new NFP(clipperNfp.Points) };
           }
 
-          if (nfp == null || nfp.Length == 0)
+          if (nfpList == null || nfpList.Length == 0)
           {
             // console.log('holy shit', nfp, A, B, JSON.stringify(A), JSON.stringify(B));
             return null;
           }
 
-          INfp nfps = nfp.FirstOrDefault();
-          if (nfps == null || nfps.Length == 0)
+          INfp nfp = nfpList.FirstOrDefault();
+          if (nfp == null || nfp.Length == 0)
           {
             return null;
           }
 
           if (nfpType == NoFitPolygonType.Outer)
           {
-            var doc2 = new DbCacheKey(a.Source, b.Source, a.Rotation, b.Rotation, nfp);
+            var doc2 = new DbCacheKey(a.Source, b.Source, a.Rotation, b.Rotation, nfpList);
             Window.Insert(doc2);
           }
 
@@ -250,7 +254,7 @@
               window.db.insert(doc);
           }
           */
-          return nfps;
+          return nfp;
         }
       }
       catch (BadImageFormatException)
@@ -264,10 +268,10 @@
     }
 
     /// <summary>
-    /// Expands the frame of the <see cref="INfp"/> passed in.
+    /// Expands the part passed in by 10% to generate a frame and adds the original <see cref="INfp"/> passed in as a child of the frame.
     /// </summary>
     /// <param name="a">Part to expand.</param>
-    /// <returns>Expanded frame.</returns>
+    /// <returns>Expanded frame with passsed in a as a child.</returns>
     private static INfp GetExpandedFrame(INfp a)
     {
       var bounds = GeometryUtil.GetPolygonBounds(a);

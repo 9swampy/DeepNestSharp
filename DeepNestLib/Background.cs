@@ -173,7 +173,7 @@
         processed.Nfp.Children = cnfp;
       }
 
-      DbCacheKey doc = new DbCacheKey(processed.Asource, processed.Bsource, processed.ARotation, processed.BRotation, new[] { processed.Nfp });
+      DbCacheKey keyItem = new DbCacheKey(processed.Asource, processed.Bsource, processed.ARotation, processed.BRotation, new[] { processed.Nfp });
 
       /*var doc = {
               A: processed[i].Asource,
@@ -183,7 +183,7 @@
               nfp: processed[i].nfp
 
           };*/
-      window.Insert(doc);
+      window.Insert(keyItem);
     }
 
     private void ThenDeepNest(NfpPair[] nfpPairs, INfp[] parts, ISheet[] sheets, ISvgNestConfig config, int index, Stopwatch backgroundStopwatch)

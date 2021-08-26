@@ -203,7 +203,18 @@
     <Compile Include="NfpRotateFixture.cs" />
     <Compile Include="OuterFitPolygonFixture.cs" />
     <Compile Include="PerfectBoundingBoxFitnessFixture.cs" />
+    <EmbeddedResource Include="Minkowski\MinkowskiCacheA.dnpoly">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Minkowski\MinkowskiCacheB.dnpoly">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Minkowski\MinkowskiCacheRet.dnpoly">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <Compile Include="Placement\Capture{T}.cs" />
     <Compile Include="Placement\DecimalArrayHashCodeFixture.cs" />
+    <Compile Include="Placement\Fit12InDonutHoleFixture.cs" />
     <Compile Include="Placement\NestResultJsonFixture.cs" />
     <Compile Include="Placement\NfpJsonFixture.cs" />
     <Compile Include="NestProject\ProjectInfoSerializationFixture.cs" />
@@ -275,15 +286,6 @@
     <EmbeddedResource Include="Minkowski\MinkowskiCache.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="Minkowski\MinkowskiCacheA.dnpoly">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Minkowski\MinkowskiCacheB.dnpoly">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Minkowski\MinkowskiCacheRet.dnpoly">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
     <None Include="packages.config" />
     <Content Include="SquareInSquare.dxf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -304,6 +306,21 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Placement\MinkowskiKeyExample.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Placement\Fit12InDonutHoleIn.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Placement\Fit12InDonutHoleOut-FinalNfp.dnnfps">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Placement\Fit12InDonutHoleOut-Parts2.dnsp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Placement\Fit12InDonutHoleOut-SheetNfp.dnsnfp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Placement\Fit12InDonutHoleOut.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>

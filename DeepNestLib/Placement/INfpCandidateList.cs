@@ -6,6 +6,8 @@
 
     ISheet Sheet { get; }
 
+    int NumberOfNfps { get; }
+
     string ToJson();
   }
 }
