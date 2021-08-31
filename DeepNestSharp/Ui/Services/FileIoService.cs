@@ -22,13 +22,13 @@
       return fileInfo.Exists;
     }
 
-    public async Task<string> GetOpenFilePathAsync(string filter)
+    public async Task<string> GetOpenFilePathAsync(string filter, string initialDirectory)
     {
-      var filePaths = await GetOpenFilePathsAsync(filter, false).ConfigureAwait(false);
+      var filePaths = await GetOpenFilePathsAsync(filter, initialDirectory, false).ConfigureAwait(false);
       return filePaths.First();
     }
 
-    public async Task<string[]> GetOpenFilePathsAsync(string filter, bool allowMultiSelect = true)
+    public async Task<string[]> GetOpenFilePathsAsync(string filter, string initialDirectory, bool allowMultiSelect = true)
     {
       try
       {
@@ -37,6 +37,11 @@
           Filter = filter,
           Multiselect = allowMultiSelect,
         };
+
+        if (!string.IsNullOrWhiteSpace(initialDirectory))
+        {
+          openFileDialog.InitialDirectory = initialDirectory;
+        }
 
         bool dialogResponse = false;
         await dispatcherService.InvokeAsync(() => dialogResponse = openFileDialog.ShowDialog() == true).ConfigureAwait(false);

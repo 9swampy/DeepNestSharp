@@ -41,7 +41,7 @@
       sw.Restart();
       for (int i = 0; i < iterations; i++)
       {
-        dllImportResult = minkowskiSumService.DllImportExecute(firstPart, secondPart, MinkowskiSumCleaning.Cleaned).Single();
+        dllImportResult = minkowskiSumService.DllImportExecute(firstPart, secondPart, MinkowskiSumCleaning.None).Single();
       }
 
       sw.Stop();
@@ -86,13 +86,18 @@
     }
 
     [Fact]
-    public void UncleanedResultsShouldBeEquivalent()
+    public void UncleanedResultsShouldNotBeEquivalent()
     {
-      dllImportResult.Should().BeEquivalentTo(
+#pragma warning disable IDE0058 // Expression value is never used
+      _ = dllImportResult.Should().NotBeEquivalentTo(
         clipperResult,
         options => options.Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 1))
                           .WhenTypeIs<double>(),
-        "because I added the CleanPolygon in to the sut.MinkowskiSum");
+#pragma warning disable SA1118 // Parameter should not span multiple lines
+        "because they're only same if CleanPolygon added in to the sut.MinkowskiSum; cleaning could mean " +
+        "the result is no longer closed so if it's fed back in to the ClipperLib sum it won't work; unless " +
+        "we change the way ClipperLib is called.");
+#pragma warning restore SA1118 // Parameter should not span multiple lines
     }
 
     [Fact]

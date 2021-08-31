@@ -31,16 +31,6 @@
     /// <inheritdoc/>
     public int Rotations { get; set; } = 4;
 
-    public string ToJson()
-    {
-      return SvgNestConfigJsonConverter.ToJson(this);
-    }
-
-    internal static ISvgNestConfig FromJson(string json)
-    {
-      return SvgNestConfigJsonConverter.FromJson(json);
-    }
-
     /// <inheritdoc/>
     public double SheetSpacing { get; set; } = 0;
 
@@ -83,6 +73,38 @@
       set
       {
         Properties.Settings.Default["CurveTolerance"] = value;
+        Properties.Settings.Default.Save();
+        Properties.Settings.Default.Upgrade();
+      }
+    }
+
+    /// <inheritdoc/>
+    public string LastNestFilePath
+    {
+      get
+      {
+        return (string)Properties.Settings.Default["LastNestFilePath"];
+      }
+
+      set
+      {
+        Properties.Settings.Default["LastNestFilePath"] = value;
+        Properties.Settings.Default.Save();
+        Properties.Settings.Default.Upgrade();
+      }
+    }
+
+    /// <inheritdoc/>
+    public string LastDebugFilePath
+    {
+      get
+      {
+        return (string)Properties.Settings.Default["LastDebugFilePath"];
+      }
+
+      set
+      {
+        Properties.Settings.Default["LastDebugFilePath"] = value;
         Properties.Settings.Default.Save();
         Properties.Settings.Default.Upgrade();
       }
@@ -396,6 +418,23 @@
     }
 
     /// <inheritdoc/>
+    public bool UseDllImport
+    {
+      get
+      {
+        return (bool)Properties.Settings.Default["UseDllImport"];
+      }
+
+      set
+      {
+        Properties.Settings.Default["UseDllImport"] = value;
+        Properties.Settings.Default.Save();
+        Properties.Settings.Default.Upgrade();
+      }
+    }
+
+
+    /// <inheritdoc/>
     public bool UseHoles { get; set; } = false;
 
     /// <inheritdoc/>
@@ -403,5 +442,15 @@
 
     /// <inheritdoc/>
     public bool UsePriority { get; set; } = true;
+
+    public string ToJson()
+    {
+      return SvgNestConfigJsonConverter.ToJson(this);
+    }
+
+    internal static ISvgNestConfig FromJson(string json)
+    {
+      return SvgNestConfigJsonConverter.FromJson(json);
+    }
   }
 }

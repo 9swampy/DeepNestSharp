@@ -1,6 +1,7 @@
 ﻿namespace DeepNestLib
 {
   using System.Text.Json;
+  using System.Text.Json.Serialization;
 
   public class Sheet : NFP, ISheet
   {
@@ -40,7 +41,15 @@
     {
       var options = new JsonSerializerOptions();
       options.Converters.Add(new NfpJsonConverter());
-      return JsonSerializer.Deserialize<Sheet>(json, options);
+      var result = JsonSerializer.Deserialize<Sheet>(json, options);
+      if ((result.Width == 0 && result.WidthCalculated != 0) ||
+          (result.Height == 0 && result.HeightCalculated != 0))
+      {
+        result.Width = result.WidthCalculated;
+        result.Height = result.HeightCalculated;
+      }
+
+      return result;
     }
 
     public static Sheet NewSheet(int nameSuffix, int w = 3000, int h = 1500)

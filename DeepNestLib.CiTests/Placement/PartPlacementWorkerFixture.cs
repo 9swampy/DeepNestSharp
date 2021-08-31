@@ -50,7 +50,7 @@
         parts,
         placements,
         sheet,
-        new NfpHelper(MinkowskiSum.CreateInstance(A.Fake<ISvgNestConfig>(), A.Fake<INestStateMinkowski>()), window),
+        new NfpHelper(MinkowskiSum.CreateInstance(A.Fake<ISvgNestConfig>(), A.Fake<INestStateMinkowski>()), window, true),
         clipCache,
         A.Fake<INestState>());
 
@@ -110,7 +110,7 @@
         parts,
         placements,
         sheet,
-        new NfpHelper(minkowskiSum, window),
+        new NfpHelper(minkowskiSum, window, true),
         clipCache,
         A.Fake<INestState>());
 

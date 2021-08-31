@@ -1221,6 +1221,12 @@
             "Marked": false,
             "X": 26.0496,
             "Y": 41.6479
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 36.0635,
+            "Y": 41.6479
           }
         ],
         "IsPriority": false,

@@ -242,9 +242,9 @@ namespace DeepNestLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public string UseMinkowskiCache {
+        public bool UseMinkowskiCache {
             get {
-                return ((string)(this["UseMinkowskiCache"]));
+                return ((bool)(this["UseMinkowskiCache"]));
             }
             set {
                 this["UseMinkowskiCache"] = value;
@@ -284,6 +284,42 @@ namespace DeepNestLib.Properties {
             }
             set {
                 this["UsePriority"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastDebugFilePath {
+            get {
+                return ((string)(this["LastDebugFilePath"]));
+            }
+            set {
+                this["LastDebugFilePath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastNestFilePath {
+            get {
+                return ((string)(this["LastNestFilePath"]));
+            }
+            set {
+                this["LastNestFilePath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseDllImport {
+            get {
+                return ((bool)(this["UseDllImport"]));
+            }
+            set {
+                this["UseDllImport"] = value;
             }
         }
     }

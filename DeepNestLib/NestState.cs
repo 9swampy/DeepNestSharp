@@ -10,7 +10,8 @@
 
   public class NestState : INestState, INestStateBackground, INestStateSvgNest, INestStateMinkowski, INestStateNestingContext, INotifyPropertyChanged
   {
-    private int callCounter;
+    private int clipperCallCounter;
+    private int dllCallCounter;
     private int generations;
     private int iterations;
     private int population;
@@ -49,15 +50,21 @@
     [DisplayName("Average Placement Time")]
     public long AveragePlacementTime => nestCount == 0 ? 0 : totalNestTime / nestCount;
 
-    [Description("The number of times the external Minkowski library has been called. " +
+    [Description("The number of times the external C++ Minkowski library has been called. " +
       "This should stabilise at the number of distinct parts in the nest times the number " +
       "of rotations. If it keeps growing then the caching mechanism may not be working as " +
       "intended; possibly due to complexity of the parts, possibly due to overflow " +
       "failures in the Minkoski Sum. That said if your parts have holes then the calls to" +
       "hole NfpSums aren't cached?")]
     [Category("Minkowski")]
-    [DisplayName("Call Counter")]
-    public int CallCounter => callCounter;
+    [DisplayName("Dll Call Counter")]
+    public int DllCallCounter => dllCallCounter;
+
+    [Category("Minkowski")]
+    [DisplayName("Clipper Call Counter")]
+    public int ClipperCallCounter => clipperCallCounter;
+
+
 
     [Description("The number of generations processed.")]
     [Category("Genetic Algorithm")]
@@ -130,7 +137,8 @@
       Interlocked.Exchange(ref population, 0);
       Interlocked.Exchange(ref lastPlacementTime, 0);
       Interlocked.Exchange(ref iterations, 0);
-      Interlocked.Exchange(ref callCounter, 0);
+      Interlocked.Exchange(ref dllCallCounter, 0);
+      Interlocked.Exchange(ref clipperCallCounter, 0);
       this.IsErrored = false;
       TopNestResults.Clear();
       this.SetNfpPairCachePercentCached(0);
@@ -145,7 +153,7 @@
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Generations)));
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Threads)));
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Iterations)));
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CallCounter)));
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DllCallCounter)));
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TopNestResults)));
     }
 
@@ -215,10 +223,22 @@
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Iterations)));
     }
 
-    void INestStateMinkowski.IncrementCallCounter()
+    void INestStateMinkowski.IncrementDllCallCounter()
     {
-      Interlocked.Increment(ref callCounter);
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CallCounter)));
+      Interlocked.Increment(ref dllCallCounter);
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DllCallCounter)));
+    }
+
+    void INestStateMinkowski.IncrementClipperCallCounter()
+    {
+      Interlocked.Increment(ref clipperCallCounter);
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ClipperCallCounter)));
+    }
+
+    public void IncrementRejected()
+    {
+      Interlocked.Increment(ref rejected);
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Rejected)));
     }
 
     public void SetIsErrored()
@@ -230,12 +250,6 @@
     {
       nfpPairCachePercentCached = percentCached;
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NfpPairCachePercentCached)));
-    }
-
-    public void IncrementRejected()
-    {
-      Interlocked.Increment(ref rejected);
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Rejected)));
     }
   }
 }

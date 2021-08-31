@@ -177,42 +177,18 @@
           SheetNfp = new SheetNfp(NfpHelper, Sheet, processedPart, this.Config.ClipperScale);
         }
 
-        PartPlacement position = null;
         if (Placements.Count == 0)
         {
           this.VerboseLog("First placement, put it on the bottom left corner. . .");
-          var processedPartOrigin = processedPart[0];
-          for (int nfpCandidateIndex = 0; nfpCandidateIndex < SheetNfp.NumberOfNfps; nfpCandidateIndex++)
+          var candidatePoint = SheetNfp.GetCandidatePointClosestToOrigin();
+          var position = new PartPlacement(processedPart)
           {
-            var nfpCandidate = SheetNfp[nfpCandidateIndex];
-            for (int pointIndex = 0; pointIndex < nfpCandidate.Points.Length; pointIndex++)
-            {
-              var nfpPoint = nfpCandidate.Points[pointIndex];
-              var proposedX = nfpPoint.X - processedPartOrigin.X;
-              var proposedY = nfpPoint.Y - processedPartOrigin.Y;
-              if (position == null ||
-                  proposedX < position.X ||
-                  (GeometryUtil.AlmostEqual(proposedX, position.X) && proposedY < position.Y))
-              {
-                position = new PartPlacement(processedPart)
-                {
-                  X = proposedX,
-                  Y = proposedY,
-                  Id = processedPart.Id,
-                  Rotation = processedPart.Rotation,
-                  Source = processedPart.Source,
-                };
-              }
-            }
-          }
-
-          if (position == null)
-          {
-            var json = this.ToJson();
-            throw new Exception("position null");
-
-            // console.log(sheetNfp);
-          }
+            X = candidatePoint.X - processedPart[0].X,
+            Y = candidatePoint.Y - processedPart[0].Y,
+            Id = processedPart.Id,
+            Rotation = processedPart.Rotation,
+            Source = processedPart.Source,
+          };
 
           SheetNfp = new SheetNfp(SheetNfp.Items, Sheet, processedPart.Shift(position));
           AddPlacement(inputPart, processedPart, position, inputPartIndex);
@@ -323,6 +299,7 @@
           }
 
           this.VerboseLog($"Iterate nfps in differenceWithSheetPolygonNfp:");
+          PartPlacement position = null;
           for (int j = 0; j < finalNfp.Count; j++)
           {
             this.VerboseLog($"  For j={j}");
@@ -504,7 +481,7 @@
 
     private void Export(int inputPartIndex, string fileNameSuffix, string json)
     {
-      if (exportIndex <= 50)
+      if (this.state.NestCount <= 5)
       {
         var dirInfo = new DirectoryInfo(Config.ExportExecutionPath);
         if (dirInfo.Exists)

@@ -1,4 +1,4 @@
-namespace DeepNestLib.CiTests.Placement
+﻿namespace DeepNestLib.CiTests.Placement
 {
   using System;
   using System.Collections.Generic;

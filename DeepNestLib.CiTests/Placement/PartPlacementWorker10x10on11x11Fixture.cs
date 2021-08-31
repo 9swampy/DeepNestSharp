@@ -38,6 +38,7 @@
       placementWorker = A.Fake<IPlacementWorker>();
       ((ITestPartPlacementWorker)sut).PlacementWorker = placementWorker;
       ((ITestNfpHelper)((ITestPartPlacementWorker)sut).NfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(config, A.Fake<INestStateMinkowski>());
+      ((ITestNfpHelper)((ITestPartPlacementWorker)sut).NfpHelper).UseDllImport = true;
 
       var partPlacementArg = new Capture<PartPlacement>();
       A.CallTo(() => placementWorker.AddPlacement(sut.InputPart, A<List<IPartPlacement>>._, A<INfp>._, partPlacementArg, A<PlacementTypeEnum>._, A<ISheet>._, A<double>._)).Returns(default);

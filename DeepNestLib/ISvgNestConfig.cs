@@ -25,6 +25,16 @@
 
     string ExportExecutionPath { get; set; }
 
+    /// <summary>
+    /// Gets or sets the last path used for Nest files (dnest, dnr, dxf).
+    /// </summary>
+    string LastNestFilePath { get; set; }
+
+    /// <summary>
+    /// Gets or sets the last path used for Debugging files (dnsp, dnsnfp, dnnfps).
+    /// </summary>
+    string LastDebugFilePath { get; set; }
+
     bool MergeLines { get; set; }
 
     bool UseMinkowskiCache { get; set; }
@@ -88,6 +98,11 @@
     int ParallelNests { get; set; }
 
     bool ShowPartPositions { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the C++ imported Minkowski implementation should be used.
+    /// </summary>
+    bool UseDllImport { get; set; }
 
     string ToJson();
   }

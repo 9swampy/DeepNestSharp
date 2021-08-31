@@ -18,6 +18,11 @@
     double HeightCalculated { get; }
 
     /// <summary>
+    /// Gets a value indicating if the polygon is closed; i.e. rectangle has 5 vertices; first and last being the same.
+    /// </summary>
+    bool IsClosed { get; }
+
+    /// <summary>
     /// Gets the length of the Points collection.
     /// </summary>
     int Length { get; }
@@ -40,9 +45,18 @@
     /// <returns>A clone.</returns>
     INfp CloneTop();
 
+    /// <summary>
+    /// Shift the polygon to the origin.
+    /// </summary>
+    /// <returns>A partial clone of the polygon.</returns>
     INfp ShiftToOrigin();
 
     NFP GetHull();
+
+    /// <summary>
+    /// Checks if the points collection is closed, and closes it by adding a point if needed.
+    /// </summary>
+    void EnsureIsClosed();
 
     /// <summary>
     /// Shifts the polygon and all it's children iteratively by the specified PartPlacement(X,Y) offset.

@@ -4,9 +4,9 @@
 
   public interface IFileIoService
   {
-    Task<string> GetOpenFilePathAsync(string filter);
+    Task<string> GetOpenFilePathAsync(string filter, string initialDirectory = null);
 
-    Task<string[]> GetOpenFilePathsAsync(string filter, bool allowMultiSelect = true);
+    Task<string[]> GetOpenFilePathsAsync(string filter, string initialDirectory = null, bool allowMultiSelect = true);
 
     bool Exists(string filePath);
 

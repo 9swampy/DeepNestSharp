@@ -1,0 +1,55 @@
+{
+  "DetailLoadInfos": [
+    {
+      "Name": "10x10.dxf",
+      "Path": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\10x10.dxf",
+      "Quantity": 4,
+      "IsExists": true,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": true,
+      "StrictAngle": 0
+    }
+  ],
+  "SheetLoadInfos": [
+    {
+      "Width": 20,
+      "Height": 20,
+      "Quantity": 3
+    }
+  ],
+  "Config": {
+    "ClipperScale": 10000000,
+    "ClipByHull": true,
+    "CurveTolerance": 0.2,
+    "DrawSimplification": true,
+    "ExploreConcave": false,
+    "ExportExecutions": false,
+    "ExportExecutionPath": "C:\\Temp\\PartPlacementWorker",
+    "MergeLines": false,
+    "UseMinkowskiCache": true,
+    "MutationRate": 400,
+    "OffsetTreePhase": true,
+    "PlacementType": 1,
+    "PopulationSize": 200,
+    "Rotations": 4,
+    "SaveAsFileTypeIndex": 1,
+    "Scale": 25,
+    "SheetHeight": 10,
+    "SheetQuantity": 3,
+    "SheetSpacing": 0,
+    "SheetWidth": 10,
+    "Simplify": false,
+    "Spacing": 0,
+    "TimeRatio": 0.5,
+    "Tolerance": 2,
+    "ToleranceSvg": 0.005,
+    "UseHoles": false,
+    "UseParallel": false,
+    "UsePriority": false,
+    "StrictAngles": 0,
+    "Multiplier": 1,
+    "ParallelNests": 10,
+    "ShowPartPositions": true
+  }
+}

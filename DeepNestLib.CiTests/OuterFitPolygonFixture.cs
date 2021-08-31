@@ -12,7 +12,7 @@
       var generator = new DxfGenerator();
       var sheet = generator.GenerateSquare("sheet", 9, RectangleType.FileLoad).ToSheet();
       var part = generator.GenerateSquare("part", 10, RectangleType.FileLoad).ToNfp();
-      var nfp = A.Dummy<NfpHelper>().GetOuterNfp(sheet, part, MinkowskiCache.NoCache, NoFitPolygonType.Inner);
+      var nfp = A.Dummy<NfpHelper>().GetInnerNfp(sheet, part, MinkowskiCache.NoCache);
       nfp.Children.Should().BeEmpty("couldn't fit part inside sheet.");
     }
 
@@ -22,7 +22,7 @@
       var generator = new DxfGenerator();
       var sheet = generator.GenerateSquare("sheet", 10, RectangleType.FileLoad).ToSheet();
       var part = generator.GenerateSquare("part", 10, RectangleType.FileLoad).ToNfp();
-      var nfp = A.Dummy<NfpHelper>().GetOuterNfp(sheet, part, MinkowskiCache.NoCache, NoFitPolygonType.Inner);
+      var nfp = A.Dummy<NfpHelper>().GetInnerNfp(sheet, part, MinkowskiCache.NoCache);
       nfp.Children.Should().BeEmpty("couldn't fit part inside sheet.");
     }
 
@@ -32,7 +32,7 @@
       var generator = new DxfGenerator();
       var sheet = generator.GenerateSquare("sheet", 20, RectangleType.FileLoad).ToSheet();
       var part = generator.GenerateSquare("part", 10, RectangleType.FileLoad).ToNfp();
-      var nfp = A.Dummy<NfpHelper>().GetOuterNfp(sheet, part, MinkowskiCache.NoCache, NoFitPolygonType.Inner);
+      var nfp = A.Dummy<NfpHelper>().GetInnerNfp(sheet, part, MinkowskiCache.NoCache);
       nfp.Children.Should().NotBeEmpty("could fit part inside sheet.");
     }
 
@@ -42,7 +42,7 @@
       var generator = new DxfGenerator();
       var sheet = generator.GenerateSquare("sheet", 10, RectangleType.FileLoad).ToSheet();
       var part = generator.GenerateSquare("part", 10, RectangleType.FileLoad).ToNfp();
-      var nfp = A.Dummy<NfpHelper>().GetOuterNfp(sheet, part, MinkowskiCache.NoCache, NoFitPolygonType.Outer);
+      var nfp = A.Dummy<NfpHelper>().GetOuterNfp(sheet, part, MinkowskiCache.NoCache);
       nfp.Area.Should().Be(400);
     }
   }

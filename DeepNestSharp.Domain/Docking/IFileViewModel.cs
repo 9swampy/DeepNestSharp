@@ -13,6 +13,8 @@
 
     string FilePath { get; set; }
 
+    string DirectoryName { get; }
+
     string FileTypeName { get; }
 
     bool IsDirty { get; set; }

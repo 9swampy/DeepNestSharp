@@ -21,10 +21,11 @@
     {
     }
 
-    public NfpHelper(IMinkowskiSumService minkowskiSumService, IWindowUnk window)
+    public NfpHelper(IMinkowskiSumService minkowskiSumService, IWindowUnk window, bool useDllImport)
     {
       this.minkowskiSumService = minkowskiSumService;
       this.Window = window;
+      this.UseDllImport = useDllImport;
     }
 
     [JsonInclude]
@@ -34,6 +35,10 @@
     public IMinkowskiSumService MinkowskiSumService { get => this.minkowskiSumService; set => this.minkowskiSumService = value; }
 
     IMinkowskiSumService ITestNfpHelper.MinkowskiSumService { get => this.minkowskiSumService; set => this.minkowskiSumService = value; }
+
+    public bool UseDllImport { get; private set; } = true;
+
+    bool ITestNfpHelper.UseDllImport { get => UseDllImport; set => UseDllImport = value; }
 
     // inner nfps can be an array of nfps, outer nfps are always singular
     public static IntPoint[][] InnerNfpToClipperCoordinates(IList<INfp> nfp, double clipperScale)
@@ -112,9 +117,7 @@
         return res;
       }
 
-      var frame = GetExpandedFrame(sheet);
-
-      var nfp = GetOuterNfp(frame, part, minkowskiCache, NoFitPolygonType.Inner);
+      var nfp = GetInnerNfp(sheet, part, minkowskiCache);
 
       if (nfp == null || nfp.Children == null || nfp.Children.Count == 0)
       {
@@ -185,7 +188,8 @@
         return cacheProcess[key];
       }
 
-      var res = minkowskiSumService.DllImportExecute(path, pattern, MinkowskiSumCleaning.None);
+      INfp[] res = ((ITestNfpHelper)this).ExecuteInterchangeableMinkowski(UseDllImport, path, pattern);
+
       if (cacheAllow)
       {
         cacheProcess.Add(key, res);
@@ -194,7 +198,83 @@
       return res;
     }
 
-    internal INfp GetOuterNfp(INfp a, INfp b, MinkowskiCache minkowskiCache, NoFitPolygonType nfpType = NoFitPolygonType.Outer)
+    INfp[] ITestNfpHelper.ExecuteInterchangeableMinkowski(bool useDllImport, INfp path, INfp pattern)
+    {
+      return ExecuteInterchangeableMinkowski(useDllImport, path, pattern);
+    }
+
+    /// <summary>
+    /// Attempt to fit the part passed in inside the given sheet.
+    /// </summary>
+    /// <param name="sheet">The outer sheet on which to try fit the part.</param>
+    /// <param name="part">The part to try fit within the sheet.</param>
+    /// <param name="minkowskiCache">A value indicating whether to cache the result.</param>
+    /// <returns>The generated InnerFitPolygon if found, otherwise null.</returns>
+    internal INfp GetInnerNfp(ISheet sheet, INfp part, MinkowskiCache minkowskiCache)
+    {
+      return GetInnerNfp((INfp)sheet, part, minkowskiCache);
+    }
+
+    internal INfp GetOuterNfp(INfp a, INfp b, MinkowskiCache minkowskiCache)
+    {
+      return GetNoFitPolygon(a, b, minkowskiCache, NoFitPolygonType.Outer);
+    }
+
+    /// <summary>
+    /// Expands the part passed in by 10% to generate a frame and adds the original <see cref="INfp"/> passed in as a child of the frame.
+    /// </summary>
+    /// <param name="a">Part to expand.</param>
+    /// <returns>Expanded frame with passsed in a as a child.</returns>
+    internal static INfp GetExpandedFrame(INfp a)
+    {
+      var bounds = GeometryUtil.GetPolygonBounds(a);
+
+      // expand bounds by 10%
+      bounds.Width *= 1.1;
+      bounds.Height *= 1.1;
+      bounds.X -= 0.5 * (bounds.Width - (bounds.Width / 1.1));
+      bounds.Y -= 0.5 * (bounds.Height - (bounds.Height / 1.1));
+
+      var frame = new NFP(new List<INfp>() { a });
+      ((IHiddenNfp)frame).Push(new SvgPoint(bounds.X, bounds.Y));
+      ((IHiddenNfp)frame).Push(new SvgPoint(bounds.X + bounds.Width, bounds.Y));
+      ((IHiddenNfp)frame).Push(new SvgPoint(bounds.X + bounds.Width, bounds.Y + bounds.Height));
+      ((IHiddenNfp)frame).Push(new SvgPoint(bounds.X, bounds.Y + bounds.Height));
+
+      frame.Source = a.Source;
+      frame.Rotation = 0;
+
+      return frame;
+    }
+
+    /// <summary>
+    /// Attempt to fit the part passed in inside the given envelope. This method can only only
+    /// be used for fitting on empty sheet or in a hole if it's not been used yet because it can 
+    /// only return a single NFP.
+    /// </summary>
+    /// <param name="envelope">The outer envelope inside which to try fit the part.</param>
+    /// <param name="part">The part to try fit inside the envelope.</param>
+    /// <param name="minkowskiCache">A value indicating whether to cache the result.</param>
+    /// <returns>The generated InnerFitPolygon.</returns>
+    private INfp GetInnerNfp(INfp envelope, INfp part, MinkowskiCache minkowskiCache)
+    {
+      if (!UseDllImport)
+      {
+        // DllImport we let pass but for the NewClipperMinkowskiSum we were getting
+        // an inner result when fitting a larger part on a smaller sheet which should
+        // have been impossible so guard against it
+        if (part.WidthCalculated >= envelope.WidthCalculated ||
+            part.HeightCalculated >= envelope.HeightCalculated)
+        {
+          return null;
+        }
+      }
+
+      var frame = GetExpandedFrame(envelope);
+      return GetNoFitPolygon(frame, part, minkowskiCache, NoFitPolygonType.Inner);
+    }
+
+    private INfp GetNoFitPolygon(INfp a, INfp b, MinkowskiCache minkowskiCache, NoFitPolygonType nfpType)
     {
       try
       {
@@ -267,31 +347,41 @@
       }
     }
 
-    /// <summary>
-    /// Expands the part passed in by 10% to generate a frame and adds the original <see cref="INfp"/> passed in as a child of the frame.
-    /// </summary>
-    /// <param name="a">Part to expand.</param>
-    /// <returns>Expanded frame with passsed in a as a child.</returns>
-    private static INfp GetExpandedFrame(INfp a)
+    private INfp[] ExecuteInterchangeableMinkowski(bool useDllImport, INfp path, INfp pattern)
     {
-      var bounds = GeometryUtil.GetPolygonBounds(a);
+      INfp[] res;
 
-      // expand bounds by 10%
-      bounds.Width *= 1.1;
-      bounds.Height *= 1.1;
-      bounds.X -= 0.5 * (bounds.Width - (bounds.Width / 1.1));
-      bounds.Y -= 0.5 * (bounds.Height - (bounds.Height / 1.1));
+      if (useDllImport)
+      {
+        //nfp = Process2(A, B, type);
+        //res = minkowskiSumService.DllImportExecute(path, pattern, MinkowskiSumCleaning.Cleaned);
+        // For a long time through the refactor had been using MinkowskiSumCleaning.None and only started to pull in 
+        // clean to get NewMinkowski to be same as incumbent but changing from none is wrong thing to do surely; should
+        // be keeping as it was not getting the origina lto match with the added.
+        // The only place calling the method is this; so shift all UnitTests that have gone the cleaned way to none.
+        res = minkowskiSumService.DllImportExecute(path, pattern, MinkowskiSumCleaning.None);
+      }
+      else
+      {
+        if (!path.IsClosed)
+        {
+#if NCRUNCH
+          // throw new NotImplementedException("The implementation Fel88 added executes path is closed so I'd expect the path to be closed. . .");
+          path.EnsureIsClosed();
+#else
+          // System.Diagnostics.Debugger.Break();
+          path.EnsureIsClosed();
+#endif
+        }
 
-      var frame = new NFP(new List<INfp>() { a });
-      ((IHiddenNfp)frame).Push(new SvgPoint(bounds.X, bounds.Y));
-      ((IHiddenNfp)frame).Push(new SvgPoint(bounds.X + bounds.Width, bounds.Y));
-      ((IHiddenNfp)frame).Push(new SvgPoint(bounds.X + bounds.Width, bounds.Y + bounds.Height));
-      ((IHiddenNfp)frame).Push(new SvgPoint(bounds.X, bounds.Y + bounds.Height));
+        res = minkowskiSumService.NewMinkowskiSum(pattern, path, WithChildren.Included, takeOnlyBiggestArea: false);
+        foreach (var nfp in res)
+        {
+          nfp.EnsureIsClosed();
+        }
+      }
 
-      frame.Source = a.Source;
-      frame.Rotation = 0;
-
-      return frame;
+      return res;
     }
   }
 }

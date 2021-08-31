@@ -79,6 +79,22 @@
     public override bool IsDirty => true;
 
     /// <inheritdoc />
+    [Category("File Settings")]
+    public string LastDebugFilePath
+{
+      get => svgNestConfig.LastDebugFilePath;
+      set => SetProperty(nameof(LastDebugFilePath), () => svgNestConfig.LastDebugFilePath, v => svgNestConfig.LastDebugFilePath = v, value);
+    }
+
+    /// <inheritdoc />
+    [Category("File Settings")]
+    public string LastNestFilePath
+  {
+      get => svgNestConfig.LastNestFilePath;
+      set => SetProperty(nameof(LastNestFilePath), () => svgNestConfig.LastNestFilePath, v => svgNestConfig.LastNestFilePath = v, value);
+    }
+
+    /// <inheritdoc />
     [Category("Unimplemented")]
     public bool MergeLines
     {
@@ -281,6 +297,16 @@
     {
       get => svgNestConfig.UsePriority;
       set => SetProperty(nameof(UsePriority), () => svgNestConfig.UsePriority, v => svgNestConfig.UsePriority = v, value);
+    }
+
+    /// <inheritdoc />
+    [Description("Legacy only used the DllImport. Turn this off with caution. . . and please do give feedback if you" +
+      " try turning it off any experience repeatable problems.")]
+    [Category("Experimental")]
+    public bool UseDllImport
+    {
+      get => svgNestConfig.UseDllImport;
+      set => SetProperty(nameof(UseDllImport), () => svgNestConfig.UseDllImport, v => svgNestConfig.UseDllImport = v, value);
     }
 
     public string ToJson()

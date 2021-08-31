@@ -194,12 +194,16 @@
     <Compile Include="GeneticAlgorithm\SheetPlacementJsonHelper.cs" />
     <Compile Include="GeneticAlgorithm\SqueezeFitnessFixture.cs" />
     <Compile Include="GetInnerPolygonFixture.cs" />
+    <Compile Include="Minkowski\DllImportExecuteCleanOrNotPolygonFixture.cs" />
+    <Compile Include="Minkowski\MinkowskiSum2DebugFixture.cs" />
+    <Compile Include="Minkowski\MinkowskiSumDebugFixture.cs" />
     <Compile Include="Minkowski\MinkowskiCacheDebugFixture.cs" />
     <Compile Include="Minkowski\MinkowskiDictionaryFixture.cs" />
     <Compile Include="NestProject\SvgNestConfigSerializationFixture.cs" />
     <Compile Include="NfpCtorCloneFixture.cs" />
     <Compile Include="NfpExtensions.cs" />
     <Compile Include="NfpFixture.cs" />
+    <Compile Include="NfpIsClosedFixture.cs" />
     <Compile Include="NfpRotateFixture.cs" />
     <Compile Include="OuterFitPolygonFixture.cs" />
     <Compile Include="PerfectBoundingBoxFitnessFixture.cs" />
@@ -212,6 +216,20 @@
     <EmbeddedResource Include="Minkowski\MinkowskiCacheRet.dnpoly">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Minkowski\MinkowskiSum2A.dnpoly">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Minkowski\MinkowskiSum2B.dnpoly">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Minkowski\MinkowskiSum2Ret.dnpoly">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <None Include="Placement\PartPlacementScenarioNewMinkowski-MinkowskiOutNfp.dnpoly" />
+    <None Include="Placement\PartPlacementScenarioNewMinkowski-NewOutNfp.dnpoly" />
+    <EmbeddedResource Include="Placement\PartPlacementWorker10x10on11x11In.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Compile Include="Placement\Capture{T}.cs" />
     <Compile Include="Placement\DecimalArrayHashCodeFixture.cs" />
     <Compile Include="Placement\Fit12InDonutHoleFixture.cs" />
@@ -219,6 +237,8 @@
     <Compile Include="Placement\NfpJsonFixture.cs" />
     <Compile Include="NestProject\ProjectInfoSerializationFixture.cs" />
     <Compile Include="Placement\PartPlacementScenarioFixture.cs" />
+    <Compile Include="Placement\PartPlacementScenarioNewMinkowskiFixture.cs" />
+    <Compile Include="Placement\PartPlacementWorker10x10on11x11Fixture.cs" />
     <Compile Include="Placement\PartPlacementWorkerFixture.cs" />
     <Compile Include="Placement\SecondGenerationOverlaysIn.cs" />
     <Compile Include="Placement\SheetNfpFixture.cs" />
@@ -239,6 +259,18 @@
     <Compile Include="UnitTestingTraceListener.cs" />
     <Compile Include="UnitTraceLog.cs" />
     <Compile Include="UnitTraceLogEntry.cs" />
+    <EmbeddedResource Include="Placement\pathScaledUpListOrig.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Placement\patternScaledUpOrig.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Placement\pathScaledUpList.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Placement\patternScaledUp.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Dxfs\20x20outer10x10hole.dxf">
@@ -286,6 +318,15 @@
     <EmbeddedResource Include="Minkowski\MinkowskiCache.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Minkowski\MinkowskiSumA.dnpoly">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Minkowski\MinkowskiSumB.dnpoly">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Minkowski\MinkowskiSumRet.dnpoly">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <Content Include="SquareInSquare.dxf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -321,6 +362,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Placement\Fit12InDonutHoleOut.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Placement\PartPlacementScenarioNewMinkowski.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>

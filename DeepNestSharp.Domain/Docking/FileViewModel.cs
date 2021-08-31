@@ -48,6 +48,19 @@
       Title = FileName;
     }
 
+    public string DirectoryName
+    {
+      get
+      {
+        if (!string.IsNullOrWhiteSpace(FilePath))
+        {
+          return new FileInfo(FilePath).DirectoryName;
+        }
+
+        return string.Empty;
+      }
+    }
+
     /// <summary>
     /// Gets the filter to apply to Open/Save file dialogs.
     /// </summary>

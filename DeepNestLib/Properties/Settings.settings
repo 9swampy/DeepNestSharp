@@ -56,7 +56,7 @@
     <Setting Name="ParallelNests" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">10</Value>
     </Setting>
-    <Setting Name="UseMinkowskiCache" Type="System.String" Scope="User">
+    <Setting Name="UseMinkowskiCache" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ExportExecutionPath" Type="System.String" Scope="User">
@@ -67,6 +67,15 @@
     </Setting>
     <Setting Name="UsePriority" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="LastDebugFilePath" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LastNestFilePath" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="UseDllImport" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

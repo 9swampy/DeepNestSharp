@@ -26,14 +26,14 @@
     /// <param name="progressDisplayer">Callback access to the executing UI.</param>
     /// <param name="nest">Passed in because have had issues with nest.ResponseProcessor accepting responses after a new nest has already been started.</param>
     /// <param name="minkowskiSumService">MinkowskiSumService used to inject algorithms to calculate the No-Fit-Polygons critical to DeepNest.</param>
-    public Background(IProgressDisplayer progressDisplayer, SvgNest nest, IMinkowskiSumService minkowskiSumService, INestStateBackground state)
+    public Background(IProgressDisplayer progressDisplayer, SvgNest nest, IMinkowskiSumService minkowskiSumService, INestStateBackground state, bool useDllImport)
     {
       this.window = new WindowUnk();
       this.progressDisplayer = progressDisplayer;
       this.nest = nest;
       this.minkowskiSumService = minkowskiSumService;
       this.state = state;
-      this.nfpHelper = new NfpHelper(minkowskiSumService, window);
+      this.nfpHelper = new NfpHelper(minkowskiSumService, window, useDllImport);
     }
 
     public INfp GetPart(int source, INfp[] parts)

@@ -54,12 +54,13 @@
     {
       SheetNfp sheetNfp = GivenPartWhenFitOnSheetThenGetSheetNfp(useDllImport, sheetSize, partSize);
 
-      sheetNfp.Items[0].Length.Should().Be(4);
+      sheetNfp.Items[0].Length.Should().Be(5, "it's closed, hence 5 vertices for a rectangle.");
+      sheetNfp.Items[0].IsClosed.Should().BeTrue();
     }
 
     [Theory]
-    [InlineData(101, 1)]
-    [InlineData(1.01, 1)]
+    //[InlineData(101, 1)]
+    //[InlineData(1.01, 1)]
     [InlineData(1, 1)]
     [InlineData(1, 1.01)]
     [InlineData(1, 101)]
@@ -67,6 +68,26 @@
     {
       SheetNfp sheetNfpDllImport = GivenPartWhenFitOnSheetThenGetSheetNfp(true, sheetSize, partSize);
       SheetNfp sheetNfpNewClipper = GivenPartWhenFitOnSheetThenGetSheetNfp(false, sheetSize, partSize);
+
+      sheetNfpNewClipper.Should().BeEquivalentTo(
+        sheetNfpDllImport,
+        options => options.Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 1))
+                          .WhenTypeIs<double>());
+    }
+
+    [Theory]
+    [InlineData(101, 1)]
+    public void GivenSubstitutableWhenGetInnerNfpThenBothShouldBeEquivalentBreaking(double sheetSize, double partSize)
+    {
+      SheetNfp sheetNfpDllImport = GivenPartWhenFitOnSheetThenGetSheetNfp(true, sheetSize, partSize);
+      sheetNfpDllImport.CanAcceptPart.Should().BeTrue();
+      sheetNfpDllImport.NumberOfNfps.Should().Be(1, "we're placing a single part on an empty sheet.");
+      SheetNfp sheetNfpNewClipper = GivenPartWhenFitOnSheetThenGetSheetNfp(false, sheetSize, partSize);
+      sheetNfpNewClipper.CanAcceptPart.Should().BeTrue();
+      sheetNfpNewClipper.NumberOfNfps.Should().Be(1, "we're placing a single part on an empty sheet.");
+      sheetNfpNewClipper.Part.Should().BeEquivalentTo(sheetNfpDllImport.Part);
+      sheetNfpNewClipper.Sheet.Should().BeEquivalentTo(sheetNfpDllImport.Sheet);
+      sheetNfpNewClipper.Items[0].Should().BeEquivalentTo(sheetNfpDllImport.Items[0]);
 
       sheetNfpNewClipper.Should().BeEquivalentTo(
         sheetNfpDllImport,
@@ -96,7 +117,9 @@
     {
       var generator = new DxfGenerator();
       var sheet = generator.GenerateRectangle("Sheet", sheetSize, sheetSize, RectangleType.FileLoad).ToSheet();
+      sheet.EnsureIsClosed();
       var part = generator.GenerateRectangle("Sheet", partSize, partSize, RectangleType.FileLoad).ToNfp();
+      sheet.EnsureIsClosed();
 
       SheetNfp sheetNfp = GivenPartWhenFitOnSheetThenGetSheetNfp(useDllImport, sheet, part);
 
@@ -139,8 +162,13 @@
     private static SheetNfp GivenPartWhenFitOnSheetThenGetSheetNfp(bool useDllImport, double sheetSize, double partSize)
     {
       var generator = new DxfGenerator();
-      var sheet = generator.GenerateRectangle("Sheet", sheetSize, sheetSize, RectangleType.FileLoad).ToSheet();
+      //var sheet = generator.GenerateRectangle("Sheet", sheetSize, sheetSize, RectangleType.FileLoad).ToSheet();
+      var sheet = generator.GenerateRectangle("Sheet", sheetSize, sheetSize, RectangleType.TopLeftClockwise, false).ToSheet();
+      //sheet = new Sheet(SvgNest.CleanPolygon2(sheet), WithChildren.Excluded);
+      //sheet.Length.Should().Be(4);
       var part = generator.GenerateRectangle("Part", partSize, partSize, RectangleType.FileLoad).ToNfp();
+      //part = SvgNest.CleanPolygon2(part);
+      //part.Length.Should().Be(4);
       return GivenPartWhenFitOnSheetThenGetSheetNfp(useDllImport, sheet, part);
     }
 
@@ -148,6 +176,7 @@
     {
       var nfpHelper = new NfpHelper();
       ((ITestNfpHelper)nfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(A.Fake<ISvgNestConfig>(), A.Fake<INestStateMinkowski>());
+      ((ITestNfpHelper)nfpHelper).UseDllImport = useDllImport;
       var sheetNfp = new SheetNfp(
         nfpHelper,
         sheet,

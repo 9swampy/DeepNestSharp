@@ -1,7 +1,10 @@
 ﻿namespace DeepNestLib
 {
+  using DeepNestLib.Geometry;
   using System;
+  using System.Collections.Generic;
   using System.IO;
+  using System.Linq;
   using System.Text.Json;
   using System.Text.Json.Serialization;
 #if NCRUNCH
@@ -25,8 +28,24 @@
 
     // Inner NFP aka SheetNfp
     public SheetNfp(INfpHelper nfpHelper, ISheet sheet, INfp part, double clipperScale)
-      : this(nfpHelper.GetInnerNfp(sheet, part, MinkowskiCache.Cache, clipperScale) ?? new INfp[0], sheet, part)
+      : this(RemoveOuterNfps(nfpHelper.GetInnerNfp(sheet, part, MinkowskiCache.Cache, clipperScale) ?? new INfp[0], sheet), sheet, part)
     {
+    }
+
+    private static INfp[] RemoveOuterNfps(INfp[] nfps, ISheet sheet)
+    {
+      IEnumerable<INfp> result = new List<INfp>(nfps);
+      result = result.Where(o => o.WidthCalculated <= sheet.WidthCalculated &&
+                                 o.HeightCalculated <= sheet.HeightCalculated)
+                     .Select(o =>
+                     {
+                       var cleaned = SvgNest.CleanPolygon2(o);
+                       var points = cleaned.Points.ToList();
+                       points.Add(points[0]);
+                       o.ReplacePoints(points);
+                       return o;
+                     });
+      return result.ToArray();
     }
 
     internal bool CanAcceptPart
@@ -64,6 +83,37 @@
       {
         return FromJson(inputFile.ReadToEnd());
       }
+    }
+
+    internal object Shift(INfp processedPart)
+    {
+      throw new NotImplementedException();
+    }
+
+    public IPointXY GetCandidatePointClosestToOrigin()
+    {
+      SvgPoint result = null;
+      for (int nfpCandidateIndex = 0; nfpCandidateIndex < this.NumberOfNfps; nfpCandidateIndex++)
+      {
+        var nfpCandidate = this[nfpCandidateIndex];
+        for (int pointIndex = 0; pointIndex < nfpCandidate.Points.Length; pointIndex++)
+        {
+          var nfpPoint = nfpCandidate.Points[pointIndex];
+          if (result == null ||
+              nfpPoint.X < result.X ||
+              (GeometryUtil.AlmostEqual(nfpPoint.X, result.X) && nfpPoint.Y < result.Y))
+          {
+            result = nfpPoint;
+          }
+        }
+      }
+
+      if (result == null)
+      {
+        throw new Exception("result null; shouldn't be possible; shouldn't get to method if the SheetNfp couldn't accept part.");
+      }
+
+      return result;
     }
   }
 }

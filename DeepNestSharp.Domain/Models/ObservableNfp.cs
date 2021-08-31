@@ -52,6 +52,9 @@
     }
 
     /// <inheritdoc/>
+    public bool IsClosed => this.item.IsClosed;
+
+    /// <inheritdoc/>
     public bool IsExact => !this.item.Points.Any(o => !o.Exact);
 
     /// <inheritdoc/>
@@ -281,6 +284,11 @@
     bool IEquatable<IPolygon>.Equals(IPolygon other)
     {
       return ((IEquatable<IPolygon>)this.item).Equals(other);
+    }
+
+    public void EnsureIsClosed()
+    {
+      this.item.EnsureIsClosed();
     }
   }
 }

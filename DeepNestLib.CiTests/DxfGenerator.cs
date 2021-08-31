@@ -2,6 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
+  using System.Linq;
   using IxMilia.Dxf.Entities;
 
   public enum RectangleType
@@ -12,6 +13,18 @@
     TopRightAntiClockwise,
     TopLeftClockwise,
     BottomLeftClockwise,
+  }
+
+  public class NfpGenerator
+  {
+    public INfp GenerateRectangle(string name, double width, double height, RectangleType type, bool isClosed = false)
+    {
+      var generator = new DxfGenerator();
+      var points = generator.RectanglePoints(width, height, type, isClosed);
+      var result = new NFP(points.Select(o => new SvgPoint(o.X, o.Y)));
+      result.Name = name;
+      return result;
+    }
   }
 
   public class DxfGenerator
@@ -44,39 +57,44 @@
 
     public DxfPolyline Rectangle(double width, double height, RectangleType rectangleType = RectangleType.FileLoad, bool isClosed = false)
     {
-      DxfPolyline result;
+      return new DxfPolyline(RectanglePoints(width, height, rectangleType, isClosed).Select(o => new DxfVertex(o)));
+    }
+
+    public IEnumerable<IxMilia.Dxf.DxfPoint> RectanglePoints(double width, double height, RectangleType rectangleType = RectangleType.FileLoad, bool isClosed = false)
+    {
+      List<IxMilia.Dxf.DxfPoint> result;
       switch (rectangleType)
       {
         case RectangleType.FileLoad:
-          return Rectangle(width, height, RectangleType.Normal, true);
+          return RectanglePoints(width, height, RectangleType.Normal, true);
         case RectangleType.Normal:
         case RectangleType.TopLeftClockwise:
-          result = new DxfPolyline(new DxfVertex[]
+          result = new List<IxMilia.Dxf.DxfPoint>
           {
-            new DxfVertex(new IxMilia.Dxf.DxfPoint(0D, height, 0D)),
-            new DxfVertex(new IxMilia.Dxf.DxfPoint(width, height, 0D)),
-            new DxfVertex(new IxMilia.Dxf.DxfPoint(width, 0D, 0D)),
-            new DxfVertex(new IxMilia.Dxf.DxfPoint(0D, 0D, 0D)),
-          });
+            new IxMilia.Dxf.DxfPoint(0D, height, 0D),
+            new IxMilia.Dxf.DxfPoint(width, height, 0D),
+            new IxMilia.Dxf.DxfPoint(width, 0D, 0D),
+            new IxMilia.Dxf.DxfPoint(0D, 0D, 0D),
+          };
           break;
         case RectangleType.FitFour:
         case RectangleType.TopRightAntiClockwise:
-          result = new DxfPolyline(new DxfVertex[]
+          result = new List<IxMilia.Dxf.DxfPoint>
           {
-            new DxfVertex(new IxMilia.Dxf.DxfPoint(width, height, 0D)),
-            new DxfVertex(new IxMilia.Dxf.DxfPoint(0D, height, 0D)),
-            new DxfVertex(new IxMilia.Dxf.DxfPoint(0D, 0D, 0D)),
-            new DxfVertex(new IxMilia.Dxf.DxfPoint(width, 0D, 0D)),
-          });
+            new IxMilia.Dxf.DxfPoint(width, height, 0D),
+            new IxMilia.Dxf.DxfPoint(0D, height, 0D),
+            new IxMilia.Dxf.DxfPoint(0D, 0D, 0D),
+            new IxMilia.Dxf.DxfPoint(width, 0D, 0D),
+          };
           break;
         case RectangleType.BottomLeftClockwise:
-          result = new DxfPolyline(new DxfVertex[]
+          result = new List<IxMilia.Dxf.DxfPoint>
           {
-            new DxfVertex(new IxMilia.Dxf.DxfPoint(0D, 0D, 0D)),
-            new DxfVertex(new IxMilia.Dxf.DxfPoint(0D, height, 0D)),
-            new DxfVertex(new IxMilia.Dxf.DxfPoint(width, height, 0D)),
-            new DxfVertex(new IxMilia.Dxf.DxfPoint(width, 0D, 0D)),
-          });
+            new IxMilia.Dxf.DxfPoint(0D, 0D, 0D),
+            new IxMilia.Dxf.DxfPoint(0D, height, 0D),
+            new IxMilia.Dxf.DxfPoint(width, height, 0D),
+            new IxMilia.Dxf.DxfPoint(width, 0D, 0D),
+          };
           break;
         default:
           throw new NotImplementedException();
@@ -84,7 +102,7 @@
 
       if (isClosed)
       {
-        result.Vertices.Add(result.Vertices[0]);
+        result.Add(result[0]);
       }
 
       return result;

@@ -1007,7 +1007,7 @@
           }
           else
           {
-            Background background = new Background(this.progressDisplayer, this, minkowskiSumService, nestStateBackground);
+            Background background = new Background(this.progressDisplayer, this, minkowskiSumService, nestStateBackground, config.UseDllImport);
             background.BackgroundStart(data, config);
           }
         }

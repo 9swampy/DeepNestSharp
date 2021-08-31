@@ -6,7 +6,7 @@
 
     long AverageNestTime { get; }
 
-    int CallCounter { get; }
+    int DllCallCounter { get; }
 
     int Generations { get; }
 
@@ -61,7 +61,9 @@
 
   public interface INestStateMinkowski : INestState
   {
-    void IncrementCallCounter();
+    void IncrementDllCallCounter();
+
+    void IncrementClipperCallCounter();
   }
 
   public interface INestStateNestingContext : INestState

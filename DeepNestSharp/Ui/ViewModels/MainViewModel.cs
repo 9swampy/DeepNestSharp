@@ -188,6 +188,17 @@
           activeDocument = value;
           OnPropertyChanged(nameof(ActiveDocument));
           ActiveDocumentChanged?.Invoke(this, EventArgs.Empty);
+          if (value is NestProjectViewModel ||
+              value is NestResultViewModel ||
+              value is PartEditorViewModel)
+          {
+            this.SvgNestConfigViewModel.SvgNestConfig.LastNestFilePath = value.DirectoryName;
+          }
+          else if (value is NfpCandidateListViewModel ||
+                   value is SheetPlacementViewModel)
+          {
+            SvgNestConfigViewModel.SvgNestConfig.LastDebugFilePath = value.DirectoryName;
+          }
         }
       }
     }
@@ -200,7 +211,7 @@
 
     public async Task OnLoadNestProjectAsync()
     {
-      var filePath = await fileIoService.GetOpenFilePathAsync(ProjectInfo.FileDialogFilter).ConfigureAwait(false);
+      var filePath = await fileIoService.GetOpenFilePathAsync(ProjectInfo.FileDialogFilter, SvgNestConfigViewModel.SvgNestConfig.LastNestFilePath).ConfigureAwait(false);
       OnLoadNestProject(filePath);
     }
 
@@ -225,7 +236,7 @@
 
     public async Task OnLoadNestResultAsync()
     {
-      var filePath = await fileIoService.GetOpenFilePathAsync(NestResult.FileDialogFilter).ConfigureAwait(false);
+      var filePath = await fileIoService.GetOpenFilePathAsync(NestResult.FileDialogFilter, SvgNestConfigViewModel.SvgNestConfig.LastNestFilePath).ConfigureAwait(false);
       LoadNestResult(filePath);
     }
 
@@ -249,7 +260,7 @@
 
     public async Task OnLoadPartAsync()
     {
-      var filePath = await fileIoService.GetOpenFilePathAsync(NFP.FileDialogFilter).ConfigureAwait(false);
+      var filePath = await fileIoService.GetOpenFilePathAsync(NFP.FileDialogFilter, SvgNestConfigViewModel.SvgNestConfig.LastNestFilePath).ConfigureAwait(false);
       LoadPart(filePath);
     }
 
@@ -288,7 +299,7 @@
 
     public async Task OnLoadSheetPlacementAsync()
     {
-      var filePath = await fileIoService.GetOpenFilePathAsync(SheetPlacement.FileDialogFilter).ConfigureAwait(false);
+      var filePath = await fileIoService.GetOpenFilePathAsync(SheetPlacement.FileDialogFilter, SvgNestConfigViewModel.SvgNestConfig.LastDebugFilePath).ConfigureAwait(false);
       LoadSheetPlacement(filePath);
     }
 
@@ -358,7 +369,7 @@
       {
         if (fileToSave.FilePath == null || saveAsFlag)
         {
-          var filePath = fileIoService.GetSaveFilePath(fileToSave.FileDialogFilter);
+          var filePath = fileIoService.GetSaveFilePath(fileToSave.FileDialogFilter, SvgNestConfigViewModel.SvgNestConfig.LastNestFilePath);
           if (!string.IsNullOrWhiteSpace(filePath))
           {
             fileToSave.FilePath = filePath;
@@ -418,13 +429,13 @@
 
     private async Task OnLoadNfpCandidatesAsync()
     {
-      var filePath = await fileIoService.GetOpenFilePathAsync(NfpCandidateList.FileDialogFilter).ConfigureAwait(false);
+      var filePath = await fileIoService.GetOpenFilePathAsync(NfpCandidateList.FileDialogFilter, SvgNestConfigViewModel.SvgNestConfig.LastDebugFilePath).ConfigureAwait(false);
       LoadNfpCandidates(filePath);
     }
 
     private async Task OnLoadSheetNfpAsync()
     {
-      var filePath = await fileIoService.GetOpenFilePathAsync(SheetNfp.FileDialogFilter).ConfigureAwait(false);
+      var filePath = await fileIoService.GetOpenFilePathAsync(SheetNfp.FileDialogFilter, SvgNestConfigViewModel.SvgNestConfig.LastDebugFilePath).ConfigureAwait(false);
       LoadSheetNfp(filePath);
     }
 

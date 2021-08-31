@@ -128,6 +128,36 @@
       }
     }
 
+    public string LastDebugFilePath
+    {
+      get
+      {
+        return (string)Properties.Settings.Default["LastDebugFilePath"];
+      }
+
+      set
+      {
+        Properties.Settings.Default["LastDebugFilePath"] = value;
+        Properties.Settings.Default.Save();
+        Properties.Settings.Default.Upgrade();
+      }
+    }
+
+    public string LastNestFilePath
+    {
+      get
+      {
+        return (string)Properties.Settings.Default["LastNestFilePath"];
+      }
+
+      set
+      {
+        Properties.Settings.Default["LastNestFilePath"] = value;
+        Properties.Settings.Default.Save();
+        Properties.Settings.Default.Upgrade();
+      }
+    }
+
     /// <inheritdoc />
     public int SaveAsFileTypeIndex
     {
@@ -382,6 +412,22 @@
       set
       {
         Properties.Settings.Default["ShowPartPositions"] = value;
+        Properties.Settings.Default.Save();
+        Properties.Settings.Default.Upgrade();
+      }
+    }
+
+    /// <inheritdoc />
+    public bool UseDllImport
+    {
+      get
+      {
+        return (bool)Properties.Settings.Default["UseDllImport"];
+      }
+
+      set
+      {
+        Properties.Settings.Default["UseDllImport"] = value;
         Properties.Settings.Default.Save();
         Properties.Settings.Default.Upgrade();
       }

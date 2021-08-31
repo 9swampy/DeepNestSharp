@@ -7,6 +7,7 @@
   using System.Text;
   using System.Text.Json;
   using System.Text.Json.Serialization;
+  using DeepNestLib.Geometry;
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
 
@@ -222,6 +223,41 @@
         }
 
         return (double)Math.Abs(ret / 2);
+      }
+    }
+
+    [JsonIgnore]
+    /// <inheritdoc />
+    public bool IsClosed
+    {
+      get
+      {
+        var tolerance = 0.0000001;
+        if (this.Points.Length == 0)
+        {
+          return false;
+        }
+
+        if (Math.Abs(this.Points.First().X - this.Points.Last().X) < tolerance &&
+            Math.Abs(this.Points.First().Y - this.Points.Last().Y) < tolerance)
+        {
+          return true;
+        }
+
+        IPointXY lastPoint = null;
+        foreach (var point in this.Points)
+        {
+          if (lastPoint != null &&
+              Math.Abs(point.X - lastPoint.X) < tolerance &&
+              Math.Abs(point.Y - lastPoint.Y) < tolerance)
+          {
+            return true;
+          }
+
+          lastPoint = point;
+        }
+
+        return false;
       }
     }
 
@@ -575,10 +611,7 @@
       return shifted;
     }
 
-    /// <summary>
-    /// Shift the polygon to the origin.
-    /// </summary>
-    /// <returns>A partial clone of the polygon.</returns>
+    /// <inheritdoc />
     public INfp ShiftToOrigin()
     {
       return Shift(-this.MinX, -this.MinY);
@@ -608,6 +641,16 @@
       }
 
       return false;
+    }
+
+    public void EnsureIsClosed()
+    {
+      if (!this.IsClosed)
+      {
+        var closedPoints = points.ToList();
+        closedPoints.Add(closedPoints.First());
+        ReplacePoints(closedPoints);
+      } 
     }
   }
 }

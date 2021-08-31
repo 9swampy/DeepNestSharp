@@ -253,18 +253,6 @@ namespace DeepNestLib.Core {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool ExportExecutions {
-            get {
-                return ((bool)(this["ExportExecutions"]));
-            }
-            set {
-                this["ExportExecutions"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string ExportExecutionPath {
             get {
@@ -278,12 +266,60 @@ namespace DeepNestLib.Core {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ExportExecutions {
+            get {
+                return ((bool)(this["ExportExecutions"]));
+            }
+            set {
+                this["ExportExecutions"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool UsePriority {
             get {
                 return ((bool)(this["UsePriority"]));
             }
             set {
                 this["UsePriority"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastDebugFilePath {
+            get {
+                return ((string)(this["LastDebugFilePath"]));
+            }
+            set {
+                this["LastDebugFilePath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastNestFilePath {
+            get {
+                return ((string)(this["LastNestFilePath"]));
+            }
+            set {
+                this["LastNestFilePath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseDllImport {
+            get {
+                return ((bool)(this["UseDllImport"]));
+            }
+            set {
+                this["UseDllImport"] = value;
             }
         }
     }
