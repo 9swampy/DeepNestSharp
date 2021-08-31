@@ -141,7 +141,7 @@
     {
       var generator = new DxfGenerator();
       var minSheetSize = 159.340005;
-      var expectedSheetLength = 4;
+      var expectedSheetLength = 5;
       INfp part;
       ISheet sheet;
       ISheet frame;
@@ -168,7 +168,7 @@
           sheet = generator.GenerateRectangle("Sheet", minSheetSize, minSheetSize, RectangleType.FileLoad).ToSheet();
           sheet = generator.GenerateRectangle("Sheet", minSheetSize, minSheetSize, RectangleType.TopLeftClockwise, true).ToSheet();
           sheet = generator.GenerateRectangle("Sheet", minSheetSize, minSheetSize, RectangleType.TopLeftClockwise, false).ToSheet();
-          sheet.Length.Should().Be(expectedSheetLength + 1);
+          sheet.Length.Should().Be(expectedSheetLength);
           // All above work with 5 points and Cleaning breaks them all...
           var cleaned = new Sheet(SvgNest.CleanPolygon2(sheet), WithChildren.Excluded);
           sheet = cleaned;

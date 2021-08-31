@@ -27,7 +27,7 @@
 
       sut = PartPlacementWorker.FromJson(json);
 
-      var config = sut.Config;
+      var config = sut.Config as ISvgNestConfig;
       config.Rotations = 1;
       var dispatcherService = A.Fake<IDispatcherService>();
       A.CallTo(() => dispatcherService.InvokeRequired).Returns(false);

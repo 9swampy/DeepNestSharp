@@ -133,7 +133,7 @@
     public void NewClipperShouldReturnSameAsDllImportCleaned()
     {
       var cleanedDllResult = SvgNest.CleanPolygon2(dllResult[0]);
-
+      //Revisit after validate others; dllResult is closed, clipper isn't.
       newClipperResult[0].Should().BeEquivalentTo(
                   cleanedDllResult,
                   options => options.Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 0.001))

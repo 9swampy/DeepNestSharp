@@ -689,6 +689,11 @@
         cleaned.ReplacePoints(cleaned.Points.Take(cleaned.Points.Count() - 1));
       }
 
+      if (polygon.IsClosed)
+      {
+        cleaned.EnsureIsClosed();
+      }
+
       return cleaned;
     }
 

@@ -104,12 +104,14 @@
     [Fact]
     public void GivenSameNestWhenSingleNfpReturnedThenBothShouldHaveNoChildren()
     {
+      //Revisit after validate others
       newClipperResult[0].Children.Count().Should().Be(dllResult[0].Children.Count());
     }
 
     [Fact]
     public void NewClipperShouldReturnSameAsDllImport()
     {
+      //Revisit after validate others
       newClipperResult.Should().BeEquivalentTo(
                   dllResult,
                   options => options.Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 0.001))

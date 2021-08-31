@@ -2,6 +2,8 @@
 {
   public interface INfpCandidateList
   {
+    INfp[] Items { get; }
+
     INfp Part { get; }
 
     ISheet Sheet { get; }

@@ -24,7 +24,7 @@
     private long lastNestTime;
     private long totalPlacementTime;
 
-    public NestState(ISvgNestConfig config, IDispatcherService dispatcherService)
+    public NestState(ITopNestResultsConfig config, IDispatcherService dispatcherService)
     {
       this.TopNestResults = new TopNestResultsCollection(config, dispatcherService);
       this.TopNestResults.CollectionChanged += this.TopNestResults_CollectionChanged;

@@ -11,15 +11,15 @@
   public class TopNestResultsCollection : IEnumerable<INestResult>, INotifyCollectionChanged
   {
     private static volatile object lockItemsObject = new object();
+    private readonly ITopNestResultsConfig config;
 
-    private readonly ISvgNestConfig config;
     private readonly IDispatcherService dispatcherService;
 
     private ObservableCollection<INestResult> items = new ObservableCollection<INestResult>();
 
     public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-    public TopNestResultsCollection(ISvgNestConfig config, IDispatcherService dispatcherService)
+    public TopNestResultsCollection(ITopNestResultsConfig config, IDispatcherService dispatcherService)
     {
       this.config = config;
       this.dispatcherService = dispatcherService;

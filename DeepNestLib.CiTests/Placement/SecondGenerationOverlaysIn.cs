@@ -69,7 +69,13 @@
     [Fact]
     public void SheetNfpShouldBeEquivalent()
     {
+      sut.SheetNfp.Items[0].EnsureIsClosed();
+      SvgNest.CleanPolygon2(sut.SheetNfp.Items[0]).Should().BeEquivalentTo(sutOutExpected.SheetNfp.Items[0], options => options
+                                    .Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 0.001))
+                                    .WhenTypeIs<double>());
+
       sut.SheetNfp.Should().BeEquivalentTo(sutOutExpected.SheetNfp, options => options
+                                    //.Excluding(o => o.Name == "Items") //See above; validate other tests first, revisit this one.
                                     .Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 0.001))
                                     .WhenTypeIs<double>());
     }

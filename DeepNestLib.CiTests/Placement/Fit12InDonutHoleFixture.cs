@@ -23,8 +23,7 @@
     public void GivenPartCanBePlacedWhenProcessPartThenSheetNfpCapturesCanBePlaced(bool useDllImport)
     {
       PartPlacementWorker sut;
-      IPlacementWorker placementWorker;
-      SetupFit12InDonutHolePartPlacementWorker(useDllImport, out sut, out placementWorker);
+      SetupFit12InDonutHolePartPlacementWorker(useDllImport, out sut, out _);
 
       sut.ProcessPart(sut.InputPart, 1);
 
@@ -37,8 +36,7 @@
     public void GivenSheetNfpComparesToEmptySheetWhenProcessPartThenOnlyOneNfp(bool useDllImport)
     {
       PartPlacementWorker sut;
-      IPlacementWorker placementWorker;
-      SetupFit12InDonutHolePartPlacementWorker(useDllImport, out sut, out placementWorker);
+      SetupFit12InDonutHolePartPlacementWorker(useDllImport, out sut, out _);
 
       sut.ProcessPart(sut.InputPart, 1);
 
@@ -48,15 +46,69 @@
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
+    public void GivenSheetNfpComparesToEmptySheetWhenProcessPartThenOnlyOneNfpCLosedWithExpectedPointsAndNoChildren(bool useDllImport)
+    {
+      PartPlacementWorker sut;
+      SetupFit12InDonutHolePartPlacementWorker(useDllImport, out sut, out _);
+
+      sut.ProcessPart(sut.InputPart, 1);
+
+      sut.SheetNfp[0].Length.Should().Be(6, "it's closed");
+      sut.SheetNfp[0].IsClosed.Should().BeTrue();
+      sut.SheetNfp[0][0].X.Should().BeApproximately(121.36, 0.01);
+      sut.SheetNfp[0][0].Y.Should().BeApproximately(88.27, 0.01);
+      sut.SheetNfp[0][1].X.Should().BeApproximately(1.08, 0.01);
+      sut.SheetNfp[0][1].Y.Should().BeApproximately(88.27, 0.01);
+      sut.SheetNfp[0][2].X.Should().BeApproximately(1.08, 0.01);
+      sut.SheetNfp[0][2].Y.Should().BeApproximately(17.27, 0.01);
+      sut.SheetNfp[0][3].X.Should().BeApproximately(121.36, 0.01);
+      sut.SheetNfp[0][3].Y.Should().BeApproximately(17.27, 0.01);
+      sut.SheetNfp[0][4].X.Should().BeApproximately(121.36, 0.01);
+      sut.SheetNfp[0][4].Y.Should().BeApproximately(88.27, 0.01);
+      sut.SheetNfp[0][5].X.Should().BeApproximately(121.36, 0.01);
+      sut.SheetNfp[0][5].Y.Should().BeApproximately(88.27, 0.01);
+      sut.SheetNfp[0].Children.Count.Should().Be(0);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
     public void GivenFinalNfpComparesToSheetWithDonutWhenProcessPartThenTwoNfp(bool useDllImport)
     {
       PartPlacementWorker sut;
-      IPlacementWorker placementWorker;
-      SetupFit12InDonutHolePartPlacementWorker(useDllImport, out sut, out placementWorker);
+      SetupFit12InDonutHolePartPlacementWorker(useDllImport, out sut, out _);
 
       sut.ProcessPart(sut.InputPart, 1);
 
       sut.FinalNfp.NumberOfNfps.Should().Be(2);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void GivenFinalNfpComparesToSheetWithDonutWhenProcessPartThenFirstFinalNfpExpected(bool useDllImport)
+    {
+      PartPlacementWorker sut;
+      SetupFit12InDonutHolePartPlacementWorker(useDllImport, out sut, out _);
+
+      sut.ProcessPart(sut.InputPart, 1);
+
+      sut.FinalNfp.Items[0].IsClosed.Should().BeFalse();
+      sut.FinalNfp.Items[0].Length.Should().Be(19);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void GivenFinalNfpComparesToSheetWithDonutWhenProcessPartThenSecondFinalNfpExpected(bool useDllImport)
+    {
+      PartPlacementWorker sut;
+      SetupFit12InDonutHolePartPlacementWorker(useDllImport, out sut, out _);
+
+      sut.ProcessPart(sut.InputPart, 1);
+
+      sut.FinalNfp.Items[1].IsClosed.Should().BeFalse();
+      sut.FinalNfp.Items[1].Length.Should().Be(16);
     }
 
     [Theory]
@@ -131,7 +183,7 @@
       }
 
       sut = PartPlacementWorker.FromJson(json);
-      var config = sut.Config;
+      var config = sut.Config as ISvgNestConfig;
       config.Rotations = 1;
       var dispatcherService = A.Fake<IDispatcherService>();
       A.CallTo(() => dispatcherService.InvokeRequired).Returns(false);
@@ -237,85 +289,19 @@
     }
 
     [Fact]
-    public void GivenSharpPartAndSheetShouldWorkExecuteMinkowskiThenGet2Solutions()
-    {
-      string json;
-      using (Stream stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Placement.pathScaledUpList.json"))
-      using (StreamReader reader = new StreamReader(stream))
-      {
-        json = reader.ReadToEnd().Replace(" ", string.Empty).Replace("\r\n", string.Empty);
-      }
-
-      var options = new System.Text.Json.JsonSerializerOptions();
-      options.IncludeFields = true;
-      var pathScaledUpList = System.Text.Json.JsonSerializer.Deserialize<List<List<IntPoint>>>(json, options);
-      pathScaledUpList.Count.Should().Be(2);
-      pathScaledUpList[0].Count.Should().Be(4);
-      var n = pathScaledUpList[0].ToArray().ToNestCoordinates(scaler);
-      var sarea = Math.Abs(GeometryUtil.PolygonArea(n));
-      sarea.Should().Be(31360);
-      n.Area.Should().Be(31360);
-      n.X.Should().Be(0);
-      n.Y.Should().Be(0);
-      n.WidthCalculated.Should().Be(160);
-      n.HeightCalculated.Should().Be(196);
-      n = pathScaledUpList[1].ToArray().ToNestCoordinates(scaler);
-      sarea = Math.Abs(GeometryUtil.PolygonArea(n));
-      sarea.Should().BeApproximately(37945.60, 0.01);
-      n.Area.Should().BeApproximately(37945.60, 0.01);
-      n.X.Should().Be(0);
-      n.Y.Should().Be(0);
-      n.WidthCalculated.Should().BeApproximately(176, 0.01);
-      n.HeightCalculated.Should().BeApproximately(215.6, 0.01);
-
-      using (Stream stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Placement.patternScaledUp.json"))
-      using (StreamReader reader = new StreamReader(stream))
-      {
-        json = reader.ReadToEnd().Replace(" ", string.Empty).Replace("\r\n", string.Empty);
-      }
-
-      var patternScaledUp = System.Text.Json.JsonSerializer.Deserialize<List<IntPoint>>(json, options);
-      patternScaledUp.Count.Should().Be(46);
-      patternScaledUp[10].X.Should().Be(-220905000L);
-      patternScaledUp[10].Y.Should().Be(-765603000L);
-      n = patternScaledUp.ToArray().ToNestCoordinates(scaler);
-      sarea = Math.Abs(GeometryUtil.PolygonArea(n));
-      sarea.Should().BeApproximately(14750.11638, 0.01);
-      n.WidthCalculated.Should().BeApproximately(159.338, 0.01);
-      n.HeightCalculated.Should().BeApproximately(156.229, 0.01);
-
-      var solution = ClipperLib.Clipper.MinkowskiSum(new List<IntPoint>(patternScaledUp), new List<List<IntPoint>>(pathScaledUpList.Select(pointsArray => pointsArray.ToList())), true);
-
-      solution.Count.Should().Be(2);
-    }
-
-    [InlineData(true, true)]
-    [InlineData(false, true)]
-    [InlineData(true, false)]
-    [InlineData(false, false)]
-    [Theory]
-    public void GivenSerialisedScenariosWhenClipperMinkowskiSumExpect2SolutionsForEach(bool useOriginal, bool pathIsClosed)
+    public void GivenSerialisedScenariosWhenClipperMinkowskiSumExpect2Solutions()
     {
       string pathScaledUpResourcePath;
       string patternScaledUpResourcePath;
-      if (useOriginal)
-      {
-        pathScaledUpResourcePath = "Placement.pathScaledUpListOrig.json";
-        patternScaledUpResourcePath = "Placement.patternScaledUpOrig.json";
-      }
-      else
-      {
-        pathScaledUpResourcePath = "Placement.pathScaledUpList.json";
-        patternScaledUpResourcePath = "Placement.patternScaledUp.json";
-      }
+      pathScaledUpResourcePath = "Placement.pathScaledUpListOrig.json";
+      patternScaledUpResourcePath = "Placement.patternScaledUpOrig.json";
 
       var options = new System.Text.Json.JsonSerializerOptions();
       options.IncludeFields = true;
       var pathScaledUpList = System.Text.Json.JsonSerializer.Deserialize<List<List<IntPoint>>>(LoadJson(pathScaledUpResourcePath), options);
-      // pathScaledUpList = new List<List<IntPoint>>() { pathScaledUpList.Skip(1).First() };
       var patternScaledUp = System.Text.Json.JsonSerializer.Deserialize<List<IntPoint>>(LoadJson(patternScaledUpResourcePath), options);
 
-      var solution = ClipperLib.Clipper.MinkowskiSum(new List<IntPoint>(patternScaledUp), new List<List<IntPoint>>(pathScaledUpList.Select(pointsArray => pointsArray.ToList())), pathIsClosed);
+      var solution = ClipperLib.Clipper.MinkowskiSum(new List<IntPoint>(patternScaledUp), new List<List<IntPoint>>(pathScaledUpList.Select(pointsArray => pointsArray.ToList())), true);
 
       solution.Count.Should().Be(2);
       //solution[0].Count.Should().Be(18);

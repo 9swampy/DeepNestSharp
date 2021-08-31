@@ -8,7 +8,9 @@
   {
     public override bool CanConvert(Type typeToConvert)
     {
-      return typeToConvert.IsAssignableFrom(typeof(ISvgNestConfig));
+      return typeToConvert.IsAssignableFrom(typeof(ISvgNestConfig)) ||
+             typeToConvert.IsAssignableFrom(typeof(IPlacementConfig)) ||
+             typeToConvert.IsAssignableFrom(typeof(ITopNestResultsConfig));
     }
 
     public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)

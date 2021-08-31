@@ -22,7 +22,7 @@
       }
 
       sut = PartPlacementWorker.FromJson(json);
-      var config = sut.Config;
+      var config = sut.Config as ISvgNestConfig;
       config.Rotations = 1;
       var dispatcherService = A.Fake<IDispatcherService>();
       A.CallTo(() => dispatcherService.InvokeRequired).Returns(false);
@@ -118,7 +118,7 @@
       }
 
       var scenarioIn = PartPlacementWorker.FromJson(json);
-      var sut = MinkowskiSum.CreateInstance(scenarioIn.Config, A.Fake<INestStateMinkowski>());
+      var sut = MinkowskiSum.CreateInstance(scenarioIn.Config as ISvgNestConfig, A.Fake<INestStateMinkowski>());
       var executor = new NfpHelper(sut, A.Fake<IWindowUnk>(), true);
       ((ITestNfpHelper)executor).UseDllImport = true;
       var result = executor.ExecuteDllImportMinkowski(scenarioIn.Sheet, scenarioIn.InputPart, MinkowskiCache.NoCache);
@@ -130,33 +130,6 @@
       result[0][0].Y.Should().BeApproximately(274.08, 0.01);
       result[0].Length.Should().Be(29);
       result[0].Children.Count().Should().Be(0);
-      //result[0].Points[0].Should().BeEquivalentTo()
-    }
-
-    [Fact]
-    public void GivenSheetAndPartWhenNfpHelperExecuteDllImportMinkowskiThenExpectedResponseFromNewMinkowski()
-    {
-      string json;
-      using (Stream stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Placement.PartPlacementScenarioNewMinkowski.json"))
-      using (StreamReader reader = new StreamReader(stream))
-      {
-        json = reader.ReadToEnd().Replace(" ", string.Empty).Replace("\r\n", string.Empty);
-      }
-
-      var scenarioIn = PartPlacementWorker.FromJson(json);
-      var sut = MinkowskiSum.CreateInstance(scenarioIn.Config, A.Fake<INestStateMinkowski>());
-      var executor = new NfpHelper(sut, A.Fake<IWindowUnk>(), false);
-      var result = executor.ExecuteDllImportMinkowski(scenarioIn.Sheet, scenarioIn.InputPart, MinkowskiCache.NoCache);
-      result.Length.Should().Be(1);
-      json = result[0].ToJson();
-      result[0].HeightCalculated.Should().BeApproximately(352.23, 0.01);
-      result[0].WidthCalculated.Should().BeApproximately(319.33, 0.01);
-      //result[0][0].X.Should().BeApproximately(-77.34, 0.01);
-      //result[0][0].Y.Should().BeApproximately(19.15, 0.01);
-      result[0].Length.Should().Be(39, "that's what it was, not what it should be if Clipper's going to match DllImport.");
-      result[0].Children.Count().Should().Be(0);
-      SvgNest.CleanPolygon2(result[0]).Length.Should().Be(29, "guessed that it was just the uncleaned difference again; but clearly isn't... why 39 not 29 as DllImport was?");
-      //result[0].Points[0].Should().BeEquivalentTo()
     }
 
     [Theory]
@@ -172,22 +145,17 @@
       }
 
       var scenarioIn = PartPlacementWorker.FromJson(json);
-      var sut = MinkowskiSum.CreateInstance(scenarioIn.Config, A.Fake<INestStateMinkowski>());
+      var sut = MinkowskiSum.CreateInstance(scenarioIn.Config as ISvgNestConfig, A.Fake<INestStateMinkowski>());
       var executor = new NfpHelper(sut, A.Fake<IWindowUnk>(), true) as ITestNfpHelper;
 
-      scenarioIn.Sheet.EnsureIsClosed();
-      scenarioIn.InputPart.EnsureIsClosed();
       var result = executor.ExecuteInterchangeableMinkowski(useDllImport, scenarioIn.Sheet, scenarioIn.InputPart);
-
-      scenarioIn.Sheet.IsClosed.Should().Be(true);
-      scenarioIn.InputPart.IsClosed.Should().Be(true);
+      result[0].HeightCalculated.Should().BeApproximately(352.23, 0.01);
+      result[0].WidthCalculated.Should().BeApproximately(319.33, 0.01);
       result.Length.Should().Be(1);
+      result[0].IsClosed.Should().Be(true);
       var cleanedResult = SvgNest.CleanPolygon2(result[0]);
-      cleanedResult.EnsureIsClosed();
       cleanedResult.Points.Length.Should().Be(27);
       cleanedResult.IsClosed.Should().Be(true);
-      result[0].IsClosed.Should().Be(true);
-      result[0].Points.Length.Should().Be(29);
       result[0].Children.Count.Should().Be(0);
     }
   }

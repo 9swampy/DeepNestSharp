@@ -17,7 +17,8 @@
 
       clip.Should().NotBeNull();
       clip.Area.Should().Be(triangle.Area);
-      clip.Should().BeEquivalentTo(triangle);
+      clip.EnsureIsClosed();
+      clip.Should().BeEquivalentTo(triangle, "it's been forced by EnsureIsClosed.");
     }
 
     private static INfp GetNfp(List<DxfEntity> dxfEntities)

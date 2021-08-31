@@ -27,6 +27,7 @@
       new SvgPoint(0, 11),
       new SvgPoint(0, 0),
       new SvgPoint(11, 0),
+      new SvgPoint(11, 11),
     };
 
     private static readonly DxfGenerator DxfGenerator = new DxfGenerator();

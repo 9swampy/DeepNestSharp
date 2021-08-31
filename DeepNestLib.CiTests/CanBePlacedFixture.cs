@@ -54,7 +54,7 @@
     {
       SheetNfp sheetNfp = GivenPartWhenFitOnSheetThenGetSheetNfp(useDllImport, sheetSize, partSize);
 
-      sheetNfp.Items[0].Length.Should().Be(5, "it's closed, hence 5 vertices for a rectangle.");
+      SvgNest.CleanPolygon2(sheetNfp.Items[0]).Length.Should().Be(5, "it's closed, hence 5 vertices for a rectangle");
       sheetNfp.Items[0].IsClosed.Should().BeTrue();
     }
 
@@ -77,7 +77,7 @@
 
     [Theory]
     [InlineData(101, 1)]
-    public void GivenSubstitutableWhenGetInnerNfpThenBothShouldBeEquivalentBreaking(double sheetSize, double partSize)
+    public void GivenSubstitutableWhenGetInnerNfpThenBothShouldBeEquivalentButDllImportNeedsCleaned(double sheetSize, double partSize)
     {
       SheetNfp sheetNfpDllImport = GivenPartWhenFitOnSheetThenGetSheetNfp(true, sheetSize, partSize);
       sheetNfpDllImport.CanAcceptPart.Should().BeTrue();
@@ -87,10 +87,10 @@
       sheetNfpNewClipper.NumberOfNfps.Should().Be(1, "we're placing a single part on an empty sheet.");
       sheetNfpNewClipper.Part.Should().BeEquivalentTo(sheetNfpDllImport.Part);
       sheetNfpNewClipper.Sheet.Should().BeEquivalentTo(sheetNfpDllImport.Sheet);
-      sheetNfpNewClipper.Items[0].Should().BeEquivalentTo(sheetNfpDllImport.Items[0]);
+      sheetNfpNewClipper.Items[0].Should().BeEquivalentTo(SvgNest.CleanPolygon2(sheetNfpDllImport.Items[0]));
 
-      sheetNfpNewClipper.Should().BeEquivalentTo(
-        sheetNfpDllImport,
+      sheetNfpNewClipper[0].Should().BeEquivalentTo(
+        SvgNest.CleanPolygon2(sheetNfpDllImport[0]),
         options => options.Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 1))
                           .WhenTypeIs<double>());
     }

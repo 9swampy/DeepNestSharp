@@ -31,12 +31,12 @@
       this.clipCache = clipCache;
     }
 
-    public PartPlacementWorker(IPlacementWorker placementWorker, ISvgNestConfig config, INfp[] parts, List<IPartPlacement> placements, ISheet sheet, NfpHelper nfpHelper, INestState state)
+    public PartPlacementWorker(IPlacementWorker placementWorker, IPlacementConfig config, INfp[] parts, List<IPartPlacement> placements, ISheet sheet, NfpHelper nfpHelper, INestState state)
       : this(placementWorker, config, parts, placements, sheet, nfpHelper, new Dictionary<string, ClipCacheItem>(), state)
     {
     }
 
-    public PartPlacementWorker(IPlacementWorker placementWorker, ISvgNestConfig config, INfp[] parts, List<IPartPlacement> placements, ISheet sheet, NfpHelper nfpHelper, Dictionary<string, ClipCacheItem> clipCache, INestState state)
+    public PartPlacementWorker(IPlacementWorker placementWorker, IPlacementConfig config, INfp[] parts, List<IPartPlacement> placements, ISheet sheet, NfpHelper nfpHelper, Dictionary<string, ClipCacheItem> clipCache, INestState state)
     {
       this.clipCache = clipCache;
       this.state = state;
@@ -64,7 +64,7 @@
     public double MergedLength { get; private set; }
 
     [JsonInclude]
-    public ISvgNestConfig Config { get; private set; }
+    public IPlacementConfig Config { get; private set; }
 
     [JsonInclude]
     public IList<INfp> Parts { get; private set; }
@@ -237,7 +237,7 @@
           // console.log('save cache', placed.length - 1);
 
           List<INfp> finalNfp;
-          InnerFlowResult clipperForDifferenceResult = this.TryGetDifferenceWithSheetPolygon(this.Config, CombinedNfp, processedPart, clipperSheetNfp, out finalNfp);
+          InnerFlowResult clipperForDifferenceResult = this.TryGetDifferenceWithSheetPolygon(this.Config.ClipperScale, CombinedNfp, processedPart, clipperSheetNfp, out finalNfp);
           if (clipperForDifferenceResult == InnerFlowResult.Break)
           {
             return InnerFlowResult.Break;
@@ -590,7 +590,7 @@
       this.placementWorker.VerboseLog(message);
     }
 
-    private InnerFlowResult TryGetDifferenceWithSheetPolygon(ISvgNestConfig config, List<List<IntPoint>> combinedNfp, INfp part, IntPoint[][] clipperSheetNfp, out List<INfp> differenceWithSheetPolygonNfp)
+    private InnerFlowResult TryGetDifferenceWithSheetPolygon(double clipperScale, List<List<IntPoint>> combinedNfp, INfp part, IntPoint[][] clipperSheetNfp, out List<INfp> differenceWithSheetPolygonNfp)
     {
       differenceWithSheetPolygonNfp = new List<INfp>();
 
@@ -629,7 +629,7 @@
       for (int j = 0; j < differenceWithSheetPolygonNfpPoints.Count; j++)
       {
         // back to normal scale
-        differenceWithSheetPolygonNfp.Add(differenceWithSheetPolygonNfpPoints[j].ToArray().ToNestCoordinates(config.ClipperScale));
+        differenceWithSheetPolygonNfp.Add(differenceWithSheetPolygonNfpPoints[j].ToArray().ToNestCoordinates(clipperScale));
       }
 
       return InnerFlowResult.Success;

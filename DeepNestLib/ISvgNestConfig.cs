@@ -2,9 +2,34 @@
 {
   using DeepNestLib.NestProject;
 
-  public interface ISvgNestConfig
+  public interface ITopNestResultsConfig
+  {
+    int PopulationSize { get; set; }
+  }
+
+  public interface IPlacementConfig
   {
     double ClipperScale { get; set; }
+
+    double CurveTolerance { get; set; }
+
+    bool ExportExecutions { get; set; }
+
+    string ExportExecutionPath { get; set; }
+
+    bool MergeLines { get; set; }
+
+    PlacementTypeEnum PlacementType { get; set; }
+
+    int Rotations { get; set; }
+
+    double Scale { get; set; }
+
+    double TimeRatio { get; set; }
+  }
+
+  public interface ISvgNestConfig : ITopNestResultsConfig, IPlacementConfig
+  {
 
     /// <summary>
     /// Gets or sets whether to clip the simplified polygon used in nesting by the hull.
@@ -15,15 +40,9 @@
     /// </summary>
     bool ClipByHull { get; set; }
 
-    double CurveTolerance { get; set; }
-
     bool DrawSimplification { get; set; }
 
     bool ExploreConcave { get; set; }
-
-    bool ExportExecutions { get; set; }
-
-    string ExportExecutionPath { get; set; }
 
     /// <summary>
     /// Gets or sets the last path used for Nest files (dnest, dnr, dxf).
@@ -35,23 +54,13 @@
     /// </summary>
     string LastDebugFilePath { get; set; }
 
-    bool MergeLines { get; set; }
-
     bool UseMinkowskiCache { get; set; }
 
     int MutationRate { get; set; }
 
     bool OffsetTreePhase { get; set; }
 
-    PlacementTypeEnum PlacementType { get; set; }
-
-    int PopulationSize { get; set; }
-
-    int Rotations { get; set; }
-
     int SaveAsFileTypeIndex { get; set; }
-
-    double Scale { get; set; }
 
     int SheetHeight { get; set; }
 
@@ -64,8 +73,6 @@
     bool Simplify { get; set; }
 
     double Spacing { get; set; }
-
-    double TimeRatio { get; set; }
 
     /// <summary>
     /// Gets or sets max bound for bezier->line segment conversion, in native SVG units.

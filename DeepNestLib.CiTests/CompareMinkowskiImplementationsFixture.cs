@@ -76,7 +76,7 @@
     [Fact]
     public void BackgroundResultShouldHave4Points()
     {
-      SvgNest.CleanPolygon2(dllImportResult).Points.Length.Should().Be(4);
+      SvgNest.CleanPolygon2(dllImportResult).Points.Length.Should().Be(5, "it's closed");
     }
 
     [Fact]
@@ -103,6 +103,8 @@
     [Fact]
     public void CleanedResultsShouldBeEquivalent()
     {
+      // Isn't equivalent now because need to revisit the clipperResult and see if it'd be ok to close the result
+      // so it matches DllImport but let's fix the other tests first.
       SvgNest.CleanPolygon2(dllImportResult).Should().BeEquivalentTo(clipperResult, options => options
                                     .Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 1))
                                     .WhenTypeIs<double>());
