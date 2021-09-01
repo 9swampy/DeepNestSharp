@@ -78,6 +78,12 @@
       "Marked": false,
       "X": -8,
       "Y": 205.8
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": -8,
+      "Y": -9.8
     }
   ],
   "IsPriority": false,

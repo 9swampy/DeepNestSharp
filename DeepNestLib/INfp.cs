@@ -10,6 +10,11 @@
     /// </summary>
     double Area { get; }
 
+    /// <summary>
+    /// Cleans the points of the parent and all children, maintaining IsClosed state.
+    /// </summary>
+    void Clean();
+
     bool Fitted { get; }
 
     /// <summary>

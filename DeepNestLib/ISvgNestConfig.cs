@@ -26,6 +26,11 @@
     double Scale { get; set; }
 
     double TimeRatio { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the C++ imported Minkowski implementation should be used.
+    /// </summary>
+    bool UseDllImport { get; set; }
   }
 
   public interface ISvgNestConfig : ITopNestResultsConfig, IPlacementConfig
@@ -105,11 +110,6 @@
     int ParallelNests { get; set; }
 
     bool ShowPartPositions { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the C++ imported Minkowski implementation should be used.
-    /// </summary>
-    bool UseDllImport { get; set; }
 
     string ToJson();
   }

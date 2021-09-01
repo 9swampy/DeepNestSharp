@@ -48,8 +48,11 @@
       ret = NFP.FromJson(json);
 
       var minkowski = MinkowskiSum.CreateInstance(false, A.Fake<INestStateMinkowski>());
-      dllResult = minkowski.DllImportExecute(sheet, part, MinkowskiSumCleaning.None);
-      newClipperResult = minkowski.NewMinkowskiSum(part, sheet, WithChildren.Included, true);
+
+      dllResult = ((ITestNfpHelper)new NfpHelper(minkowski, A.Fake<IWindowUnk>())).ExecuteInterchangeableMinkowski(true, sheet, part);
+      //dllResult = minkowski.DllImportExecute(sheet, part, MinkowskiSumCleaning.None);
+      //newClipperResult = minkowski.NewMinkowskiSum(part, sheet, WithChildren.Included, true);
+      newClipperResult = ((ITestNfpHelper)new NfpHelper(minkowski, A.Fake<IWindowUnk>())).ExecuteInterchangeableMinkowski(false, sheet, part);
     }
 
     [Fact]
@@ -122,7 +125,7 @@
     [Fact]
     public void NewClipperShouldReturnSameAsDllImport()
     {
-      newClipperResult.Should().NotBeEquivalentTo(
+      newClipperResult.Should().BeEquivalentTo(
                   dllResult,
                   options => options.Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 0.001))
                                     .WhenTypeIs<double>(),

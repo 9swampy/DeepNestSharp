@@ -34,7 +34,7 @@
       INfp part;
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryConvertToNfp(0, out part).Should().BeTrue();
 
-      A.Dummy<NfpHelper>().ExecuteDllImportMinkowski(sheet, part, MinkowskiCache.Cache).Should().NotBeNull();
+      A.Dummy<NfpHelper>().ExecuteDllImportMinkowski(sheet, part, MinkowskiCache.Cache, A.Dummy<bool>()).Should().NotBeNull();
     }
 
     [Fact]

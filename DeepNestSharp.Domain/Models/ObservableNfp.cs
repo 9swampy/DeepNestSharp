@@ -183,6 +183,12 @@
     }
 
     /// <inheritdoc/>
+    public void Clean()
+    {
+      this.item.Clean();
+    }
+
+    /// <inheritdoc/>
     public NFP Clone()
     {
       return this.item.Clone();

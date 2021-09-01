@@ -27,8 +27,8 @@
     }
 
     // Inner NFP aka SheetNfp
-    public SheetNfp(INfpHelper nfpHelper, ISheet sheet, INfp part, double clipperScale)
-      : this(RemoveOuterNfps(nfpHelper.GetInnerNfp(sheet, part, MinkowskiCache.Cache, clipperScale) ?? new INfp[0], sheet), sheet, part)
+    public SheetNfp(INfpHelper nfpHelper, ISheet sheet, INfp part, double clipperScale, bool useDllImport)
+      : this(RemoveOuterNfps(nfpHelper.GetInnerNfp(sheet, part, MinkowskiCache.Cache, clipperScale, useDllImport) ?? new INfp[0], sheet), sheet, part)
     {
     }
 

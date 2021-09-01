@@ -54,7 +54,7 @@
 #if NCRUNCH
     public bool ExportExecutions { get; private set; } = false;
 #else
-    public bool ExportExecutions { get => Config.ExportExecutions; private set => Config.ExportExecutions = value; }
+    public bool ExportExecutions { get => Config.ExportExecutions && this.state.NestCount <= 5; private set => Config.ExportExecutions = value; }
 #endif
 
     [JsonInclude]
@@ -138,7 +138,7 @@
           for (int j = 0; j < this.Config.Rotations; j++)
           {
             this.VerboseLog("Calculate first on SheetNfp");
-            SheetNfp = new SheetNfp(NfpHelper, Sheet, processedPart, this.Config.ClipperScale);
+            SheetNfp = new SheetNfp(NfpHelper, Sheet, processedPart, this.Config.ClipperScale, this.Config.UseDllImport);
             if (SheetNfp.CanAcceptPart)
             {
               this.VerboseLog($"{processedPart.ToShortString()} could be placed if sheet empty (only do this for the first part on each sheet).");
@@ -174,7 +174,7 @@
         if (SheetNfp == null)
         {
           this.VerboseLog($"Calculate placement #{Placements.Count} on SheetNfp");
-          SheetNfp = new SheetNfp(NfpHelper, Sheet, processedPart, this.Config.ClipperScale);
+          SheetNfp = new SheetNfp(NfpHelper, Sheet, processedPart, this.Config.ClipperScale, this.Config.UseDllImport);
         }
 
         if (Placements.Count == 0)
@@ -536,7 +536,7 @@
       {
         this.VerboseLog($"TryGetCombinedNfp(j={j})=>NfpHelper.GetOuterNfp");
         ((MinkowskiSum)((ITestNfpHelper)this.NfpHelper).MinkowskiSumService).VerboseLogAction = s => VerboseLog(s);
-        var outerNfp = NfpHelper.GetOuterNfp(placements[j].Part, part, MinkowskiCache.Cache);
+        var outerNfp = NfpHelper.GetOuterNfp(placements[j].Part, part, MinkowskiCache.Cache, true);
         ((MinkowskiSum)((ITestNfpHelper)this.NfpHelper).MinkowskiSumService).VerboseLogAction = s => { };
         this.VerboseLog($"NfpHelper.GetOuterNfp=>TryGetCombinedNfp(j={j})");
         if (outerNfp == null)

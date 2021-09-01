@@ -6,7 +6,7 @@
   {
     protected override NfpHelper Create()
     {
-      return new NfpHelper(A.Dummy<MinkowskiSum>(), new WindowUnk(), true);
+      return new NfpHelper(A.Dummy<MinkowskiSum>(), new WindowUnk());
     }
   }
 }

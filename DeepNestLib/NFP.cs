@@ -308,6 +308,21 @@
       this.points[i] = point;
     }
 
+    /// <inheritdoc/>
+    public void Clean()
+    {
+      var cleaned = SvgNest.CleanPolygon2(this);
+      if (cleaned != null)
+      {
+        this.ReplacePoints(cleaned.Points);
+      }
+
+      foreach (var child in this.Children)
+      {
+        child.ReplacePoints(SvgNest.CleanPolygon2(child).Points);
+      }
+    }
+
     /// <inheritdoc />
     public void Reverse()
     {
@@ -650,7 +665,7 @@
         var closedPoints = points.ToList();
         closedPoints.Add(closedPoints.First());
         ReplacePoints(closedPoints);
-      } 
+      }
     }
   }
 }

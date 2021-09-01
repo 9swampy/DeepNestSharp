@@ -221,23 +221,20 @@
       if (minkowskiSumCleaning == MinkowskiSumCleaning.Cleaned)
       {
         VerboseLogAction?.Invoke("Clean MinkowskiSum. . .");
-        var cleaned = SvgNest.CleanPolygon2(ret);
-        ret.ReplacePoints(cleaned.Points);
-        foreach (var child in ret.Children)
-        {
-          child.ReplacePoints(SvgNest.CleanPolygon2(child).Points);
-        }
+        ret.Clean();
       }
 
       return new INfp[] { ret };
     }
 
-    NFP IMinkowskiSumService.ClipperExecute(INfp a, INfp b, MinkowskiSumPick minkowskiSumPick)
+    NFP IMinkowskiSumService.ClipperExecuteOuterNfp(SvgPoint[] a, SvgPoint[] b, MinkowskiSumPick minkowskiSumPick)
     {
-      return ((IMinkowskiSumService)this).ClipperExecute(a.Points, b.Points, minkowskiSumPick);
+      var result = ClipperExecute(a, b, minkowskiSumPick);
+      result.EnsureIsClosed();
+      return result;
     }
 
-    NFP IMinkowskiSumService.ClipperExecute(SvgPoint[] a, SvgPoint[] b, MinkowskiSumPick minkowskiSumPick)
+    private NFP ClipperExecute(SvgPoint[] a, SvgPoint[] b, MinkowskiSumPick minkowskiSumPick)
     {
       var scaler = 10000000;
       var ac = DeepNestClipper.ScaleUpPaths(a, scaler);
@@ -271,6 +268,7 @@
         clipperNfp[i].Y += b[0].Y;
       }
 
+      //clipperNfp.EnsureIsClosed();
       return clipperNfp;
     }
 
@@ -376,6 +374,7 @@
         }
       }
 
+      clipperNfp.EnsureIsClosed();
       var res = new[] { clipperNfp };
       return res;
     }

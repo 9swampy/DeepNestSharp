@@ -33,7 +33,7 @@
       IMinkowskiSumService minkowskiSumService = A.Dummy<MinkowskiSum>();
       for (int i = 0; i < iterations; i++)
       {
-        clipperResult = minkowskiSumService.ClipperExecute(firstPart, secondPart, MinkowskiSumPick.Largest);
+        clipperResult = minkowskiSumService.ClipperExecuteOuterNfp(firstPart.Points, secondPart.Points, MinkowskiSumPick.Largest);
       }
 
       sw.Stop();
@@ -74,40 +74,24 @@
     }
 
     [Fact]
-    public void BackgroundResultShouldHave4Points()
+    public void DllImportResultResultShouldHave5Points()
     {
-      SvgNest.CleanPolygon2(dllImportResult).Points.Length.Should().Be(5, "it's closed");
+      SvgNest.CleanPolygon2(dllImportResult).Points.Length.Should().Be(5, "it's closed, went 4 for a while prior to maintain IsClosed through CleanPolygon2");
     }
 
     [Fact]
-    public void DeepNestClipperResultShouldHave4Points()
+    public void DeepNestClipperResultShouldHave5Points()
     {
-      clipperResult.Points.Length.Should().Be(4);
+      clipperResult.Points.Length.Should().Be(5, "it's closed");
     }
 
     [Fact]
-    public void UncleanedResultsShouldNotBeEquivalent()
+    public void UncleanedResultsShouldBeEquivalent()
     {
-#pragma warning disable IDE0058 // Expression value is never used
       _ = dllImportResult.Should().NotBeEquivalentTo(
         clipperResult,
         options => options.Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 1))
-                          .WhenTypeIs<double>(),
-#pragma warning disable SA1118 // Parameter should not span multiple lines
-        "because they're only same if CleanPolygon added in to the sut.MinkowskiSum; cleaning could mean " +
-        "the result is no longer closed so if it's fed back in to the ClipperLib sum it won't work; unless " +
-        "we change the way ClipperLib is called.");
-#pragma warning restore SA1118 // Parameter should not span multiple lines
-    }
-
-    [Fact]
-    public void CleanedResultsShouldBeEquivalent()
-    {
-      // Isn't equivalent now because need to revisit the clipperResult and see if it'd be ok to close the result
-      // so it matches DllImport but let's fix the other tests first.
-      SvgNest.CleanPolygon2(dllImportResult).Should().BeEquivalentTo(clipperResult, options => options
-                                    .Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 1))
-                                    .WhenTypeIs<double>());
+                          .WhenTypeIs<double>());
     }
   }
 }

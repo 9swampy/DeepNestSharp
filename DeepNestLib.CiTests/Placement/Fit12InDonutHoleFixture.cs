@@ -53,7 +53,7 @@
 
       sut.ProcessPart(sut.InputPart, 1);
 
-      sut.SheetNfp[0].Length.Should().Be(6, "it's closed");
+      sut.SheetNfp[0].Length.Should().Be(5, "it's closed");
       sut.SheetNfp[0].IsClosed.Should().BeTrue();
       sut.SheetNfp[0][0].X.Should().BeApproximately(121.36, 0.01);
       sut.SheetNfp[0][0].Y.Should().BeApproximately(88.27, 0.01);
@@ -65,8 +65,6 @@
       sut.SheetNfp[0][3].Y.Should().BeApproximately(17.27, 0.01);
       sut.SheetNfp[0][4].X.Should().BeApproximately(121.36, 0.01);
       sut.SheetNfp[0][4].Y.Should().BeApproximately(88.27, 0.01);
-      sut.SheetNfp[0][5].X.Should().BeApproximately(121.36, 0.01);
-      sut.SheetNfp[0][5].Y.Should().BeApproximately(88.27, 0.01);
       sut.SheetNfp[0].Children.Count.Should().Be(0);
     }
 

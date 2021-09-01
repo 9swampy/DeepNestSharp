@@ -103,6 +103,7 @@
       var generator = new DxfGenerator();
       var sheet = generator.GenerateRectangle("Sheet", sheetSize, sheetSize, RectangleType.FileLoad).ToSheet();
       var part = generator.GenerateRectangle("Sheet", partSize, partSize, RectangleType.FileLoad).ToNfp();
+      sheet.IsClosed.Should().BeTrue();
 
       SheetNfp sheetNfp = GivenPartWhenFitOnSheetThenGetSheetNfp(useDllImport, sheet, part);
 
@@ -176,12 +177,12 @@
     {
       var nfpHelper = new NfpHelper();
       ((ITestNfpHelper)nfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(A.Fake<ISvgNestConfig>(), A.Fake<INestStateMinkowski>());
-      ((ITestNfpHelper)nfpHelper).UseDllImport = useDllImport;
       var sheetNfp = new SheetNfp(
         nfpHelper,
         sheet,
         part,
-        100000);
+        100000,
+        useDllImport);
       return sheetNfp;
     }
   }

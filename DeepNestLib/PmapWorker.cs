@@ -61,7 +61,7 @@
       {
         if (!NfpPairCache.TryGetValue(a.Points, b.Points, pair.ARotation, pair.BRotation, pair.Asource, pair.Bsource, MinkowskiSumPick.Largest, out clipperNfp))
         {
-          clipperNfp = minkoskiSumService.ClipperExecute(a.Points, b.Points, MinkowskiSumPick.Largest);
+          clipperNfp = minkoskiSumService.ClipperExecuteOuterNfp(a.Points, b.Points, MinkowskiSumPick.Largest);
           NfpPairCache.Add(a.Points, b.Points, pair.ARotation, pair.BRotation, pair.Asource, pair.Bsource, MinkowskiSumPick.Largest, clipperNfp);
         }
       }

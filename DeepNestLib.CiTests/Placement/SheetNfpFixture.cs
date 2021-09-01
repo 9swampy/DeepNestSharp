@@ -14,7 +14,7 @@
     [Fact]
     public void ShouldSerialize()
     {
-      var sut = new SheetNfp(A.Fake<INfpHelper>(), new Sheet(), new NFP(), 1);
+      var sut = new SheetNfp(A.Fake<INfpHelper>(), new Sheet(), new NFP(), A.Dummy<int>(), A.Dummy<bool>());
       Action act = () => sut.ToJson();
       act.Should().NotThrow();
     }
@@ -23,7 +23,7 @@
     public void ShouldRoundTripSerialize()
     {
       var nfpHelper = A.Fake<INfpHelper>();
-      var sut = new SheetNfp(nfpHelper, new Sheet(), new NFP(), 1);
+      var sut = new SheetNfp(nfpHelper, new Sheet(), new NFP(), A.Dummy<int>(), A.Dummy<bool>());
       var json = sut.ToJson();
       SheetNfp.FromJson(json).Should().BeEquivalentTo(sut);
     }
@@ -47,8 +47,8 @@
       var sheet = new Sheet();
       var part = new NFP(new SvgPoint[] { new SvgPoint(1, 1) });
       var nfpHelper = A.Fake<INfpHelper>();
-      A.CallTo(() => nfpHelper.GetInnerNfp(A<ISheet>._, A<INfp>._, A<MinkowskiCache>._, A<double>._)).Returns(new INfp[] { part });
-      var sut = new NfpCandidateList(nfpHelper, sheet, part, 1);
+      A.CallTo(() => nfpHelper.GetInnerNfp(A<ISheet>._, A<INfp>._, A<MinkowskiCache>._, A<double>._, A<bool>.Ignored)).Returns(new INfp[] { part });
+      var sut = new NfpCandidateList(nfpHelper, sheet, part, 1, true);
       var json = sut.ToJson();
       NfpCandidateList actual = NfpCandidateList.FromJson(json);
       actual.Should().BeEquivalentTo(sut);

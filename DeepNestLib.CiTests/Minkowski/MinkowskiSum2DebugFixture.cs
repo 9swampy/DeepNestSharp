@@ -29,7 +29,7 @@
       }
 
       sheet = Sheet.FromJson(json);
-      //sheet.EnsureIsClosed();
+      sheet.EnsureIsClosed();
 
       using (Stream stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Minkowski.MinkowskiSum2B.dnpoly"))
       using (StreamReader reader = new StreamReader(stream))
