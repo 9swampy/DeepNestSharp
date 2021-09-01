@@ -7,7 +7,6 @@
   using System.Text;
   using System.Text.Json;
   using System.Text.Json.Serialization;
-  using DeepNestLib.Geometry;
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
 

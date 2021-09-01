@@ -1,4 +1,4 @@
-﻿namespace DeepNestSharp.Ui.ViewModels
+﻿namespace DeepNestSharp.Domain.ViewModels
 {
   using System;
   using System.Collections.Generic;
@@ -6,28 +6,16 @@
   using System.IO;
   using System.Linq;
   using System.Threading.Tasks;
-  using System.Windows;
   using System.Windows.Input;
-  using AvalonDock.Layout;
-  using AvalonDock.Themes;
   using DeepNestLib;
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain.Docking;
   using DeepNestSharp.Domain.Services;
-  using DeepNestSharp.Domain.ViewModels;
   using Microsoft.Toolkit.Mvvm.ComponentModel;
   using Microsoft.Toolkit.Mvvm.Input;
 
-  public class DockingMainViewModel : MainViewModel
-  {
-    public DockingMainViewModel(IMessageService messageService, IDispatcherService dispatcherService, ISvgNestConfig config, IFileIoService fileIoService, IMouseCursorService mouseCursorService)
-      : base(messageService, dispatcherService, config, fileIoService, mouseCursorService)
-    {
-    }
-  }
-
-  public class MainViewModel : ObservableRecipient, IMainViewModel
+  public abstract class MainViewModel : ObservableRecipient, IMainViewModel
   {
     private readonly IFileIoService fileIoService;
     private readonly IMouseCursorService mouseCursorService;
@@ -48,11 +36,10 @@
 
     private IToolViewModel[] tools;
 
-    private PreviewViewModel? previewViewModel;
-    private Tuple<string, Theme>? selectedTheme;
-    private IFileViewModel? activeDocument;
-    private IPropertiesViewModel? propertiesViewModel;
-    private INestMonitorViewModel? nestMonitorViewModel;
+    private PreviewViewModel previewViewModel;
+    private IFileViewModel activeDocument;
+    private IPropertiesViewModel propertiesViewModel;
+    private INestMonitorViewModel nestMonitorViewModel;
 
     public MainViewModel(IMessageService messageService, IDispatcherService dispatcherService, ISvgNestConfig config, IFileIoService fileIoService, IMouseCursorService mouseCursorService)
     {
@@ -61,21 +48,6 @@
       files = new ObservableCollection<IFileViewModel>();
       Files = new ReadOnlyObservableCollection<IFileViewModel>(files);
 
-      this.Themes = new List<Tuple<string, Theme>>
-      {
-        new Tuple<string, Theme>(nameof(GenericTheme), new GenericTheme()),
-
-        // new Tuple<string, Theme>(nameof(AeroTheme),new AeroTheme()),
-        // new Tuple<string, Theme>(nameof(ExpressionDarkTheme),new ExpressionDarkTheme()),
-        // new Tuple<string, Theme>(nameof(ExpressionLightTheme),new ExpressionLightTheme()),
-        // new Tuple<string, Theme>(nameof(MetroTheme),new MetroTheme()),
-        // new Tuple<string, Theme>(nameof(VS2010Theme),new VS2010Theme()),
-        // new Tuple<string, Theme>(nameof(Vs2013BlueTheme),new Vs2013BlueTheme()),
-        // new Tuple<string, Theme>(nameof(Vs2013DarkTheme),new Vs2013DarkTheme()),
-        // new Tuple<string, Theme>(nameof(Vs2013LightTheme),new Vs2013LightTheme()),
-      };
-
-      this.SelectedTheme = Themes.First();
       this.messageService = messageService;
       this.DispatcherService = dispatcherService;
       this.fileIoService = fileIoService;
@@ -83,20 +55,7 @@
       this.ActiveDocumentChanged += this.MainViewModel_ActiveDocumentChanged;
     }
 
-    public event EventHandler? ActiveDocumentChanged;
-
-    public List<Tuple<string, Theme>> Themes { get; set; }
-
-    public Tuple<string, Theme>? SelectedTheme
-    {
-      get => selectedTheme;
-
-      set
-      {
-        selectedTheme = value;
-        OnPropertyChanged(nameof(SelectedTheme));
-      }
-    }
+    public event EventHandler ActiveDocumentChanged;
 
     public IEnumerable<IToolViewModel> Tools
     {
@@ -174,11 +133,13 @@
 
     public ICommand ExitCommand => exitCommand ?? (exitCommand = new RelayCommand(OnExit, CanExit));
 
-    public ICommand LoadLayoutCommand => loadLayoutCommand ?? (saveLayoutCommand = new RelayCommand(OnSaveLayout, CanSaveLayout));
+    protected abstract void OnExit();
 
-    public ICommand SaveLayoutCommand => saveLayoutCommand ?? (loadLayoutCommand = new RelayCommand(OnLoadLayout, CanLoadLayout));
+    public ICommand LoadLayoutCommand => loadLayoutCommand ?? (loadLayoutCommand = new RelayCommand(OnLoadLayout, CanLoadLayout));
 
-    public IFileViewModel? ActiveDocument
+    public ICommand SaveLayoutCommand => saveLayoutCommand ?? (saveLayoutCommand = new RelayCommand(OnSaveLayout, CanSaveLayout));
+
+    public IFileViewModel ActiveDocument
     {
       get => activeDocument;
       set
@@ -188,22 +149,24 @@
           activeDocument = value;
           OnPropertyChanged(nameof(ActiveDocument));
           ActiveDocumentChanged?.Invoke(this, EventArgs.Empty);
-          if (value is NestProjectViewModel ||
-              value is NestResultViewModel ||
-              value is PartEditorViewModel)
-          {
-            this.SvgNestConfigViewModel.SvgNestConfig.LastNestFilePath = value.DirectoryName;
-          }
-          else if (value is NfpCandidateListViewModel ||
-                   value is SheetPlacementViewModel)
-          {
-            SvgNestConfigViewModel.SvgNestConfig.LastDebugFilePath = value.DirectoryName;
-          }
+          SetSelectedToolView(value);
         }
       }
     }
 
-    public IDockingManagerFacade? DockManager { get; set; }
+    public void SetSelectedToolView(IFileViewModel fileViewModel)
+    {
+      if (fileViewModel is NestProjectViewModel)
+      {
+        NestMonitorViewModel.IsSelected = true;
+      }
+      else
+      {
+        PreviewViewModel.IsSelected = true;
+      }
+    }
+
+    public IDockingManagerFacade DockManager { get; set; }
 
     public IDispatcherService DispatcherService { get; }
 
@@ -326,12 +289,12 @@
       if (fileToClose.IsDirty)
       {
         var res = messageService.DisplayYesNoCancel(string.Format("Save changes for file '{0}'?", fileToClose.FileName), "DeepNestSharp", MessageBoxIcon.Question);
-        if (res == DeepNestLib.MessageBoxResult.Cancel)
+        if (res == MessageBoxResult.Cancel)
         {
           return;
         }
 
-        if (res == DeepNestLib.MessageBoxResult.Yes)
+        if (res == MessageBoxResult.Yes)
         {
           Save(fileToClose);
         }
@@ -340,7 +303,7 @@
       files.Remove(fileToClose);
     }
 
-    public async Task ExportSheetPlacementAsync(ISheetPlacement? sheetPlacement)
+    public async Task ExportSheetPlacementAsync(ISheetPlacement sheetPlacement)
     {
       if (sheetPlacement == null)
       {
@@ -363,7 +326,7 @@
       }
     }
 
-    public void Save(IFileViewModel? fileToSave, bool saveAsFlag = false)
+    public void Save(IFileViewModel fileToSave, bool saveAsFlag = false)
     {
       if (fileToSave != null)
       {
@@ -385,44 +348,6 @@
         if (ActiveDocument != null)
         {
           ActiveDocument.IsDirty = false;
-        }
-      }
-    }
-
-    private static IEnumerable<LayoutContent> GatherLayoutContent(ILayoutElement le)
-    {
-      if (le is LayoutContent)
-      {
-        yield return (LayoutContent)le;
-      }
-
-      IEnumerable<ILayoutElement> children = new ILayoutElement[0];
-      if (le is LayoutRoot)
-      {
-        children = ((LayoutRoot)le).Children;
-      }
-      else if (le is LayoutPanel)
-      {
-        children = ((LayoutPanel)le).Children;
-      }
-      else if (le is LayoutDocumentPaneGroup)
-      {
-        children = ((LayoutDocumentPaneGroup)le).Children;
-      }
-      else if (le is LayoutAnchorablePane)
-      {
-        children = ((LayoutAnchorablePane)le).Children;
-      }
-      else if (le is LayoutDocumentPane)
-      {
-        children = ((LayoutDocumentPane)le).Children;
-      }
-
-      foreach (var child in children)
-      {
-        foreach (var x in GatherLayoutContent(child))
-        {
-          yield return x;
         }
       }
     }
@@ -480,23 +405,18 @@
       return true;
     }
 
-    private void OnExit()
-    {
-      Application.Current.MainWindow.Close();
-    }
-
     private void OnLoadLayout()
     {
       this.DockManager?.LoadLayout();
     }
 
-    private void MainViewModel_ActiveDocumentChanged(object? sender, EventArgs e)
+    private void MainViewModel_ActiveDocumentChanged(object sender, EventArgs e)
     {
       this.activeDocumentSaveCommand?.NotifyCanExecuteChanged();
       this.activeDocumentSaveAsCommand?.NotifyCanExecuteChanged();
     }
 
-    private void NestProjectViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void NestProjectViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
       if (e.PropertyName == $"{nameof(IFileViewModel.IsDirty)}")
       {

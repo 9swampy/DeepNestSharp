@@ -10,10 +10,7 @@
   public class RunFullNestGravityFixture
   {
     private const string DxfTestFilename = "Dxfs._5.dxf";
-    // private const double ExpectedFitness = 518947; This often required two, three runs to hit. When the MinkowskiCache was removed it seemed it was never being hit. . .
-    // private const double ExpectedFitness = 557771; // but as soon as I made this change it got hit.
-    private const double ExpectedFitness = (557771 + 518947) / 2;
-
+    private const double ExpectedFitness = 504731;
     private const double ExpectedFitnessTolerance = 10000 * 2;
 
     private static volatile object testSyncLock = new object();

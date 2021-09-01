@@ -2,11 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
-  using System.IO;
-  using System.Reflection;
-  using DeepNestLib.Placement;
   using FakeItEasy;
-  using Xunit;
 
   /// <summary>
   /// Create a container to capture parameter values passed into a FakeItEasy fake.

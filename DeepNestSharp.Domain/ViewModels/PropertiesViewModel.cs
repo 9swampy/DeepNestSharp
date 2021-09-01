@@ -1,16 +1,14 @@
-﻿namespace DeepNestSharp.Ui.ViewModels
+﻿namespace DeepNestSharp.Domain.ViewModels
 {
   using System.ComponentModel;
-  using DeepNestSharp.Domain;
   using DeepNestSharp.Domain.Docking;
   using DeepNestSharp.Domain.Models;
-  using DeepNestSharp.Domain.ViewModels;
 
   public class PropertiesViewModel : ToolViewModel, IPropertiesViewModel
   {
     private readonly IMainViewModel mainViewModel;
 
-    private ISheetPlacementViewModel? lastSheetPlacementViewModel;
+    private ISheetPlacementViewModel lastSheetPlacementViewModel;
     private object selectedObject;
 
     /// <summary>
@@ -24,7 +22,7 @@
       this.mainViewModel.ActiveDocumentChanged += this.MainViewModel_ActiveDocumentChanged;
     }
 
-    public object? SelectedObject
+    public object SelectedObject
     {
       get
       {
@@ -37,7 +35,7 @@
       }
     }
 
-    private void MainViewModel_ActiveDocumentChanged(object? sender, System.EventArgs e)
+    private void MainViewModel_ActiveDocumentChanged(object sender, System.EventArgs e)
     {
       if (lastSheetPlacementViewModel != null)
       {
@@ -68,7 +66,7 @@
       }
     }
 
-    private void LastSheetPlacementViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void LastSheetPlacementViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
       if (sender == mainViewModel.ActiveDocument &&
           e.PropertyName == "SelectedItem" &&
@@ -79,7 +77,7 @@
       }
     }
 
-    private void NestProjectViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void NestProjectViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
       if (sender == mainViewModel.ActiveDocument &&
           e.PropertyName == "SelectedDetailLoadInfo" &&
@@ -102,7 +100,7 @@
       }
     }
 
-    private void SheetPlacementViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void SheetPlacementViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
       if (sender == mainViewModel.ActiveDocument &&
           e.PropertyName == "SelectedItem" &&

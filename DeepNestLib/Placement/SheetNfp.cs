@@ -35,8 +35,8 @@
     private static INfp[] RemoveOuterNfps(INfp[] nfps, ISheet sheet)
     {
       IEnumerable<INfp> result = new List<INfp>(nfps);
-      result = result.Where(o => o.WidthCalculated <= sheet.WidthCalculated &&
-                                 o.HeightCalculated <= sheet.HeightCalculated)
+      result = result.Where(o => o.WidthCalculated < sheet.WidthCalculated &&
+                                 o.HeightCalculated < sheet.HeightCalculated)
                      .Select(o =>
                      {
                        var cleaned = SvgNest.CleanPolygon2(o);

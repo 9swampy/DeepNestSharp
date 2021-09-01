@@ -1,6 +1,5 @@
 ﻿namespace DeepNestSharp.Ui.Services
 {
-  using DeepNestSharp.Domain;
   using DeepNestSharp.Domain.Services;
 
   public sealed class SettingsService : ISettingsService

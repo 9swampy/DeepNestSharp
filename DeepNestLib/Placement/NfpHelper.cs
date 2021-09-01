@@ -274,7 +274,17 @@
         }
       }
 
-      var frame = GetExpandedFrame(envelope);
+      INfp frame;
+      if (useDllImport)
+      {
+        frame = GetExpandedFrame(envelope);
+      }
+      else
+      {
+        frame = new NFP(envelope, WithChildren.Excluded);
+        frame.EnsureIsClosed();
+      }
+
       return GetNoFitPolygon(frame, part, minkowskiCache, NoFitPolygonType.Inner, useDllImport);
     }
 
@@ -355,6 +365,17 @@
     {
       INfp[] res;
 
+      if (!path.IsClosed)
+      {
+#if NCRUNCH
+          // throw new NotImplementedException("The implementation Fel88 added executes path is closed so I'd expect the path to be closed. . .");
+          path.EnsureIsClosed();
+#else
+        // System.Diagnostics.Debugger.Break();
+        path.EnsureIsClosed();
+#endif
+      }
+
       if (useDllImport)
       {
         //nfp = Process2(A, B, type);
@@ -367,17 +388,6 @@
       }
       else
       {
-        if (!path.IsClosed)
-        {
-#if NCRUNCH
-          // throw new NotImplementedException("The implementation Fel88 added executes path is closed so I'd expect the path to be closed. . .");
-          path.EnsureIsClosed();
-#else
-          // System.Diagnostics.Debugger.Break();
-          path.EnsureIsClosed();
-#endif
-        }
-
         res = minkowskiSumService.NewMinkowskiSum(pattern, path, WithChildren.Included, takeOnlyBiggestArea: false);
         foreach (var nfp in res)
         {

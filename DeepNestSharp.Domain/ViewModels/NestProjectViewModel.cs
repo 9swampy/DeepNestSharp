@@ -1,4 +1,4 @@
-﻿namespace DeepNestSharp.Ui.ViewModels
+﻿namespace DeepNestSharp.Domain.ViewModels
 {
   using System;
   using System.Linq;
@@ -6,9 +6,7 @@
   using System.Windows.Input;
   using DeepNestLib;
   using DeepNestLib.NestProject;
-  using DeepNestSharp.Domain;
   using DeepNestSharp.Domain.Services;
-  using DeepNestSharp.Domain.ViewModels;
   using DeepNestSharp.Ui.Docking;
   using DeepNestSharp.Ui.Models;
   using Light.GuardClauses;
@@ -17,7 +15,7 @@
   public class NestProjectViewModel : FileViewModel, INestProjectViewModel
   {
     private int selectedDetailLoadInfoIndex;
-    private IDetailLoadInfo? selectedDetailLoadInfo;
+    private IDetailLoadInfo selectedDetailLoadInfo;
     private int selectedSheetLoadInfoIndex;
     private ISheetLoadInfo selectedSheetLoadInfo;
     private AsyncRelayCommand executeNestCommand;
@@ -28,7 +26,7 @@
     private RelayCommand<ISheetLoadInfo> removeSheetCommand;
     private RelayCommand<string> loadPartCommand;
     private IFileIoService fileIoService;
-    private ObservableProjectInfo? observableProjectInfo;
+    private ObservableProjectInfo observableProjectInfo;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NestProjectViewModel"/> class.
@@ -137,7 +135,7 @@
       this.fileIoService = fileIoService;
     }
 
-    private void NestMonitorViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void NestMonitorViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
       if (MainViewModel.DispatcherService.InvokeRequired)
       {
@@ -150,7 +148,7 @@
       }
     }
 
-    private void ObservableProjectInfo_IsDirtyChanged(object? sender, EventArgs e)
+    private void ObservableProjectInfo_IsDirtyChanged(object sender, EventArgs e)
     {
       this.IsDirty = true;
     }
@@ -193,11 +191,11 @@
 
     private async Task OnExecuteNest()
     {
-      MainViewModel.NestMonitorViewModel.IsActive = true;
+      MainViewModel.SetSelectedToolView(this);
       await MainViewModel.NestMonitorViewModel.TryStartAsync(this).ConfigureAwait(false);
     }
 
-    private void OnLoadPart(string? path)
+    private void OnLoadPart(string path)
     {
       if (!string.IsNullOrWhiteSpace(path))
       {
@@ -205,7 +203,7 @@
       }
     }
 
-    private void OnRemovePart(IDetailLoadInfo? arg)
+    private void OnRemovePart(IDetailLoadInfo arg)
     {
       if (arg != null)
       {
@@ -214,7 +212,7 @@
       }
     }
 
-    private void OnRemoveSheet(ISheetLoadInfo? arg)
+    private void OnRemoveSheet(ISheetLoadInfo arg)
     {
       if (arg != null)
       {

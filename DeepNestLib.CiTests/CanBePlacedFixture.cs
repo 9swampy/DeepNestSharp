@@ -10,6 +10,8 @@
     [Theory]
     [InlineData(true, 1.01, 1)]
     [InlineData(false, 1.01, 1)]
+    [InlineData(true, 1200, 200)]
+    [InlineData(false, 1200, 200)]
     public void GivenSmallerSquareWhenFitInLargeSquareThenCanBePlaced(bool useDllImport, double sheetSize, double partSize)
     {
       SheetNfp sheetNfp = GivenPartWhenFitOnSheetThenGetSheetNfp(useDllImport, sheetSize, partSize);
@@ -30,6 +32,8 @@
     [Theory]
     [InlineData(true, 1.01, 1)]
     [InlineData(false, 1.01, 1)]
+    [InlineData(true, 1200, 200)]
+    [InlineData(false, 1200, 200)]
     public void GivenSmallerSquareWhenFitInLargeSquareThenItemsShouldHaveSingleNfpCandidate(bool useDllImport, double sheetSize, double partSize)
     {
       SheetNfp sheetNfp = GivenPartWhenFitOnSheetThenGetSheetNfp(useDllImport, sheetSize, partSize);
@@ -59,8 +63,8 @@
     }
 
     [Theory]
-    //[InlineData(101, 1)]
-    //[InlineData(1.01, 1)]
+    [InlineData(101, 1)]
+    [InlineData(1.01, 1)]
     [InlineData(1, 1)]
     [InlineData(1, 1.01)]
     [InlineData(1, 101)]
@@ -77,6 +81,7 @@
 
     [Theory]
     [InlineData(101, 1)]
+    [InlineData(1200, 200)]
     public void GivenSubstitutableWhenGetInnerNfpThenBothShouldBeEquivalentButDllImportNeedsCleaned(double sheetSize, double partSize)
     {
       SheetNfp sheetNfpDllImport = GivenPartWhenFitOnSheetThenGetSheetNfp(true, sheetSize, partSize);
@@ -98,6 +103,7 @@
     [Theory]
     [InlineData(true, 1.01, 1)]
     [InlineData(false, 1.01, 1)]
+    [InlineData(false, 1200, 200)]
     public void GivenPartWhenSheetNfpMemoisesShouldBeEquivalentOnly(bool useDllImport, double sheetSize, double partSize)
     {
       var generator = new DxfGenerator();
@@ -114,6 +120,7 @@
     [Theory]
     [InlineData(true, 1.01, 1)]
     [InlineData(false, 1.01, 1)]
+    [InlineData(false, 1200, 200)]
     public void GivenSheetWhenSheetNfpMemoisesShouldBeEquivalentOnly(bool useDllImport, double sheetSize, double partSize)
     {
       var generator = new DxfGenerator();

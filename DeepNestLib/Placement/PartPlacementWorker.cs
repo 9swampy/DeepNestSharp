@@ -536,7 +536,7 @@
       {
         this.VerboseLog($"TryGetCombinedNfp(j={j})=>NfpHelper.GetOuterNfp");
         ((MinkowskiSum)((ITestNfpHelper)this.NfpHelper).MinkowskiSumService).VerboseLogAction = s => VerboseLog(s);
-        var outerNfp = NfpHelper.GetOuterNfp(placements[j].Part, part, MinkowskiCache.Cache, true);
+        var outerNfp = NfpHelper.GetOuterNfp(placements[j].Part, part, MinkowskiCache.Cache, Config.UseDllImport);
         ((MinkowskiSum)((ITestNfpHelper)this.NfpHelper).MinkowskiSumService).VerboseLogAction = s => { };
         this.VerboseLog($"NfpHelper.GetOuterNfp=>TryGetCombinedNfp(j={j})");
         if (outerNfp == null)

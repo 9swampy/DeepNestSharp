@@ -11,6 +11,8 @@
 
   public interface IMainViewModel
   {
+    event EventHandler ActiveDocumentChanged;
+
     IFileViewModel ActiveDocument { get; set; }
 
     ICommand ActiveDocumentSaveAsCommand { get; }
@@ -55,7 +57,9 @@
 
     IEnumerable<IToolViewModel> Tools { get; }
 
-    event EventHandler ActiveDocumentChanged;
+    Task ExportSheetPlacementAsync(ISheetPlacement sheetPlacement);
+
+    void Close(IFileViewModel fileViewModel);
 
     void LoadNestResult(string filePath);
 
@@ -81,10 +85,8 @@
 
     Task OnLoadSheetPlacementAsync();
 
-    void Close(IFileViewModel fileViewModel);
-
     void Save(IFileViewModel fileViewModel, bool v);
 
-    Task ExportSheetPlacementAsync(ISheetPlacement sheetPlacement);
+    void SetSelectedToolView(IFileViewModel fileViewModel);
   }
 }

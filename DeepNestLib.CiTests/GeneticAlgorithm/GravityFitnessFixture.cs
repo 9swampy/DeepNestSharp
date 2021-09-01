@@ -44,14 +44,14 @@
     public void GivenBoundsPenaltyShouldBeInLineWithSheetsPenaltyThenScenario1BoundsShouldBeComingCloseToSheets()
     {
       var sut = new OriginalFitnessSheet(scenario1);
-      sut.Bounds.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
+      sut.Bounds.Should().BeApproximately(2 * sut.Sheets / 3, sut.Sheets / 2);
     }
 
     [Fact]
     public void GivenBoundsPenaltyShouldBeInLineWithSheetsPenaltyThenScenario2BoundsShouldBeComingCloseToSheets()
     {
       var sut = new OriginalFitnessSheet(scenario2);
-      sut.Bounds.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
+      sut.Bounds.Should().BeApproximately(2 * sut.Sheets / 3, sut.Sheets / 2);
     }
 
     [Fact]

@@ -2,10 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
-  using System.IO;
-  using System.Reflection;
   using DeepNestLib.Placement;
-  using FakeItEasy;
   using FluentAssertions;
   using Xunit;
 

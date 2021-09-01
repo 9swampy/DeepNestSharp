@@ -1,4 +1,4 @@
-﻿namespace DeepNestSharp.Ui.ViewModels
+﻿namespace DeepNestSharp.Domain.ViewModels
 {
   using System;
   using System.ComponentModel;
@@ -8,22 +8,21 @@
   using DeepNestSharp.Domain;
   using DeepNestSharp.Domain.Docking;
   using DeepNestSharp.Domain.Models;
-  using DeepNestSharp.Domain.ViewModels;
   using Microsoft.Toolkit.Mvvm.Input;
 
   public class PreviewViewModel : ToolViewModel, IPreviewViewModel
   {
     private readonly IMainViewModel mainViewModel;
-    private IFileViewModel? lastActiveViewModel;
-    private IPartPlacement? hoverPartPlacement;
+    private IFileViewModel lastActiveViewModel;
+    private IPartPlacement hoverPartPlacement;
     private IPointXY mousePosition;
     private IPointXY dragOffset;
-    private IPointXY? dragStart;
+    private IPointXY dragStart;
     private double canvasScale = 1;
-    private IPointXY? viewport;
-    private RelayCommand? fitAllCommand = null;
-    private IPointXY? actual;
-    private IPointXY? canvasPosition;
+    private IPointXY viewport;
+    private RelayCommand fitAllCommand = null;
+    private IPointXY actual;
+    private IPointXY canvasPosition;
     private bool isExperimental;
 
     /// <summary>
@@ -38,7 +37,7 @@
       this.PropertyChanged += this.PreviewViewModel_PropertyChanged;
     }
 
-    public IFileViewModel? ActiveDocument => mainViewModel.ActiveDocument;
+    public IFileViewModel ActiveDocument => mainViewModel.ActiveDocument;
 
     public IZoomPreviewDrawingContext ZoomDrawingContext { get; } = new ZoomPreviewDrawingContext();
 
@@ -57,7 +56,7 @@
 
     public IMainViewModel MainViewModel => mainViewModel;
 
-    public IPartPlacement? SelectedPartPlacement
+    public IPartPlacement SelectedPartPlacement
     {
       get
       {
@@ -79,7 +78,7 @@
       }
     }
 
-    public IPartPlacement? HoverPartPlacement
+    public IPartPlacement HoverPartPlacement
     {
       get => hoverPartPlacement;
 
@@ -102,7 +101,7 @@
       }
     }
 
-    public IPointXY? CanvasPosition
+    public IPointXY CanvasPosition
     {
       get => canvasPosition;
       set
@@ -135,7 +134,7 @@
       }
     }
 
-    public IPointXY? DragStart
+    public IPointXY DragStart
     {
       get => dragStart;
       set
@@ -191,7 +190,7 @@
       }
     }
 
-    public IPointXY? Actual
+    public IPointXY Actual
     {
       get => actual;
       set
@@ -200,7 +199,7 @@
       }
     }
 
-    public IPointXY? Viewport
+    public IPointXY Viewport
     {
       get => viewport;
       set
@@ -258,7 +257,7 @@
       }
     }
 
-    private void InitialiseDrawingContext(object? sender)
+    private void InitialiseDrawingContext(object sender)
     {
       if (lastActiveViewModel != null)
       {
@@ -318,7 +317,7 @@
       }
     }
 
-    private void MainViewModel_ActiveDocumentChanged(object? sender, EventArgs e)
+    private void MainViewModel_ActiveDocumentChanged(object sender, EventArgs e)
     {
       InitialiseDrawingContext(sender);
       OnPropertyChanged(nameof(ActiveDocument));
@@ -331,7 +330,7 @@
         Actual?.Y / (ZoomDrawingContext.Extremum(MinMax.Max, XY.Y) - ZoomDrawingContext.Extremum(MinMax.Min, XY.Y)) ?? 5);
     }
 
-    private void PreviewViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void PreviewViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
       if (e.PropertyName == nameof(ZoomDrawingContext))
       {
@@ -342,7 +341,7 @@
       }
     }
 
-    private void ActiveViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void ActiveViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
       if (sender == mainViewModel.ActiveDocument)
       {
@@ -364,6 +363,7 @@
                  nestProjectViewModel.SelectedDetailLoadInfo is ObservableDetailLoadInfo detailLoadInfo)
         {
           Set(detailLoadInfo);
+          this.IsSelected = true;
         }
         else if (sender is PartEditorViewModel partViewModel &&
                  e.PropertyName == nameof(PartEditorViewModel.Part) &&

@@ -8,8 +8,8 @@
   using System.Windows.Shapes;
   using DeepNestLib;
   using DeepNestSharp.Domain.Models;
+  using DeepNestSharp.Domain.ViewModels;
   using DeepNestSharp.Ui.Behaviors;
-  using DeepNestSharp.Ui.ViewModels;
 
   /// <summary>
   /// Interaction logic for ZoomPreview.xaml.

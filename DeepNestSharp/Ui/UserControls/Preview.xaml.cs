@@ -3,8 +3,8 @@
   using System.Windows;
   using System.Windows.Controls;
   using DeepNestLib;
+  using DeepNestSharp.Domain.ViewModels;
   using DeepNestSharp.Ui.Behaviors;
-  using DeepNestSharp.Ui.ViewModels;
 
   /// <summary>
   /// Interaction logic for Preview.xaml.

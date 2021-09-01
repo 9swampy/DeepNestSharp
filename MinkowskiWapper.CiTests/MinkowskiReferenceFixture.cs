@@ -2,7 +2,9 @@
 {
   using System;
   using System.IO;
+#if x64
   using System.Linq;
+#endif
   using FluentAssertions;
   using Xunit;
 

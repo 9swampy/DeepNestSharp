@@ -1,4 +1,4 @@
-﻿namespace DeepNestSharp.Ui.ViewModels
+﻿namespace DeepNestSharp.Domain.ViewModels
 {
   using System;
   using System.Diagnostics;
@@ -11,7 +11,7 @@
   using DeepNestSharp.Domain;
   using DeepNestSharp.Domain.Docking;
   using DeepNestSharp.Domain.Services;
-  using DeepNestSharp.Domain.ViewModels;
+  using DeepNestSharp.Ui.ViewModels;
   using Microsoft.Toolkit.Mvvm.Input;
 
   public class NestMonitorViewModel : ToolViewModel, INestMonitorViewModel
@@ -24,22 +24,22 @@
     private bool isRunning;
     private bool isStopping;
     private NestExecutionHelper nestExecutionHelper = new NestExecutionHelper();
-    private NestingContext? context;
-    private NestWorker? nestWorker;
+    private NestingContext context;
+    private NestWorker nestWorker;
     private ConfiguredTaskAwaitable? nestWorkerConfiguredTaskAwaitable;
-    private Task? nestWorkerTask;
+    private Task nestWorkerTask;
     private string lastLogMessage = string.Empty;
     private double progress;
     private IProgressDisplayer progressDisplayer;
     private double progressSecondary;
     private int selectedIndex;
-    private INestResult? selectedItem;
+    private INestResult selectedItem;
 
-    private RelayCommand? stopNestCommand;
-    private RelayCommand? continueNestCommand;
-    private RelayCommand? restartNestCommand;
-    private RelayCommand? loadSheetPlacementCommand;
-    private RelayCommand<INestResult>? loadNestResultCommand;
+    private RelayCommand stopNestCommand;
+    private RelayCommand continueNestCommand;
+    private RelayCommand restartNestCommand;
+    private RelayCommand loadSheetPlacementCommand;
+    private RelayCommand<INestResult> loadNestResultCommand;
     private bool isSecondaryProgressVisible;
 
     public NestMonitorViewModel(IMainViewModel mainViewModel, IMessageService messageService, IMouseCursorService mouseCursorService)
@@ -132,7 +132,7 @@
       set => SetProperty(ref selectedIndex, value);
     }
 
-    public INestResult? SelectedItem
+    public INestResult SelectedItem
     {
       get => selectedItem;
       set
@@ -248,7 +248,7 @@
       }
     }
 
-    private void OnLoadNestResult(INestResult? nestResult)
+    private void OnLoadNestResult(INestResult nestResult)
     {
       if (nestResult != null)
       {

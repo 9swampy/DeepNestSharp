@@ -186,6 +186,17 @@
         LoadContent();
         ContentId = filePath;
         NotifyContentUpdated();
+        if (this is NestProjectViewModel ||
+            this is NestResultViewModel ||
+            this is PartEditorViewModel)
+        {
+          this.MainViewModel.SvgNestConfigViewModel.SvgNestConfig.LastNestFilePath = this.DirectoryName;
+        }
+        else if (this is NfpCandidateListViewModel ||
+                 this is SheetPlacementViewModel)
+        {
+          this.MainViewModel.SvgNestConfigViewModel.SvgNestConfig.LastDebugFilePath = this.DirectoryName;
+        }
       }
     }
 

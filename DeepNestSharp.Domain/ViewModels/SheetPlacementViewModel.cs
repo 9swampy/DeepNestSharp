@@ -1,4 +1,4 @@
-﻿namespace DeepNestSharp.Ui.ViewModels
+﻿namespace DeepNestSharp.Domain.ViewModels
 {
   using System;
   using System.Diagnostics;
@@ -9,7 +9,6 @@
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Domain.Services;
-  using DeepNestSharp.Domain.ViewModels;
   using DeepNestSharp.Ui.Docking;
   using Microsoft.Toolkit.Mvvm.Input;
 
@@ -17,11 +16,11 @@
   {
     private readonly IMouseCursorService mouseCursorService;
     private int selectedIndex;
-    private IPartPlacement? selectedItem;
-    private ObservableSheetPlacement? observableSheetPlacement;
-    private RelayCommand? loadPartFileCommand = null;
-    private AsyncRelayCommand? loadAllExactCommand;
-    private AsyncRelayCommand? exportSheetPlacementCommand;
+    private IPartPlacement selectedItem;
+    private ObservableSheetPlacement observableSheetPlacement;
+    private RelayCommand loadPartFileCommand = null;
+    private AsyncRelayCommand loadAllExactCommand;
+    private AsyncRelayCommand exportSheetPlacementCommand;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SheetPlacementViewModel"/> class.
@@ -116,7 +115,7 @@
       OnPropertyChanged(nameof(SheetPlacement));
     }
 
-    private void SheetPlacement_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void SheetPlacement_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
       NotifyContentUpdated();
     }
@@ -134,7 +133,7 @@
 
     private async Task OnLoadAllExactAsync()
     {
-      mouseCursorService.OverrideCursor = Domain.Cursors.Wait;
+      mouseCursorService.OverrideCursor = Cursors.Wait;
       var partPlacementList = this.observableSheetPlacement.PartPlacements.Cast<ObservablePartPlacement>().ToList();
       foreach (var pp in partPlacementList)
       {
@@ -144,7 +143,7 @@
       this.IsDirty = false;
       NotifyContentUpdated();
       loadAllExactCommand?.NotifyCanExecuteChanged();
-      mouseCursorService.OverrideCursor = Domain.Cursors.Null;
+      mouseCursorService.OverrideCursor = Cursors.Null;
     }
 
     private void OnLoadPartFile()

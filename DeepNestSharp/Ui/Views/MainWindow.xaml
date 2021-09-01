@@ -6,7 +6,6 @@
         xmlns:interactivity="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:local="clr-namespace:DeepNestSharp"
         xmlns:userControls="clr-namespace:DeepNestSharp.Ui.UserControls"
-        xmlns:models="clr-namespace:DeepNestSharp.Ui.Models"
         xmlns:converters="clr-namespace:DeepNestSharp.Ui.Converters" 
         xmlns:behaviors="clr-namespace:DeepNestSharp.Ui.Behaviors"
         xmlns:sys="clr-namespace:System;assembly=System.Runtime" 
