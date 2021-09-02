@@ -1,8 +1,6 @@
 ﻿namespace DeepNestLib.CiTests
 {
-  using System;
   using System.Collections.Generic;
-  using System.IO;
   using System.Linq;
   using FakeItEasy;
   using FluentAssertions;
@@ -16,15 +14,13 @@
     private static readonly DxfGenerator DxfGenerator = new DxfGenerator();
 
     private RawDetail loadedRawDetail;
-    private NestingContext nestingContext;
     private INfp loadedNfp;
     private bool hasImportedRawDetail;
 
     public DxfParserFixture()
     {
       this.loadedRawDetail = DxfParser.LoadDxfStream(DxfTestFilename);
-      this.nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
-      this.hasImportedRawDetail = this.loadedRawDetail.TryImportFromRawDetail(A.Dummy<int>(), out this.loadedNfp);
+      this.hasImportedRawDetail = this.loadedRawDetail.TryConvertToNfp(A.Dummy<int>(), out this.loadedNfp);
     }
 
     [Fact]

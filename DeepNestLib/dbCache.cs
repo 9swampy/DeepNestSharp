@@ -7,14 +7,14 @@
   {
     public DbCache(IWindowUnk w)
     {
-      window = w;
+      Window = w;
     }
 
     public bool Has(DbCacheKey dbCacheKey)
     {
       lock (lockobj)
       {
-        if (window.nfpCache.ContainsKey(dbCacheKey.Key))
+        if (Window.nfpCache.ContainsKey(dbCacheKey.Key))
         {
           return true;
         }
@@ -23,7 +23,7 @@
       }
     }
 
-    public IWindowUnk window;
+    public IWindowUnk Window;
 
     public static volatile object lockobj = new object();
 
@@ -33,9 +33,9 @@
       {
         lock (lockobj)
         {
-          if (!window.nfpCache.ContainsKey(obj.Key))
+          if (!Window.nfpCache.ContainsKey(obj.Key))
           {
-            window.nfpCache.Add(obj.Key, CacheHelper.CloneNfp(obj.nfp, inner).ToList());
+            Window.nfpCache.Add(obj.Key, CacheHelper.CloneNfp(obj.Nfp, inner).ToList());
           }
           else
           {
@@ -43,6 +43,7 @@
             //   window.nfpCache[key] = Background.cloneNfp(new[] { obj.nfp }, inner).ToList();
           }
         }
+
         //console.log('cached: ',window.cache[key].poly);
         //console.log('using', window.performance.memory.totalJSHeapSize/window.performance.memory.jsHeapSizeLimit);
       }
@@ -55,9 +56,9 @@
         //var key = "A" + obj.A + "B" + obj.B + "Arot" + (int)Math.Round(obj.ARotation) + "Brot" + (int)Math.Round((obj.BRotation));
 
         //console.log('key: ', key);
-        if (window.nfpCache.ContainsKey(key.Key))
+        if (Window.nfpCache.ContainsKey(key.Key))
         {
-          return CacheHelper.CloneNfp(window.nfpCache[key.Key].ToArray(), inner);
+          return CacheHelper.CloneNfp(Window.nfpCache[key.Key].ToArray(), inner);
         }
 
         return null;

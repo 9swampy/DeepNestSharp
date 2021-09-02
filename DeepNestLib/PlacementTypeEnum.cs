@@ -4,6 +4,6 @@
   {
     BoundingBox,
     Gravity,
-    Squeeze
+    Squeeze,
   }
 }

@@ -14,5 +14,23 @@
     {
       Console.WriteLine($"{ex.Message}/n{ex.StackTrace}");
     }
+
+    public void DisplayMessageBox(string text, string caption, MessageBoxIcon icon)
+    {
+      Console.WriteLine($"--------------------------------------------------------------/n" +
+                        $"{caption}/n" +
+                        $"{text}/n" +
+                        $"--------------------------------------------------------------");
+    }
+
+    public MessageBoxResult DisplayOkCancel(string text, string caption, MessageBoxIcon icon)
+    {
+      throw new NotImplementedException();
+    }
+
+    public MessageBoxResult DisplayYesNoCancel(string text, string caption, MessageBoxIcon icon)
+    {
+      throw new NotImplementedException();
+    }
   }
 }

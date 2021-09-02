@@ -10,7 +10,7 @@
 
     public PmapWorkerProcessSecondFixture()
     {
-      processed = new PmapWorker(null, A.Fake<IProgressDisplayer>(), false).Process(pair2);
+      processed = new PmapWorker(null, A.Fake<IProgressDisplayer>(), false, A.Dummy<MinkowskiSum>(), A.Dummy<NestState>()).Process(pair2);
     }
 
     [Fact]
@@ -34,31 +34,31 @@
     [Fact]
     public void ShouldSetNfp()
     {
-      processed.nfp.Should().NotBeNull();
+      processed.Nfp.Should().NotBeNull();
     }
 
     [Fact]
     public void ShouldSetNfpHeight()
     {
-      processed.nfp.HeightCalculated.Should().Be(22);
+      processed.Nfp.HeightCalculated.Should().Be(22);
     }
 
     [Fact]
     public void ShouldSetNfpWidth()
     {
-      processed.nfp.WidthCalculated.Should().Be(22);
+      processed.Nfp.WidthCalculated.Should().Be(22);
     }
 
     [Fact]
     public void ShouldSetNfpArea()
     {
-      processed.nfp.Area.Should().Be(484);
+      processed.Nfp.Area.Should().Be(484);
     }
 
     [Fact]
     public void ShouldSetPoints()
     {
-      processed.nfp.Points.Should().BeEquivalentTo(expectedPoints2, options => options.Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 1))
+      processed.Nfp.Points.Should().BeEquivalentTo(ExpectedPoints2, options => options.Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 1))
                                     .WhenTypeIs<double>());
     }
   }

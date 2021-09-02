@@ -8,13 +8,13 @@
 
     public double Fitness = -1;
 
-    public float[] Rotation { get; }
+    public double[] Rotation { get; }
 
-    public List<NFP> Parts { get; }
+    public List<INfp> Parts { get; }
 
     public bool IsPending => !Processing && Fitness == -1;
 
-    public PopulationItem(List<NFP> parts, float[] rotations)
+    public PopulationItem(List<INfp> parts, double[] rotations)
     {
       this.Parts = parts;
       this.Rotation = rotations;

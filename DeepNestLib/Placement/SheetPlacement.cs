@@ -2,23 +2,29 @@
 {
   using System;
   using System.Collections.Generic;
+  using System.IO;
   using System.Linq;
   using System.Text.Json;
   using System.Text.Json.Serialization;
   using DeepNestLib.GeneticAlgorithm;
+  using DeepNestLib.Geometry;
+  using DeepNestLib.IO;
 
   /// <summary>
   /// Represents a sheet that has had parts placed on it in the nest.
   /// </summary>
-  public class SheetPlacement : ISheetPlacement
+  public class SheetPlacement : Saveable, ISheetPlacement
   {
+    public const string FileDialogFilter = "DeepNest SheetPlacement (*.dnsp)|*.dnsp|Json (*.json)|*.json|All files (*.*)|*.*";
+
     private NFP hull;
 
-    public SheetPlacement(PlacementTypeEnum placementType, INfp sheet, IList<PartPlacement> partPlacements)
+    public SheetPlacement(PlacementTypeEnum placementType, ISheet sheet, IReadOnlyList<IPartPlacement> partPlacements, double mergedLength)
     {
       this.PlacementType = placementType;
       this.Sheet = sheet;
       this.PartPlacements = partPlacements;
+      this.MergedLength = mergedLength;
       this.Fitness = new OriginalFitnessSheet(this);
     }
 
@@ -36,19 +42,13 @@
     public PlacementTypeEnum PlacementType { get; private set; }
 
     [JsonInclude]
-    public INfp Sheet { get; private set; }
+    public ISheet Sheet { get; private set; }
 
     [JsonInclude]
-    public IList<PartPlacement> PartPlacements { get; private set; } = new List<PartPlacement>();
+    public IReadOnlyList<IPartPlacement> PartPlacements { get; private set; } = new List<IPartPlacement>();
 
     [JsonIgnore]
-    public PolygonBounds RectBounds
-    {
-      get
-      {
-        return CombinedRectBounds(this.PartPlacements);
-      }
-    }
+    public PolygonBounds RectBounds => CombinedRectBounds(this.PartPlacements);
 
     [JsonIgnore]
     public INfp Hull
@@ -71,75 +71,96 @@
       {
         var clipperScale = new SvgNestConfig().ClipperScale;
         var allpoints = CombinedPoints(this.PartPlacements);
-        var clipperNfp = Background.NfpToClipperCoordinates(allpoints, clipperScale);
+        var clipperNfp = NfpHelper.NfpToClipperCoordinates(allpoints, clipperScale);
 
         var combinedNfp = new List<List<ClipperLib.IntPoint>>();
         var clipper = new ClipperLib.Clipper();
-        clipper.AddPaths(clipperNfp.Select(z => z.ToList()).ToList(), ClipperLib.PolyType.ptSubject, true);
-        clipper.Execute(ClipperLib.ClipType.ctUnion, combinedNfp, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero);
+        _ = clipper.AddPaths(clipperNfp.Select(z => z.ToList()).ToList(), ClipperLib.PolyType.ptSubject, true);
+        _ = clipper.Execute(ClipperLib.ClipType.ctUnion, combinedNfp, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero);
 
-        return SvgNest.simplifyFunction(combinedNfp[0].ToArray().ToNestCoordinates(clipperScale), false, 1, false);
+        return SvgNest.SimplifyFunction(combinedNfp[0].ToArray().ToNestCoordinates(clipperScale), false, 1, false);
       }
     }
 
     [JsonIgnore]
-    public float TotalPartsArea => this.PartPlacements.Sum(p => p.Part.Area);
+    public double TotalPartsArea => this.PartPlacements.Sum(p => p.Part.Area);
 
     [JsonIgnore]
-    public float MaterialUtilization
-    {
-      get
-      {
-        return Math.Abs(TotalPartsArea / this.Sheet.Area);
-      }
-    }
-
-    internal static PolygonBounds CombinedRectBounds(IList<PartPlacement> partPlacements)
-    {
-      NFP allpoints = CombinedPoints(partPlacements);
-      return GeometryUtil.getPolygonBounds(allpoints);
-    }
-
-    internal static NFP CombinedPoints(IList<PartPlacement> partPlacements)
-    {
-      NFP allpoints = new NFP();
-      for (int partIndex = 0; partIndex < partPlacements.Count; partIndex++)
-      {
-        var length = partPlacements[partIndex].Part.Points.Length;
-        for (int pointIndex = 0; pointIndex < length; pointIndex++)
-        {
-          var part = partPlacements[partIndex].Part.Points[pointIndex];
-          var placement = partPlacements[partIndex];
-          allpoints.AddPoint(
-              new SvgPoint(
-               part.x + placement.x,
-               part.y + placement.y));
-        }
-      }
-
-      return allpoints;
-    }
+    public double MaterialUtilization => Math.Abs(TotalPartsArea / this.Sheet.Area);
 
     [JsonIgnore]
     public OriginalFitnessSheet Fitness { get; }
 
-    public string ToJson()
+    [JsonIgnore]
+    public double MaxX => PartPlacements.Max(pp => pp.MaxX);
+
+    [JsonIgnore]
+    public double MaxY => PartPlacements.Max(pp => pp.MaxY);
+
+    [JsonIgnore]
+    public double MinX => PartPlacements.Min(pp => pp.MinX);
+
+    [JsonIgnore]
+    public double MinY => PartPlacements.Min(pp => pp.MinY);
+
+    public double MergedLength { get; }
+
+    public static SheetPlacement LoadFromFile(string fileName)
     {
-      var options = new JsonSerializerOptions();
-      options.Converters.Add(new NfpJsonConverter());
-      return JsonSerializer.Serialize(this, options);
+      using (StreamReader inputFile = new StreamReader(fileName))
+      {
+        return FromJson(inputFile.ReadToEnd());
+      }
     }
 
     public static SheetPlacement FromJson(string json)
     {
       var options = new JsonSerializerOptions();
+      options.Converters.Add(new SheetJsonConverter());
       options.Converters.Add(new NfpJsonConverter());
+      options.Converters.Add(new PartPlacementJsonConverter());
       return JsonSerializer.Deserialize<SheetPlacement>(json, options);
+    }
+
+    public override string ToJson(bool writeIndented = false)
+    {
+      var options = new JsonSerializerOptions();
+      options.Converters.Add(new SheetJsonConverter());
+      options.Converters.Add(new NfpJsonConverter());
+      options.Converters.Add(new PartPlacementJsonConverter());
+      options.WriteIndented = writeIndented;
+      return JsonSerializer.Serialize(this, options);
     }
 
     public override string ToString()
     {
       return this.Fitness.ToString();
+    }
+
+    internal static PolygonBounds CombinedRectBounds(IReadOnlyList<IPartPlacement> partPlacements)
+    {
+      NFP allpoints = CombinedPoints(partPlacements);
+      return GeometryUtil.GetPolygonBounds(allpoints);
+    }
+
+    internal static NFP CombinedPoints(IReadOnlyList<IPartPlacement> partPlacements)
+    {
+      NFP allpoints = new NFP();
+      for (var partIndex = 0; partIndex < partPlacements.Count; partIndex++)
+      {
+        var length = partPlacements[partIndex].Part.Points.Length;
+        for (var pointIndex = 0; pointIndex < length; pointIndex++)
+        {
+          var part = partPlacements[partIndex].Part.Points[pointIndex];
+          var placement = partPlacements[partIndex];
+          allpoints.AddPoint(
+              new SvgPoint(
+               part.X + placement.X,
+               part.Y + placement.Y));
+        }
+      }
+
+      return allpoints;
     }
   }
 }

@@ -14,7 +14,7 @@
       this.window = window;
     }
 
-    public List<NfpPair> Generate(bool useParallel, NFP[] parts)
+    public List<NfpPair> Generate(bool useParallel, INfp[] parts)
     {
       List<NfpPair> pairs = new List<NfpPair>();
       if (useParallel)
@@ -45,7 +45,7 @@
       return pairs;
     }
 
-    private IEnumerable<NfpPair> CreatePairs(int i, NFP[] parts)
+    private IEnumerable<NfpPair> CreatePairs(int i, INfp[] parts)
     {
       var b = parts[i];
       for (var j = 0; j < i; j++)

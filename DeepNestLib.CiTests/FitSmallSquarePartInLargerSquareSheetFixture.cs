@@ -1,7 +1,6 @@
 ﻿namespace DeepNestLib.CiTests
 {
-  using System;
-  using DeepNestLib.GeneticAlgorithm;
+  using System.Diagnostics;
   using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
@@ -14,30 +13,28 @@
 
     public FitSmallSquarePartInLargerSquareSheetFixture()
     {
-      var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
-      INfp sheet;
-      DxfGenerator.GenerateSquare("Sheet", 22D, RectangleType.FileLoad).TryImportFromRawDetail(0, out sheet).Should().BeTrue();
+      ISheet sheet;
+      DxfGenerator.GenerateSquare("Sheet", 22D, RectangleType.FileLoad).TryConvertToSheet(0, out sheet).Should().BeTrue();
       INfp part;
-      DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryImportFromRawDetail(0, out part).Should().BeTrue();
-      this.nestResult = new Background(A.Fake<IProgressDisplayer>(), null).PlaceParts(new INfp[] { sheet }, new INfp[] { part }, new SvgNestConfig());
+      DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryConvertToNfp(0, out part).Should().BeTrue();
+      this.nestResult = new PlacementWorker(A.Dummy<NfpHelper>(), new ISheet[] { sheet }, new INfp[] { part }, new SvgNestConfig(), A.Dummy<Stopwatch>(), A.Fake<INestState>()).PlaceParts();
     }
 
     [Fact]
     public void GivenNullSheetsPassedInThenNullReturned()
     {
-      new Background(A.Fake<IProgressDisplayer>(), null).PlaceParts(null, new NFP[] { new NFP() }, new SvgNestConfig()).Should().BeNull();
+      new PlacementWorker(A.Dummy<NfpHelper>(), null, new NFP[] { new NFP() }, new SvgNestConfig(), A.Dummy<Stopwatch>(), A.Fake<INestState>()).PlaceParts().Should().BeNull();
     }
 
     [Fact]
     private void TestAnActualCallOutToMinkowskiBecauseWhyDoTestsWorkButApplicationCrashes()
     {
-      var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
-      INfp sheet;
-      DxfGenerator.GenerateSquare("Sheet", 22D, RectangleType.FileLoad).TryImportFromRawDetail(0, out sheet).Should().BeTrue();
+      ISheet sheet;
+      DxfGenerator.GenerateSquare("Sheet", 22D, RectangleType.FileLoad).TryConvertToSheet(0, out sheet).Should().BeTrue();
       INfp part;
-      DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryImportFromRawDetail(0, out part).Should().BeTrue();
+      DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryConvertToNfp(0, out part).Should().BeTrue();
 
-      new Background(A.Fake<IProgressDisplayer>(), null).ExecuteDllImportMinkowski(sheet, part, MinkowskiCache.Cache).Should().NotBeNull();
+      A.Dummy<NfpHelper>().ExecuteDllImportMinkowski(sheet, part, MinkowskiCache.Cache, A.Dummy<bool>()).Should().NotBeNull();
     }
 
     [Fact]
@@ -55,7 +52,7 @@
     [Fact]
     public void ShouldHaveExpectedFitness()
     {
-      this.nestResult.Fitness.Should().BeApproximately(1959, 1);
+      this.nestResult.Fitness.Should().BeApproximately(1679, 1);
     }
 
     [Fact]
@@ -91,19 +88,19 @@
     [Fact]
     public void ShouldHaveOnePartOnOnePlacementWithExpectedX()
     {
-      this.nestResult.UsedSheets[0].PartPlacements[0].x.Should().Be(0);
+      this.nestResult.UsedSheets[0].PartPlacements[0].X.Should().Be(0);
     }
 
     [Fact]
     public void ShouldHaveOnePartOnOnePlacementWithExpectedY()
     {
-      this.nestResult.UsedSheets[0].PartPlacements[0].y.Should().Be(0);
+      this.nestResult.UsedSheets[0].PartPlacements[0].Y.Should().Be(0);
     }
 
     [Fact]
     public void ShouldHaveOnePartOnOnePlacementWithExpectedRotation()
     {
-      this.nestResult.UsedSheets[0].PartPlacements[0].rotation.Should().Be(0);
+      this.nestResult.UsedSheets[0].PartPlacements[0].Rotation.Should().Be(0);
     }
 
     [Fact]

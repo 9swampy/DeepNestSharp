@@ -3,5 +3,10 @@
     <HiddenComponentWarnings>
       <Value>PostBuildEventDisabled</Value>
     </HiddenComponentWarnings>
+    <IgnoredTests>
+      <NamedTestSelector>
+        <TestName>DeepNestLib.CiTests.OverlappingNestDebug180180CorrectFixture.ShouldHaveReturnedExpectedSheetPlacement</TestName>
+      </NamedTestSelector>
+    </IgnoredTests>
   </Settings>
 </ProjectConfiguration>

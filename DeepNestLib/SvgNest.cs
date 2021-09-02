@@ -2,129 +2,69 @@
 {
   using System;
   using System.Collections.Generic;
+#if NCRUNCH
+  using System.Diagnostics;
+#endif
   using System.Linq;
-  using System.Text;
-  using System.Threading;
   using System.Threading.Tasks;
   using ClipperLib;
   using DeepNestLib.GeneticAlgorithm;
+  using DeepNestLib.Geometry;
   using DeepNestLib.Placement;
 
   public partial class SvgNest
   {
-    private static int generations = 0;
-    private static int population = 0;
-    private static int threads = 0;
-    private static int nestCount = 0;
-    private static long totalNestTime = 0;
-    private static long lastPlacementTime = 0;
-
     private readonly IMessageService messageService;
-    private readonly Action setIsErrored;
-    private GeneticAlgorithm.Procreant ga;
-    private PolygonTreeItem[] tree;
-    private bool useHoles;
-    private bool searchEdges;
+    private readonly IMinkowskiSumService minkowskiSumService;
+    private Procreant ga;
 
     private IProgressDisplayer progressDisplayer;
+
+    private static readonly PolygonSimplificationDictionary cache = new PolygonSimplificationDictionary();
+
+    private static volatile object cacheSyncLock = new object();
     private volatile bool isStopped;
 
-    public SvgNest(IMessageService messageService, IProgressDisplayer progressDisplayer, Action setIsErrored)
+    public SvgNest(
+      IMessageService messageService,
+      IProgressDisplayer progressDisplayer,
+      IMinkowskiSumService minkowskiSumService,
+      INestStateSvgNest nestState)
     {
+      this.State = nestState;
       this.messageService = messageService;
       this.progressDisplayer = progressDisplayer;
-      this.setIsErrored = setIsErrored;
-    }
-
-    public TopNestResultsCollection TopNestResults { get; private set; } = new TopNestResultsCollection(Config);
-
-    public long AverageNestTime => nestCount == 0 ? 0 : totalNestTime / nestCount;
-
-    public long LastPlacementTime => lastPlacementTime;
-
-    public static int NestCount => nestCount;
-
-    public static int Population => population;
-
-    public static int Threads => threads;
-
-    public static int Generations => generations;
-
-    private static SvgPoint GetTarget(SvgPoint o, INfp simple, double tol)
-    {
-      List<InrangeItem> inrange = new List<InrangeItem>();
-
-      // find closest points within 2 offset deltas
-      for (var j = 0; j < simple.Length; j++)
-      {
-        var s = simple[j];
-        var d2 = ((o.x - s.x) * (o.x - s.x)) + ((o.y - s.y) * (o.y - s.y));
-        if (d2 < tol * tol)
-        {
-          inrange.Add(new InrangeItem() { point = s, distance = d2 });
-        }
-      }
-
-      SvgPoint target = null;
-      if (inrange.Count > 0)
-      {
-        var filtered = inrange.Where((p) =>
-        {
-          return p.point.Exact;
-        }).ToList();
-
-        // use exact points when available, normal points when not
-        inrange = filtered.Count > 0 ? filtered : inrange;
-
-        inrange = inrange.OrderBy((b) =>
-{
-  return b.distance;
-}).ToList();
-
-        target = inrange[0].point;
-      }
-      else
-      {
-        double? mind = null;
-        for (int j = 0; j < simple.Length; j++)
-        {
-          var s = simple[j];
-          var d2 = ((o.x - s.x) * (o.x - s.x)) + ((o.y - s.y) * (o.y - s.y));
-          if (mind == null || d2 < mind)
-          {
-            target = s;
-            mind = d2;
-          }
-        }
-      }
-
-      return target;
+      this.minkowskiSumService = minkowskiSumService;
     }
 
     public static ISvgNestConfig Config { get; } = new SvgNestConfig();
 
-    public static bool pointInPolygon(SvgPoint point, INfp polygon)
+    public bool IsStopped { get => isStopped; private set => isStopped = value; }
+
+    private INestStateSvgNest State { get; }
+
+    public static bool PointInPolygon(SvgPoint point, INfp polygon)
     {
       // scaling is deliberately coarse to filter out points that lie *on* the polygon
-      var p = svgToClipper2(polygon, 1000);
-      var pt = new ClipperLib.IntPoint(1000 * point.x, 1000 * point.y);
+      var p = SvgToClipper2(polygon, 1000);
+      var pt = new IntPoint(1000 * point.X, 1000 * point.Y);
 
-      return ClipperLib.Clipper.PointInPolygon(pt, p.ToList()) > 0;
+      return Clipper.PointInPolygon(pt, p.ToList()) > 0;
     }
 
     // returns true if any complex vertices fall outside the simple polygon
-    private static bool exterior(INfp simple, INfp complex, bool inside, double curveTolerance)
+    private static bool Exterior(INfp simple, INfp complex, bool inside, double curveTolerance)
     {
       // find all protruding vertices
       for (var i = 0; i < complex.Length; i++)
       {
         var v = complex[i];
-        if (!inside && !pointInPolygon(v, simple) && find(v, simple, curveTolerance) == null)
+        if (!inside && !PointInPolygon(v, simple) && Find(v, simple, curveTolerance) == null)
         {
           return true;
         }
 
-        if (inside && pointInPolygon(v, simple) && find(v, simple, curveTolerance) != null)
+        if (inside && PointInPolygon(v, simple) && Find(v, simple, curveTolerance) != null)
         {
           return true;
         }
@@ -133,23 +73,15 @@
       return false;
     }
 
-    private static readonly PolygonSimplificationDictionary cache = new PolygonSimplificationDictionary();
-
-    private static volatile object cacheSyncLock = new object();
-
-    public static INfp simplifyFunction(INfp polygon, bool inside)
+    public static INfp SimplifyFunction(INfp polygon, bool inside, ISvgNestConfig config)
     {
-      return simplifyFunction(polygon, inside, Config.CurveTolerance, Config.Simplify);
+      return SimplifyFunction(polygon, inside, config.CurveTolerance, config.Simplify);
     }
 
     /// <summary>
     /// Override specifically added for Tests so the curveTolerance can be passed in.
     /// </summary>
-    /// <param name="polygon"></param>
-    /// <param name="inside"></param>
-    /// <param name="curveTolerance"></param>
-    /// <returns></returns>
-    internal static INfp simplifyFunction(INfp polygon, bool inside, double curveTolerance, bool useHull)
+    internal static INfp SimplifyFunction(INfp polygon, bool inside, double curveTolerance, bool useHull)
     {
       var markExact = true;
       var straighten = true;
@@ -160,7 +92,7 @@
 
       // give special treatment to line segments above this length (squared)
       var fixedTolerance = 40 * curveTolerance * 40 * curveTolerance;
-      int i, j, k;
+      int i, j;
 
       var hull = polygon.GetHull();
       if (useHull)
@@ -184,7 +116,7 @@
         }
       }
 
-      var cleaned = cleanPolygon2(polygon);
+      var cleaned = CleanPolygon2(polygon);
       if (cleaned != null && cleaned.Length > 1)
       {
         polygon = cleaned;
@@ -206,7 +138,7 @@
       if (doSimplify)
       {
         // polygon to polyline
-        var copy = polygon.slice(0);
+        var copy = polygon.Slice(0);
         ((IHiddenNfp)copy).Push(copy[0]);
 
         // mark all segments greater than ~0.25 in to be kept
@@ -216,7 +148,7 @@
         {
           var p1 = copy[i];
           var p2 = copy[i + 1];
-          var sqd = ((p2.x - p1.x) * (p2.x - p1.x)) + ((p2.y - p1.y) * (p2.y - p1.y));
+          var sqd = ((p2.X - p1.X) * (p2.X - p1.X)) + ((p2.Y - p1.Y) * (p2.Y - p1.Y));
           if (sqd > fixedTolerance)
           {
             p1.Marked = true;
@@ -224,14 +156,14 @@
           }
         }
 
-        simple = Simplify.simplify(copy.Points, tolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker);
+        simple = Simplify.SimplifyPolygon(copy.Points, tolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker);
 
         // now a polygon again
         // simple.pop();
         simple.ReplacePoints(simple.Points.Take(simple.Points.Count() - 1));
 
         // could be dirty again (self intersections and/or coincident points)
-        simple = cleanPolygon2(simple);
+        simple = CleanPolygon2(simple);
       }
 
       // simplification process reduced poly to a line or point; or it came back just as complex as the original
@@ -240,14 +172,14 @@
         simple = polygon;
       }
 
-      var offsets = polygonOffsetDeepNest(simple, inside ? -tolerance : tolerance);
+      var offsets = PolygonOffsetDeepNest(simple, inside ? -tolerance : tolerance);
 
       INfp offset = null;
       double offsetArea = 0;
       List<INfp> holes = new List<INfp>();
       for (i = 0; i < offsets.Length; i++)
       {
-        var area = GeometryUtil.polygonArea(offsets[i]);
+        var area = GeometryUtil.PolygonArea(offsets[i]);
         if (offset == null || area < offsetArea)
         {
           offset = offsets[i];
@@ -272,7 +204,7 @@
       {
         var delta = j * (tolerance / numshells);
         delta = inside ? -delta : delta;
-        var shell = polygonOffsetDeepNest(simple, delta);
+        var shell = PolygonOffsetDeepNest(simple, delta);
         if (shell.Count() > 0)
         {
           shells[j] = shell.First();
@@ -303,12 +235,12 @@
 
           // reverse point offset and try to find exterior points
           var test = offset.CloneTop();
-          test.Points[i] = new SvgPoint(target.x, target.y);
+          test.Points[i] = new SvgPoint(target.X, target.Y);
 
-          if (!exterior(test, polygon, inside, curveTolerance))
+          if (!Exterior(test, polygon, inside, curveTolerance))
           {
-            o.x = target.x;
-            o.y = target.y;
+            o.X = target.X;
+            o.Y = target.Y;
           }
           else
           {
@@ -321,11 +253,11 @@
                 var delta = j * (tolerance / numshells);
                 target = GetTarget(o, shell, 2 * delta);
                 test = offset.CloneTop();
-                test.Points[i] = new SvgPoint(target.x, target.y);
-                if (!exterior(test, polygon, inside, curveTolerance))
+                test.Points[i] = new SvgPoint(target.X, target.Y);
+                if (!Exterior(test, polygon, inside, curveTolerance))
                 {
-                  o.x = target.x;
-                  o.y = target.y;
+                  o.X = target.X;
+                  o.Y = target.Y;
                   break;
                 }
               }
@@ -345,7 +277,7 @@
           var p1 = offset[i];
           var p2 = offset[i + 1 == offset.Length ? 0 : i + 1];
 
-          var sqd = ((p2.x - p1.x) * (p2.x - p1.x)) + ((p2.y - p1.y) * (p2.y - p1.y));
+          var sqd = ((p2.X - p1.X) * (p2.X - p1.X)) + ((p2.Y - p1.Y) * (p2.Y - p1.Y));
 
           if (sqd < fixedTolerance)
           {
@@ -357,23 +289,23 @@
             var s1 = simple[j];
             var s2 = simple[j + 1 == simple.Length ? 0 : j + 1];
 
-            var sqds = ((p2.x - p1.x) * (p2.x - p1.x)) + ((p2.y - p1.y) * (p2.y - p1.y));
+            var sqds = ((p2.X - p1.X) * (p2.X - p1.X)) + ((p2.Y - p1.Y) * (p2.Y - p1.Y));
 
             if (sqds < fixedTolerance)
             {
               continue;
             }
 
-            if ((GeometryUtil._almostEqual(s1.x, s2.x) || GeometryUtil._almostEqual(s1.y, s2.y)) && // we only really care about vertical and horizontal lines
-            GeometryUtil._withinDistance(p1, s1, 2 * tolerance) &&
-            GeometryUtil._withinDistance(p2, s2, 2 * tolerance) &&
-            (!GeometryUtil._withinDistance(p1, s1, curveTolerance / 1000) ||
-            !GeometryUtil._withinDistance(p2, s2, curveTolerance / 1000)))
+            if ((GeometryUtil.AlmostEqual(s1.X, s2.X) || GeometryUtil.AlmostEqual(s1.Y, s2.Y)) && // we only really care about vertical and horizontal lines
+            GeometryUtil.WithinDistance(p1, s1, 2 * tolerance) &&
+            GeometryUtil.WithinDistance(p2, s2, 2 * tolerance) &&
+            (!GeometryUtil.WithinDistance(p1, s1, curveTolerance / 1000) ||
+            !GeometryUtil.WithinDistance(p2, s2, curveTolerance / 1000)))
             {
-              p1.x = s1.x;
-              p1.y = s1.y;
-              p2.x = s2.x;
-              p2.y = s2.y;
+              p1.X = s1.X;
+              p1.Y = s1.Y;
+              p2.X = s2.X;
+              p2.Y = s2.Y;
               straightened = true;
             }
           }
@@ -397,7 +329,7 @@
             for (i = 0; i < combined.Count; i++)
             {
               var n = combined[i].ToArray().ToNestCoordinates(10000000);
-              var sarea = -GeometryUtil.polygonArea(n);
+              var sarea = -GeometryUtil.PolygonArea(n);
               if (largestArea == null || largestArea < sarea)
               {
                 offset = n;
@@ -408,7 +340,7 @@
         }
       }
 
-      cleaned = cleanPolygon2(offset);
+      cleaned = CleanPolygon2(offset);
       if (cleaned != null && cleaned.Length > 1)
       {
         offset = cleaned;
@@ -440,18 +372,9 @@
       return offset;
     }
 
-    internal static void Reset()
-    {
-      Interlocked.Exchange(ref nestCount, 0);
-      Interlocked.Exchange(ref totalNestTime, 0);
-      Interlocked.Exchange(ref generations, 0);
-      Interlocked.Exchange(ref population, 0);
-      Interlocked.Exchange(ref lastPlacementTime, 0);
-    }
-
     internal void Stop()
     {
-      this.isStopped = true;
+      this.IsStopped = true;
     }
 
     /// <summary>
@@ -463,8 +386,8 @@
     /// <returns></returns>
     internal static INfp ClipSubject(INfp subject, INfp clipBounds, double clipperScale)
     {
-      var clipperSubject = Background.InnerNfpToClipperCoordinates(new INfp[] { subject }, clipperScale);
-      var clipperClip = Background.InnerNfpToClipperCoordinates(new INfp[] { clipBounds }, clipperScale);
+      var clipperSubject = NfpHelper.InnerNfpToClipperCoordinates(new INfp[] { subject }, clipperScale);
+      var clipperClip = NfpHelper.InnerNfpToClipperCoordinates(new INfp[] { clipBounds }, clipperScale);
 
       var clipper = new Clipper();
       clipper.AddPaths(clipperClip.Select(z => z.ToList()).ToList(), PolyType.ptClip, true);
@@ -490,8 +413,8 @@
       for (i = 0; i < offset.Length; i++)
       {
         var seg = new SvgPoint[] { offset[i], offset[i + 1 == offset.Length ? 0 : i + 1] };
-        var index1 = find(seg[0], polygon, curveTolerance);
-        var index2 = find(seg[1], polygon, curveTolerance);
+        var index1 = Find(seg[0], polygon, curveTolerance);
+        var index2 = Find(seg[1], polygon, curveTolerance);
         if (index1 == null)
         {
           index1 = 0;
@@ -523,8 +446,8 @@
         seg.AddPoint(simple[i]);
         seg.AddPoint(simple[i + 1 == simple.Length ? 0 : i + 1]);
 
-        var index1 = find(seg[0], polygon, curveTolerance);
-        var index2 = find(seg[1], polygon, curveTolerance);
+        var index1 = Find(seg[0], polygon, curveTolerance);
+        var index2 = Find(seg[1], polygon, curveTolerance);
 
         if (IsExactMatch(polygon, index1, index2))
         {
@@ -539,11 +462,11 @@
       return index1 + 1 == index2 || index2 + 1 == index1 || (index1 == 0 && index2 == polygon.Length - 1) || (index2 == 0 && index1 == polygon.Length - 1);
     }
 
-    private static int? find(SvgPoint v, INfp p, double curveTolerance)
+    private static int? Find(SvgPoint v, INfp p, double curveTolerance)
     {
       for (var i = 0; i < p.Length; i++)
       {
-        if (GeometryUtil._withinDistance(v, p[i], curveTolerance / 1000))
+        if (GeometryUtil.WithinDistance(v, p[i], curveTolerance / 1000))
         {
           return i;
         }
@@ -553,13 +476,13 @@
     }
 
     // offset tree recursively
-    public static void OffsetTree(INfp t, double offset, bool? inside = null)
+    public static void OffsetTree(ref INfp t, double offset, ISvgNestConfig config, bool? inside = null)
     {
-      var simple = simplifyFunction(t, (inside == null) ? false : inside.Value);
+      var simple = SimplifyFunction(t, (inside == null) ? false : inside.Value, config);
       var offsetpaths = new INfp[] { simple };
       if (Math.Abs(offset) > 0)
       {
-        offsetpaths = polygonOffsetDeepNest(simple, offset);
+        offsetpaths = PolygonOffsetDeepNest(simple, offset);
       }
 
       if (offsetpaths.Count() > 0)
@@ -591,21 +514,22 @@
       {
         for (var i = 0; i < t.Children.Count; i++)
         {
-          OffsetTree(t.Children[i], -offset, (inside == null) ? true : (!inside));
+          var child = t.Children[i];
+          OffsetTree(ref child, -offset, config, (inside == null) ? true : (!inside));
         }
       }
     }
 
     // use the clipper library to return an offset to the given polygon. Positive offset expands the polygon, negative contracts
     // note that this returns an array of polygons
-    public static INfp[] polygonOffsetDeepNest(INfp polygon, double offset)
+    public static INfp[] PolygonOffsetDeepNest(INfp polygon, double offset)
     {
-      if (offset == 0 || GeometryUtil._almostEqual(offset, 0))
+      if (offset == 0 || GeometryUtil.AlmostEqual(offset, 0))
       {
         return new[] { polygon };
       }
 
-      var p = svgToClipper(polygon).ToList();
+      var p = SvgToClipper(polygon).ToList();
 
       var miterLimit = 4;
       var co = new ClipperLib.ClipperOffset(miterLimit, Config.CurveTolerance * Config.ClipperScale);
@@ -617,32 +541,32 @@
       var result = new List<NFP>();
       for (var i = 0; i < newpaths.Count; i++)
       {
-        result.Add(clipperToSvg(newpaths[i]));
+        result.Add(ClipperToSvg(newpaths[i]));
       }
 
       return result.ToArray();
     }
 
-    // converts a polygon from normal float coordinates to integer coordinates used by clipper, as well as x/y -> X/Y
-    public static IntPoint[] svgToClipper2(INfp polygon, double? scale = null)
+    // converts a polygon from normal double coordinates to integer coordinates used by clipper, as well as x/y -> X/Y
+    public static IntPoint[] SvgToClipper2(INfp polygon, double? scale = null)
     {
       var d = DeepNestClipper.ScaleUpPaths(polygon.Points, scale == null ? Config.ClipperScale : scale.Value);
       return d.ToArray();
     }
 
-    // converts a polygon from normal float coordinates to integer coordinates used by clipper, as well as x/y -> X/Y
-    public static ClipperLib.IntPoint[] svgToClipper(INfp polygon)
+    // converts a polygon from normal double coordinates to integer coordinates used by clipper, as well as x/y -> X/Y
+    public static ClipperLib.IntPoint[] SvgToClipper(INfp polygon)
     {
       var d = DeepNestClipper.ScaleUpPaths(polygon.Points, Config.ClipperScale);
       return d.ToArray();
 
-      return polygon.Points.Select(z => new IntPoint((long)z.x, (long)z.y)).ToArray();
+      return polygon.Points.Select(z => new IntPoint((long)z.X, (long)z.Y)).ToArray();
     }
 
     // returns a less complex polygon that satisfies the curve tolerance
-    public static INfp cleanPolygon(INfp polygon)
+    public static INfp CleanPolygon(INfp polygon)
     {
-      var p = svgToClipper2(polygon);
+      var p = SvgToClipper2(polygon);
 
       // remove self-intersections and find the biggest polygon that's left
       var simple = ClipperLib.Clipper.SimplifyPolygon(p.ToList(), ClipperLib.PolyFillType.pftNonZero);
@@ -672,12 +596,12 @@
         return null;
       }
 
-      return clipperToSvg(clean);
+      return ClipperToSvg(clean);
     }
 
-    public static INfp cleanPolygon2(INfp polygon)
+    public static INfp CleanPolygon2(INfp polygon)
     {
-      var p = svgToClipper(polygon);
+      var p = SvgToClipper(polygon);
 
       // remove self-intersections and find the biggest polygon that's left
       var simple = ClipperLib.Clipper.SimplifyPolygon(p.ToList(), ClipperLib.PolyFillType.pftNonZero);
@@ -707,21 +631,26 @@
         return null;
       }
 
-      var cleaned = clipperToSvg(clean);
+      var cleaned = ClipperToSvg(clean);
 
       // remove duplicate endpoints
       var start = cleaned[0];
       var end = cleaned[cleaned.Length - 1];
-      if (start == end || (GeometryUtil._almostEqual(start.x, end.x)
-          && GeometryUtil._almostEqual(start.y, end.y)))
+      if (start == end || (GeometryUtil.AlmostEqual(start.X, end.X)
+          && GeometryUtil.AlmostEqual(start.Y, end.Y)))
       {
         cleaned.ReplacePoints(cleaned.Points.Take(cleaned.Points.Count() - 1));
+      }
+
+      if (polygon.IsClosed)
+      {
+        cleaned.EnsureIsClosed();
       }
 
       return cleaned;
     }
 
-    private static NFP clipperToSvg(IList<IntPoint> polygon)
+    private static NFP ClipperToSvg(IList<IntPoint> polygon)
     {
       List<SvgPoint> ret = new List<SvgPoint>();
 
@@ -733,7 +662,7 @@
       return new NFP(ret);
     }
 
-    private int toTree(PolygonTreeItem[] list, int idstart = 0)
+    private int ToTree(PolygonTreeItem[] list, int idstart = 0)
     {
       List<PolygonTreeItem> parents = new List<PolygonTreeItem>();
       int i, j;
@@ -754,7 +683,7 @@
             continue;
           }
 
-          if (GeometryUtil.pointInPolygon(p.Polygon.Points[0], list[j].Polygon).Value)
+          if (GeometryUtil.PointInPolygon(p.Polygon.Points[0], list[j].Polygon).Value)
           {
             if (list[j].Childs == null)
             {
@@ -793,7 +722,7 @@
       {
         if (parents[i].Childs != null)
         {
-          id = this.toTree(parents[i].Childs.ToArray(), id);
+          id = this.ToTree(parents[i].Childs.ToArray(), id);
         }
       }
 
@@ -802,50 +731,87 @@
 
     public void ResponseProcessor(NestResult payload)
     {
-      if (this.ga == null || payload == null)
+      try
       {
-        // user might have quit while we're away
-        return;
-      }
-
-      Interlocked.Increment(ref population);
-      lastPlacementTime = payload.PlacePartTime;
-      Interlocked.Increment(ref nestCount);
-      totalNestTime += payload.PlacePartTime;
-
-      this.ga.Population[payload.index].Processing = false;
-      this.ga.Population[payload.index].Fitness = payload.Fitness;
-
-      int currentPlacements = 0;
-      if (this.TopNestResults.Add(payload))
-      {
-        currentPlacements = this.TopNestResults.Top.UsedSheets[0].PartPlacements.Count;
-        if (this.TopNestResults.IndexOf(payload) < this.TopNestResults.EliteSurvivors)
+        if (this.ga == null || payload == null)
         {
-          this.progressDisplayer.DisplayToolStripMessage($"New top nest found: Nesting time; {payload.PlacePartTime}ms");
-          this.progressDisplayer?.UpdateNestsList();
+          // user might have quit while we're away
+          return;
         }
-      }
 
-      this.progressDisplayer?.DisplayProgress(currentPlacements, population);
+        State.IncrementPopulation();
+        State.SetLastNestTime(payload.BackgroundTime);
+        State.SetLastPlacementTime(payload.PlacePartTime);
+        State.IncrementNestCount();
+        State.IncrementPlacementTime(payload.PlacePartTime);
+        State.IncrementNestTime(payload.BackgroundTime);
+
+#if NCRUNCH
+      Trace.WriteLine("payload.Index I don't think is being set right; double check before retrying threaded execution.");
+#endif
+        this.ga.Population[payload.Index].Processing = false;
+        this.ga.Population[payload.Index].Fitness = payload.Fitness;
+
+        int currentPlacements = 0;
+        string suffix = string.Empty;
+        if (!payload.IsValid || payload.UsedSheets.Count == 0)
+        {
+          this.State.IncrementRejected();
+          suffix = " Rejected";
+        }
+        else if (this.State.TopNestResults.TryAdd(payload))
+        {
+          if (this.State.TopNestResults.Contains(payload))
+          {
+            currentPlacements = this.State.TopNestResults.Top.UsedSheets[0].PartPlacements.Count;
+            if (this.State.TopNestResults.IndexOf(payload) < this.State.TopNestResults.EliteSurvivors)
+            {
+              suffix = " Elite";
+              this.progressDisplayer.DisplayTransientMessage($"New top {this.State.TopNestResults.MaxCapacity} nest found: nesting time = {payload.PlacePartTime}ms");
+              this.progressDisplayer?.UpdateNestsList();
+            }
+            else
+            {
+              suffix = " Top";
+            }
+          }
+          else
+          {
+            suffix = " Duplicate";
+          }
+        }
+        else
+        {
+          this.progressDisplayer.DisplayTransientMessage($"Nesting time = {payload.PlacePartTime}ms");
+          suffix = " Sub-optimal";
+        }
+
+        if (currentPlacements > 0)
+        {
+          progressDisplayer.DisplayProgress(currentPlacements, State.Population);
+        }
+
+        System.Diagnostics.Debug.Print($"Nest {payload.BackgroundTime}ms{suffix}");
+      }
+      catch (Exception ex)
+      {
+        throw;
+      }
     }
 
     /// <summary>
-    /// Starts next generation if none started or prior finished. Will keep rehitting the outstanding population 
+    /// Starts next generation if none started or prior finished. Will keep rehitting the outstanding population
     /// set up for the generation until all have processed.
     /// </summary>
-    /// <param name="parts"></param>
-    /// <param name="background"></param>
-    public void launchWorkers(NestItem[] parts, ISvgNestConfig config)
+    public void LaunchWorkers(NestItem<INfp>[] partNestItems, NestItem<ISheet>[] sheetNestItems, ISvgNestConfig config, INestStateBackground nestStateBackground)
     {
       try
       {
-        if (!this.isStopped)
+        if (!this.IsStopped)
         {
           if (this.ga == null)
           {
-            Reset();
-            this.ga = new Procreant(parts, config);
+            this.ga = new Procreant(partNestItems, config, progressDisplayer);
           }
 
           if (this.ga.IsCurrentGenerationFinished)
@@ -854,84 +820,132 @@
             // all individuals have been evaluated, start next generation
 
             this.ga.Generate();
-            Interlocked.Increment(ref generations);
-            Interlocked.Exchange(ref population, 0);
+            if (this.ga.Population.Length == 0)
+            {
+              this.Stop();
+              this.messageService.DisplayMessageBox("Terminating the nest because we're just recalculating the same nests over and over again.", "Terminating Nest", MessageBoxIcon.Information);
+            }
+
+            State.IncrementGenerations();
+            State.ResetPopulation();
           }
 
-          List<INfp> sheets = new List<INfp>();
-          List<int> sheetids = new List<int>();
-          List<int> sheetsources = new List<int>();
-          List<List<INfp>> sheetchildren = new List<List<INfp>>();
+          var sheets = new List<ISheet>();
+          var sheetids = new List<int>();
+          var sheetsources = new List<int>();
+          var sheetchildren = new List<List<INfp>>();
           var sid = 0;
-          for (int i = 0; i < parts.Count(); i++)
+          for (int i = 0; i < sheetNestItems.Count(); i++)
           {
-            if (parts[i].IsSheet)
+            var poly = sheetNestItems[i].Polygon;
+            for (int j = 0; j < sheetNestItems[i].Quantity; j++)
             {
-              var poly = parts[i].Polygon;
-              for (int j = 0; j < parts[i].Quantity; j++)
+              ISheet clone;
+              if (poly is Sheet sheet)
               {
-                var cln = poly.CloneTree();
-                cln.Id = sid; // id is the unique id of all parts that will be nested, including cloned duplicates
-                cln.Source = poly.Source; // source is the id of each unique part from the main part list
-
-                sheets.Add(cln);
-                sheetids.Add(sid);
-                sheetsources.Add(i);
-                sheetchildren.Add(poly.Children.ToList());
-                sid++;
+                clone = (ISheet)poly.CloneTree();
               }
+              else
+              {
+#if DEBUG || NCRUNCH
+                throw new InvalidOperationException("Sheet should have been a sheet; why wasn't it?");
+#endif
+                clone = new Sheet(poly.CloneTree(), WithChildren.Excluded);
+              }
+
+              clone.Id = sid; // id is the unique id of all parts that will be nested, including cloned duplicates
+              clone.Source = poly.Source; // source is the id of each unique part from the main part list
+
+              sheets.Add(new Sheet(clone, WithChildren.Excluded));
+              sheetids.Add(sid);
+              sheetsources.Add(poly.Source);
+              sheetchildren.Add(poly.Children.ToList());
+              sid++;
             }
           }
 
+          this.progressDisplayer.DisplayTransientMessage("Executing Nest. . .");
           if (config.UseParallel)
           {
             var end1 = this.ga.Population.Length / 3;
             var end2 = this.ga.Population.Length * 2 / 3;
             var end3 = this.ga.Population.Length;
-            var t1 = new Thread(() => ProcessPopulation(0, end1, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren));
-            var t2 = new Thread(() => ProcessPopulation(end1, end2, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren));
-            var t3 = new Thread(() => ProcessPopulation(end2, this.ga.Population.Length, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren));
-            t1.Start();
-            t2.Start();
-            t3.Start();
-            t1.Join();
-            t2.Join();
-            t3.Join();
+            Parallel.Invoke(
+              () => ProcessPopulation(0, end1, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren, nestStateBackground),
+              () => ProcessPopulation(end1, end2, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren, nestStateBackground),
+              () => ProcessPopulation(end2, this.ga.Population.Length, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren, nestStateBackground));
           }
           else
           {
-            ProcessPopulation(0, this.ga.Population.Length, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren);
+            ProcessPopulation(0, this.ga.Population.Length, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren, nestStateBackground);
           }
         }
+      }
+      catch (DllNotFoundException)
+      {
+        DisplayMinkowskiDllError();
+        State.SetIsErrored();
+      }
+      catch (BadImageFormatException badImageEx)
+      {
+        if (badImageEx.StackTrace.Contains("Minkowski"))
+        {
+          DisplayMinkowskiDllError();
+        }
+        else
+        {
+          this.messageService.DisplayMessage(badImageEx);
+        }
+
+        State.SetIsErrored();
       }
       catch (Exception ex)
       {
         this.messageService.DisplayMessage(ex);
-        this.setIsErrored();
+        State.SetIsErrored();
+#if NCRUNCH
+        throw;
+#endif
       }
     }
 
-    private void ProcessPopulation(int start, int end, ISvgNestConfig config, INfp[] sheets, int[] sheetids, int[] sheetsources, List<List<INfp>> sheetchildren)
+    private void DisplayMinkowskiDllError()
     {
-      Interlocked.Increment(ref threads);
+      this.messageService.DisplayMessageBox(
+                  "An error has occurred attempting to execute the C++ Minkowski DllImport.\r\n" +
+                  "\r\n" +
+                  "You can turn off the C++ DllImport in Settings and use the internal C# implementation " +
+                  "instead; but this is experimental. Alternatively try using another build (x86/x64) or " +
+                  "recreate the Minkowski.Dlls on your own system.\r\n" +
+                  "\r\n" +
+                  "You can continue to use the import/edit/export functionality but unless you fix " +
+                  "the problem/switch to the internal implementation you will be unable to execute " +
+                  "any nests.",
+                  "DeepNestSharp Error!",
+                  MessageBoxIcon.Error);
+    }
+
+    private void ProcessPopulation(int start, int end, ISvgNestConfig config, ISheet[] sheets, int[] sheetids, int[] sheetsources, List<List<INfp>> sheetchildren, INestStateBackground nestStateBackground)
+    {
+      State.IncrementThreads();
       for (int i = start; i < end; i++)
       {
-        if (this.isStopped)
+        if (this.IsStopped)
         {
           break;
         }
 
         // if(running < config.threads && !GA.population[i].processing && !GA.population[i].fitness){
         // only one background window now...
-        if (!this.isStopped && this.ga.Population[i].IsPending)
+        var individual = ga.Population[i];
+        if (!this.IsStopped && individual.IsPending)
         {
-          var individual = ga.Population[i];
           individual.Processing = true;
 
           // hash values on arrays don't make it across ipc, store them in an array and reassemble on the other side....
-          int[] ids = new int[this.ga.Population[i].Parts.Count];
-          int[] sources = new int[this.ga.Population[i].Parts.Count];
-          List<List<INfp>> children = new List<List<INfp>>();
+          var ids = new int[individual.Parts.Count];
+          var sources = new int[individual.Parts.Count];
+          var children = new List<List<INfp>>();
 
           for (int j = 0; j < individual.Parts.Count; j++)
           {
@@ -954,41 +968,70 @@
             Children = children,
           };
 
-          if (this.isStopped)
+          if (this.IsStopped)
           {
             this.ResponseProcessor(null);
           }
           else
           {
-            Background background = new Background(this.progressDisplayer, this.ResponseProcessor);
+            var background = new Background(this.progressDisplayer, this, minkowskiSumService, nestStateBackground, config.UseDllImport);
             background.BackgroundStart(data, config);
           }
         }
       }
 
-      Interlocked.Decrement(ref threads);
+      State.DecrementThreads();
     }
 
-    private int PopulationRunning
+    private static SvgPoint GetTarget(SvgPoint o, INfp simple, double tol)
     {
-      get
-      {
-        return this.ga.Population.Where((p) => { return p.Processing; }).Count();
-      }
-    }
+      List<InrangeItem> inrange = new List<InrangeItem>();
 
-    public static IntPoint[] toClipperCoordinates(NFP polygon)
-    {
-      var clone = new List<IntPoint>();
-      for (var i = 0; i < polygon.Length; i++)
+      // find closest points within 2 offset deltas
+      for (var j = 0; j < simple.Length; j++)
       {
-        clone.Add(
-            new IntPoint(
-             polygon[i].x,
-             polygon[i].y));
+        var s = simple[j];
+        var d2 = ((o.X - s.X) * (o.X - s.X)) + ((o.Y - s.Y) * (o.Y - s.Y));
+        if (d2 < tol * tol)
+        {
+          inrange.Add(new InrangeItem() { point = s, distance = d2 });
+        }
       }
 
-      return clone.ToArray();
+      SvgPoint target = null;
+      if (inrange.Count > 0)
+      {
+        var filtered = inrange.Where((p) =>
+        {
+          return p.point.Exact;
+        }).ToList();
+
+        // use exact points when available, normal points when not
+        inrange = filtered.Count > 0 ? filtered : inrange;
+
+        inrange = inrange.OrderBy((b) =>
+        {
+          return b.distance;
+        }).ToList();
+
+        target = inrange[0].point;
+      }
+      else
+      {
+        double? mind = null;
+        for (int j = 0; j < simple.Length; j++)
+        {
+          var s = simple[j];
+          var d2 = ((o.X - s.X) * (o.X - s.X)) + ((o.Y - s.Y) * (o.Y - s.Y));
+          if (mind == null || d2 < mind)
+          {
+            target = s;
+            mind = d2;
+          }
+        }
+      }
+
+      return target;
     }
   }
 }

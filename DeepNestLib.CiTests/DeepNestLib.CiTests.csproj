@@ -30,7 +30,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>DeepNestLib.CiTests.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>
+    </CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -39,7 +40,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>DeepNestLib.CiTests.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>
+    </CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -48,7 +50,8 @@
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>DeepNestLib.CiTests.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>
+    </CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -58,7 +61,8 @@
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>DeepNestLib.CiTests.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>
+    </CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -67,7 +71,8 @@
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>DeepNestLib.CiTests.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>
+    </CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -77,7 +82,8 @@
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>DeepNestLib.CiTests.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>
+    </CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
@@ -86,17 +92,23 @@
     <Reference Include="FakeItEasy, Version=7.0.0.0, Culture=neutral, PublicKeyToken=eff28e2146d5fd2c, processorArchitecture=MSIL">
       <HintPath>..\packages\FakeItEasy.7.1.0\lib\net45\FakeItEasy.dll</HintPath>
     </Reference>
-    <Reference Include="FluentAssertions, Version=5.10.3.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\packages\FluentAssertions.5.10.3\lib\net45\FluentAssertions.dll</HintPath>
+    <Reference Include="FluentAssertions, Version=6.1.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentAssertions.6.1.0\lib\net47\FluentAssertions.dll</HintPath>
     </Reference>
     <Reference Include="IxMilia.Dxf, Version=0.8.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\IxMilia.Dxf.0.8.0\lib\netstandard2.0\IxMilia.Dxf.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Bcl.HashCode, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.HashCode.1.1.1\lib\net461\Microsoft.Bcl.HashCode.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis, Version=3.10.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.CodeAnalysis.Common.3.10.0\lib\netstandard2.0\Microsoft.CodeAnalysis.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis, Version=3.11.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.Common.3.11.0\lib\netstandard2.0\Microsoft.CodeAnalysis.dll</HintPath>
+    </Reference>
+    <Reference Include="NCrunch.Framework, Version=4.7.0.4, Culture=neutral, PublicKeyToken=01d101bf6f3e0aea, processorArchitecture=MSIL">
+      <HintPath>..\packages\NCrunch.Framework.4.7.0.4\lib\net35\NCrunch.Framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -107,6 +119,8 @@
     </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
     </Reference>
@@ -122,6 +136,12 @@
     </Reference>
     <Reference Include="System.Text.Encoding.CodePages, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Text.Encoding.CodePages.5.0.0\lib\net461\System.Text.Encoding.CodePages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Encodings.Web, Version=5.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encodings.Web.5.0.1\lib\net461\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json, Version=5.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Json.5.0.2\lib\net461\System.Text.Json.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
@@ -146,26 +166,82 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CanBePlacedFixture.cs" />
     <Compile Include="ClipperFixture.cs" />
     <Compile Include="ClipperIntersectFixture.cs" />
-    <Compile Include="CompareMinkowskiImplementations.cs" />
+    <Compile Include="CompareMinkowskiImplementationsFixture.cs" />
     <Compile Include="DefaultSvgNestConfig.cs" />
+    <Compile Include="DummyFactories\DummyMinkowskiSumFactory.cs" />
+    <Compile Include="DummyFactories\DummyNestStateFactory.cs" />
+    <Compile Include="DummyFactories\DummyNfpHelperFactory.cs" />
+    <Compile Include="DummyFactories\DummyPartPlacementWorkerFactory.cs" />
+    <Compile Include="DummyFactories\DummyPlacementWorkerFactory.cs" />
     <Compile Include="DxfGenerator.cs" />
     <Compile Include="DxfParserPart5Fixture.cs" />
     <Compile Include="DxfParserPart1Fixture.cs" />
     <Compile Include="DxfParserFixture.cs" />
     <Compile Include="EmbededResourcesExtensions.cs" />
+    <Compile Include="ExtensionsSpliceFixture.cs" />
     <Compile Include="FitFourSmallSquaresInOneLargerSquareSheetPerfectlyBoundingBoxFitnessFixture.cs" />
     <Compile Include="FitFourSmallSquaresInOneLargerSquareSheetPerfectlyFixture.cs" />
     <Compile Include="FitSmallSquarePartInLargerSquareSheetFixture.cs" />
     <Compile Include="FitOnlyOneOfTwoSmallSquaresPartInOneLargerSquareSheetsFixture.cs" />
     <Compile Include="FitTwoSmallSquaresPartInTwoLargerSquareSheetsFixture.cs" />
     <Compile Include="GeneticAlgorithm\BoundingBoxFitnessFixture.cs" />
+    <Compile Include="GeneticAlgorithm\GravityBoundsFixture.cs" />
     <Compile Include="GeneticAlgorithm\GravityFitnessFixture.cs" />
+    <Compile Include="GeneticAlgorithm\GravityFitnessOneSheetBetterThanTwoFixture.cs" />
+    <Compile Include="GeneticAlgorithm\SheetPlacementJsonHelper.cs" />
     <Compile Include="GeneticAlgorithm\SqueezeFitnessFixture.cs" />
+    <Compile Include="GetInnerPolygonFixture.cs" />
+    <Compile Include="Minkowski\DllImportExecuteCleanOrNotPolygonFixture.cs" />
+    <Compile Include="Minkowski\MinkowskiSum2DebugFixture.cs" />
+    <Compile Include="Minkowski\MinkowskiSumDebugFixture.cs" />
+    <Compile Include="Minkowski\MinkowskiCacheDebugFixture.cs" />
+    <Compile Include="Minkowski\MinkowskiDictionaryFixture.cs" />
+    <Compile Include="NestProject\SvgNestConfigSerializationFixture.cs" />
+    <Compile Include="NfpCtorCloneFixture.cs" />
+    <Compile Include="NfpExtensions.cs" />
     <Compile Include="NfpFixture.cs" />
-    <Compile Include="PerfectFitnessFixture.cs" />
+    <Compile Include="NfpIsClosedFixture.cs" />
+    <Compile Include="NfpRotateFixture.cs" />
+    <Compile Include="OuterFitPolygonFixture.cs" />
+    <Compile Include="PerfectBoundingBoxFitnessFixture.cs" />
+    <EmbeddedResource Include="Minkowski\MinkowskiCacheA.dnpoly">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Minkowski\MinkowskiCacheB.dnpoly">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Minkowski\MinkowskiCacheRet.dnpoly">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Minkowski\MinkowskiSum2A.dnpoly">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Minkowski\MinkowskiSum2B.dnpoly">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Minkowski\MinkowskiSum2Ret.dnpoly">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <None Include="Placement\PartPlacementScenarioNewMinkowski-MinkowskiOutNfp.dnpoly" />
+    <None Include="Placement\PartPlacementScenarioNewMinkowski-NewOutNfp.dnpoly" />
+    <EmbeddedResource Include="Placement\PartPlacementWorker10x10on11x11In.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <Compile Include="Placement\Capture{T}.cs" />
+    <Compile Include="Placement\DecimalArrayHashCodeFixture.cs" />
+    <Compile Include="Placement\Fit12InDonutHoleFixture.cs" />
+    <Compile Include="Placement\NestResultJsonFixture.cs" />
     <Compile Include="Placement\NfpJsonFixture.cs" />
+    <Compile Include="NestProject\ProjectInfoSerializationFixture.cs" />
+    <Compile Include="Placement\PartPlacementScenarioFixture.cs" />
+    <Compile Include="Placement\PartPlacementScenarioNewMinkowskiFixture.cs" />
+    <Compile Include="Placement\PartPlacementWorker10x10on11x11Fixture.cs" />
+    <Compile Include="Placement\PartPlacementWorkerFixture.cs" />
+    <Compile Include="Placement\SecondGenerationOverlaysIn.cs" />
+    <Compile Include="Placement\SheetNfpFixture.cs" />
     <Compile Include="Placement\SheetPlacementJsonFixture.cs" />
     <Compile Include="PmapWorkerFixtureSetup.cs" />
     <Compile Include="PmapWorkerPmapDeepNestFixture.cs" />
@@ -174,12 +250,32 @@
     <Compile Include="PolygonSimplificationDictionaryFixture.cs" />
     <Compile Include="ProgressTestResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RandomExtensions.cs" />
     <Compile Include="RunFullNestBoundingBoxFixture.cs" />
     <Compile Include="RunFullNestGravityFixture.cs" />
     <Compile Include="RunFullNestSqueezeFixture.cs" />
+    <Compile Include="Dxfs\SquareWithHoleFixture.cs" />
     <Compile Include="TopNestResultsCollectionFixture.cs" />
+    <Compile Include="UnitTestingTraceListener.cs" />
+    <Compile Include="UnitTraceLog.cs" />
+    <Compile Include="UnitTraceLogEntry.cs" />
+    <EmbeddedResource Include="Placement\pathScaledUpListOrig.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Placement\patternScaledUpOrig.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Placement\pathScaledUpList.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Placement\patternScaledUp.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Dxfs\20x20outer10x10hole.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <None Include="app.config" />
     <Content Include="..\MinkowskiDlls\minkowski.dll">
       <Link>minkowski.dll</Link>
@@ -193,10 +289,12 @@
       <Link>minkowski_x86.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <EmbeddedResource Include="Dxfs\20x20outer10x10hole.scad">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="OneSquare.dxf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="DeepNestLib.CiTests.ruleset" />
     <EmbeddedResource Include="GeneticAlgorithm\SheetPlacementScenario1.json" />
     <EmbeddedResource Include="GeneticAlgorithm\SheetPlacementScenario2.json" />
     <EmbeddedResource Include="GeneticAlgorithm\SheetPlacementScenario3-BestBoundingBoxAllDxfSamples.json" />
@@ -205,12 +303,70 @@
     <EmbeddedResource Include="GeneticAlgorithm\SheetPlacementScenario3-MidSqueezeAllDxfSamples.json" />
     <EmbeddedResource Include="GeneticAlgorithm\SheetPlacementScenario3-WorstBoundingBoxAllDxfSamples.json" />
     <EmbeddedResource Include="GeneticAlgorithm\SheetPlacementScenario3-WorstSqueezeAllDxfSamples.json" />
+    <EmbeddedResource Include="Dxfs\_10.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dxfs\_5.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GeneticAlgorithm\ReadMeExampleTwoSheetsBetterThanOne1.dnr">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GeneticAlgorithm\ReadMeExampleTwoSheetsBetterThanOne2.dnr">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Minkowski\MinkowskiCache.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Minkowski\MinkowskiSumA.dnpoly">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Minkowski\MinkowskiSumB.dnpoly">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Minkowski\MinkowskiSumRet.dnpoly">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <Content Include="SquareInSquare.dxf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <EmbeddedResource Include="Placement\SimpleRectangleNfp.json" />
     <EmbeddedResource Include="Placement\SimpleRectangleNfpOnSheetPlacement.json" />
+    <EmbeddedResource Include="Placement\SimpleRectangleSheet.json" />
+    <EmbeddedResource Include="Placement\PartPlacementWorker.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Placement\PartPlacementScenarioPartPlacementWorker.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Placement\SecondGenerationOverlaysIn.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Placement\SecondGenerationOverlaysOut.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Placement\MinkowskiKeyExample.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Placement\Fit12InDonutHoleIn.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Placement\Fit12InDonutHoleOut-FinalNfp.dnnfps">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Placement\Fit12InDonutHoleOut-Parts2.dnsp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Placement\Fit12InDonutHoleOut-SheetNfp.dnsnfp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Placement\Fit12InDonutHoleOut.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Placement\PartPlacementScenarioNewMinkowski.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\clipper_library\clipper_library.csproj">
@@ -234,6 +390,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

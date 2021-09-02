@@ -1,7 +1,6 @@
 ﻿namespace DeepNestLib.CiTests.GeneticAlgorithm
 {
-  using System.IO;
-  using System.Reflection;
+  using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
   using FluentAssertions;
   using Xunit;
@@ -14,18 +13,9 @@
 
     public BoundingBoxFitnessFixture()
     {
-      scenarioBest = LoadSheetPlacement("GeneticAlgorithm.SheetPlacementScenario3-BestBoundingBoxAllDxfSamples.json");
-      scenarioMid = LoadSheetPlacement("GeneticAlgorithm.SheetPlacementScenario3-MidBoundingBoxAllDxfSamples.json");
-      scenarioWorst = LoadSheetPlacement("GeneticAlgorithm.SheetPlacementScenario3-WorstBoundingBoxAllDxfSamples.json");
-    }
-
-    private ISheetPlacement LoadSheetPlacement(string relativeResourcePath)
-    {
-      using (Stream stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream(relativeResourcePath))
-      using (StreamReader reader = new StreamReader(stream))
-      {
-        return SheetPlacement.FromJson(reader.ReadToEnd());
-      }
+      scenarioBest = SheetPlacementJsonHelper.LoadSheetPlacement("GeneticAlgorithm.SheetPlacementScenario3-BestBoundingBoxAllDxfSamples.json");
+      scenarioMid = SheetPlacementJsonHelper.LoadSheetPlacement("GeneticAlgorithm.SheetPlacementScenario3-MidBoundingBoxAllDxfSamples.json");
+      scenarioWorst = SheetPlacementJsonHelper.LoadSheetPlacement("GeneticAlgorithm.SheetPlacementScenario3-WorstBoundingBoxAllDxfSamples.json");
     }
 
     [Fact]
@@ -50,6 +40,69 @@
     public void GivenTwoSheetPlacementsWhenSameSheetsUsedOnEachThenSheetsFitnessShouldBeSame()
     {
       scenarioWorst.Fitness.Sheets.Should().Be(scenarioBest.Fitness.Sheets);
+    }
+
+    [Fact]
+    public void GivenBoundsPenaltyShouldBeInLineWithSheetsPenaltyThenScenarioBestBoundsShouldBeComingCloseToSheets()
+    {
+      var sut = new OriginalFitnessSheet(scenarioBest);
+      sut.Bounds.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
+    }
+
+    [Fact]
+    public void GivenBoundsPenaltyShouldBeInLineWithSheetsPenaltyThenScenarioMidBoundsShouldBeComingCloseToSheets()
+    {
+      var sut = new OriginalFitnessSheet(scenarioMid);
+      sut.Bounds.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
+    }
+
+    [Fact]
+    public void GivenBoundsPenaltyShouldBeInLineWithSheetsPenaltyThenScenarioWorstBoundsShouldBeComingCloseToSheets()
+    {
+      var sut = new OriginalFitnessSheet(scenarioMid);
+      sut.Bounds.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
+    }
+
+    [Fact]
+    public void GivenMaterialUtilizationPenaltyShouldBeInLineWithSheetsPenaltyThenScenarioBestShouldBeComingCloseToSheets()
+    {
+      var sut = new OriginalFitnessSheet(scenarioBest);
+      sut.MaterialUtilization.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
+    }
+
+    [Fact]
+    public void GivenMaterialUtilizationPenaltyShouldBeInLineWithSheetsPenaltyThenScenarioMidShouldBeComingCloseToSheets()
+    {
+      var sut = new OriginalFitnessSheet(scenarioMid);
+      sut.MaterialUtilization.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
+    }
+
+    [Fact]
+    public void GivenMaterialUtilizationPenaltyShouldBeInLineWithSheetsPenaltyThenScenarioWorstShouldBeComingCloseToSheets()
+    {
+      var sut = new OriginalFitnessSheet(scenarioWorst);
+      sut.MaterialUtilization.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
+    }
+
+    [Fact]
+    public void GivenMaterialWastedPenaltyShouldBeInLineWithSheetsPenaltyThenScenarioBestShouldBeComingCloseToSheets()
+    {
+      var sut = new OriginalFitnessSheet(scenarioBest);
+      sut.MaterialWasted.Should().BeApproximately(sut.Sheets * 1.5, sut.Sheets);
+    }
+
+    [Fact]
+    public void GivenMaterialWastedPenaltyShouldBeInLineWithSheetsPenaltyThenScenarioMidShouldBeComingCloseToSheets()
+    {
+      var sut = new OriginalFitnessSheet(scenarioMid);
+      sut.MaterialWasted.Should().BeApproximately(sut.Sheets * 1.5, sut.Sheets);
+    }
+
+    [Fact]
+    public void GivenMaterialWastedPenaltyShouldBeInLineWithSheetsPenaltyThenScenarioWorstShouldBeComingCloseToSheets()
+    {
+      var sut = new OriginalFitnessSheet(scenarioMid);
+      sut.MaterialWasted.Should().BeApproximately(sut.Sheets * 1.5, sut.Sheets);
     }
   }
 }

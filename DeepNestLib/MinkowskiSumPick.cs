@@ -3,6 +3,6 @@
   public enum MinkowskiSumPick
   {
     Smallest,
-    Largest
+    Largest,
   }
 }

@@ -7,8 +7,9 @@
 
   public class RawDetail
   {
-    public List<LocalContour> Outers = new List<LocalContour>();
-    public List<LocalContour> Holes = new List<LocalContour>();
+    private List<LocalContour> outers = new List<LocalContour>();
+
+    public IReadOnlyCollection<LocalContour> Outers => outers;
 
     public RectangleF BoundingBox()
     {
@@ -21,14 +22,19 @@
       return gp.GetBounds();
     }
 
-    public string Name { get; set; }
-
-    public bool TryImportFromRawDetail(int src, out INfp loadedNfp)
+    public void AddContour(LocalContour contour)
     {
-      return this.TryGetNfp(src, out loadedNfp);
+      outers.Add(contour);
     }
 
-    public bool TryGetNfp(int src, out INfp loadedNfp)
+    public void AddRangeContour(IEnumerable<LocalContour> collection)
+    {
+      outers.AddRange(collection);
+    }
+
+    public string Name { get; set; }
+
+    public bool TryConvertToNfp(int src, out INfp loadedNfp)
     {
       if (this == null)
       {
@@ -46,9 +52,9 @@
       return true;
     }
 
-    public NFP ToNfp()
+    public INfp ToNfp()
     {
-      NFP po = null;
+      NFP result = null;
       List<NFP> nfps = new List<NFP>();
       foreach (var item in this.Outers)
       {
@@ -62,27 +68,45 @@
 
       if (nfps.Any())
       {
-        var tt = nfps.OrderByDescending(z => z.Area).First();
-        po = tt; // Reference caution needed here; should be cloning not messing with the original object?
-        po.Name = Name;
+        var parent = nfps.OrderByDescending(z => z.Area).First();
+        result = parent; // Reference caution needed here; should be cloning not messing with the original object?
+        result.Name = Name;
 
-        foreach (var r in nfps)
+        foreach (var child in nfps.Where(o => o != parent))
         {
-          if (r == tt)
+          if (result.Children == null)
           {
-            continue;
+            result.Children = new List<INfp>();
           }
 
-          if (po.Children == null)
-          {
-            po.Children = new List<INfp>();
-          }
-
-          po.Children.Add(r);
+          result.Children.Add(child);
         }
       }
 
-      return po;
+      return result;
+    }
+
+    public ISheet ToSheet(double width, double height)
+    {
+      return new Sheet(this.ToNfp(), width, height, WithChildren.Excluded);
+    }
+
+    public ISheet ToSheet()
+    {
+      return new Sheet(this.ToNfp(), WithChildren.Excluded);
+    }
+
+    internal bool TryConvertToSheet(int firstSheetIdSrc, out ISheet firstSheet)
+    {
+      INfp nfp;
+      if (TryConvertToNfp(firstSheetIdSrc, out nfp))
+      {
+        firstSheet = new Sheet(nfp, WithChildren.Excluded);
+        return true;
+      }
+
+      firstSheet = default;
+      return false;
     }
   }
 }

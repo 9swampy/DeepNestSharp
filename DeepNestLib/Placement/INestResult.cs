@@ -2,9 +2,12 @@
 {
   using System;
   using System.Collections.Generic;
+  using DeepNestLib.NestProject;
 
   public interface INestResult
   {
+    DateTime CreatedAt { get; }
+
     double Fitness { get; }
 
     double FitnessBounds { get; }
@@ -13,30 +16,34 @@
 
     double FitnessUnplaced { get; }
 
+    bool IsValid { get; }
+
     double MergedLength { get; }
 
     PlacementTypeEnum PlacementType { get; }
 
     long PlacePartTime { get; }
 
-    float[] Rotation { get; set; }
+    double[] Rotation { get; set; }
 
-    IList<NFP> UnplacedParts { get; }
+    int TotalParts { get; }
 
-    SheetPlacementCollection UsedSheets { get; }
+    IList<INfp> UnplacedParts { get; }
+
+    IList<ISheetPlacement, SheetPlacement> UsedSheets { get; }
 
     int TotalPlacedCount { get; }
 
     int TotalPartsCount { get; }
 
-    float PartsPlacedPercent { get; }
+    double PartsPlacedPercent { get; }
 
-    float MaterialUtilization { get; }
+    double MaterialUtilization { get; }
 
-    float TotalSheetsArea { get; }
+    double TotalSheetsArea { get; }
 
-    float TotalPartsArea { get; }
+    double TotalPartsArea { get; }
 
-    DateTime CreatedAt { get; }
+    string ToJson(bool writeIndented = false);
   }
 }

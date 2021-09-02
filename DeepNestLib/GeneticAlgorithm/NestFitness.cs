@@ -4,7 +4,6 @@
 
   using GeneticSharp.Domain.Chromosomes;
   using GeneticSharp.Domain.Fitnesses;
-  using GeneticSharp.Domain.Randomizations;
 
   public class NestFitness : IFitness
   {

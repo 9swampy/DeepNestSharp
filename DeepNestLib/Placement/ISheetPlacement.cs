@@ -2,22 +2,23 @@
 {
   using System.Collections.Generic;
   using DeepNestLib.GeneticAlgorithm;
+  using DeepNestLib.Geometry;
 
-  public interface ISheetPlacement
+  public interface ISheetPlacement : IMinMaxXY
   {
     OriginalFitnessSheet Fitness { get; }
 
     INfp Hull { get; }
 
-    float MaterialUtilization { get; }
+    double MaterialUtilization { get; }
 
-    IList<PartPlacement> PartPlacements { get; }
+    IReadOnlyList<IPartPlacement> PartPlacements { get; }
 
     PlacementTypeEnum PlacementType { get; }
 
     PolygonBounds RectBounds { get; }
 
-    INfp Sheet { get; }
+    ISheet Sheet { get; }
 
     int SheetId { get; }
 
@@ -25,9 +26,11 @@
 
     INfp Simplify { get; }
 
-    float TotalPartsArea { get; }
+    double TotalPartsArea { get; }
 
-    string ToJson();
+    double MergedLength { get; }
+
+    string ToJson(bool writeIndented = false);
 
     string ToString();
   }

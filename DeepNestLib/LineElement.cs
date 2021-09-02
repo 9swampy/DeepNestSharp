@@ -1,10 +1,10 @@
 ﻿namespace DeepNestLib
 {
-    using System.Drawing;
+  using System.Drawing;
 
-    public class LineElement
-    {
-        public PointF Start;
-        public PointF End;
-    }
+  public class LineElement
+  {
+    public PointF Start;
+    public PointF End;
+  }
 }

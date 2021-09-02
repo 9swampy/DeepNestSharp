@@ -21,12 +21,12 @@
 
     private Bitmap bmp;
     private Graphics gr;
-    public float Value;
+    public double Value;
 
     public void UpdateImg()
     {
       gr.FillRectangle(Brushes.White, 0, 0, Width, Height);
-      gr.FillRectangle(Brushes.LightGreen, 0, 0, (Value / 100.0f) * Width, Height);
+      gr.FillRectangle(Brushes.LightGreen, 0, 0, (float)(Value / 100.0) * Width, Height);
       gr.DrawRectangle(Pens.Black, 0, 0, Width - 1, Height - 1);
       Image = bmp;
 

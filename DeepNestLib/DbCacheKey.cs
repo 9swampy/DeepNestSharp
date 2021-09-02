@@ -4,24 +4,19 @@
   using System.Collections.Generic;
   using System.Linq;
   using System.Text;
-  using System.Threading;
-  using System.Threading.Tasks;
-  using ClipperLib;
-  using DeepNestLib.GeneticAlgorithm;
-  using DeepNestLib.Placement;
 
   public class DbCacheKey
   {
-    public DbCacheKey(int? a, int? b, float aRotation, float bRotation, IEnumerable<INfp> nfps)
+    public DbCacheKey(int? a, int? b, double aRotation, double bRotation, IEnumerable<INfp> nfps)
     {
       A = a;
       B = b;
       ARotation = aRotation;
       BRotation = bRotation;
-      nfp = nfps.ToArray();
+      Nfp = nfps.ToArray();
     }
 
-    public DbCacheKey(int? a, int? b, float aRotation, float bRotation)
+    public DbCacheKey(int? a, int? b, double aRotation, double bRotation)
     // : this(a, b, aRotation, bRotation, null)
     {
       A = a;
@@ -34,11 +29,11 @@
 
     public int? B { get; }
 
-    public float ARotation { get; }
+    public double ARotation { get; }
 
-    public float BRotation { get; }
+    public double BRotation { get; }
 
-    public INfp[] nfp { get; }
+    public INfp[] Nfp { get; }
 
     public int Type { get; }
 

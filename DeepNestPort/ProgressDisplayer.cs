@@ -1,37 +1,59 @@
 ﻿namespace DeepNestPort
 {
-  using System.Windows.Forms;
+  using System;
   using DeepNestLib;
+  using DeepNestLib.IO;
 
-  public class ProgressDisplayer : IProgressDisplayer
+  public class ProgressDisplayer : ProgressDisplayerBase, IProgressDisplayer
   {
     private readonly Form1 form;
+    private readonly Action initialiseUiForStartNest;
+    private readonly IMessageService messageService;
 
-    public ProgressDisplayer(Form1 form)
+    public ProgressDisplayer(Form1 form, Action initialiseUiForStartNest, IMessageService messageService, Func<INestState> stateFactory)
+      : base(stateFactory)
     {
       this.form = form;
+      this.initialiseUiForStartNest = initialiseUiForStartNest;
+      this.messageService = messageService;
     }
 
     public void DisplayProgress(int placedParts, int currentPopulation)
     {
-      float progressPopulation = 0.66f * ((float)currentPopulation / (float)SvgNest.Config.PopulationSize);
-      float progressPlacements = 0.34f * ((float)placedParts / (float)this.form.Polygons.Count);
-      this.form.DisplayProgress(progressPopulation + progressPlacements);
+      this.form.DisplayProgress(CalculatePercentageComplete(placedParts, currentPopulation, SvgNest.Config.PopulationSize, this.form.Context.Polygons.Count));
     }
 
-    public void DisplayProgress(float percentageComplete)
+    public override void DisplayProgress(ProgressBar progressBar, double percentageComplete)
     {
-      this.form.DisplayProgress(percentageComplete);
+      if (progressBar == ProgressBar.Primary)
+      {
+        this.form.DisplayProgress(percentageComplete);
+      }
     }
 
-    public void DisplayToolStripMessage(string message)
+    public override void DisplayTransientMessage(string message)
     {
       this.form.ToolStripMessage = message;
+    }
+
+    public void DisplayMessageBox(string text, string caption, MessageBoxIcon icon)
+    {
+      messageService.DisplayMessageBox(text, caption, icon);
     }
 
     public void UpdateNestsList()
     {
       this.form.UpdateNestsList();
+    }
+
+    public void InitialiseUiForStartNest()
+    {
+      this.initialiseUiForStartNest();
+    }
+
+    public override void SetIsVisibleSecondaryProgressBar(bool isVisible)
+    {
+      // NOP.
     }
   }
 }

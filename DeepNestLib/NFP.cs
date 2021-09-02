@@ -2,23 +2,18 @@
 {
   using System;
   using System.Collections.Generic;
+  using System.IO;
   using System.Linq;
+  using System.Text;
   using System.Text.Json;
+  using System.Text.Json.Serialization;
+  using DeepNestLib.NestProject;
+  using DeepNestLib.Placement;
 
   public class NFP : PolygonBase, INfp, IHiddenNfp, IStringify
   {
-    public bool Fitted
-    {
-      get { return this.Sheet != null; }
-    }
-
-    public INfp Sheet { get; set; }
-
-    public override string ToString()
-    {
-      var str1 = (this.points != null) ? this.points.Count() + string.Empty : "null";
-      return $"nfp: id: {this.Id}; source: {this.Source}; rotation: {this.Rotation}; points: {str1}";
-    }
+    public const string FileDialogFilter = "AutoCad Drawing Exchange Format (*.dxf)|*.dxf|DeepNest Polygon (*.dnpoly)|*.dnpoly|All files (*.*)|*.*";
+    private double rotation;
 
     public NFP(IList<INfp> children)
         : this()
@@ -26,10 +21,39 @@
       Children = children;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NFP"/> class.
+    /// Creates a true clone of the source; only Sheet is a common object reference.
+    /// </summary>
+    /// <param name="source">The original object to clone.</param>
+    public NFP(INfp source, WithChildren withChildren)
+      : this(source.Points)
+    {
+      this.Id = source.Id;
+      this.IsPriority = source.IsPriority;
+      this.Name = source.Name;
+      this.OffsetX = source.OffsetX;
+      this.OffsetY = source.OffsetY;
+      this.PlacementOrder = source.PlacementOrder;
+      this.Rotation = source.Rotation;
+      this.Sheet = source.Sheet;
+      this.Source = source.Source;
+      this.StrictAngle = source.StrictAngle;
+      this.X = source.X;
+      this.Y = source.Y;
+
+      if (withChildren == WithChildren.Included)
+      {
+        foreach (var child in source.Children)
+        {
+          this.Children.Add(new NFP(child, withChildren));
+        }
+      }
+    }
+
     public NFP()
       : base(new SvgPoint[0])
     {
-      this.points = new SvgPoint[0];
     }
 
     public NFP(IEnumerable<SvgPoint> points)
@@ -37,26 +61,47 @@
     {
     }
 
+    /// <inheritdoc />
+    public bool Fitted
+    {
+      get
+      {
+        return this.Sheet != null;
+      }
+    }
+
+    /// <inheritdoc />
+    public INfp Sheet { get; set; }
+
+    /// <inheritdoc />
     public string Name { get; set; } = string.Empty;
 
-    public void AddPoint(SvgPoint point)
-    {
-      int i = this.points.Length;
-      Array.Resize(ref this.points, i + 1);
-      this.points[i] = point;
-    }
+    [JsonConverter(typeof(DoublePrecisionConverter))]
+    /// <inheritdoc />
+    public double X { get; set; }
 
-    public bool isBin;
+    [JsonIgnore]
+    /// <inheritdoc />
+    public double MaxX => points.Length == 0 ? 0 : points.Max(p => p.X);
 
-    public void reverse()
-    {
-      this.points.Reverse();
-    }
+    [JsonIgnore]
+    /// <inheritdoc />
+    public double MinX => points.Length == 0 ? 0 : points.Min(p => p.X);
 
-    public double x { get; set; }
+    [JsonConverter(typeof(DoublePrecisionConverter))]
+    /// <inheritdoc />
+    public double Y { get; set; }
 
-    public double y { get; set; }
+    [JsonIgnore]
+    /// <inheritdoc />
+    public double MaxY => points.Length == 0 ? 0 : points.Max(p => p.Y);
 
+    [JsonIgnore]
+    /// <inheritdoc />
+    public double MinY => points.Length == 0 ? 0 : points.Min(p => p.Y);
+
+    [JsonIgnore]
+    /// <inheritdoc />
     public double WidthCalculated
     {
       get
@@ -66,13 +111,15 @@
           return 0;
         }
 
-        var maxx = this.points.Max(z => z.x);
-        var minx = this.points.Min(z => z.x);
+        var maxx = this.points.Max(z => z.X);
+        var minx = this.points.Min(z => z.X);
 
         return maxx - minx;
       }
     }
 
+    [JsonIgnore]
+    /// <inheritdoc />
     public double HeightCalculated
     {
       get
@@ -82,22 +129,17 @@
           return 0;
         }
 
-        var maxy = this.points.Max(z => z.y);
-        var miny = this.points.Min(z => z.y);
+        var maxy = this.points.Max(z => z.Y);
+        var miny = this.points.Min(z => z.Y);
         return maxy - miny;
       }
     }
 
-    public SvgPoint this[int ind]
-    {
-      get
-      {
-        return this.points[ind];
-      }
-    }
-
+    /// <inheritdoc />
     public IList<INfp> Children { get; set; } = new List<INfp>();
 
+    [JsonIgnore]
+    /// <inheritdoc />
     public int Length
     {
       get
@@ -106,19 +148,26 @@
       }
     }
 
+    /// <inheritdoc />
     public int Id { get; set; }
 
-    public double? Offsetx { get; set; }
+    [JsonConverter(typeof(DoublePrecisionConverter))]
+    /// <inheritdoc />
+    public double? OffsetX { get; set; }
 
-    public double? Offsety { get; set; }
+    [JsonConverter(typeof(DoublePrecisionConverter))]
+    /// <inheritdoc />
+    public double? OffsetY { get; set; }
 
+    /// <inheritdoc />
     public int Source { get; set; } = -1;
 
+    /// <inheritdoc />
     public int PlacementOrder { get; set; } = -1;
 
-    private float rotation;
-
-    public float Rotation
+    [JsonConverter(typeof(DoublePrecisionConverter))]
+    /// <inheritdoc />
+    public double Rotation
     {
       get
       {
@@ -127,14 +176,16 @@
 
       set
       {
+        if (value > 360D)
+        {
+          value = value % 360D;
+        }
+
         this.rotation = value;
       }
     }
 
-    public bool ForceRotations { get; set; }
-
-    public float[] Rotations { get; } = new float[] { 90, 270 };
-
+    /// <inheritdoc />
     public SvgPoint[] Points
     {
       get
@@ -148,17 +199,13 @@
       }
     }
 
-    public SvgPoint[] ReplacePoints(IEnumerable<SvgPoint> points)
-    {
-      this.points = points.ToArray();
-      return this.Points;
-    }
-
-    public float Area
+    /// <inheritdoc />
+    [JsonIgnore]
+    public double Area
     {
       get
       {
-        float ret = 0;
+        var ret = 0d;
         if (this.points.Length < 3)
         {
           return 0;
@@ -171,40 +218,172 @@
         {
           var s0 = pp[i - 1];
           var s1 = pp[i];
-          ret += (float)((s0.x * s1.y) - (s0.y * s1.x));
+          ret += (s0.X * s1.Y) - (s0.Y * s1.X);
         }
 
-        return (float)Math.Abs(ret / 2);
+        return (double)Math.Abs(ret / 2);
       }
     }
 
+    [JsonIgnore]
+    /// <inheritdoc />
+    public bool IsClosed
+    {
+      get
+      {
+        var tolerance = 0.0000001;
+        if (this.Points.Length == 0)
+        {
+          return false;
+        }
+
+        if (Math.Abs(this.Points.First().X - this.Points.Last().X) < tolerance &&
+            Math.Abs(this.Points.First().Y - this.Points.Last().Y) < tolerance)
+        {
+          return true;
+        }
+
+        IPointXY lastPoint = null;
+        foreach (var point in this.Points)
+        {
+          if (lastPoint != null &&
+              Math.Abs(point.X - lastPoint.X) < tolerance &&
+              Math.Abs(point.Y - lastPoint.Y) < tolerance)
+          {
+            return true;
+          }
+
+          lastPoint = point;
+        }
+
+        return false;
+      }
+    }
+
+    [JsonIgnore]
+    /// <inheritdoc />
+    public bool IsExact => !this.Points.Any(o => !o.Exact);
+
+    /// <inheritdoc />
     public bool IsPriority { get; set; }
 
+    /// <inheritdoc />
     public AnglesEnum StrictAngle { get; set; }
 
+    /// <inheritdoc />
+    public SvgPoint this[int ind]
+    {
+      get
+      {
+        return this.points[ind];
+      }
+    }
+
+    /// <summary>
+    /// Creates a new <see cref="NFP"/> from the json supplied.
+    /// </summary>
+    /// <param name="json">Serialised representation of the NFP to create.</param>
+    /// <returns>New <see cref="NFP"/>.</returns>
+    public static NFP FromJson(string json)
+    {
+      var options = new JsonSerializerOptions();
+      options.Converters.Add(new NfpJsonConverter());
+      return JsonSerializer.Deserialize<NFP>(json, options);
+    }
+
+    public static NFP LoadFromFile(string fileName)
+    {
+      using (StreamReader inputFile = new StreamReader(fileName))
+      {
+        return FromJson(inputFile.ReadToEnd());
+      }
+    }
+
+    /// <inheritdoc />
+    public void AddPoint(SvgPoint point)
+    {
+      int i = this.points.Length;
+      Array.Resize(ref this.points, i + 1);
+      this.points[i] = point;
+    }
+
+    /// <inheritdoc/>
+    public void Clean()
+    {
+      var cleaned = SvgNest.CleanPolygon2(this);
+      if (cleaned != null)
+      {
+        this.ReplacePoints(cleaned.Points);
+      }
+
+      foreach (var child in this.Children)
+      {
+        child.ReplacePoints(SvgNest.CleanPolygon2(child).Points);
+      }
+    }
+
+    /// <inheritdoc />
+    public void Reverse()
+    {
+      this.points.Reverse();
+    }
+
+    /// <inheritdoc />
     void IHiddenNfp.Push(SvgPoint svgPoint)
     {
       this.points = this.points.Append(svgPoint).ToArray();
     }
 
-    public INfp slice(int v)
+    /// <inheritdoc />
+    public void ReplacePoints(IEnumerable<SvgPoint> points)
+    {
+      this.points = points.ToArray();
+    }
+
+    /// <inheritdoc />
+    public void ReplacePoints(INfp replacementNfp)
+    {
+      this.points = replacementNfp.Points.ToArray();
+      for (int i = 0; i < this.Children.Count; i++)
+      {
+        this.Children[i].ReplacePoints(replacementNfp.Children[i]);
+      }
+    }
+
+    /// <inheritdoc />
+    public INfp Slice(int v)
     {
       var ret = new NFP();
       List<SvgPoint> pp = new List<SvgPoint>();
       for (int i = v; i < this.Length; i++)
       {
-        pp.Add(new SvgPoint(this[i].x, this[i].y));
+        pp.Add(new SvgPoint(this[i].X, this[i].Y));
       }
 
       ret.ReplacePoints(pp.ToArray());
       return ret;
     }
 
-    public string stringify()
+    /// <inheritdoc />
+    public string Stringify()
     {
       throw new NotImplementedException();
     }
 
+    /// <inheritdoc />
+    public override string ToString()
+    {
+      var pointStr = (this.points != null) ? this.points.Count() + string.Empty : "null";
+      return $"{this.GetType().Name}: id:{this.Id}; src:{this.Source}; rot:{this.Rotation}°@{this.X:0.###},{this.Y:0.###}; points:{pointStr} - {this.Name}";
+    }
+
+    /// <inheritdoc />
+    public string ToShortString()
+    {
+      return $"{this.GetType().Name}: i:{this.Id};s:{this.Source};r:{this.Rotation}°@{this.X:0.###},{this.Y:0.###}";
+    }
+
+    /// <inheritdoc />
     public NFP Clone()
     {
       NFP result = new NFP();
@@ -217,7 +396,7 @@
 
       for (var i = 0; i < this.Length; i++)
       {
-        result.AddPoint(new SvgPoint(this[i].x, this[i].y));
+        result.AddPoint(new SvgPoint(this[i].X, this[i].Y));
       }
 
       if (this.Children != null && this.Children.Count > 0)
@@ -231,28 +410,21 @@
       return result;
     }
 
-    /// <summary>
-    /// Clones but only the top level points; no children.
-    /// </summary>
-    /// <param name="p"></param>
-    /// <returns></returns>
+    /// <inheritdoc />
     public INfp CloneTop()
     {
       var newp = new NFP();
       for (var i = 0; i < this.Length; i++)
       {
         newp.AddPoint(new SvgPoint(
-             this[i].x,
-             this[i].y));
+             this[i].X,
+             this[i].Y));
       }
 
       return newp;
     }
 
-    /// <summary>
-    /// Clone but only copy exact points.
-    /// </summary>
-    /// <returns>Clone but only copy exact points.</returns>
+    /// <inheritdoc />
     public NFP CloneExact()
     {
       NFP clone = new NFP();
@@ -261,7 +433,7 @@
       clone.IsPriority = this.IsPriority;
       clone.StrictAngle = this.StrictAngle;
       clone.Name = this.Name;
-      clone.ReplacePoints(this.Points.Select(z => new SvgPoint(z.x, z.y) { Exact = z.Exact }));
+      clone.ReplacePoints(this.Points.Select(z => new SvgPoint(z.X, z.Y) { Exact = z.Exact }));
       if (this.Children != null)
       {
         foreach (var citem in this.Children)
@@ -270,21 +442,22 @@
           var l = clone.Children.Last();
           l.Id = citem.Id;
           l.Source = citem.Source;
-          l.ReplacePoints(citem.Points.Select(z => new SvgPoint(z.x, z.y) { Exact = z.Exact }));
+          l.ReplacePoints(citem.Points.Select(z => new SvgPoint(z.X, z.Y) { Exact = z.Exact }));
         }
       }
 
       return clone;
     }
 
-    public NFP Rotate(float degrees)
+    /// <inheritdoc/>
+    public INfp Rotate(double degrees, WithChildren withChildren = WithChildren.Included)
     {
       var angle = degrees * Math.PI / 180;
       List<SvgPoint> pp = new List<SvgPoint>();
       for (var i = 0; i < this.Length; i++)
       {
-        var x = this[i].x;
-        var y = this[i].y;
+        var x = this[i].X;
+        var y = this[i].Y;
         var x1 = (x * Math.Cos(angle)) - (y * Math.Sin(angle));
         var y1 = (x * Math.Sin(angle)) + (y * Math.Cos(angle));
 
@@ -294,26 +467,42 @@
       NFP rotated = this.Clone();
       rotated.Rotation = 0;
       rotated.ReplacePoints(pp);
+
       // rotated.Rotation += degrees;
+
       // rotated.Rotation = rotated.Rotation % 360f;
 
-      if (this.Children != null && this.Children.Count > 0)
+      if (withChildren == WithChildren.Included && this.Children != null && this.Children.Count > 0)
       {
         for (var j = 0; j < this.Children.Count; j++)
         {
-          rotated.Children.Add(this.Children[j].Rotate(degrees));
+          rotated.Children[j] = this.Children[j].Rotate(degrees, withChildren);
         }
       }
 
       return rotated;
     }
 
-    public NFP CloneTree()
+    /// <inheritdoc />
+    public INfp CloneTree()
     {
-      NFP newtree = new NFP();
+      INfp newtree;
+      if (this is Sheet sheet)
+      {
+        newtree = new Sheet()
+        {
+          Width = sheet.Width,
+          Height = sheet.Height,
+        };
+      }
+      else
+      {
+        newtree = new NFP();
+      }
+
       foreach (var t in this.Points)
       {
-        newtree.AddPoint(new SvgPoint(t.x, t.y) { Exact = t.Exact });
+        newtree.AddPoint(new SvgPoint(t.X, t.Y) { Exact = t.Exact });
       }
 
       // jwb added the properties
@@ -322,7 +511,7 @@
       newtree.IsPriority = this.IsPriority;
       newtree.StrictAngle = this.StrictAngle;
       newtree.Name = this.Name;
-      // jwb added the properties
+
       if (this.Children != null && this.Children.Count > 0)
       {
         foreach (var c in this.Children)
@@ -334,6 +523,7 @@
       return newtree;
     }
 
+    /// <inheritdoc />
     public NFP GetHull()
     {
       // convert to hulljs format
@@ -346,10 +536,10 @@
       double[][] points = new double[this.Length][];
       for (var i = 0; i < this.Length; i++)
       {
-        points[i] = new double[] { this[i].x, this[i].y };
+        points[i] = new double[] { this[i].X, this[i].Y };
       }
 
-      var hullpoints = D3.polygonHull(points);
+      var hullpoints = D3.PolygonHull(points);
       if (hullpoints == null)
       {
         return new NFP(this.Points);
@@ -366,14 +556,115 @@
       }
     }
 
-    public string ToJson()
+    /// <inheritdoc />
+    public virtual string ToJson()
     {
-      return JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
+      var options = new JsonSerializerOptions();
+      options.Converters.Add(new NfpJsonConverter());
+      options.WriteIndented = true;
+      return JsonSerializer.Serialize(this, options);
     }
 
-    public static NFP FromJson(string json)
+    /// <inheritdoc />
+    public string ToOpenScadPolygon()
     {
-      return JsonSerializer.Deserialize<NFP>(json);
+      var resultBuilder = new StringBuilder("polygon ([");
+      foreach (var p in this.Points)
+      {
+        resultBuilder.AppendLine($"[{p.X:0.######},{p.Y:0.######}],");
+      }
+
+      resultBuilder.AppendLine("]);");
+
+      if (Children.Count > 0)
+      {
+        var outer = resultBuilder.ToString();
+        resultBuilder = new StringBuilder();
+        resultBuilder.AppendLine("difference() {");
+        resultBuilder.Append(outer);
+        foreach (var c in Children)
+        {
+          resultBuilder.Append(c.ToOpenScadPolygon());
+        }
+
+        resultBuilder.AppendLine("}");
+      }
+
+      return resultBuilder.ToString();
+    }
+
+    /// <inheritdoc />
+    public INfp Shift(IPartPlacement shift)
+    {
+      return Shift(shift.X, shift.Y);
+    }
+
+    /// <inheritdoc />
+    public INfp Shift(double x, double y)
+    {
+      NFP shifted = new NFP();
+      shifted.Id = this.Id;
+      shifted.Name = this.Name;
+      shifted.PlacementOrder = this.PlacementOrder;
+      shifted.Rotation = this.Rotation;
+      shifted.Source = this.Source;
+      shifted.StrictAngle = this.StrictAngle;
+      for (var i = 0; i < this.Length; i++)
+      {
+        shifted.AddPoint(new SvgPoint(this[i].X + x, this[i].Y + y) { Exact = this[i].Exact });
+      }
+
+      if (this.Children != null /*&& p.Children.Count*/)
+      {
+        for (int i = 0; i < this.Children.Count(); i++)
+        {
+          shifted.Children.Add(this.Children[i].Shift(x, y));
+        }
+      }
+
+      return shifted;
+    }
+
+    /// <inheritdoc />
+    public INfp ShiftToOrigin()
+    {
+      return Shift(-this.MinX, -this.MinY);
+    }
+
+    bool IEquatable<IPolygon>.Equals(IPolygon other)
+    {
+      var thisPolygon = this as IPolygon;
+      if (other != null &&
+          thisPolygon.Points.SequenceEqual(other.Points, new SvgPointCloseEqualityComparer()) &&
+          thisPolygon.Id == other.Id &&
+          thisPolygon.Name == other.Name &&
+          thisPolygon.Rotation == other.Rotation &&
+          thisPolygon.Source == other.Source &&
+          thisPolygon.Children.Count == other.Children.Count)
+      {
+        for (int c = 0; c < thisPolygon.Children.Count; c++)
+        {
+          var childPolygon = thisPolygon.Children[c] as IEquatable<IPolygon>;
+          if (!childPolygon.Equals(other.Children[c]))
+          {
+            return false;
+          }
+        }
+
+        return true;
+      }
+
+      return false;
+    }
+
+    public void EnsureIsClosed()
+    {
+      if (!this.IsClosed)
+      {
+        var closedPoints = points.ToList();
+        closedPoints.Add(closedPoints.First());
+        ReplacePoints(closedPoints);
+      }
     }
   }
 }

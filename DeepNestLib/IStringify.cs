@@ -2,6 +2,6 @@
 {
   public interface IStringify
   {
-    string stringify();
+    string Stringify();
   }
 }

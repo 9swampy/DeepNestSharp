@@ -1,9 +1,7 @@
 ﻿namespace DeepNestLib.CiTests
 {
   using System.Diagnostics;
-  using System.IO;
   using System.Linq;
-  using System.Reflection;
   using FakeItEasy;
   using FluentAssertions;
   using Xunit;
@@ -28,12 +26,12 @@
         if (!this.hasImportedRawDetail)
         {
           this.loadedRawDetail = DxfParser.LoadDxfStream(DxfTestFilename);
-          this.nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
-          this.hasImportedRawDetail = this.loadedRawDetail.TryGetNfp(A.Dummy<int>(), out this.loadedNfp);
+          this.nestingContext = A.Dummy<NestingContext>();
+          this.hasImportedRawDetail = this.loadedRawDetail.TryConvertToNfp(A.Dummy<int>(), out this.loadedNfp);
           var sw = new Stopwatch();
           sw.Start();
           var config = new DefaultSvgNestConfig() { CurveTolerance = 0.72D };
-          this.simplifiedNfp = SvgNest.simplifyFunction(this.loadedNfp, false, config.CurveTolerance, config.Simplify);
+          this.simplifiedNfp = SvgNest.SimplifyFunction(this.loadedNfp, false, config.CurveTolerance, config.Simplify);
           sw.Stop();
           this.simplifiedNfpTime = sw.ElapsedMilliseconds;
         }
@@ -69,7 +67,7 @@
     [Fact]
     public void ShouldHaveExpectedArea()
     {
-      this.loadedNfp.Area.Should().Be(2109.70581F);
+      this.loadedNfp.Area.Should().BeApproximately(2109, 1d);
     }
 
     [Fact]

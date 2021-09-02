@@ -2,7 +2,6 @@
 {
   using System;
   using System.Collections.Generic;
-  using System.Threading;
   using FakeItEasy;
   using FluentAssertions;
   using IxMilia.Dxf.Entities;
@@ -11,6 +10,8 @@
   public class RunFullNestSqueezeFixture
   {
     private const string DxfTestFilename = "Dxfs._5.dxf";
+    private const double ExpectedFitness = (494516 + 541746) / 2;
+    private const double ExpectedFitnessTolerance = 10000 * 3;
 
     private static volatile object testSyncLock = new object();
     private DefaultSvgNestConfig config;
@@ -35,22 +36,27 @@
           config.PopulationSize = 40;
           this.loadedRawDetail = DxfParser.LoadDxfStream(DxfTestFilename);
           var progressCapture = new ProgressTestResponse();
-          this.nestingContext = new NestingContext(A.Fake<IMessageService>(), progressCapture);
-          this.hasImportedRawDetail = this.loadedRawDetail.TryImportFromRawDetail(A.Dummy<int>(), out this.loadedNfp);
+          this.nestingContext = new NestingContext(A.Fake<IMessageService>(), progressCapture, A.Dummy<NestState>(), this.config);
+          this.hasImportedRawDetail = this.loadedRawDetail.TryConvertToNfp(A.Dummy<int>(), out this.loadedNfp);
           this.nestingContext.Polygons.Add(this.loadedNfp);
           this.nestingContext.Polygons.Add(this.loadedNfp.Clone());
 
-          INfp firstSheet;
-          DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { new DxfGenerator().Rectangle(595D, 395D, RectangleType.FileLoad) }).TryImportFromRawDetail(firstSheetIdSrc, out firstSheet).Should().BeTrue();
+          ISheet firstSheet;
+          DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { new DxfGenerator().Rectangle(595D, 395D, RectangleType.FileLoad) }).TryConvertToSheet(firstSheetIdSrc, out firstSheet).Should().BeTrue();
           this.nestingContext.Sheets.Add(firstSheet);
 
           this.nestingContext.StartNest();
           int i = 0;
-          while (i < 100 && this.nestingContext.Nest.TopNestResults.Count < terminateNestResultCount)
+          while (i < 100 && this.nestingContext.State.TopNestResults.Count < terminateNestResultCount)
           {
             i++;
             this.nestingContext.NestIterate(this.config);
             progressCapture.Are.WaitOne(1000);
+            if (this.nestingContext.State.TopNestResults.Count >= terminateNestResultCount &&
+                this.nestingContext.State.TopNestResults.Top.Fitness <= ExpectedFitness + ExpectedFitnessTolerance)
+            {
+              break;
+            }
           }
         }
       }
@@ -65,25 +71,25 @@
     [Fact]
     public void ShouldHaveReturnedNestResults()
     {
-      this.nestingContext.Nest.TopNestResults.Count.Should().BeGreaterOrEqualTo(terminateNestResultCount);
+      this.nestingContext.State.TopNestResults.Count.Should().BeGreaterOrEqualTo(terminateNestResultCount);
     }
 
     [Fact]
     public void ShouldHaveNoUnplacedParts()
     {
-      this.nestingContext.Nest.TopNestResults.Top.UnplacedParts.Should().BeEmpty();
+      this.nestingContext.State.TopNestResults.Top.UnplacedParts.Should().BeEmpty();
     }
 
     [Fact]
     public void FitnessShouldBeExpected()
     {
-      this.nestingContext.Nest.TopNestResults.Top.Fitness.Should().BeApproximately(584871, 10000);
+      this.nestingContext.State.TopNestResults.Top.Fitness.Should().BeApproximately(ExpectedFitness, ExpectedFitnessTolerance);
     }
 
     [Fact]
     public void PlacementTypeShouldBeExpected()
     {
-      this.nestingContext.Nest.TopNestResults.Top.PlacementType.Should().Be(config.PlacementType);
+      this.nestingContext.State.TopNestResults.Top.PlacementType.Should().Be(config.PlacementType);
     }
   }
 }

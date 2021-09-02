@@ -2,9 +2,10 @@
 {
   using System;
   using System.Linq;
+  using DeepNestLib.Geometry;
   using DeepNestLib.Placement;
 
-  public class OriginalFitness
+  public class OriginalFitness : ISheetPlacementFitness
   {
     private readonly NestResult nestResult;
 
@@ -17,15 +18,16 @@
     {
       var result = 0D;
       result += Unplaced;
-      result += Bounds;
-      result += Sheets;
-      result += MaterialWasted;
-      result += MaterialUtilization;
+      var sheetPlacementFitness = (ISheetPlacementFitness)this;
+      result += sheetPlacementFitness.Bounds;
+      result += sheetPlacementFitness.Sheets;
+      result += sheetPlacementFitness.MaterialWasted;
+      result += sheetPlacementFitness.MaterialUtilization;
 
       return result;
     }
 
-    private float TotalSheetArea
+    private double TotalSheetArea
     {
       get
       {
@@ -34,57 +36,57 @@
     }
 
     /// <summary>
-    /// Penalise for each additional sheet needed.
+    /// Gets penalty for each additional sheet needed.
     /// </summary>
-    internal double Sheets
+    double ISheetPlacementFitness.Sheets
     {
       get
       {
-        return nestResult.UsedSheets.Sum(o => o.Fitness.Sheets);
+        return ((SheetPlacementCollection)nestResult.UsedSheets).Sheets;
       }
     }
 
     /// <summary>
-    /// Penalise low material utilization.
+    /// Gets penalty for low material utilization.
     /// </summary>
-    internal double MaterialUtilization
+    double ISheetPlacementFitness.MaterialUtilization
     {
       get
       {
-        return nestResult.UsedSheets.Sum(o => o.Fitness.MaterialUtilization);
+        return ((SheetPlacementCollection)nestResult.UsedSheets).MaterialUtilization;
       }
     }
 
     /// <summary>
-    /// Penalise high material wastage; weighted to reward compression within the part of the sheet used.
+    /// Gets penalty for high material wastage; weighted to reward compression within the part of the sheet used.
     /// </summary>
-    internal double MaterialWasted
+    double ISheetPlacementFitness.MaterialWasted
     {
       get
       {
-        return nestResult.UsedSheets.Sum(o => o.Fitness.MaterialWasted);
+        return ((SheetPlacementCollection)nestResult.UsedSheets).MaterialWasted;
       }
     }
 
     /// <summary>
-    /// For Gravity prefer left squeeze; BoundingBox the smaller Bound; Squeeze tbc.
+    /// Gets penalty for bounds of sheet used; for Gravity prefer left squeeze; for BoundingBox a smaller Bound; Squeeze tbc.
     /// </summary>
-    internal double Bounds
+    double ISheetPlacementFitness.Bounds
     {
       get
       {
-        return nestResult.UsedSheets.Sum(o => o.Fitness.Bounds);
+        return ((SheetPlacementCollection)nestResult.UsedSheets).Bounds;
       }
     }
 
     /// <summary>
-    /// Huge penalty for unplaced parts so an additional sheet will always get added if needed.
+    /// Get overweighted penalty for unplaced parts so an additional sheet will always get added when needed.
     /// </summary>
-    internal double Unplaced
+    public double Unplaced
     {
       get
       {
-        var result = nestResult.UnplacedParts.Sum(o => 100000000 * (Math.Abs(GeometryUtil.polygonArea(o)) / TotalSheetArea));
+        var result = nestResult.UnplacedParts.Sum(o => 50 * Math.Abs(GeometryUtil.PolygonArea(o)));
         if (nestResult.UnplacedParts.Any(o => o.IsPriority))
         {
           result *= 2;

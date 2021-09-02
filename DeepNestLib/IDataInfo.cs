@@ -17,7 +17,7 @@
 
     int[] SheetIds { get; }
 
-    INfp[] Sheets { get; }
+    ISheet[] Sheets { get; }
 
     int[] SheetSources { get; }
 

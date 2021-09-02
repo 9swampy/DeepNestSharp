@@ -3,58 +3,57 @@
   using System;
   using System.Collections.Generic;
   using System.Linq;
-  using System.Threading;
   using System.Threading.Tasks;
   using System.Xml.Linq;
   using DeepNestLib.Placement;
 
-  public class NestingContext
+  public class NestingContext : INestingContext
   {
     private readonly IMessageService messageService;
     private readonly IProgressDisplayer progressDisplayer;
-    private readonly Random random = new Random();
-    private int iterations = 0;
+    private readonly ISvgNestConfig config;
+    private readonly NestState state;
+    private readonly INestStateBackground stateBackground;
+    private readonly INestStateNestingContext stateNestingContext;
     private volatile bool isStopped;
+    private volatile SvgNest nest;
 
-    public NestingContext(IMessageService messageService, IProgressDisplayer progressDisplayer)
+    public NestingContext(IMessageService messageService, IProgressDisplayer progressDisplayer, NestState state, ISvgNestConfig config)
     {
       this.messageService = messageService;
       this.progressDisplayer = progressDisplayer;
+      this.State = state;
+      this.config = config;
+      this.state = state;
+      this.stateNestingContext = state;
+      this.stateBackground = state;
     }
-
-    public bool IsErrored { get; private set; }
 
     public ICollection<INfp> Polygons { get; } = new HashSet<INfp>();
 
-    public List<INfp> Sheets { get; private set; } = new List<INfp>();
-
-    public int PlacedPartsCount => Current?.TotalPlacedCount ?? 0;
+    public IList<ISheet> Sheets { get; private set; } = new List<ISheet>();
 
     public INestResult Current { get; private set; } = null;
 
     public SvgNest Nest
     {
-      get;
-      private set;
+      get => nest;
+      private set => nest = value;
     }
 
-    public int Iterations
-    {
-      get
-      {
-        return iterations;
-      }
-    }
+    public INestState State { get; }
 
     public void StartNest()
     {
+      this.ReorderSheets();
       this.InternalReset();
       this.Current = null;
       this.Nest = new SvgNest(
         this.messageService,
         this.progressDisplayer,
-        () => this.IsErrored = true);
-      this.progressDisplayer.DisplayToolStripMessage($"Pre-processing. . .");
+        MinkowskiSum.CreateInstance(this.config, this.state),
+        state);
+      this.progressDisplayer.DisplayTransientMessage($"Pre-processing. . .");
       this.isStopped = false;
     }
 
@@ -67,8 +66,8 @@
     {
       try
       {
-        List<NFP> lsheets = new List<NFP>();
-        List<NFP> lpoly = new List<NFP>();
+        var lsheets = new List<ISheet>();
+        var lpoly = new List<INfp>();
 
         int id = 0;
         foreach (var item in Polygons)
@@ -82,18 +81,20 @@
           Sheets[i].Id = i;
         }
 
+        this.progressDisplayer.InitialiseLoopProgress(ProgressBar.Primary, "Pre-processing (Polygon Clone). . .", Polygons.Count);
         foreach (var item in Polygons)
         {
           NFP clone = item.CloneExact();
           lpoly.Add(clone);
+          this.progressDisplayer.IncrementLoopProgress(ProgressBar.Primary);
         }
 
         foreach (var item in Sheets)
         {
-          NFP clone = new NFP();
+          var clone = new Sheet();
           clone.Id = item.Id;
           clone.Source = item.Source;
-          clone.ReplacePoints(item.Points.Select(z => new SvgPoint(z.x, z.y) { Exact = z.Exact }));
+          clone.ReplacePoints(item.Points.Select(z => new SvgPoint(z.X, z.Y) { Exact = z.Exact }));
           if (item.Children != null)
           {
             foreach (var citem in item.Children)
@@ -102,7 +103,7 @@
               var l = clone.Children.Last();
               l.Id = citem.Id;
               l.Source = citem.Source;
-              l.ReplacePoints(citem.Points.Select(z => new SvgPoint(z.x, z.y) { Exact = z.Exact }));
+              l.ReplacePoints(citem.Points.Select(z => new SvgPoint(z.X, z.Y) { Exact = z.Exact }));
             }
           }
 
@@ -112,57 +113,53 @@
         if (config.OffsetTreePhase)
         {
           var grps = lpoly.GroupBy(z => z.Source).ToArray();
+          this.progressDisplayer.InitialiseLoopProgress(ProgressBar.Primary, "Pre-processing (Offset Tree Phase). . .", grps.Length);
           if (config.UseParallel)
           {
             Parallel.ForEach(grps, (item) =>
             {
-              SvgNest.OffsetTree(item.First(), 0.5 * config.Spacing);
-              foreach (var zitem in item)
-              {
-                zitem.ReplacePoints(item.First().Points);
-              }
-
+              OffsetTreeReplace(config, item);
+              this.progressDisplayer.IncrementLoopProgress(ProgressBar.Primary);
             });
-
           }
           else
           {
             foreach (var item in grps)
             {
-              SvgNest.OffsetTree(item.First(), 0.5 * config.Spacing);
-              foreach (var zitem in item)
-              {
-                zitem.ReplacePoints(item.First().Points);
-              }
+              OffsetTreeReplace(config, item);
+              this.progressDisplayer.IncrementLoopProgress(ProgressBar.Primary);
             }
           }
 
           foreach (var item in lsheets)
           {
             var gap = config.SheetSpacing - (config.Spacing / 2);
-            SvgNest.OffsetTree(item, -gap, true);
+            INfp sheet = item;
+            SvgNest.OffsetTree(ref sheet, -gap, config, true);
           }
         }
 
-        List<NestItem> partsLocal = new List<NestItem>();
-        var p1 = lpoly.GroupBy(z => z.Source).Select(z => new NestItem()
+        var p1 = lpoly.GroupBy(z => z.Source).Select(z => new NestItem<INfp>()
         {
           Polygon = z.First(),
-          IsSheet = false,
           Quantity = z.Count(),
         });
 
-        var p2 = lsheets.GroupBy(z => z.Source).Select(z => new NestItem()
+        var p2 = lsheets.GroupBy(z => z.Source).Select(z => new NestItem<ISheet>()
         {
           Polygon = z.First(),
-          IsSheet = true,
           Quantity = z.Count(),
         });
 
-        partsLocal.AddRange(p1);
-        partsLocal.AddRange(p2);
+        var partsLocal = new List<NestItem<INfp>>(p1);
+        var sheetsLocal = new List<NestItem<ISheet>>(p2);
         int srcc = 0;
         foreach (var item in partsLocal)
+        {
+          item.Polygon.Source = srcc++;
+        }
+
+        foreach (var item in sheetsLocal)
         {
           item.Polygon.Source = srcc++;
         }
@@ -175,12 +172,19 @@
         {
           if (!this.isStopped)
           {
-            Nest.launchWorkers(partsLocal.ToArray(), config);
+            if (Nest.IsStopped)
+            {
+              this.StopNest();
+            }
+            else
+            {
+              Nest.LaunchWorkers(partsLocal.ToArray(), sheetsLocal.ToArray(), config, stateBackground);
+            }
           }
 
-          if (Nest.TopNestResults != null && Nest.TopNestResults.Count > 0)
+          if (state.TopNestResults != null && State.TopNestResults.Count > 0)
           {
-            var plcpr = Nest.TopNestResults.Top;
+            var plcpr = State.TopNestResults.Top;
 
             if (Current == null || plcpr.Fitness < Current.Fitness)
             {
@@ -188,14 +192,14 @@
             }
           }
 
-          Interlocked.Increment(ref iterations);
+          stateNestingContext.IncrementIterations();
         }
       }
       catch (Exception ex)
       {
-        if (!this.IsErrored)
+        if (!State.IsErrored)
         {
-          this.IsErrored = true;
+          state.SetIsErrored();
           this.messageService.DisplayMessage(ex);
         }
 
@@ -229,12 +233,12 @@
 
         foreach (var partPlacement in sheetPlacement.PartPlacements)
         {
-          var poly = Polygons.First(z => z.Id == partPlacement.id);
+          var poly = Polygons.First(z => z.Id == partPlacement.Id);
           placed.Add(poly);
           poly.Sheet = sheet;
-          poly.x = partPlacement.x + sheet.x;
-          poly.y = partPlacement.y + sheet.y;
-          poly.Rotation = partPlacement.rotation;
+          poly.X = partPlacement.X + sheet.X;
+          poly.Y = partPlacement.Y + sheet.Y;
+          poly.Rotation = partPlacement.Rotation;
           poly.PlacementOrder = sheetPlacement.PartPlacements.IndexOf(partPlacement);
         }
       }
@@ -242,8 +246,8 @@
       var ppps = Polygons.Where(z => !placed.Contains(z));
       foreach (var item in ppps)
       {
-        item.x = -1000;
-        item.y = 0;
+        item.X = -1000;
+        item.Y = 0;
       }
     }
 
@@ -254,20 +258,35 @@
       int gap = 10;
       for (int i = 0; i < Sheets.Count; i++)
       {
-        Sheets[i].x = x;
-        Sheets[i].y = y;
-        if (Sheets[i] is Sheet)
+        Sheets[i].X = x;
+        Sheets[i].Y = y;
+        if (Sheets[i] is Sheet sheet)
         {
-          var r = Sheets[i] as Sheet;
-          x += r.Width + gap;
+          x += sheet.Width + gap;
         }
         else
         {
-          var maxx = Sheets[i].Points.Max(z => z.x);
-          var minx = Sheets[i].Points.Min(z => z.x);
+          var maxx = Sheets[i].Points.Max(z => z.X);
+          var minx = Sheets[i].Points.Min(z => z.X);
           var w = maxx - minx;
           x += w + gap;
         }
+      }
+    }
+
+    /// <summary>
+    /// This is the only point where simplification feeds in to the process so use this in tests to apply config-simplifications to imports.
+    /// </summary>
+    /// <param name="config">Config to use when simplifying.</param>
+    /// <param name="item">The item that will be modified.</param>
+    private static void OffsetTreeReplace(ISvgNestConfig config, IGrouping<int, INfp> item)
+    {
+      // Don't see the reason to apply to all in the group because later we regroup and just use the first again.
+      var target = item.First();
+      SvgNest.OffsetTree(ref target, 0.5 * config.Spacing, config);
+      foreach (var zitem in item)
+      {
+        zitem.ReplacePoints(item.First().Points);
       }
     }
 
@@ -365,7 +384,7 @@
         }
         else if (path.ToLower().EndsWith("dxf"))
         {
-          r = DxfParser.LoadDxfFile(path);
+          r = DxfParser.LoadDxfFile(path).Result;
         }
         else
         {
@@ -377,7 +396,7 @@
         for (int i = 0; i < cnt; i++)
         {
           INfp loadedNfp;
-          if (r.TryGetNfp(src, out loadedNfp))
+          if (r.TryConvertToNfp(src, out loadedNfp))
           {
             this.Polygons.Add(loadedNfp);
           }
@@ -394,6 +413,7 @@
       this.Polygons.Clear();
       this.Sheets.Clear();
       InternalReset();
+      progressDisplayer.UpdateNestsList();
     }
 
     /// <summary>
@@ -401,11 +421,9 @@
     /// </summary>
     private void InternalReset()
     {
-      SvgNest.Reset();
-      Interlocked.Exchange(ref iterations, 0);
-      this.IsErrored = false;
+      stateNestingContext.Reset();
+      Current = null;
       this.Current = null;
-      this.Nest = null;
     }
 
     public void StopNest()

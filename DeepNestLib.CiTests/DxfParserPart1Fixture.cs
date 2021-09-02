@@ -1,12 +1,8 @@
 ﻿namespace DeepNestLib.CiTests
 {
-  using System;
-  using System.Collections.Generic;
-  using System.IO;
   using System.Linq;
   using FakeItEasy;
   using FluentAssertions;
-  using IxMilia.Dxf.Entities;
   using Xunit;
 
   public class DxfParserPart1Fixture
@@ -21,8 +17,8 @@
     public DxfParserPart1Fixture()
     {
       this.loadedRawDetail = DxfParser.LoadDxfStream(DxfTestFilename);
-      this.nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
-      this.hasImportedRawDetail = this.loadedRawDetail.TryImportFromRawDetail(A.Dummy<int>(), out this.loadedNfp);
+      this.nestingContext = A.Dummy<NestingContext>();
+      this.hasImportedRawDetail = this.loadedRawDetail.TryConvertToNfp(A.Dummy<int>(), out this.loadedNfp);
     }
 
     [Fact]
@@ -54,7 +50,7 @@
     [Fact]
     public void ShouldHaveExpectedArea()
     {
-      this.loadedNfp.Area.Should().Be(2500F);
+      this.loadedNfp.Area.Should().BeApproximately(2500, 1);
     }
 
     [Fact]

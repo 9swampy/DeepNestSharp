@@ -3,13 +3,12 @@
   using System;
   using System.Collections.Generic;
   using System.Drawing;
-  using System.Linq;
 
   public static class Extensions
   {
     public static double DistTo(this SvgPoint p, SvgPoint p2)
     {
-      return Math.Sqrt(Math.Pow(p.x - p2.x, 2) + Math.Pow(p.y - p2.y, 2));
+      return Math.Sqrt(Math.Pow(p.X - p2.X, 2) + Math.Pow(p.Y - p2.Y, 2));
     }
 
     public static double DistTo(this PointF p, PointF p2)

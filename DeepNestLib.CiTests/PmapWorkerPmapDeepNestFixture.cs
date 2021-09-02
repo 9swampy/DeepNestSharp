@@ -11,7 +11,7 @@
     public PmapWorkerPmapDeepNestFixture()
     {
       var pairs = new NfpPair[] { pair1, pair2 };
-      processed = new PmapWorker(pairs, A.Fake<IProgressDisplayer>(), false).PmapDeepNest();
+      processed = new PmapWorker(pairs, A.Fake<IProgressDisplayer>(), false, A.Dummy<MinkowskiSum>(), A.Dummy<NestState>()).PmapDeepNest();
     }
 
     [Fact]
@@ -29,14 +29,14 @@
     [Fact]
     public void ShouldSetPoints1()
     {
-      processed[0].nfp.Points.Should().BeEquivalentTo(PmapWorkerProcessFixture.expectedPoints1, options => options.Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 1))
+      processed[0].Nfp.Points.Should().BeEquivalentTo(PmapWorkerProcessFixture.ExpectedPoints1, options => options.Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 1))
                                     .WhenTypeIs<double>());
     }
 
     [Fact]
     public void ShouldSetPoints2()
     {
-      processed[1].nfp.Points.Should().BeEquivalentTo(PmapWorkerProcessSecondFixture.expectedPoints2, options => options.Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 1))
+      processed[1].Nfp.Points.Should().BeEquivalentTo(PmapWorkerProcessSecondFixture.ExpectedPoints2, options => options.Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 1))
                                     .WhenTypeIs<double>());
     }
   }

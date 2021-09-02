@@ -29,8 +29,8 @@
     [Fact]
     public void GivenSimpleSquareWhenToJsonThenShouldNotThrow()
     {
-      INfp firstSheet;
-      new DxfGenerator().GenerateRectangle("Sheet", 1D, 2D, RectangleType.FileLoad).TryImportFromRawDetail(3, out firstSheet).Should().BeTrue();
+      ISheet firstSheet;
+      new DxfGenerator().GenerateRectangle("Sheet", 1D, 2D, RectangleType.FileLoad).TryConvertToSheet(3, out firstSheet).Should().BeTrue();
 
       Action act = () => _ = firstSheet.ToJson();
 
@@ -38,12 +38,12 @@
     }
 
     [Fact]
-    public void GivenSimpleSquareWhenToJsonThenShouldBeExpected()
+    public void GivenSimpleSquareNfpWhenToJsonThenShouldBeExpected()
     {
-      INfp firstSheet;
-      new DxfGenerator().GenerateRectangle("Sheet", 1D, 2D, RectangleType.FileLoad).TryImportFromRawDetail(3, out firstSheet).Should().BeTrue();
+      INfp firstPart;
+      new DxfGenerator().GenerateRectangle("Part", 1D, 2D, RectangleType.FileLoad).TryConvertToNfp(3, out firstPart).Should().BeTrue();
 
-      var json = firstSheet.ToJson();
+      var json = firstPart.ToJson();
 
       using (Stream stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Placement.SimpleRectangleNfp.json"))
       using (StreamReader reader = new StreamReader(stream))
@@ -54,17 +54,50 @@
     }
 
     [Fact]
-    public void ShouldRoundTripSerialise()
+    public void GivenSimpleSquareSheetWhenToJsonThenShouldBeExpected()
     {
-      INfp expected;
-      new DxfGenerator().GenerateRectangle("Sheet", 1D, 2D, RectangleType.FileLoad).TryImportFromRawDetail(3, out expected).Should().BeTrue();
+      ISheet firstSheet;
+      new DxfGenerator().GenerateRectangle("Sheet", 1D, 2D, RectangleType.FileLoad).TryConvertToSheet(3, out firstSheet).Should().BeTrue();
+
+      var json = firstSheet.ToJson();
+
+      using (Stream stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Placement.SimpleRectangleSheet.json"))
+      using (StreamReader reader = new StreamReader(stream))
+      {
+        string fromFile = reader.ReadToEnd();
+        json.Should().Be(fromFile);
+      }
+    }
+
+    [Fact]
+    public void SheetClonedToNfpShouldRoundTripSerialiseHavingDroppedAddedSheetProperties()
+    {
+      ISheet expected;
+      new DxfGenerator().GenerateRectangle("Sheet", 1D, 2D, RectangleType.FileLoad).TryConvertToSheet(3, out expected).Should().BeTrue();
       expected.Rotation = 12;
 
       var json = expected.ToJson();
 
       var actual = NFP.FromJson(json);
 
-      actual.Should().BeEquivalentTo(expected);
+      actual.Should().BeEquivalentTo(expected, options => options.Excluding(o => o.Width)
+                                                                 .Excluding(o => o.Height));
+      ((IEquatable<IPolygon>)actual).Equals(expected).Should().BeTrue();
+      actual.Rotation.Should().Be(12);
+    }
+
+    [Fact]
+    public void ViaSheetToJsonShouldRoundTripSerialiseFully()
+    {
+      ISheet expected;
+      new DxfGenerator().GenerateRectangle("Sheet", 1D, 2D, RectangleType.FileLoad).TryConvertToSheet(3, out expected).Should().BeTrue();
+      expected.Rotation = 12;
+
+      var json = expected.ToJson();
+
+      var actual = Sheet.FromJson(json);
+
+      actual.Should().BeEquivalentTo(expected, options => options);
       actual.Rotation.Should().Be(12);
     }
   }

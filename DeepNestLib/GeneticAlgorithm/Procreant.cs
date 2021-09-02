@@ -2,85 +2,121 @@
 {
   using System;
   using System.Collections.Generic;
+  using System.Diagnostics;
   using System.Linq;
+  using DeepNestLib.Geometry;
+  using DeepNestLib.NestProject;
 
   public class Procreant
   {
+    private readonly HashSet<string> ancestors = new HashSet<string>();
     private readonly Random r = new Random();
+    private readonly ISvgNestConfig config;
+    private readonly IProgressDisplayer progressDisplayer;
+    private readonly Stopwatch chaperone = new Stopwatch();
+    private int terminations = 0;
 
-    private readonly ISvgNestConfig Config;
-    public PopulationItem[] Population;
-
-    private float[] strictVerticalAngles = new float[]
+    private double[] strictVerticalAngles = new double[]
     {
       0,
       180,
     };
 
-    private float[] strictHorizontalAngles = new float[]
+    private double[] strictHorizontalAngles = new double[]
     {
       90,
       270,
     };
 
-    public Procreant(NFP[] adam, ISvgNestConfig config)
+    public Procreant(NestItem<INfp>[] parts, ISvgNestConfig config, IProgressDisplayer progressDisplayer)
+      : this(CreateAdam(parts), config, progressDisplayer)
     {
-      Config = config;
+    }
 
-      var angles = new List<float>();
+    public Procreant(INfp[] adam, ISvgNestConfig config, IProgressDisplayer progressDisplayer)
+    {
+      this.config = config;
+      this.progressDisplayer = progressDisplayer;
+      var angles = new List<double>();
       for (var i = 0; i < adam.Length; i++)
       {
-        if (config.StrictAngles == AnglesEnum.Vertical)
+        if (adam[i].StrictAngle == AnglesEnum.Vertical || (adam[i].StrictAngle == AnglesEnum.None && this.config.StrictAngles == AnglesEnum.Vertical))
         {
-          angles.Add(strictVerticalAngles[i % strictVerticalAngles.Length]);
+          angles.Add(this.strictVerticalAngles[this.random.Next() % this.strictVerticalAngles.Length]);
         }
-        else if (config.StrictAngles == AnglesEnum.Horizontal)
+        else if (adam[i].StrictAngle == AnglesEnum.Horizontal || (adam[i].StrictAngle == AnglesEnum.None && this.config.StrictAngles == AnglesEnum.Horizontal))
         {
-          angles.Add(strictHorizontalAngles[i % strictHorizontalAngles.Length]);
+          angles.Add(this.strictHorizontalAngles[this.random.Next() % this.strictHorizontalAngles.Length]);
         }
         else
         {
-          var angle = (float)Math.Floor(r.NextDouble() * Config.Rotations) * (360f / Config.Rotations);
+          var angle = Math.Floor(this.r.NextDouble() * this.config.Rotations) * (360f / this.config.Rotations);
           angles.Add(angle);
         }
       }
 
-      Population = new PopulationItem[config.PopulationSize];
-      Population[0] = new PopulationItem(adam.ToList(), angles.ToArray());
+      var population = new PopulationItem[config.PopulationSize];
+      population[0] = new PopulationItem(adam.ToList(), angles.ToArray());
       for (int i = 1; i < config.PopulationSize; i++)
       {
-        var mutant = this.Mutate(Population[0]);
-        Population[i] = mutant;
+        var mutant = this.Mutate(population[0]);
+        population[i] = mutant;
       }
+
+      Population = TerminateClones(population).ToArray();
     }
 
-    public Procreant(NestItem[] parts, ISvgNestConfig config)
-      : this(CreateAdam(parts), config)
+    private IEnumerable<PopulationItem> TerminateClones(IEnumerable<PopulationItem> source)
     {
+      var population = new List<PopulationItem>();
+      foreach (var citizen in source)
+      {
+        if (IsUnique(citizen))
+        {
+          population.Add(citizen);
+        }
+      }
+
+      return population;
     }
 
-    private static NFP[] CreateAdam(NestItem[] parts)
+    private bool IsUnique(PopulationItem citizen)
     {
-      List<NFP> adam = new List<NFP>();
+      var chromosome = $"{string.Join(",", citizen.Parts.Select(p => p.Id))},{string.Join(",", citizen.Rotation.Select(r => r))}";
+      if (ancestors.Add(chromosome))
+      {
+        this.progressDisplayer.IncrementLoopProgress(ProgressBar.Primary);
+        return true;
+      }
+      else
+      {
+        terminations++;
+      }
+
+      return false;
+    }
+
+    public PopulationItem[] Population { get; private set; }
+
+    private static INfp[] CreateAdam(NestItem<INfp>[] parts)
+    {
+      List<INfp> adam = new List<INfp>();
       var id = 0;
       for (int i = 0; i < parts.Count(); i++)
       {
         var part = parts[i];
-        if (!part.IsSheet)
+        for (int j = 0; j < part.Quantity; j++)
         {
-          for (int j = 0; j < part.Quantity; j++)
-          {
-            var poly = part.Polygon.CloneTree(); // deep copy
-            poly.Id = id; // id is the unique id of all parts that will be nested, including cloned duplicates
-            poly.Source = i; // source is the id of each unique part from the main part list
+          var poly = part.Polygon.CloneTree(); // deep copy
+          poly.Id = id; // id is the unique id of all parts that will be nested, including cloned duplicates
+          poly.Source = i; // source is the id of each unique part from the main part list
 
-            adam.Add(poly);
-            id++;
-          }
+          adam.Add(poly);
+          id++;
         }
       }
 
-      adam = adam.OrderByDescending(z => Math.Abs(GeometryUtil.polygonArea(z))).ToList();
+      adam = adam.OrderByDescending(z => Math.Abs(GeometryUtil.PolygonArea(z))).ToList();
       /*List<NFP> shuffle = new List<NFP>();
       Random r = new Random(DateTime.Now.Millisecond);
       while (adam.Any())
@@ -120,11 +156,11 @@
 
     private PopulationItem Mutate(PopulationItem p)
     {
-      var clone = new PopulationItem(p.Parts.ToList(), p.Rotation.Clone() as float[]);
+      var clone = new PopulationItem(p.Parts.ToList(), p.Rotation.Clone() as double[]);
       for (var i = 0; i < clone.Parts.Count(); i++)
       {
         var rand = r.NextDouble();
-        if (rand < 0.01 * Config.MutationRate)
+        if (rand < 0.01 * config.MutationRate)
         {
           var j = i + 1;
           if (j < clone.Parts.Count)
@@ -136,19 +172,19 @@
         }
 
         rand = r.NextDouble();
-        if (rand < 0.01 * Config.MutationRate)
+        if (rand < 0.01 * config.MutationRate)
         {
-          if (clone.Parts[i].StrictAngle == AnglesEnum.Vertical || (clone.Parts[i].StrictAngle == AnglesEnum.None && Config.StrictAngles == AnglesEnum.Vertical))
+          if (clone.Parts[i].StrictAngle == AnglesEnum.Vertical || (clone.Parts[i].StrictAngle == AnglesEnum.None && config.StrictAngles == AnglesEnum.Vertical))
           {
             clone.Rotation[i] = strictVerticalAngles[random.Next() % strictVerticalAngles.Length];
           }
-          else if (clone.Parts[i].StrictAngle == AnglesEnum.Horizontal || (clone.Parts[i].StrictAngle == AnglesEnum.None && Config.StrictAngles == AnglesEnum.Horizontal))
+          else if (clone.Parts[i].StrictAngle == AnglesEnum.Horizontal || (clone.Parts[i].StrictAngle == AnglesEnum.None && config.StrictAngles == AnglesEnum.Horizontal))
           {
             clone.Rotation[i] = strictHorizontalAngles[random.Next() % strictHorizontalAngles.Length];
           }
           else
           {
-            clone.Rotation[i] = (float)Math.Floor(r.NextDouble() * Config.Rotations) * (360f / Config.Rotations);
+            clone.Rotation[i] = Math.Floor(r.NextDouble() * config.Rotations) * (360f / config.Rotations);
           }
         }
       }
@@ -156,37 +192,23 @@
       return clone;
     }
 
-    private float[] shuffleArray(float[] array)
-    {
-      for (var i = array.Length - 1; i > 0; i--)
-      {
-        var j = (int)Math.Floor(r.NextDouble() * (i + 1));
-        var temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-      }
-
-      return array;
-    }
-
     // returns a random individual from the population, weighted to the front of the list (lower fitness value is more likely to be selected)
-    private PopulationItem randomWeightedIndividual(PopulationItem exclude = null)
+    private PopulationItem RandomWeightedIndividual(IEnumerable<PopulationItem> population, PopulationItem exclude = null)
     {
-      //var pop = this.population.slice(0);
-      var pop = this.Population.ToArray();
+      var pop = population.ToList();
 
-      if (exclude != null && Array.IndexOf(pop, exclude) >= 0)
+      if (exclude != null)
       {
-        pop.Splice(Array.IndexOf(pop, exclude), 1);
+        pop.Remove(exclude);
       }
 
       var rand = r.NextDouble();
 
-      float lower = 0;
-      var weight = 1 / (float)pop.Length;
+      double lower = 0;
+      var weight = 1 / (double)pop.Count;
       var upper = weight;
 
-      for (var i = 0; i < pop.Length; i++)
+      for (var i = 0; i < pop.Count; i++)
       {
         // if the random number falls between lower and upper bounds, select this individual
         if (rand > lower && rand < upper)
@@ -195,22 +217,22 @@
         }
 
         lower = upper;
-        upper += 2 * weight * ((pop.Length - i) / (float)pop.Length);
+        upper += 2 * weight * ((pop.Count - i) / (double)pop.Count);
       }
 
       return pop[0];
     }
 
     // single point crossover
-    private PopulationItem[] mate(PopulationItem male, PopulationItem female)
+    private PopulationItem[] Mate(PopulationItem male, PopulationItem female)
     {
       var cutpoint = (int)Math.Round(Math.Min(Math.Max(r.NextDouble(), 0.1), 0.9) * (male.Parts.Count - 1));
 
-      var gene1 = new List<NFP>(male.Parts.Take(cutpoint).ToArray());
-      var rot1 = new List<float>(male.Rotation.Take(cutpoint).ToArray());
+      var gene1 = new List<INfp>(male.Parts.Take(cutpoint).ToArray());
+      var rot1 = new List<double>(male.Rotation.Take(cutpoint).ToArray());
 
-      var gene2 = new List<NFP>(female.Parts.Take(cutpoint).ToArray());
-      var rot2 = new List<float>(female.Rotation.Take(cutpoint).ToArray());
+      var gene2 = new List<INfp>(female.Parts.Take(cutpoint).ToArray());
+      var rot2 = new List<double>(female.Rotation.Take(cutpoint).ToArray());
 
       var i = 0;
 
@@ -245,29 +267,47 @@
       Array.Sort(Population, (x, y) => x.Fitness.CompareTo(y.Fitness)); // = Population.OrderBy(z => z.Fitness).ToList();
 
       // fittest individuals are preserved in the new generation (elitism)
-      var newpopulation = new List<PopulationItem>();
-      var fittestSurvivors = Config.PopulationSize / 10;
-      newpopulation.AddRange(this.Population.Take(this.Population.Count() < fittestSurvivors ? this.Population.Count() : fittestSurvivors));
-      while (newpopulation.Count() < this.Population.Length)
+      var newPopulation = new List<PopulationItem>();
+      var fittestSurvivors = config.PopulationSize / 10;
+      newPopulation.AddRange(this.Population.Take(this.Population.Count() < fittestSurvivors ? this.Population.Count() : fittestSurvivors));
+      chaperone.Restart();
+      this.progressDisplayer.SetIsVisibleSecondaryProgressBar(false);
+      this.progressDisplayer.InitialiseLoopProgress(ProgressBar.Primary, "Procreate. . .", config.PopulationSize);
+      while (newPopulation.Count() < config.PopulationSize && chaperone.ElapsedMilliseconds <= config.ProcreationTimeout)
       {
-        var male = randomWeightedIndividual();
-        var female = randomWeightedIndividual(male);
+        var male = RandomWeightedIndividual(newPopulation);
+        var female = RandomWeightedIndividual(newPopulation, male);
 
         // each mating produces two children
-        var children = mate(male, female);
+        var children = Mate(male, female);
 
         // slightly mutate children
-        newpopulation.Add(this.Mutate(children[0]));
-
-        if (newpopulation.Count < this.Population.Length)
+        var child = this.Mutate(children[0]);
+        if (IsUnique(child))
         {
-          newpopulation.Add(this.Mutate(children[1]));
+          chaperone.Restart();
+          newPopulation.Add(child);
+          if (newPopulation.Count < config.PopulationSize)
+          {
+            child = this.Mutate(children[1]);
+            if (IsUnique(child))
+            {
+              newPopulation.Add(child);
+            }
+          }
+        }
+        else
+        {
+          this.progressDisplayer.DisplayTransientMessage($"Cumulative Terminations={terminations} ({chaperone.ElapsedMilliseconds / 1000:N0}s)");
         }
       }
 
-      this.Population = newpopulation.ToArray();
+      if (newPopulation.Count <= fittestSurvivors)
+      {
+        newPopulation = TerminateClones(newPopulation).ToList();
+      }
+
+      this.Population = newPopulation.ToArray();
     }
   }
-
-
 }

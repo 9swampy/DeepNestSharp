@@ -1,7 +1,6 @@
 ﻿namespace DeepNestLib.GeneticAlgorithm
 {
   using System;
-  using System.Linq;
   using DeepNestLib.Placement;
 
   public class OriginalFitnessSheet : IOriginalFitnessSheet
@@ -21,21 +20,13 @@
 
     public double Evaluate()
     {
-      var result = 0D;
+      var result = 0d;
       result += Bounds;
       result += Sheets;
       result += MaterialWasted;
       result += MaterialUtilization;
 
       return result;
-    }
-
-    private float TotalSheetArea
-    {
-      get
-      {
-        return sheetPlacement.Sheet.Area;
-      }
     }
 
     /// <summary>
@@ -50,10 +41,6 @@
           if (!sheets.HasValue)
           {
             sheets = sheetPlacement.Sheet.Area;
-            if (sheetPlacement.PartPlacements.Any(p => p.Part.IsPriority))
-            {
-              sheets += sheetPlacement.Sheet.Area;
-            }
           }
         }
 
@@ -73,16 +60,16 @@
           if (!materialWasted.HasValue)
           {
             var rectBounds = sheetPlacement.RectBounds;
-            materialWasted = sheetPlacement.MaterialUtilization < 0.6 ? rectBounds.width * rectBounds.height * 2 : sheetPlacement.Sheet.Area;
-            materialWasted += sheetPlacement.Hull.Area + (rectBounds.width * rectBounds.height);
+            materialWasted = sheetPlacement.MaterialUtilization < 0.6 ? rectBounds.Width * rectBounds.Height * 2 : sheetPlacement.Sheet.Area;
+            materialWasted += sheetPlacement.Hull.Area + (rectBounds.Width * rectBounds.Height);
             materialWasted *= 2;
             materialWasted -= sheetPlacement.MaterialUtilization < 0.6 ? 7 : 6 * sheetPlacement.TotalPartsArea;
-            if (sheetPlacement.MaterialUtilization < 0.2)
+            if (sheetPlacement.MaterialUtilization < 0.3)
             {
-              materialWasted *= 3;
+              materialWasted *= 1.25;
             }
 
-            materialWasted = Math.Max(0, materialWasted.Value);
+            materialWasted = Math.Max(0, materialWasted.Value / 2);
           }
         }
 
@@ -101,7 +88,7 @@
         {
           if (!materialUtilization.HasValue)
           {
-            materialUtilization = Math.Pow((double)(1 - this.sheetPlacement.MaterialUtilization), 1.1D) * sheetPlacement.Sheet.Area;
+            materialUtilization = (double)Math.Pow(1 - this.sheetPlacement.MaterialUtilization, 1.1) * sheetPlacement.Sheet.Area;
           }
         }
 
@@ -122,22 +109,20 @@
           {
             double area;
             var rectBounds = sheetPlacement.RectBounds;
+            double bound;
             if (sheetPlacement.PlacementType == PlacementTypeEnum.Gravity)
             {
-              area = (rectBounds.width * 3) * rectBounds.height;
+              area = Math.Pow(((rectBounds.Width * 3) + rectBounds.Height) / 4, 2);
+              var sheetWidth = sheetPlacement.Sheet.Width == 0 ? sheetPlacement.Sheet.WidthCalculated : sheetPlacement.Sheet.Width;
+              bound = rectBounds.Width / sheetWidth * sheetPlacement.Sheet.Area;
             }
             else
             {
-              area = rectBounds.width * rectBounds.height;
+              area = rectBounds.Width * rectBounds.Height;
+              bound = area;
             }
 
-            bounds = (((rectBounds.width * 2) / sheetPlacement.Sheet.Area) + area + sheetPlacement.Hull.Area) / 6;
-
-            if (this.sheetPlacement.PlacementType == PlacementTypeEnum.BoundingBox ||
-                this.sheetPlacement.PlacementType == PlacementTypeEnum.Squeeze)
-            {
-              bounds *= 4;
-            }
+            bounds = ((bound * 4) + area + sheetPlacement.Hull.Area) / 5;
           }
         }
 

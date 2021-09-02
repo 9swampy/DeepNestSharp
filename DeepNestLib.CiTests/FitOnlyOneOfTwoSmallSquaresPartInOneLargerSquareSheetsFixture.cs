@@ -1,6 +1,7 @@
 ﻿namespace DeepNestLib.CiTests
 {
   using System;
+  using System.Diagnostics;
   using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
@@ -16,14 +17,13 @@
 
     public FitOnlyOneOfTwoSmallSquaresPartInOneLargerSquareSheetsFixture()
     {
-      var nestingContext = new NestingContext(A.Fake<IMessageService>(), A.Fake<IProgressDisplayer>());
-      INfp firstSheet;
-      DxfGenerator.GenerateSquare("Sheet", 20D, RectangleType.FileLoad).TryImportFromRawDetail(firstSheetIdSrc, out firstSheet).Should().BeTrue();
+      ISheet firstSheet;
+      DxfGenerator.GenerateSquare("Sheet", 20D, RectangleType.FileLoad).TryConvertToSheet(firstSheetIdSrc, out firstSheet).Should().BeTrue();
       INfp firstPart;
-      DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryImportFromRawDetail(firstPartIdSrc, out firstPart).Should().BeTrue();
+      DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryConvertToNfp(firstPartIdSrc, out firstPart).Should().BeTrue();
       INfp secondPart;
-      DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryImportFromRawDetail(secondPartIdSrc, out secondPart).Should().BeTrue();
-      this.nestResult = new Background(A.Fake<IProgressDisplayer>(), null).PlaceParts(new INfp[] { firstSheet }, new INfp[] { firstPart, secondPart }, new SvgNestConfig());
+      DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryConvertToNfp(secondPartIdSrc, out secondPart).Should().BeTrue();
+      this.nestResult = new PlacementWorker(A.Dummy<NfpHelper>(), new ISheet[] { firstSheet }, new INfp[] { firstPart, secondPart }.ApplyIndex(), new SvgNestConfig(), A.Dummy<Stopwatch>(), A.Fake<INestState>()).PlaceParts();
     }
 
     [Fact]
@@ -41,7 +41,7 @@
     [Fact]
     public void ShouldHaveExpectedFitness()
     {
-      this.nestResult.Fitness.Should().BeApproximately(30251500, 1000);
+      this.nestResult.Fitness.Should().BeApproximately(7424, 100);
     }
 
     [Fact]
@@ -83,19 +83,19 @@
     [Fact]
     public void ShouldHaveOnePartOnFirstPlacementWithExpectedX()
     {
-      this.nestResult.UsedSheets[0].PartPlacements[0].x.Should().Be(0, "bottom left");
+      this.nestResult.UsedSheets[0].PartPlacements[0].X.Should().Be(0, "bottom left");
     }
 
     [Fact]
     public void ShouldHaveOnePartOnFirstPlacementWithExpectedY()
     {
-      this.nestResult.UsedSheets[0].PartPlacements[0].y.Should().Be(0, "bottom left");
+      this.nestResult.UsedSheets[0].PartPlacements[0].Y.Should().Be(0, "bottom left");
     }
 
     [Fact]
     public void ShouldHaveOnePartOnFirstPlacementWithExpectedRotation()
     {
-      this.nestResult.UsedSheets[0].PartPlacements[0].rotation.Should().Be(0);
+      this.nestResult.UsedSheets[0].PartPlacements[0].Rotation.Should().Be(0);
     }
 
     [Fact]

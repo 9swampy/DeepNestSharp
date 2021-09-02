@@ -1,17 +1,19 @@
 ﻿namespace DeepNestLib.Placement
 {
   using System;
+  using System.Linq;
   using System.Text.Json.Serialization;
 
-  public class PartPlacement
+  public class PartPlacement : IPartPlacement
   {
     public PartPlacement(INfp part)
     {
       this.Part = part;
     }
 
+    /// <inheritdoc />
     [JsonIgnore]
-    public double? mergedLength
+    public double? MergedLength
     {
       get
       {
@@ -24,8 +26,9 @@
       }
     }
 
+    /// <inheritdoc />
     [JsonIgnore]
-    public object mergedSegments
+    public object MergedSegments
     {
       get
       {
@@ -38,38 +41,57 @@
       }
     }
 
-    public int id { get; set; }
+    /// <inheritdoc />
+    public int Id { get; set; }
 
-    /// <summary>
-    /// A hull of the part captured only when not Gravity or BoundingBox (ie. Squeeze).
-    /// </summary>
-    public INfp hull { get; set; }
+    /// <inheritdoc />
+    [JsonIgnore]
+    public bool IsExact => Part.IsExact;
 
-    /// <summary>
-    /// A hull of the sheet captured only when not Gravity or BoundingBox (ie. Squeeze).
-    /// </summary>
-    public INfp hullsheet { get; set; }
+    /// <inheritdoc />
+    [JsonIgnore]
+    public bool IsDragging { get; set; }
 
-    /// <summary>
-    /// Rotation of the part (sheets I don't think ever get rotated, so this would be absolute).
-    /// </summary>
-    public float rotation { get; set; }
+    /// <inheritdoc />
+    [JsonIgnore]
+    public INfp Hull { get; set; }
 
-    /// <summary>
-    /// Offset of the part relative to the sheet.
-    /// </summary>
-    public double x { get; set; }
+    /// <inheritdoc />
+    [JsonIgnore]
+    public INfp HullSheet { get; set; }
 
-    /// <summary>
-    /// Offset of the part relative to the sheet.
-    /// </summary>
-    public double y { get; set; }
+    /// <inheritdoc />
+    [JsonIgnore]
+    public double MaxX => this.X + this.Part.Points.Max(p => p.X);
 
-    /// <summary>
-    /// Source of the part placed.
-    /// </summary>
-    public int source { get; set; }
+    /// <inheritdoc />
+    [JsonIgnore]
+    public double MaxY => this.Y + this.Part.Points.Max(p => p.Y);
 
+    /// <inheritdoc />
+    [JsonIgnore]
+    public double MinX => this.X + this.Part.Points.Min(p => p.X);
+
+    /// <inheritdoc />
+    [JsonIgnore]
+    public double MinY => this.Y + this.Part.Points.Min(p => p.Y);
+
+    /// <inheritdoc />
+    [JsonConverter(typeof(DoublePrecisionConverter))]
+    public double Rotation { get; set; }
+
+    /// <inheritdoc />
+    [JsonConverter(typeof(DoublePrecisionConverter))]
+    public double X { get; set; }
+
+    /// <inheritdoc />
+    [JsonConverter(typeof(DoublePrecisionConverter))]
+    public double Y { get; set; }
+
+    /// <inheritdoc />
+    public int Source { get; set; }
+
+    /// <inheritdoc />
     public INfp Part { get; }
   }
 }

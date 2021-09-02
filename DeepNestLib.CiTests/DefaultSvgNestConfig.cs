@@ -1,61 +1,69 @@
 ﻿namespace DeepNestLib.CiTests
 {
-  public class DefaultSvgNestConfig : ISvgNestConfig
+  using System;
+  using DeepNestLib.NestProject;
+
+  public class DefaultSvgNestConfig : SvgNestConfig, ISvgNestConfig
   {
-    public double ClipperScale { get; set; } = 10000000;
+    public new double ClipperScale { get; set; } = 10000000;
 
-    public double CurveTolerance { get; set; } = 0.72;
+    public new double CurveTolerance { get; set; } = 0.72D;
 
-    public bool ExploreConcave { get; set; } = false;
+    public new bool ExploreConcave { get; set; } = false;
 
-    public bool MergeLines { get; set; } = false;
+    public new bool MergeLines { get; set; } = false;
 
-    public int MutationRate { get; set; } = 10;
+    public new int MutationRate { get; set; } = 10;
 
-    public bool OffsetTreePhase { get; set; } = true;
+    public new bool OffsetTreePhase { get; set; } = true;
 
-    public PlacementTypeEnum PlacementType { get; set; } = PlacementTypeEnum.Gravity;
+    public new PlacementTypeEnum PlacementType { get; set; } = PlacementTypeEnum.Gravity;
 
-    public int PopulationSize { get; set; } = 10;
+    public new int PopulationSize { get; set; } = 10;
 
-    public int Rotations { get; set; } = 4;
+    public new int Rotations { get; set; } = 4;
 
-    public int SaveAsFileTypeIndex { get; set; } = 1;
+    public new int SaveAsFileTypeIndex { get; set; } = 1;
 
-    public double Scale { get; set; } = 25;
+    public new double Scale { get; set; } = 25;
 
-    public int SheetHeight { get; set; } = 395;
+    public new int SheetHeight { get; set; } = 395;
 
-    public int SheetQuantity { get; set; } = 10;
+    public new int SheetQuantity { get; set; } = 10;
 
-    public double SheetSpacing { get; set; } = 0;
+    public new double SheetSpacing { get; set; } = 0;
 
-    public int SheetWidth { get; set; } = 595;
+    public new int SheetWidth { get; set; } = 595;
 
-    public bool Simplify { get; set; } = false;
+    public new bool Simplify { get; set; } = false;
 
-    public double Spacing { get; set; } = 0;
+    public new double Spacing { get; set; } = 0;
 
-    public double TimeRatio { get; set; } = 0.5;
+    public new double TimeRatio { get; set; } = 0.5;
 
-    public bool UseHoles { get; set; } = false;
+    public new bool UseHoles { get; set; } = false;
 
-    public bool ClipByHull { get; set; } = true;
+    public new bool ClipByHull { get; set; } = true;
 
-    public bool DrawSimplification { get; set; } = true;
+    public new bool DrawSimplification { get; set; } = true;
 
-    public bool UseParallel { get; set; } = false;
+    public new bool UseParallel { get; set; } = false;
 
-    public float Tolerance { get; set; } = 2f;
+    public new double Tolerance { get; set; } = 2;
 
-    public float ToleranceSvg { get; set; } = 0.005f;
+    public new double ToleranceSvg { get; set; } = 0.005;
 
-    public AnglesEnum StrictAngles { get; set; } = AnglesEnum.None;
+    public new AnglesEnum StrictAngles { get; set; } = AnglesEnum.None;
 
-    public int Multiplier { get; set; } = 1;
+    public new int Multiplier { get; set; } = 1;
 
-    public int ParallelNests { get; set; } = 10;
+    public new int ParallelNests { get; set; } = 10;
 
-    public bool ShowPartPositions { get; set; } = false;
+    public new bool ShowPartPositions { get; set; } = false;
+
+    public new string ToJson()
+    {
+      throw new NotImplementedException();
+    }
   }
 }

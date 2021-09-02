@@ -6,11 +6,12 @@
   using System.IO;
   using System.Linq;
   using System.Reflection;
-  using System.Threading;
+  using System.Threading.Tasks;
+  using DeepNestLib.Placement;
   using IxMilia.Dxf;
   using IxMilia.Dxf.Entities;
 
-  public class DxfParser : IExport
+  public class DxfParser : ParserBase, IExport
   {
     private const int NumberOfRetries = 5;
     private const int DelayOnRetry = 1000;
@@ -21,35 +22,39 @@
     {
       using (var inputStream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream(path))
       {
-        DxfFile dxffile = DxfFile.Load(inputStream);
-        IEnumerable<DxfEntity> entities = dxffile.Entities.ToArray();
-        return ConvertDxfToRawDetail(path, entities);
+        return LoadDxfStream(path, inputStream);
       }
     }
 
-    public static RawDetail LoadDxfFile(string path)
+    public static RawDetail LoadDxfStream(string name, Stream inputStream)
+    {
+      DxfFile dxffile = DxfFile.Load(inputStream);
+      IEnumerable<DxfEntity> entities = dxffile.Entities.ToArray();
+      return ConvertDxfToRawDetail(name, entities);
+    }
+
+    public async static Task<RawDetail> LoadDxfFile(string path)
     {
       FileInfo fi = new FileInfo(path);
       DxfFile dxffile;
-      lock (loadLock)
+      for (int i = 1; i <= NumberOfRetries; ++i)
       {
-        for (int i = 1; i <= NumberOfRetries; ++i)
+        try
         {
-          try
+          lock (loadLock)
           {
             dxffile = DxfFile.Load(fi.FullName);
             IEnumerable<DxfEntity> entities = dxffile.Entities.ToArray();
-            Thread.Sleep(DelayOnRetry);
             return ConvertDxfToRawDetail(fi.FullName, entities);
           }
-          catch (IOException) when (i <= NumberOfRetries)
-          {
-            Thread.Sleep(DelayOnRetry);
-          }
-          catch (IOException)
-          {
-            throw;
-          }
+        }
+        catch (IOException) when (i <= NumberOfRetries)
+        {
+          await Task.Delay(DelayOnRetry);
+        }
+        catch (IOException)
+        {
+          throw;
         }
       }
 
@@ -95,7 +100,7 @@
                 arc.StartAngle -= 360;
               }
 
-              for (double i = arc.StartAngle; i < arc.EndAngle; i += 15)
+              for (var i = arc.StartAngle; i < arc.EndAngle; i += 15)
               {
                 var tt = arc.GetPointFromAngle(i);
                 pp.Add(new PointF((float)tt.X, (float)tt.Y));
@@ -161,7 +166,7 @@
 
       elems = elems.Where(z => z.Start.DistTo(z.End) > RemoveThreshold).ToList();
       var cntrs2 = ConnectElements(elems.ToArray());
-      s.Outers.AddRange(cntrs2);
+      s.AddRangeContour(cntrs2);
       if (s.Outers.Any(z => z.Points.Count < 3))
       {
         throw new Exception("few points");
@@ -188,7 +193,7 @@
     public static double RemoveThreshold = 10e-5;
     public static double ClosingThreshold = 10e-2;
 
-    public string SaveFileDialogFilter => "Dxf files (*.dxf)|*.dxf";
+    public override string SaveFileDialogFilter => "Dxf files (*.dxf)|*.dxf";
 
     public static LocalContour[] ConnectElements(LineElement[] elems)
     {
@@ -239,39 +244,15 @@
       return ret.ToArray();
     }
 
-    public void Export(string path, IEnumerable<INfp> polygons, IEnumerable<INfp> sheets)
+    public async override Task Export(string path, IEnumerable<INfp> polygons, IEnumerable<ISheet> sheets)
     {
       Dictionary<DxfFile, int> dxfexports = new Dictionary<DxfFile, int>();
+      var sheetList = sheets.ToList();
       for (int i = 0; i < sheets.Count(); i++)
       {
-        DxfFile sheetdxf;
-        double sheetwidth;
-        GenerateSheetOutline(sheets, i, out sheetdxf, out sheetwidth);
-
-        foreach (var polygon in polygons)
-        {
-          DxfFile fl;
-          if (polygon.Fitted == false || !polygon.Name.ToLower().Contains(".dxf") || polygon.Sheet.Id != sheets.ElementAt(i).Id)
-          {
-            continue;
-          }
-          else
-          {
-            fl = DxfFile.Load(polygon.Name);
-          }
-
-          double sheetXoffset = -sheetwidth * i;
-          //double sheetyoffset = -sheetheight * i;
-          DxfPoint offsetdistance = new DxfPoint(polygon.x + sheetXoffset, polygon.y, 0D);
-          List<DxfEntity> newlist = OffsetToNest(fl.Entities, offsetdistance, polygon.Rotation);
-
-          foreach (DxfEntity ent in newlist)
-          {
-            sheetdxf.Entities.Add(ent);
-          }
-        }
-
-        dxfexports.Add(sheetdxf, sheets.ElementAt(i).Id);
+        var sheet = sheetList[i];
+        DxfFile sheetdxf = GenerateDxfFile(polygons, sheet, i);
+        dxfexports.Add(sheetdxf, sheet.Id);
       }
 
       int sheetcount = 0;
@@ -284,40 +265,84 @@
         {
           sheetcount += 1;
           FileInfo fi = new FileInfo(path);
-          dxf.Save($"{fi.FullName.Substring(0, fi.FullName.Length - 4)}{id}.dxf", true);
+          await Task.Run(() =>
+          {
+            if (dxfexports.Count() == 1)
+            {
+              dxf.Save(fi.FullName, true);
+            }
+            else
+            {
+              dxf.Save($"{fi.FullName.Substring(0, fi.FullName.Length - 4)}{id}.dxf", true);
+            }
+          }).ConfigureAwait(false);
         }
       }
     }
 
-    private static void GenerateSheetOutline(IEnumerable<INfp> sheets, int i, out DxfFile sheetdxf, out double sheetwidth)
+    public DxfFile GenerateDxfFile(ISheetPlacement sheetPlacement)
+    {
+      return GenerateDxfFile(sheetPlacement.PartPlacements.Select(o => o.Part), sheetPlacement.Sheet, 0);
+    }
+
+    private DxfFile GenerateDxfFile(IEnumerable<INfp> polygons, ISheet sheet, int i = 0)
+    {
+      DxfFile sheetdxf = GenerateDxfFileWithSheetOutline(sheet);
+      foreach (var polygon in polygons)
+      {
+        DxfFile fl;
+        if (polygon.Fitted == false || !polygon.Name.ToLower().Contains(".dxf") || polygon.Sheet.Id != sheet.Id)
+        {
+          continue;
+        }
+        else
+        {
+          fl = DxfFile.Load(polygon.Name);
+        }
+
+        double sheetXoffset = -sheet.WidthCalculated * i;
+        //double sheetyoffset = -sheetheight * i;
+        DxfPoint offsetdistance = new DxfPoint(polygon.X + sheetXoffset, polygon.Y, 0D);
+        List<DxfEntity> newlist = OffsetToNest(fl.Entities, offsetdistance, polygon.Rotation);
+
+        foreach (DxfEntity ent in newlist)
+        {
+          sheetdxf.Entities.Add(ent);
+        }
+      }
+
+      return sheetdxf;
+    }
+
+    private static DxfFile GenerateDxfFileWithSheetOutline(ISheet sheet)
     {
       // Generate Sheet Outline in Dxf
-      sheetdxf = new DxfFile();
+      var sheetdxf = new DxfFile();
       sheetdxf.Views.Clear();
 
       List<DxfVertex> sheetverts = new List<DxfVertex>();
-      double sheetheight = sheets.ElementAt(i).HeightCalculated;
-      sheetwidth = sheets.ElementAt(i).WidthCalculated;
 
-      // Bl Point
+      // Bottom Left Point
       sheetverts.Add(new DxfVertex(new DxfPoint(0, 0, 0)));
 
-      // BR Point
-      sheetverts.Add(new DxfVertex(new DxfPoint(sheetwidth, 0, 0)));
+      // Bottom Right Point
+      sheetverts.Add(new DxfVertex(new DxfPoint(sheet.WidthCalculated, 0, 0)));
 
-      // TR Point
-      sheetverts.Add(new DxfVertex(new DxfPoint(sheetwidth, sheetheight, 0)));
+      // Top Right Point
+      sheetverts.Add(new DxfVertex(new DxfPoint(sheet.WidthCalculated, sheet.HeightCalculated, 0)));
 
-      // TL Point
-      sheetverts.Add(new DxfVertex(new DxfPoint(0, sheetheight, 0)));
+      // Top Left Point
+      sheetverts.Add(new DxfVertex(new DxfPoint(0, sheet.HeightCalculated, 0)));
 
       DxfPolyline sheetentity = new DxfPolyline(sheetverts)
       {
         IsClosed = true,
-        Layer = $"Plate H{sheetheight} W{sheetwidth}",
+        Layer = $"Plate H{sheet.HeightCalculated} W{sheet.WidthCalculated}",
       };
 
       sheetdxf.Entities.Add(sheetentity);
+
+      return sheetdxf;
     }
 
     private static List<DxfEntity> OffsetToNest(IList<DxfEntity> dxfEntities, DxfPoint offset, double rotationAngle)
@@ -496,11 +521,11 @@
 
     public static DxfPoint RotateLocation(double rotationAngle, DxfPoint pt)
     {
-      var angle = (float)(rotationAngle * Math.PI / 180.0f);
+      var angle = (double)(rotationAngle * Math.PI / 180.0f);
       var x = pt.X;
       var y = pt.Y;
-      var x1 = (float)((x * Math.Cos(angle)) - (y * Math.Sin(angle)));
-      var y1 = (float)((x * Math.Sin(angle)) + (y * Math.Cos(angle)));
+      var x1 = (double)((x * Math.Cos(angle)) - (y * Math.Sin(angle)));
+      var y1 = (double)((x * Math.Sin(angle)) + (y * Math.Cos(angle)));
       return new DxfPoint(x1, y1, pt.Z);
     }
   }
