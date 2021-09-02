@@ -33,7 +33,7 @@
 
       act.Should().NotThrow();
 
-      act.Should().Throw<ArgumentException>().WithMessage("An item with the same key has already been added.");
+      act.Should().Throw<ArgumentException>().WithMessage("An item with the same key has already been added. Key: a1-ac2-arr2-h2-b5-bp2");
     }
   }
 }

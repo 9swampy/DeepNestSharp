@@ -8,10 +8,10 @@
     <PublishSingleFile>true</PublishSingleFile>
     <ApplicationIcon>..\icon.ico</ApplicationIcon>
     <DebugType>embedded</DebugType>
-    <AssemblyVersion>0.2.0.0</AssemblyVersion>
-    <FileVersion>0.2.0.0</FileVersion>
-    <InformationalVersion>0.2.0-alpha.1+Branch.develop.Sha.1dcfe0052259a7925396ae343edffc3f81c7f139</InformationalVersion>
-    <Version>0.2.0-alpha0001</Version>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>0.1.0.0</FileVersion>
+    <InformationalVersion>0.1.0-beta.2+188.Branch.release-0.1.Sha.37e2239b9c384ef0039ce2cc9d130f095a9573f8</InformationalVersion>
+    <Version>0.1.0-beta0002</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <CodeAnalysisRuleSet />

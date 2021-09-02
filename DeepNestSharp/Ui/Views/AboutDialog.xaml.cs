@@ -13,8 +13,11 @@
     public AboutDialog()
     {
       InitializeComponent();
-      Title = $"About DeepNest# {this.GetType().Assembly.GetName().Version?.ToString()}";
+      Title = $"About DeepNest# {InformationalVersion}";
+      this.DataContext = this;
     }
+
+    public string Version => this.GetType().Assembly.GetName().Version?.ToString();
 
     public string InformationalVersion => this.GetType()
                                               .Assembly

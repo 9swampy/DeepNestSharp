@@ -192,14 +192,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\clipper_library\clipper_library.csproj">
-      <Project>{9b062971-a88e-4a3d-b3c9-12b78d15fa66}</Project>
-      <Name>clipper_library</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DeepNestLib\DeepNestLib.csproj">
-      <Project>{32f6dd67-ef43-49e7-a6b3-4786344baf14}</Project>
-      <Name>DeepNestLib</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MinkowskiWrapper\MinkowskiWrapper.csproj">
       <Project>{E09E5402-28CF-4C96-9410-1AF2A44833E0}</Project>
       <Name>MinkowskiWrapper</Name>

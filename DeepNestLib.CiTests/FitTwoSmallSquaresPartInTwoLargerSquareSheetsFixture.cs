@@ -123,19 +123,19 @@
     [Fact]
     public void ShouldHaveOnePartOnSecondPlacementWithExpectedX()
     {
-      this.nestResult.UsedSheets[1].PartPlacements[0].X.Should().BeApproximately(11, 0.01, "both sheet 1 and 1 part should be bottom left, not sure why this isn't 0 too");
+      this.nestResult.UsedSheets[1].PartPlacements[0].X.Should().BeApproximately(0, 0.01);
     }
 
     [Fact]
     public void ShouldHaveOnePartOnSecondPlacementWithExpectedY()
     {
-      this.nestResult.UsedSheets[1].PartPlacements[0].Y.Should().BeApproximately(0, 0.01, "both sheet 1 and 1 part should be bottom left, not sure why this isn't 0 too");
+      this.nestResult.UsedSheets[1].PartPlacements[0].Y.Should().BeApproximately(0, 0.01);
     }
 
     [Fact]
     public void ShouldHaveOnePartOnSecondPlacementWithExpectedRotation()
     {
-      this.nestResult.UsedSheets[1].PartPlacements[0].Rotation.Should().Be(90);
+      this.nestResult.UsedSheets[1].PartPlacements[0].Rotation.Should().Be(0);
     }
 
     [Fact]

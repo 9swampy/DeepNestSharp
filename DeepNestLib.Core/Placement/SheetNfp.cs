@@ -1,4 +1,6 @@
-﻿namespace DeepNestLib
+﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("DeepNestLib.CiTests")]
+
+namespace DeepNestLib
 {
   using DeepNestLib.Geometry;
   using System;

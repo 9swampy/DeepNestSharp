@@ -170,13 +170,8 @@
     private static SheetNfp GivenPartWhenFitOnSheetThenGetSheetNfp(bool useDllImport, double sheetSize, double partSize)
     {
       var generator = new DxfGenerator();
-      //var sheet = generator.GenerateRectangle("Sheet", sheetSize, sheetSize, RectangleType.FileLoad).ToSheet();
       var sheet = generator.GenerateRectangle("Sheet", sheetSize, sheetSize, RectangleType.TopLeftClockwise, false).ToSheet();
-      //sheet = new Sheet(SvgNest.CleanPolygon2(sheet), WithChildren.Excluded);
-      //sheet.Length.Should().Be(4);
       var part = generator.GenerateRectangle("Part", partSize, partSize, RectangleType.FileLoad).ToNfp();
-      //part = SvgNest.CleanPolygon2(part);
-      //part.Length.Should().Be(4);
       return GivenPartWhenFitOnSheetThenGetSheetNfp(useDllImport, sheet, part);
     }
 

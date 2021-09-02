@@ -1,4 +1,6 @@
-﻿namespace DeepNestLib
+﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("DeepNestLib.CiTests")]
+
+namespace DeepNestLib
 {
   using DeepNestLib.NestProject;
   using Properties = DeepNestLib.Core;
@@ -480,6 +482,11 @@
         Properties.Settings.Default.Save();
         Properties.Settings.Default.Upgrade();
       }
+    }
+
+    internal static ISvgNestConfig FromJson(string json)
+    {
+      return SvgNestConfigJsonConverter.FromJson(json);
     }
 
     public string ToJson()

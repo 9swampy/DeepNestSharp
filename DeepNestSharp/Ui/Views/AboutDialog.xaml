@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DeepNestSharp.Ui.Views"
         mc:Ignorable="d"
-        Title="{Binding Title}" Height="610" Width="800" ResizeMode="NoResize" >
+        Title="{Binding Title, Mode=OneTime}" Height="610" Width="800" ResizeMode="NoResize" >
   <Grid>
     <StackPanel Orientation="Vertical">
       <StackPanel Orientation="Horizontal">
@@ -16,7 +16,7 @@
         https://github.com/9swampy/DeepNestSharp
     </Hyperlink>) v
         </TextBlock>
-        <TextBlock Margin="0" Text="{Binding InformationalVersion}" />
+        <TextBlock Margin="0" Text="{Binding Version, Mode=OneTime}" />
       </StackPanel>
       <TextBlock TextWrapping="Wrap" Margin="5,0" FontWeight="Bold">
     DeepNestPort - C# WinForms port (<Hyperlink 
@@ -45,23 +45,34 @@ last piece in to the gaps on the sheet that the algorithm just wasn't finding.
       </TextBlock>
       <TextBlock TextWrapping="Wrap" Margin="5">
 Felix was keen to keep true to the original DeepNest code in DeepNestPort...
-> > [Hope you consider breaking away from the legacy code base because it's getting really hard to merge.](https://github.com/fel88/DeepNestPort/issues/12#issuecomment-875273391)
-> 
-> I'll try, but it is important to keep compatibility with the original code...
-> I think we shouldn't entangle our repositories too much
+      </TextBlock>
+      <TextBlock TextWrapping="Wrap" Margin="5,0" FontStyle="Italic">
+<Hyperlink 
+        NavigateUri="https://github.com/fel88/DeepNestPort/issues/12#issuecomment-875273391"
+        RequestNavigate="Hyperlink_RequestNavigate">
+        "Hope you consider breaking away from the legacy code base because it's getting really hard to merge."
+    </Hyperlink>
+      </TextBlock>
+      <TextBlock TextWrapping="Wrap" Margin="5,0" FontStyle="Italic">
+>> I'll try, but it is important to keep compatibility with the original code...
+      </TextBlock>
+      <TextBlock TextWrapping="Wrap" Margin="5,0" FontStyle="Italic">
+>> I think we shouldn't entangle our repositories too much
       </TextBlock>
       <TextBlock TextWrapping="Wrap" Margin="5">
 ...so DeepNestSharp was born. It completely rebuilds the UI using WPF on Net.Core
 and is a huge refactor which has paid some dividends but also introduced some 
-compromises and issues, some of which are outstanding...
+compromises and issues, some of which may still be outstanding... let me know.
       </TextBlock>
       <TextBlock TextWrapping="Wrap" Margin="5" FontWeight="Bold">
     Compiling minkowski.dll
       </TextBlock>
       <TextBlock TextWrapping="Wrap" Margin="5">
 Included are a set of minkowski.dlls that work on various Windows setups I 
-have; AnyCpu, x86 and x64; but you'll likely need to build the dlls for your
-own setup.
+have; AnyCpu, x86 and x64; but if you want to use the DllImport you'll likely 
+need to build the dlls for your own setup. A lot of work has been done to ensure
+the native code is substitutable; and it is close but it's still experimental. 
+Works for me, YMMV.
       </TextBlock>
       <TextBlock TextWrapping="Wrap" Margin="5,5,5,0">
 1. Replace
@@ -76,33 +87,57 @@ own setup.
       <TextBlock TextWrapping="Wrap" Margin="5,0">
 3. Copy minkowski.dll to MinkowskiDlls folder.
       </TextBlock>
-      <TextBlock TextWrapping="Wrap" Margin="5,0" FontStyle="Italic">
+      <TextBlock TextWrapping="Wrap" Margin="5,5" FontStyle="Italic">
       If you're running in Visual Studio
 DeepNestLib.CiTests has a PostBuild task to copy the DLLs from there for you. 
 Otherwise make sure the appropriate DLLs get to the DeepNestSharp.exe folder.
 Note there's preprocessor directives to pick the right dll dependent on which Arch 
-you're running. Works for me; YMMV.
+you're running.
       </TextBlock>
       <TextBlock TextWrapping="Wrap" FontWeight="Bold" Margin="5">
 Contributors
       </TextBlock>
-      <TextBlock TextWrapping="Wrap" Margin="5">
-DXF Import/Export: https://github.com/IxMilia/Dxf
+      <TextBlock TextWrapping="Wrap" Margin="5,0">
+DXF Import/Export: <Hyperlink 
+        NavigateUri="https://github.com/IxMilia/Dxf"
+        RequestNavigate="Hyperlink_RequestNavigate">
+        https://github.com/IxMilia/Dxf
+    </Hyperlink>
       </TextBlock>
       <TextBlock TextWrapping="Wrap" Margin="5,0">
-* https://github.com/kelyamany/DeepNestPort (port to Net.Core)
+<Hyperlink 
+        NavigateUri="https://github.com/kelyamany/DeepNestPort"
+        RequestNavigate="Hyperlink_RequestNavigate">
+        https://github.com/kelyamany/DeepNestPort
+    </Hyperlink> (port to Net.Core)
       </TextBlock>
       <TextBlock TextWrapping="Wrap" Margin="5,0">
-* https://github.com/Daniel-t-1/DeepNestPort (dxf export)
-      </TextBlock>
-      <TextBlock TextWrapping="Wrap" Margin="5">
-* https://github.com/9swampy/DeepNestPort (simplification features)
-      </TextBlock>
-      <TextBlock TextWrapping="Wrap" Margin="5,0">
-* https://github.com/fel88/DeepNestPort (WinForms C# port)
+<Hyperlink 
+        NavigateUri="https://github.com/Daniel-t-1/DeepNestPort"
+        RequestNavigate="Hyperlink_RequestNavigate">
+        https://github.com/Daniel-t-1/DeepNestPort
+    </Hyperlink> (dxf export)
       </TextBlock>
       <TextBlock TextWrapping="Wrap" Margin="5,0">
-* https://github.com/Jack000/Deepnest (The original DeepNest)
+<Hyperlink 
+        NavigateUri="https://github.com/9swampy/DeepNestPort"
+        RequestNavigate="Hyperlink_RequestNavigate">
+        https://github.com/9swampy/DeepNestPort
+    </Hyperlink> (simplification features)
+      </TextBlock>
+      <TextBlock TextWrapping="Wrap" Margin="5,0">
+<Hyperlink 
+        NavigateUri="https://github.com/fel88/DeepNestPort"
+        RequestNavigate="Hyperlink_RequestNavigate">
+        https://github.com/fel88/DeepNestPort
+    </Hyperlink> (WinForms C# port)
+      </TextBlock>
+      <TextBlock TextWrapping="Wrap" Margin="5,0">
+<Hyperlink 
+        NavigateUri="https://github.com/Jack000/Deepnest"
+        RequestNavigate="Hyperlink_RequestNavigate">
+        https://github.com/Jack000/Deepnest
+    </Hyperlink> (The original DeepNest)
       </TextBlock>
     </StackPanel>
     <Button Content="OK" Click="OkClick" IsDefault="True" IsCancel="True" Margin="50,40" Width="100" Height="50" HorizontalAlignment="Right" VerticalAlignment="Bottom" />

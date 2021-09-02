@@ -318,7 +318,7 @@
 
       foreach (var child in this.Children)
       {
-        child.ReplacePoints(SvgNest.CleanPolygon2(child).Points);
+        child.Clean();
       }
     }
 
