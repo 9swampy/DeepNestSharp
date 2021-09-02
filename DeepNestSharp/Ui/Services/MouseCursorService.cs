@@ -1,4 +1,4 @@
-﻿namespace DeepNestSharp.Ui.ViewModels
+﻿namespace DeepNestSharp.Ui.Services
 {
   using DeepNestSharp.Domain;
   using DeepNestSharp.Domain.Services;

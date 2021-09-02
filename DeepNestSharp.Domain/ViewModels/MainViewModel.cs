@@ -33,6 +33,7 @@
     private RelayCommand activeDocumentSaveCommand;
     private RelayCommand activeDocumentSaveAsCommand;
     private RelayCommand createNestProjectCommand;
+    private RelayCommand aboutDialogCommand;
 
     private IToolViewModel[] tools;
 
@@ -56,6 +57,14 @@
     }
 
     public event EventHandler ActiveDocumentChanged;
+
+    public IAboutDialogService AboutDialogService { get; set; }
+
+    public ICommand AboutDialogCommand => aboutDialogCommand ?? (aboutDialogCommand = new RelayCommand(() => OnAboutDialog()));
+
+    public ICommand ActiveDocumentSaveCommand => activeDocumentSaveCommand ?? (activeDocumentSaveCommand = new RelayCommand(() => Save(this.ActiveDocument, false), () => this.ActiveDocument?.IsDirty ?? false));
+
+    public ICommand ActiveDocumentSaveAsCommand => activeDocumentSaveAsCommand ?? (activeDocumentSaveAsCommand = new RelayCommand(() => Save(this.ActiveDocument, true), () => true));
 
     public IEnumerable<IToolViewModel> Tools
     {
@@ -127,10 +136,6 @@
 
     public ICommand LoadNestProjectCommand => loadNestProjectCommand ?? (loadNestProjectCommand = new AsyncRelayCommand(OnLoadNestProjectAsync));
 
-    public ICommand ActiveDocumentSaveCommand => activeDocumentSaveCommand ?? (activeDocumentSaveCommand = new RelayCommand(() => Save(this.ActiveDocument, false), () => this.ActiveDocument?.IsDirty ?? false));
-
-    public ICommand ActiveDocumentSaveAsCommand => activeDocumentSaveAsCommand ?? (activeDocumentSaveAsCommand = new RelayCommand(() => Save(this.ActiveDocument, true), () => true));
-
     public ICommand ExitCommand => exitCommand ?? (exitCommand = new RelayCommand(OnExit, CanExit));
 
     protected abstract void OnExit();
@@ -154,6 +159,12 @@
       }
     }
 
+    public IDockingManagerFacade DockManager { get; set; }
+
+    public IDispatcherService DispatcherService { get; }
+
+    public IMessageService MessageService => this.messageService;
+
     public void SetSelectedToolView(IFileViewModel fileViewModel)
     {
       if (fileViewModel is NestProjectViewModel)
@@ -166,11 +177,10 @@
       }
     }
 
-    public IDockingManagerFacade DockManager { get; set; }
-
-    public IDispatcherService DispatcherService { get; }
-
-    public IMessageService MessageService => this.messageService;
+    private void OnAboutDialog()
+    {
+      this.AboutDialogService.ShowDialog();
+    }
 
     public async Task OnLoadNestProjectAsync()
     {

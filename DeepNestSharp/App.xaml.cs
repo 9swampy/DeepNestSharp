@@ -9,6 +9,7 @@
   using DeepNestSharp.Domain.ViewModels;
   using DeepNestSharp.Ui.Services;
   using DeepNestSharp.Ui.ViewModels;
+  using DeepNestSharp.Ui.Views;
   using Microsoft.Extensions.DependencyInjection;
   using Microsoft.Extensions.Hosting;
 

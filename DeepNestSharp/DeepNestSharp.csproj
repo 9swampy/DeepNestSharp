@@ -38,6 +38,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Ui\Models\**" />
+    <EmbeddedResource Remove="Ui\Models\**" />
+    <None Remove="Ui\Models\**" />
+    <Page Remove="Ui\Models\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Ui\ViewModels\ThemeProxy.cs" />
   </ItemGroup>
 
@@ -97,10 +104,6 @@
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Ui\Models\" />
   </ItemGroup>
 
 </Project>

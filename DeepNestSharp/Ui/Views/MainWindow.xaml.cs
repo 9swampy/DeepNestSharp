@@ -1,4 +1,4 @@
-﻿namespace DeepNestSharp
+﻿namespace DeepNestSharp.Ui.Views
 {
   using System.IO;
   using System.Windows;
@@ -12,6 +12,7 @@
       InitializeComponent();
       this.DataContext = viewModel;
       viewModel.DockManager = new DockingManagerFacade(this.dockManager);
+      viewModel.AboutDialogService = new AboutDialogService(() => new AboutDialog());
       this.Loaded += new RoutedEventHandler(MainWindow_Loaded);
       this.Unloaded += new RoutedEventHandler(MainWindow_Unloaded);
     }

@@ -8,6 +8,7 @@
   using DeepNestLib;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain.Docking;
+  using DeepNestSharp.Domain.Services;
 
   public interface IMainViewModel
   {
@@ -56,6 +57,8 @@
     ISvgNestConfigViewModel SvgNestConfigViewModel { get; }
 
     IEnumerable<IToolViewModel> Tools { get; }
+
+    IAboutDialogService AboutDialogService { get; set; }
 
     Task ExportSheetPlacementAsync(ISheetPlacement sheetPlacement);
 
