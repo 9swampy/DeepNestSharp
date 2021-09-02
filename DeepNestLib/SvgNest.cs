@@ -16,9 +16,13 @@
   {
     private readonly IMessageService messageService;
     private readonly IMinkowskiSumService minkowskiSumService;
-    private GeneticAlgorithm.Procreant ga;
+    private Procreant ga;
 
     private IProgressDisplayer progressDisplayer;
+
+    private static readonly PolygonSimplificationDictionary cache = new PolygonSimplificationDictionary();
+
+    private static volatile object cacheSyncLock = new object();
     private volatile bool isStopped;
 
     public SvgNest(
@@ -33,66 +37,19 @@
       this.minkowskiSumService = minkowskiSumService;
     }
 
-    private static SvgPoint GetTarget(SvgPoint o, INfp simple, double tol)
-    {
-      List<InrangeItem> inrange = new List<InrangeItem>();
-
-      // find closest points within 2 offset deltas
-      for (var j = 0; j < simple.Length; j++)
-      {
-        var s = simple[j];
-        var d2 = ((o.X - s.X) * (o.X - s.X)) + ((o.Y - s.Y) * (o.Y - s.Y));
-        if (d2 < tol * tol)
-        {
-          inrange.Add(new InrangeItem() { point = s, distance = d2 });
-        }
-      }
-
-      SvgPoint target = null;
-      if (inrange.Count > 0)
-      {
-        var filtered = inrange.Where((p) =>
-        {
-          return p.point.Exact;
-        }).ToList();
-
-        // use exact points when available, normal points when not
-        inrange = filtered.Count > 0 ? filtered : inrange;
-
-        inrange = inrange.OrderBy((b) =>
-{
-  return b.distance;
-}).ToList();
-
-        target = inrange[0].point;
-      }
-      else
-      {
-        double? mind = null;
-        for (int j = 0; j < simple.Length; j++)
-        {
-          var s = simple[j];
-          var d2 = ((o.X - s.X) * (o.X - s.X)) + ((o.Y - s.Y) * (o.Y - s.Y));
-          if (mind == null || d2 < mind)
-          {
-            target = s;
-            mind = d2;
-          }
-        }
-      }
-
-      return target;
-    }
-
     public static ISvgNestConfig Config { get; } = new SvgNestConfig();
+
+    public bool IsStopped { get => isStopped; private set => isStopped = value; }
+
+    private INestStateSvgNest State { get; }
 
     public static bool PointInPolygon(SvgPoint point, INfp polygon)
     {
       // scaling is deliberately coarse to filter out points that lie *on* the polygon
       var p = SvgToClipper2(polygon, 1000);
-      var pt = new ClipperLib.IntPoint(1000 * point.X, 1000 * point.Y);
+      var pt = new IntPoint(1000 * point.X, 1000 * point.Y);
 
-      return ClipperLib.Clipper.PointInPolygon(pt, p.ToList()) > 0;
+      return Clipper.PointInPolygon(pt, p.ToList()) > 0;
     }
 
     // returns true if any complex vertices fall outside the simple polygon
@@ -115,10 +72,6 @@
 
       return false;
     }
-
-    private static readonly PolygonSimplificationDictionary cache = new PolygonSimplificationDictionary();
-
-    private static volatile object cacheSyncLock = new object();
 
     public static INfp SimplifyFunction(INfp polygon, bool inside, ISvgNestConfig config)
     {
@@ -421,7 +374,7 @@
 
     internal void Stop()
     {
-      this.isStopped = true;
+      this.IsStopped = true;
     }
 
     /// <summary>
@@ -854,11 +807,11 @@
     {
       try
       {
-        if (!this.isStopped)
+        if (!this.IsStopped)
         {
           if (this.ga == null)
           {
-            this.ga = new Procreant(partNestItems, config);
+            this.ga = new Procreant(partNestItems, config, progressDisplayer);
           }
 
           if (this.ga.IsCurrentGenerationFinished)
@@ -867,6 +820,12 @@
             // all individuals have been evaluated, start next generation
 
             this.ga.Generate();
+            if (this.ga.Population.Length == 0)
+            {
+              this.Stop();
+              this.messageService.DisplayMessageBox("Terminating the nest because we're just recalculating the same nests over and over again.", "Terminating Nest", MessageBoxIcon.Information);
+            }
+
             State.IncrementGenerations();
             State.ResetPopulation();
           }
@@ -955,10 +914,13 @@
       this.messageService.DisplayMessageBox(
                   "An error has occurred attempting to execute the C++ Minkowski DllImport.\r\n" +
                   "\r\n" +
-                  "Try using another build (x86/x64) or recreate the Minkowski.Dlls on your own system.\r\n" +
+                  "You can turn off the C++ DllImport in Settings and use the internal C# implementation " +
+                  "instead; but this is experimental. Alternatively try using another build (x86/x64) or " +
+                  "recreate the Minkowski.Dlls on your own system.\r\n" +
                   "\r\n" +
                   "You can continue to use the import/edit/export functionality but unless you fix " +
-                  "the problem you will be unable to execute any nests.",
+                  "the problem/switch to the internal implementation you will be unable to execute " +
+                  "any nests.",
                   "DeepNestSharp Error!",
                   MessageBoxIcon.Error);
     }
@@ -968,22 +930,22 @@
       State.IncrementThreads();
       for (int i = start; i < end; i++)
       {
-        if (this.isStopped)
+        if (this.IsStopped)
         {
           break;
         }
 
         // if(running < config.threads && !GA.population[i].processing && !GA.population[i].fitness){
         // only one background window now...
-        if (!this.isStopped && this.ga.Population[i].IsPending)
+        var individual = ga.Population[i];
+        if (!this.IsStopped && individual.IsPending)
         {
-          var individual = ga.Population[i];
           individual.Processing = true;
 
           // hash values on arrays don't make it across ipc, store them in an array and reassemble on the other side....
-          int[] ids = new int[this.ga.Population[i].Parts.Count];
-          int[] sources = new int[this.ga.Population[i].Parts.Count];
-          List<List<INfp>> children = new List<List<INfp>>();
+          var ids = new int[individual.Parts.Count];
+          var sources = new int[individual.Parts.Count];
+          var children = new List<List<INfp>>();
 
           for (int j = 0; j < individual.Parts.Count; j++)
           {
@@ -1006,13 +968,13 @@
             Children = children,
           };
 
-          if (this.isStopped)
+          if (this.IsStopped)
           {
             this.ResponseProcessor(null);
           }
           else
           {
-            Background background = new Background(this.progressDisplayer, this, minkowskiSumService, nestStateBackground, config.UseDllImport);
+            var background = new Background(this.progressDisplayer, this, minkowskiSumService, nestStateBackground, config.UseDllImport);
             background.BackgroundStart(data, config);
           }
         }
@@ -1021,6 +983,55 @@
       State.DecrementThreads();
     }
 
-    private INestStateSvgNest State { get; }
+    private static SvgPoint GetTarget(SvgPoint o, INfp simple, double tol)
+    {
+      List<InrangeItem> inrange = new List<InrangeItem>();
+
+      // find closest points within 2 offset deltas
+      for (var j = 0; j < simple.Length; j++)
+      {
+        var s = simple[j];
+        var d2 = ((o.X - s.X) * (o.X - s.X)) + ((o.Y - s.Y) * (o.Y - s.Y));
+        if (d2 < tol * tol)
+        {
+          inrange.Add(new InrangeItem() { point = s, distance = d2 });
+        }
+      }
+
+      SvgPoint target = null;
+      if (inrange.Count > 0)
+      {
+        var filtered = inrange.Where((p) =>
+        {
+          return p.point.Exact;
+        }).ToList();
+
+        // use exact points when available, normal points when not
+        inrange = filtered.Count > 0 ? filtered : inrange;
+
+        inrange = inrange.OrderBy((b) =>
+        {
+          return b.distance;
+        }).ToList();
+
+        target = inrange[0].point;
+      }
+      else
+      {
+        double? mind = null;
+        for (int j = 0; j < simple.Length; j++)
+        {
+          var s = simple[j];
+          var d2 = ((o.X - s.X) * (o.X - s.X)) + ((o.Y - s.Y) * (o.Y - s.Y));
+          if (mind == null || d2 < mind)
+          {
+            target = s;
+            mind = d2;
+          }
+        }
+      }
+
+      return target;
+    }
   }
 }

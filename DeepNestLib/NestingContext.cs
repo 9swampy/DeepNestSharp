@@ -172,7 +172,14 @@
         {
           if (!this.isStopped)
           {
-            Nest.LaunchWorkers(partsLocal.ToArray(), sheetsLocal.ToArray(), config, stateBackground);
+            if (Nest.IsStopped)
+            {
+              this.StopNest();
+            }
+            else
+            {
+              Nest.LaunchWorkers(partsLocal.ToArray(), sheetsLocal.ToArray(), config, stateBackground);
+            }
           }
 
           if (state.TopNestResults != null && State.TopNestResults.Count > 0)

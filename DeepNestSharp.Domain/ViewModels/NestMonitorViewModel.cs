@@ -356,10 +356,17 @@
       {
         if (!nestMonitorViewModel.IsStopping)
         {
-          await Task.Run(() =>
+          if (nestMonitorViewModel.Context.Nest.IsStopped)
           {
-            nestMonitorViewModel.Context.NestIterate(SvgNest.Config);
-          }).ConfigureAwait(false);
+            nestMonitorViewModel.Stop();
+          }
+          else
+          {
+            await Task.Run(() =>
+            {
+              nestMonitorViewModel.Context.NestIterate(SvgNest.Config);
+            }).ConfigureAwait(false);
+          }
         }
       }
     }

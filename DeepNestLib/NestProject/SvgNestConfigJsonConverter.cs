@@ -62,6 +62,10 @@
       target.CurveTolerance = source.CurveTolerance;
       target.DrawSimplification = source.DrawSimplification;
       target.ExploreConcave = source.ExploreConcave;
+      target.ExportExecutionPath = source.ExportExecutionPath;
+      target.ExportExecutions = source.ExportExecutions;
+      target.LastDebugFilePath = source.LastDebugFilePath;
+      target.LastNestFilePath = source.LastNestFilePath;
       target.MergeLines = source.MergeLines;
       target.Multiplier = source.Multiplier;
       target.MutationRate = source.MutationRate;
@@ -69,6 +73,7 @@
       target.ParallelNests = source.ParallelNests;
       target.PlacementType = source.PlacementType;
       target.PopulationSize = source.PopulationSize;
+      target.ProcreationTimeout = source.ProcreationTimeout;
       target.Rotations = source.Rotations;
       target.SaveAsFileTypeIndex = source.SaveAsFileTypeIndex;
       target.Scale = source.Scale;
@@ -83,8 +88,11 @@
       target.TimeRatio = source.TimeRatio;
       target.Tolerance = source.Tolerance;
       target.ToleranceSvg = source.ToleranceSvg;
+      target.UseDllImport = source.UseDllImport;
       target.UseHoles = source.UseHoles;
+      target.UseMinkowskiCache = source.UseMinkowskiCache;
       target.UseParallel = source.UseParallel;
+      target.UsePriority = source.UsePriority;
     }
   }
 }

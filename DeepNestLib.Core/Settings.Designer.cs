@@ -322,5 +322,17 @@ namespace DeepNestLib.Core {
                 this["UseDllImport"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("15000")]
+        public int ProcreationTimeout {
+            get {
+                return ((int)(this["ProcreationTimeout"]));
+            }
+            set {
+                this["ProcreationTimeout"] = value;
+            }
+        }
     }
 }

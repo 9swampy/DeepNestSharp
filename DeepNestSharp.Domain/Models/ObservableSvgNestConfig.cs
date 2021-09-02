@@ -81,7 +81,7 @@
     /// <inheritdoc />
     [Category("File Settings")]
     public string LastDebugFilePath
-{
+    {
       get => svgNestConfig.LastDebugFilePath;
       set => SetProperty(nameof(LastDebugFilePath), () => svgNestConfig.LastDebugFilePath, v => svgNestConfig.LastDebugFilePath = v, value);
     }
@@ -89,7 +89,7 @@
     /// <inheritdoc />
     [Category("File Settings")]
     public string LastNestFilePath
-  {
+    {
       get => svgNestConfig.LastNestFilePath;
       set => SetProperty(nameof(LastNestFilePath), () => svgNestConfig.LastNestFilePath, v => svgNestConfig.LastNestFilePath = v, value);
     }
@@ -132,6 +132,14 @@
     {
       get => svgNestConfig.PopulationSize;
       set => SetProperty(nameof(PopulationSize), () => svgNestConfig.PopulationSize, v => svgNestConfig.PopulationSize = v, value);
+    }
+
+    /// <inheritdoc />
+    [Category("Nest Settings")]
+    public int ProcreationTimeout
+    {
+      get => svgNestConfig.ProcreationTimeout;
+      set => SetProperty(nameof(ProcreationTimeout), () => svgNestConfig.ProcreationTimeout, v => svgNestConfig.ProcreationTimeout = v, value);
     }
 
     /// <inheritdoc />

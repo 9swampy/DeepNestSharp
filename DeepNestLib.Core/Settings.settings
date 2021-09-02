@@ -77,5 +77,8 @@
     <Setting Name="UseDllImport" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="ProcreationTimeout" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">15000</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

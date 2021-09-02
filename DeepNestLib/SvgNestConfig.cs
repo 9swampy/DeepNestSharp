@@ -266,6 +266,22 @@
     }
 
     /// <inheritdoc/>
+    public int ProcreationTimeout
+    {
+      get
+      {
+        return (int)Properties.Settings.Default["ProcreationTimeout"];
+      }
+
+      set
+      {
+        Properties.Settings.Default["ProcreationTimeout"] = value;
+        Properties.Settings.Default.Save();
+        Properties.Settings.Default.Upgrade();
+      }
+    }
+
+    /// <inheritdoc/>
     public int MutationRate
     {
       get

@@ -109,6 +109,11 @@
 
     int ParallelNests { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating the Timeout for Procreation in milliseconds.
+    /// </summary>
+    int ProcreationTimeout { get; set; }
+
     bool ShowPartPositions { get; set; }
 
     string ToJson();
