@@ -5,16 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DeepNestSharp.Ui.Views"
         mc:Ignorable="d"
-        Title="DeepNest#" Height="605" Width="800" ResizeMode="NoResize" >
+        Title="{Binding Title}" Height="610" Width="800" ResizeMode="NoResize" >
   <Grid>
     <StackPanel Orientation="Vertical">
-      <TextBlock TextWrapping="Wrap" Margin="5,0" FontWeight="Bold">
+      <StackPanel Orientation="Horizontal">
+        <TextBlock TextWrapping="Wrap" Margin="5,0" FontWeight="Bold">
     DeepNest# - Net Core C#/Mvvm/WPF port (<Hyperlink 
         NavigateUri="https://github.com/9swampy/DeepNestSharp"
         RequestNavigate="Hyperlink_RequestNavigate">
         https://github.com/9swampy/DeepNestSharp
-    </Hyperlink>)
-      </TextBlock>
+    </Hyperlink>) v
+        </TextBlock>
+        <TextBlock Margin="0" Text="{Binding InformationalVersion}" />
+      </StackPanel>
       <TextBlock TextWrapping="Wrap" Margin="5,0" FontWeight="Bold">
     DeepNestPort - C# WinForms port (<Hyperlink 
         NavigateUri="https://github.com/fel88/DeepNestPort"
@@ -102,6 +105,6 @@ DXF Import/Export: https://github.com/IxMilia/Dxf
 * https://github.com/Jack000/Deepnest (The original DeepNest)
       </TextBlock>
     </StackPanel>
-    <Button Content="Ok" Click="btnOk_Click" IsDefault="True" IsCancel="True" Margin="50" Width="100" Height="50" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+    <Button Content="OK" Click="OkClick" IsDefault="True" IsCancel="True" Margin="50,40" Width="100" Height="50" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
   </Grid>
 </Window>

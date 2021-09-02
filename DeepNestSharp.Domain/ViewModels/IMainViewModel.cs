@@ -14,6 +14,8 @@
   {
     event EventHandler ActiveDocumentChanged;
 
+    IAboutDialogService AboutDialogService { get; set; }
+
     IFileViewModel ActiveDocument { get; set; }
 
     ICommand ActiveDocumentSaveAsCommand { get; }
@@ -56,9 +58,9 @@
 
     ISvgNestConfigViewModel SvgNestConfigViewModel { get; }
 
-    IEnumerable<IToolViewModel> Tools { get; }
+    string Title { get; }
 
-    IAboutDialogService AboutDialogService { get; set; }
+    IEnumerable<IToolViewModel> Tools { get; }
 
     Task ExportSheetPlacementAsync(ISheetPlacement sheetPlacement);
 

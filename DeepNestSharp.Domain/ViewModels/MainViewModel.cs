@@ -165,6 +165,8 @@
 
     public IMessageService MessageService => this.messageService;
 
+    public string Title => $"DeepNest# {this.GetType().Assembly.GetName().Version?.ToString()}";
+
     public void SetSelectedToolView(IFileViewModel fileViewModel)
     {
       if (fileViewModel is NestProjectViewModel)
