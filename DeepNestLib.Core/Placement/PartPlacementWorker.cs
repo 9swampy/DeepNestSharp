@@ -422,7 +422,7 @@
               this.MergedLength += position.MergedLength.Value;
             }
           }
-          else if (processedPart.IsPriority)
+          else if (processedPart.IsPriority && Config.UsePriority)
           {
             this.VerboseLog($"Could not place {processedPart}. As it's Priority skip to next part.");
             return InnerFlowResult.Break;

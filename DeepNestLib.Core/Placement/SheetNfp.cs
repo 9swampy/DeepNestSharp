@@ -41,10 +41,8 @@ namespace DeepNestLib
                                  o.HeightCalculated < sheet.HeightCalculated)
                      .Select(o =>
                      {
-                       var cleaned = SvgNest.CleanPolygon2(o);
-                       var points = cleaned.Points.ToList();
-                       points.Add(points[0]);
-                       o.ReplacePoints(points);
+                       o.Clean();
+                       o.EnsureIsClosed();
                        return o;
                      });
       return result.ToArray();

@@ -48,7 +48,7 @@
     /// Gets a value indicating whether the current loop started as a PriorityPLacement.
     /// Note as parts get placed this could change; hence we memoise at the start of each placement.
     /// </summary>
-    private bool StartedAsPriorityPlacement => unplacedParts.Any(o => o.IsPriority);
+    private bool StartedAsPriorityPlacement => config.UsePriority && unplacedParts.Any(o => o.IsPriority);
 
     internal NestResult PlaceParts()
     {
@@ -179,7 +179,7 @@
         {
           var sheetPlacement = allPlacements.Single(o => o.Sheet == localSheet);
           partPlacements = sheetPlacement.PartPlacements.ToList();
-          if (unplacedParts.Any(o => o.IsPriority))
+          if (config.UsePriority && unplacedParts.Any(o => o.IsPriority))
           {
             // Sheet's already used so by definition it's already full of priority parts, no point trying to add more
             requeue.Enqueue(localSheet);

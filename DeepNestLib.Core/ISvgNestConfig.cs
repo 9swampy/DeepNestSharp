@@ -31,6 +31,11 @@
     /// Gets or sets a value indicating whether the C++ imported Minkowski implementation should be used.
     /// </summary>
     bool UseDllImport { get; set; }
+
+    /// <summary>
+    /// Gets a value that indicates whether Priority settings should be applied.
+    /// </summary>
+    bool UsePriority { get; set; }
   }
 
   public interface ISvgNestConfig : ITopNestResultsConfig, IPlacementConfig
@@ -93,11 +98,6 @@
     bool UseHoles { get; set; }
 
     bool UseParallel { get; set; }
-
-    /// <summary>
-    /// Gets a value that indicates whether Priority settings should be applied.
-    /// </summary>
-    bool UsePriority { get; set; }
 
     /// <summary>
     /// If set then parts will be restricted to <see cref="StrictAngles"/>.
