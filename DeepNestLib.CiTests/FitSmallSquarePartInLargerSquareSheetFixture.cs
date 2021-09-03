@@ -52,7 +52,7 @@
     [Fact]
     public void ShouldHaveExpectedFitness()
     {
-      this.nestResult.Fitness.Should().BeApproximately(1679, 1);
+      this.nestResult.Fitness.Should().BeApproximately(1558, 100);
     }
 
     [Fact]

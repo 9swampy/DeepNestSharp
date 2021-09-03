@@ -3,6 +3,7 @@
   using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
   using FluentAssertions;
+  using System;
   using Xunit;
 
   public class BoundingBoxFitnessFixture
@@ -46,21 +47,21 @@
     public void GivenBoundsPenaltyShouldBeInLineWithSheetsPenaltyThenScenarioBestBoundsShouldBeComingCloseToSheets()
     {
       var sut = new OriginalFitnessSheet(scenarioBest);
-      sut.Bounds.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
+      FitnessAlignment.BoundsPenaltyShouldBeInLineWithSheetsPenalty(sut, FitnessRange.Mid);
     }
 
     [Fact]
     public void GivenBoundsPenaltyShouldBeInLineWithSheetsPenaltyThenScenarioMidBoundsShouldBeComingCloseToSheets()
     {
       var sut = new OriginalFitnessSheet(scenarioMid);
-      sut.Bounds.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
+      FitnessAlignment.BoundsPenaltyShouldBeInLineWithSheetsPenalty(sut, FitnessRange.Mid);
     }
 
     [Fact]
     public void GivenBoundsPenaltyShouldBeInLineWithSheetsPenaltyThenScenarioWorstBoundsShouldBeComingCloseToSheets()
     {
       var sut = new OriginalFitnessSheet(scenarioMid);
-      sut.Bounds.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
+      FitnessAlignment.BoundsPenaltyShouldBeInLineWithSheetsPenalty(sut, FitnessRange.Mid);
     }
 
     [Fact]
@@ -103,6 +104,44 @@
     {
       var sut = new OriginalFitnessSheet(scenarioMid);
       sut.MaterialWasted.Should().BeApproximately(sut.Sheets * 1.5, sut.Sheets);
+    }
+  }
+
+  public enum FitnessRange
+  {
+    Lower,
+    Mid,
+    Upper
+  }
+
+  public class FitnessAlignment
+  {
+    internal static void BoundsPenaltyShouldBeInLineWithSheetsPenalty(OriginalFitnessSheet sut, FitnessRange fitnessRange)
+    {
+      BoundsPenaltyShouldBeInLineWithSheetsPenalty(sut.Bounds, sut.Sheets, fitnessRange);
+    }
+
+    internal static void BoundsPenaltyShouldBeInLineWithSheetsPenalty(NestResult nestResult, FitnessRange fitnessRange)
+    {
+      BoundsPenaltyShouldBeInLineWithSheetsPenalty(nestResult.FitnessBounds, nestResult.FitnessSheets, fitnessRange);
+    }
+    private static void BoundsPenaltyShouldBeInLineWithSheetsPenalty(double actual, double max, FitnessRange fitnessRange)
+    {
+      switch (fitnessRange)
+      {
+        case FitnessRange.Lower:
+          actual.Should().BeInRange(0, max / 2);
+          break;
+        case FitnessRange.Mid:
+          actual.Should().BeInRange(max * .25, max * .75);
+          break;
+        case FitnessRange.Upper:
+          actual.Should().BeInRange(max / 2, max);
+          break;
+        default:
+          actual.Should().BeInRange(0, max);
+          break;
+      }
     }
   }
 }

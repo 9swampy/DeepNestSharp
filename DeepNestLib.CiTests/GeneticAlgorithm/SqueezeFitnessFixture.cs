@@ -46,21 +46,21 @@
     public void GivenBoundsPenaltyShouldBeInLineWithSheetsPenaltyThenScenarioBestShouldBeComingCloseToSheets()
     {
       var sut = new OriginalFitnessSheet(scenarioBest);
-      sut.Bounds.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
+      FitnessAlignment.BoundsPenaltyShouldBeInLineWithSheetsPenalty(sut, FitnessRange.Mid);
     }
 
     [Fact]
     public void GivenBoundsPenaltyShouldBeInLineWithSheetsPenaltyThenScenarioMidShouldBeComingCloseToSheets()
     {
       var sut = new OriginalFitnessSheet(scenarioMid);
-      sut.Bounds.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
+      FitnessAlignment.BoundsPenaltyShouldBeInLineWithSheetsPenalty(sut, FitnessRange.Mid);
     }
 
     [Fact]
     public void GivenBoundsPenaltyShouldBeInLineWithSheetsPenaltyThenScenarioWorstShouldBeComingCloseToSheets()
     {
       var sut = new OriginalFitnessSheet(scenarioWorst);
-      sut.Bounds.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
+      FitnessAlignment.BoundsPenaltyShouldBeInLineWithSheetsPenalty(sut, FitnessRange.Mid);
     }
 
     [Fact]

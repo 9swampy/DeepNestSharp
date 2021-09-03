@@ -122,7 +122,7 @@
               bound = area;
             }
 
-            bounds = ((bound * 4) + area + sheetPlacement.Hull.Area) / 5;
+            bounds = ((bound * 4) + area + sheetPlacement.Hull.Area) / 7;
           }
         }
 

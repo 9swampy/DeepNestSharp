@@ -2,6 +2,7 @@
 {
   using System;
   using System.Diagnostics;
+  using DeepNestLib.CiTests.GeneticAlgorithm;
   using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
@@ -45,7 +46,7 @@
     [Fact]
     public void ShouldHaveSameFitnessBoundsAsOriginal()
     {
-      this.nestResult.FitnessBounds.Should().BeApproximately(580, 10);
+      this.nestResult.FitnessBounds.Should().BeApproximately(414, 10);
     }
 
     [Fact]
@@ -63,7 +64,7 @@
     [Fact]
     public void ShouldHaveSameFitnessAsOriginal()
     {
-      this.nestResult.Fitness.Should().BeApproximately(1189, 100);
+      this.nestResult.Fitness.Should().BeApproximately(1024, 100);
     }
 
     [Fact]
@@ -75,7 +76,7 @@
     [Fact]
     public void GivenBoundsPenaltyShouldBeInLineWithSheetsPenaltyThenScenario1BoundsShouldBeComingCloseToSheets()
     {
-      this.nestResult.FitnessSheets.Should().BeApproximately(this.nestResult.FitnessBounds, this.nestResult.FitnessBounds / 2);
+      FitnessAlignment.BoundsPenaltyShouldBeInLineWithSheetsPenalty(nestResult, FitnessRange.Upper);
     }
 
     [Fact]

@@ -58,13 +58,13 @@
     [Obsolete]
     public void ShouldHaveExpectedFitness()
     {
-      this.nestResult.Fitness.Should().BeApproximately(1207, 10);
+      this.nestResult.Fitness.Should().BeApproximately(1036, 10);
     }
 
     [Fact]
     public void ShouldHaveSameFitnessBoundsAsOriginal()
     {
-      this.nestResult.FitnessBounds.Should().BeApproximately(598, 10);
+      this.nestResult.FitnessBounds.Should().BeApproximately(427, 10);
     }
 
     [Fact]
