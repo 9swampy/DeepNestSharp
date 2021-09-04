@@ -42,9 +42,9 @@
           {
             sheets = sheetPlacement.Sheet.Area;
           }
-        }
 
-        return sheets.Value;
+          return sheets.Value;
+        }
       }
     }
 
@@ -71,9 +71,9 @@
 
             materialWasted = Math.Max(0, materialWasted.Value / 2);
           }
-        }
 
-        return materialWasted.Value;
+          return materialWasted.Value;
+        }
       }
     }
 
@@ -90,9 +90,9 @@
           {
             materialUtilization = (double)Math.Pow(1 - this.sheetPlacement.MaterialUtilization, 1.1) * sheetPlacement.Sheet.Area;
           }
-        }
 
-        return materialUtilization.Value;
+          return materialUtilization.Value;
+        }
       }
     }
 
@@ -105,7 +105,7 @@
       {
         lock (syncLock)
         {
-          if (this.bounds == null)
+          if (!this.bounds.HasValue)
           {
             double area;
             var rectBounds = sheetPlacement.RectBounds;
@@ -124,9 +124,9 @@
 
             bounds = ((bound * 4) + area + sheetPlacement.Hull.Area) / 7;
           }
-        }
 
-        return this.bounds.Value;
+          return this.bounds.Value;
+        }
       }
     }
 

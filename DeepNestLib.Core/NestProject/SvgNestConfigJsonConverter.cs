@@ -27,12 +27,20 @@
     {
       public override ISvgNestConfig Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
       {
+#if NCRUNCH
+        return JsonSerializer.Deserialize<TestSvgNestConfig>(ref reader, options);
+#else
         return JsonSerializer.Deserialize<SvgNestConfig>(ref reader, options);
+#endif
       }
 
       public override void Write(Utf8JsonWriter writer, ISvgNestConfig value, JsonSerializerOptions options)
       {
+#if NCRUNCH
+        JsonSerializer.Serialize<TestSvgNestConfig>(writer, (TestSvgNestConfig)value, options);
+#else
         JsonSerializer.Serialize<SvgNestConfig>(writer, (SvgNestConfig)value, options);
+#endif
       }
     }
 
@@ -40,14 +48,22 @@
     {
       var options = new JsonSerializerOptions();
       options.Converters.Add(new SvgNestConfigJsonConverter());
+#if NCRUNCH
+      return JsonSerializer.Deserialize<TestSvgNestConfig>(json, options);
+#else
       return JsonSerializer.Deserialize<SvgNestConfig>(json, options);
+#endif
     }
 
-    internal static string ToJson(SvgNestConfig config)
+    internal static string ToJson(ISvgNestConfig config)
     {
       var options = new JsonSerializerOptions();
       options.Converters.Add(new SvgNestConfigJsonConverter());
-      return JsonSerializer.Serialize<SvgNestConfig>(config, options);
+#if NCRUNCH
+      return JsonSerializer.Serialize<TestSvgNestConfig>((TestSvgNestConfig)config, options);
+#else
+      return JsonSerializer.Serialize<SvgNestConfig>((SvgNestConfig)config, options);
+#endif
     }
 
     /// <summary>

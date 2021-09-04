@@ -18,7 +18,7 @@
     private readonly NfpHelper nfpHelper;
     private readonly IEnumerable<ISheet> sheets;
     private readonly INfp[] parts;
-    private readonly ISvgNestConfig config;
+    private readonly IPlacementConfig config;
     private readonly Stopwatch backgroundStopwatch;
     private readonly INestState state;
     private Stopwatch sw;
@@ -33,7 +33,7 @@
     /// <param name="parts">The list of parts to be placed.</param>
     /// <param name="config">Config for the Nest.</param>
     /// <param name="backgroundStopwatch">Stopwatch started at Background.Start (included the PMap stage prior to the PlacementWorker).</param>
-    public PlacementWorker(NfpHelper nfpHelper, IEnumerable<ISheet> sheets, INfp[] parts, ISvgNestConfig config, Stopwatch backgroundStopwatch, INestState state)
+    public PlacementWorker(NfpHelper nfpHelper, IEnumerable<ISheet> sheets, INfp[] parts, IPlacementConfig config, Stopwatch backgroundStopwatch, INestState state)
     {
       this.nfpHelper = nfpHelper;
       this.sheets = sheets;
@@ -115,7 +115,7 @@
         if (partPlacementWorker.Placements != null && partPlacementWorker.Placements.Count > 0)
         {
           VerboseLog($"Add {config.PlacementType} placement {sheet.ToShortString()}.");
-          allPlacements.Add(new SheetPlacement(config.PlacementType, sheet, partPlacementWorker.Placements, partPlacementWorker.MergedLength));
+          allPlacements.Add(new SheetPlacement(config.PlacementType, sheet, partPlacementWorker.Placements, partPlacementWorker.MergedLength, config.ClipperScale));
         }
         else
         {
@@ -151,7 +151,7 @@
 #endif
         this.VerboseLog($"Placed part {processedPart}");
         placements.Add(position);
-        var sp = new SheetPlacement(placementType, sheet, placements, mergedLength);
+        var sp = new SheetPlacement(placementType, sheet, placements, mergedLength, config.ClipperScale);
         if (double.IsNaN(sp.Fitness.Evaluate()))
         {
           // Step back to calling method in PartPlacementWorker and you should find a PartPlacementWorker.ToJson() :)

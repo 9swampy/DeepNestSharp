@@ -37,7 +37,13 @@
       this.minkowskiSumService = minkowskiSumService;
     }
 
-    public static ISvgNestConfig Config { get; } = new SvgNestConfig();
+    public static ISvgNestConfig Config { get; }
+#if NCRUNCH
+    = new TestSvgNestConfig();
+#else
+    = new SvgNestConfig();
+#endif
+
 
     public bool IsStopped { get => isStopped; private set => isStopped = value; }
 

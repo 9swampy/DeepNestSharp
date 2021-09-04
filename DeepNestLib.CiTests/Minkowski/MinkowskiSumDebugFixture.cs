@@ -127,7 +127,7 @@
     public void Test(bool useDllImport)
     {
       var minkowski = MinkowskiSum.CreateInstance(false, A.Fake<INestStateMinkowski>());
-      var config = new DefaultSvgNestConfig();
+      var config = new TestSvgNestConfig();
 
       INfp[] result;
       SheetNfp sheetNfp;

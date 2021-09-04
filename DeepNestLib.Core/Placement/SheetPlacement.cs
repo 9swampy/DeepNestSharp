@@ -18,13 +18,21 @@
     public const string FileDialogFilter = "DeepNest SheetPlacement (*.dnsp)|*.dnsp|Json (*.json)|*.json|All files (*.*)|*.*";
 
     private NFP hull;
+    private double clipperScale;
 
+    [JsonConstructor]
     public SheetPlacement(PlacementTypeEnum placementType, ISheet sheet, IReadOnlyList<IPartPlacement> partPlacements, double mergedLength)
+      : this(placementType, sheet, partPlacements, mergedLength, new TestSvgNestConfig().ClipperScale)
+    {
+    }
+
+    public SheetPlacement(PlacementTypeEnum placementType, ISheet sheet, IReadOnlyList<IPartPlacement> partPlacements, double mergedLength, double clipperScale)
     {
       this.PlacementType = placementType;
       this.Sheet = sheet;
       this.PartPlacements = partPlacements;
       this.MergedLength = mergedLength;
+      this.clipperScale = clipperScale;
       this.Fitness = new OriginalFitnessSheet(this);
     }
 
@@ -69,7 +77,11 @@
     {
       get
       {
-        var clipperScale = new SvgNestConfig().ClipperScale;
+#if NCRUNCH
+        var clipperScale = this.clipperScale == 0 ? 10000000 : this.clipperScale;
+#else
+        var clipperScale = this.clipperScale;
+#endif
         var allpoints = CombinedPoints(this.PartPlacements);
         var clipperNfp = NfpHelper.NfpToClipperCoordinates(allpoints, clipperScale);
 

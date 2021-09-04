@@ -13,6 +13,7 @@
   using DeepNestLib.Geometry;
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
+  using Light.GuardClauses;
 
   public class PartPlacementWorker : ITestPartPlacementWorker
   {
@@ -48,14 +49,8 @@
       this.Placements = placements.ToList();
     }
 
-    bool ITestPartPlacementWorker.ExportExecutions { set => ExportExecutions = value; }
-
     [JsonIgnore]
-#if NCRUNCH
-    public bool ExportExecutions { get; private set; } = false;
-#else
-    public bool ExportExecutions { get => Config.ExportExecutions && this.state.NestCount <= 5; private set => Config.ExportExecutions = value; }
-#endif
+    public bool ExportExecutions { get => Config?.ExportExecutions ?? false && this.state.NestCount <= 5; private set => Config.ExportExecutions = value; }
 
     [JsonInclude]
     public List<IPartPlacement> Placements { get; private set; }
@@ -135,6 +130,9 @@
         {
           // try all possible rotations until it fits
           // (only do this for the first part of each sheet, to ensure that all parts that can be placed are, even if we have to to open a lot of sheets)
+#if NCRUNCH
+          this.Config.Rotations.MustBeGreaterThan(0, "Config.Rotations", "is this a test and you've passed in a Fake<Config>?");
+#endif
           for (int j = 0; j < this.Config.Rotations; j++)
           {
             this.VerboseLog("Calculate first on SheetNfp");
@@ -385,7 +383,7 @@
               if (minarea == null ||
                   area < minarea ||
                   (GeometryUtil.AlmostEqual(minarea, area) && (minx == null || shiftvector.X < minx)) ||
-                  (GeometryUtil.AlmostEqual(minarea, area) && (minx != null && GeometryUtil.AlmostEqual(shiftvector.X, minx) && shiftvector.Y < miny)))
+                  (GeometryUtil.AlmostEqual(minarea, area) && minx != null && GeometryUtil.AlmostEqual(shiftvector.X, minx) && shiftvector.Y < miny))
               {
                 this.VerboseLog($"evalmerge-entered minarea={minarea ?? -1:0.000000} x={shiftvector?.X ?? -1:0.000000} y={shiftvector?.Y ?? -1:0.000000}");
                 minarea = area;
@@ -481,7 +479,7 @@
 
     private void Export(int inputPartIndex, string fileNameSuffix, string json)
     {
-      if (this.state.NestCount <= 5)
+      if (this.state?.NestCount <= 5)
       {
         var dirInfo = new DirectoryInfo(Config.ExportExecutionPath);
         if (dirInfo.Exists)
@@ -797,8 +795,6 @@
 
   public interface ITestPartPlacementWorker
   {
-    bool ExportExecutions { set; }
-
     NfpHelper NfpHelper { get; set; }
 
     IPlacementWorker PlacementWorker { get; set; }

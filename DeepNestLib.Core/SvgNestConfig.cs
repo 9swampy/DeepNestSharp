@@ -2,6 +2,7 @@
 
 namespace DeepNestLib
 {
+  using System;
   using DeepNestLib.NestProject;
   using Properties = DeepNestLib.Core;
 
@@ -15,6 +16,13 @@ namespace DeepNestLib
     public const int MultiplierMax = 100;
     public const int ParallelNestsMin = 1;
     public const int ParallelNestsMax = 30;
+
+    public SvgNestConfig()
+    {
+#if NCRUNCH
+      throw new NotImplementedException();
+#endif
+    }
 
     /// <inheritdoc />
     public double Scale { get; set; } = 25;
@@ -349,8 +357,16 @@ namespace DeepNestLib
       get
       {
         var result = (int)Properties.Settings.Default["Multiplier"];
-        if (result < MutationRateMin) return MultiplierMin;
-        if (result > MutationRateMax) return MultiplierMax;
+        if (result < MutationRateMin)
+        {
+          return MultiplierMin;
+        }
+
+        if (result > MutationRateMax)
+        {
+          return MultiplierMax;
+        }
+
         return result;
       }
 
@@ -407,8 +423,16 @@ namespace DeepNestLib
       get
       {
         var result = (int)Properties.Settings.Default["ParallelNests"];
-        if (result < ParallelNestsMin) return ParallelNestsMin;
-        if (result > ParallelNestsMax) return ParallelNestsMax;
+        if (result < ParallelNestsMin)
+        {
+          return ParallelNestsMin;
+        }
+
+        if (result > ParallelNestsMax)
+        {
+          return ParallelNestsMax;
+        }
+
         return result;
       }
 
@@ -484,14 +508,14 @@ namespace DeepNestLib
       }
     }
 
-    internal static ISvgNestConfig FromJson(string json)
-    {
-      return SvgNestConfigJsonConverter.FromJson(json);
-    }
-
     public string ToJson()
     {
       return SvgNestConfigJsonConverter.ToJson(this);
+    }
+
+    internal static ISvgNestConfig FromJson(string json)
+    {
+      return SvgNestConfigJsonConverter.FromJson(json);
     }
   }
 }

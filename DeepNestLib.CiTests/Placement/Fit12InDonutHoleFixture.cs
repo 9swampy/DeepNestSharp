@@ -169,14 +169,14 @@
       sut = PartPlacementWorker.FromJson(json);
       var config = sut.Config as ISvgNestConfig;
       config.Rotations = 1;
+      config.UseDllImport = useDllImport;
+      config.ExportExecutions = false;
       var dispatcherService = A.Fake<IDispatcherService>();
       A.CallTo(() => dispatcherService.InvokeRequired).Returns(false);
 
       sut.Config.ClipperScale.Should().Be(10000000);
       sut.Config.Rotations.Should().Be(1);
       sut.Config.PlacementType.Should().Be(PlacementTypeEnum.Gravity);
-      sut.Config.ExportExecutions.Should().BeTrue();
-      sut.Config.ExportExecutions = false;
       sut.Config.ExportExecutions.Should().BeFalse();
       sut.Config.Scale.Should().Be(25);
       sut.Config.MergeLines.Should().BeFalse();
@@ -187,12 +187,11 @@
       sut.Config.UseDllImport.Should().Be(useDllImport);
 
       ((ITestPartPlacementWorker)sut).State = new NestState(config, dispatcherService);
-      ((ITestPartPlacementWorker)sut).ExportExecutions = false;
-
+      
       placementWorker = A.Fake<IPlacementWorker>();
       ((ITestPartPlacementWorker)sut).PlacementWorker = placementWorker;
 
-      ((ITestNfpHelper)((ITestPartPlacementWorker)sut).NfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(config, A.Fake<INestStateMinkowski>());
+      ((ITestNfpHelper)((ITestPartPlacementWorker)sut).NfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(false, A.Fake<INestStateMinkowski>());
     }
 
     [Fact]

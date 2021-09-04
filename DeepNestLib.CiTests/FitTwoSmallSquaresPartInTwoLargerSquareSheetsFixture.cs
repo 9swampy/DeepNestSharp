@@ -10,12 +10,12 @@
 
   public class FitTwoSmallSquaresPartInTwoLargerSquareSheetsFixture
   {
-    private static readonly DxfGenerator DxfGenerator = new DxfGenerator();
-    private NestResult nestResult;
-    private int firstSheetIdSrc = new Random().Next();
-    private int secondSheetIdSrc = new Random().Next();
-    private int firstPartIdSrc = new Random().Next();
-    private int secondPartIdSrc = new Random().Next();
+    private readonly DxfGenerator DxfGenerator = new DxfGenerator();
+    private readonly NestResult nestResult;
+    private readonly int firstSheetIdSrc = new Random().Next();
+    private readonly int secondSheetIdSrc = new Random().Next();
+    private readonly int firstPartIdSrc = new Random().Next();
+    private readonly int secondPartIdSrc = new Random().Next();
 
     public FitTwoSmallSquaresPartInTwoLargerSquareSheetsFixture()
     {
@@ -27,7 +27,11 @@
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryConvertToNfp(firstPartIdSrc, out firstPart).Should().BeTrue();
       INfp secondPart;
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryConvertToNfp(secondPartIdSrc, out secondPart).Should().BeTrue();
-      this.nestResult = new PlacementWorker(A.Dummy<NfpHelper>(), new ISheet[] { firstSheet, secondSheet }, new INfp[] { firstPart, secondPart }.ApplyIndex(), new SvgNestConfig(), A.Dummy<Stopwatch>(), A.Fake<INestState>()).PlaceParts();
+      var config = A.Fake<IPlacementConfig>();
+      A.CallTo(() => config.PlacementType).Returns(PlacementTypeEnum.BoundingBox);
+      A.CallTo(() => config.UseDllImport).Returns(false);
+      A.CallTo(() => config.Rotations).Returns(2);
+      this.nestResult = new PlacementWorker(A.Dummy<NfpHelper>(), new ISheet[] { firstSheet, secondSheet }, new INfp[] { firstPart, secondPart }.ApplyIndex(), config, A.Dummy<Stopwatch>(), A.Fake<INestState>()).PlaceParts();
     }
 
     [Fact]
@@ -45,7 +49,20 @@
     [Fact]
     public void ShouldHaveExpectedFitness()
     {
-      this.nestResult.Fitness.Should().BeApproximately(2619, 1);
+      // Churns consistently on 2619, but occasionally comes back with 2506. Why? Hmm, moving the Bounds return
+      // inside the lock and now it's stable on 2506 which is the correct answer. . . don't follow. . .
+      this.nestResult.FitnessSheets.Should().BeApproximately(800, 1);
+      this.nestResult.MaterialWasted.Should().BeApproximately(961, 1);
+      this.nestResult.MaterialUtilization.Should().BeApproximately(1, 1);
+      this.nestResult.UsedSheets.Count.Should().Be(2);
+      this.nestResult.UsedSheets[0].PlacementType.Should().Be(PlacementTypeEnum.BoundingBox);
+      this.nestResult.UsedSheets[0].RectBounds.X.Should().Be(0);
+      this.nestResult.UsedSheets[0].RectBounds.Y.Should().Be(0);
+      this.nestResult.UsedSheets[0].Hull.Area.Should().Be(121);
+      this.nestResult.UsedSheets[0].RectBounds.Width.Should().Be(11);
+      this.nestResult.UsedSheets[0].RectBounds.Height.Should().Be(11);
+      this.nestResult.UsedSheets[0].Fitness.Bounds.Should().BeApproximately(103, 1);
+      this.nestResult.Fitness.Should().BeApproximately(2506, 1);
     }
 
     [Fact]

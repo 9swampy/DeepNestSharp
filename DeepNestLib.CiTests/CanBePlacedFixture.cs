@@ -57,8 +57,8 @@
     public void GivenSmallerSquareWhenFitInLargeSquareThenItemsShouldHaveSingleNfpCandidateWithFourVertices(bool useDllImport, double sheetSize, double partSize)
     {
       SheetNfp sheetNfp = GivenPartWhenFitOnSheetThenGetSheetNfp(useDllImport, sheetSize, partSize);
-
-      SvgNest.CleanPolygon2(sheetNfp.Items[0]).Length.Should().Be(5, "it's closed, hence 5 vertices for a rectangle");
+      sheetNfp.Items[0].Clean();
+      sheetNfp.Items[0].Length.Should().Be(5, "it's closed, hence 5 vertices for a rectangle");
       sheetNfp.Items[0].IsClosed.Should().BeTrue();
     }
 

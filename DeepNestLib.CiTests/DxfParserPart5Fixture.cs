@@ -30,7 +30,7 @@
           this.hasImportedRawDetail = this.loadedRawDetail.TryConvertToNfp(A.Dummy<int>(), out this.loadedNfp);
           var sw = new Stopwatch();
           sw.Start();
-          var config = new DefaultSvgNestConfig() { CurveTolerance = 0.72D };
+          var config = new TestSvgNestConfig() { CurveTolerance = 0.72D };
           this.simplifiedNfp = SvgNest.SimplifyFunction(this.loadedNfp, false, config.CurveTolerance, config.Simplify);
           sw.Stop();
           this.simplifiedNfpTime = sw.ElapsedMilliseconds;

@@ -41,8 +41,7 @@
       sut.Config.UseDllImport.Should().Be(useDllImport);
 
       ((ITestPartPlacementWorker)sut).State = new NestState(config, dispatcherService);
-      ((ITestPartPlacementWorker)sut).ExportExecutions = false;
-
+      
       placementWorker = A.Fake<IPlacementWorker>();
       ((ITestPartPlacementWorker)sut).PlacementWorker = placementWorker;
       ((ITestNfpHelper)((ITestPartPlacementWorker)sut).NfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(config, A.Fake<INestStateMinkowski>());

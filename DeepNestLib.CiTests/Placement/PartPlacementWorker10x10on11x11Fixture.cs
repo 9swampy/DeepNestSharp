@@ -28,12 +28,13 @@
 
       var config = sut.Config as ISvgNestConfig;
       config.Rotations = 1;
+      config.ExportExecutions = false;
+      config.ExportExecutions.Should().BeFalse();
       var dispatcherService = A.Fake<IDispatcherService>();
       A.CallTo(() => dispatcherService.InvokeRequired).Returns(false);
 
       ((ITestPartPlacementWorker)sut).State = new NestState(config, dispatcherService);
-      ((ITestPartPlacementWorker)sut).ExportExecutions = false;
-
+      
       placementWorker = A.Fake<IPlacementWorker>();
       ((ITestPartPlacementWorker)sut).PlacementWorker = placementWorker;
       ((ITestNfpHelper)((ITestPartPlacementWorker)sut).NfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(config, A.Fake<INestStateMinkowski>());

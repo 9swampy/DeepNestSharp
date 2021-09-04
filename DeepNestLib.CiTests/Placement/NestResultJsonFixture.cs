@@ -3,6 +3,7 @@
   using System;
   using System.Collections.Generic;
   using DeepNestLib.Placement;
+  using FakeItEasy;
   using FluentAssertions;
   using Xunit;
 
@@ -16,7 +17,7 @@
       var partPlacementList = new List<IPartPlacement>();
       partPlacementList.Add(partPlacement);
       var sheet = new Sheet() { Width = 100, Height = 200 };
-      var sheetPlacement = new SheetPlacement(PlacementTypeEnum.Gravity, sheet, partPlacementList, 0);
+      var sheetPlacement = new SheetPlacement(PlacementTypeEnum.Gravity, sheet, partPlacementList, 0, A.Dummy<double>());
       var sheetPlacementsCollection = new SheetPlacementCollection();
       sheetPlacementsCollection.Add(sheetPlacement);
 
@@ -33,7 +34,7 @@
       var partPlacementList = new List<IPartPlacement>();
       partPlacementList.Add(partPlacement);
       var sheet = Sheet.NewSheet(1, 100, 200);
-      var sheetPlacement = new SheetPlacement(PlacementTypeEnum.Gravity, sheet, partPlacementList, 121);
+      var sheetPlacement = new SheetPlacement(PlacementTypeEnum.Gravity, sheet, partPlacementList, 121, A.Dummy<double>());
       var sheetPlacementsCollection = new SheetPlacementCollection();
       sheetPlacementsCollection.Add(sheetPlacement);
 
@@ -52,7 +53,7 @@
       var partPlacementList = new List<IPartPlacement>();
       partPlacementList.Add(partPlacement);
       var sheet = Sheet.NewSheet(1, 100, 200);
-      var sheetPlacement = new SheetPlacement(PlacementTypeEnum.Gravity, sheet, partPlacementList, 121);
+      var sheetPlacement = new SheetPlacement(PlacementTypeEnum.Gravity, sheet, partPlacementList, 121, A.Dummy<double>());
       var sheetPlacementsCollection = new SheetPlacementCollection();
       sheetPlacementsCollection.Add(sheetPlacement);
 
