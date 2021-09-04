@@ -71,42 +71,32 @@
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    public void GivenFinalNfpComparesToSheetWithDonutWhenProcessPartThenTwoNfp(bool useDllImport)
+    public void GivenFinalNfpComparesToSheetWithDonutWhenProcessPartThenFinalNfpTotalExpected(bool useDllImport)
     {
       PartPlacementWorker sut;
       SetupFit12InDonutHolePartPlacementWorker(useDllImport, out sut, out _);
 
       sut.ProcessPart(sut.InputPart, 1);
+      //File.WriteAllText($"C:\\Temp\\FinalNfp{useDllImport}.dnnfps", sut.FinalNfp.ToJson());
 
-      sut.FinalNfp.NumberOfNfps.Should().Be(2);
-    }
-
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void GivenFinalNfpComparesToSheetWithDonutWhenProcessPartThenFirstFinalNfpExpected(bool useDllImport)
-    {
-      PartPlacementWorker sut;
-      SetupFit12InDonutHolePartPlacementWorker(useDllImport, out sut, out _);
-
-      sut.ProcessPart(sut.InputPart, 1);
+      sut.FinalNfp.Items.Sum(o => o.Area).Should().BeApproximately(255.54, 0.3);
 
       sut.FinalNfp.Items[0].IsClosed.Should().BeFalse();
-      sut.FinalNfp.Items[0].Length.Should().Be(19);
-    }
-
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void GivenFinalNfpComparesToSheetWithDonutWhenProcessPartThenSecondFinalNfpExpected(bool useDllImport)
-    {
-      PartPlacementWorker sut;
-      SetupFit12InDonutHolePartPlacementWorker(useDllImport, out sut, out _);
-
-      sut.ProcessPart(sut.InputPart, 1);
-
       sut.FinalNfp.Items[1].IsClosed.Should().BeFalse();
-      sut.FinalNfp.Items[1].Length.Should().Be(16);
+      if (useDllImport)
+      {
+        sut.FinalNfp.NumberOfNfps.Should().Be(2, "we get one circle and one right hand contigious NFP");
+        sut.FinalNfp.Items[0].Length.Should().Be(19);
+        sut.FinalNfp.Items[1].Length.Should().Be(16);
+      }
+      else
+      {
+        sut.FinalNfp.NumberOfNfps.Should().Be(3, "we get one circle but the right hand NFP is equivalent but split.");
+        sut.FinalNfp.Items[0].Length.Should().Be(16);
+        sut.FinalNfp.Items[1].Length.Should().Be(15);
+        sut.FinalNfp.Items[2].Length.Should().Be(7);
+        sut.FinalNfp.Items[2].IsClosed.Should().BeFalse();
+      }
     }
 
     [Theory]
@@ -126,11 +116,9 @@
     [InlineData(false)]
     public void GivenPartFitsWhenProcessPartThenShouldPlaceAtExpectedPositionX(bool useDllImport)
     {
-      PartPlacementWorker sut;
-      IPlacementWorker placementWorker;
-      var partPlacement = GetPartPlacementForFit12InDonutHole(useDllImport, out sut, out placementWorker);
+      var partPlacement = GetPartPlacementForFit12InDonutHole(useDllImport, out _, out _);
 
-      partPlacement.X.Should().BeApproximately(55.79, 0.01);
+      partPlacement.X.Should().BeApproximately(55.79, 0.11);
     }
 
     [Theory]
@@ -138,11 +126,9 @@
     [InlineData(false)]
     public void GivenPartFitsWhenProcessPartThenShouldPlaceAtExpectedPositionY(bool useDllImport)
     {
-      PartPlacementWorker sut;
-      IPlacementWorker placementWorker;
-      var partPlacement = GetPartPlacementForFit12InDonutHole(useDllImport, out sut, out placementWorker);
+      var partPlacement = GetPartPlacementForFit12InDonutHole(useDllImport, out _, out _);
 
-      partPlacement.Y.Should().BeApproximately(59.56, 0.01);
+      partPlacement.Y.Should().BeApproximately(59.56, 1);
     }
 
     [Theory]
@@ -186,18 +172,27 @@
       var dispatcherService = A.Fake<IDispatcherService>();
       A.CallTo(() => dispatcherService.InvokeRequired).Returns(false);
 
+      sut.Config.ClipperScale.Should().Be(10000000);
+      sut.Config.Rotations.Should().Be(1);
+      sut.Config.PlacementType.Should().Be(PlacementTypeEnum.Gravity);
+      sut.Config.ExportExecutions.Should().BeTrue();
+      sut.Config.ExportExecutions = false;
+      sut.Config.ExportExecutions.Should().BeFalse();
+      sut.Config.Scale.Should().Be(25);
+      sut.Config.MergeLines.Should().BeFalse();
+      sut.Config.UsePriority.Should().BeFalse();
+      sut.Config.UseDllImport = true;
+      sut.Config.UseDllImport.Should().BeTrue();
+      sut.Config.UseDllImport = useDllImport;
+      sut.Config.UseDllImport.Should().Be(useDllImport);
+
       ((ITestPartPlacementWorker)sut).State = new NestState(config, dispatcherService);
       ((ITestPartPlacementWorker)sut).ExportExecutions = false;
 
       placementWorker = A.Fake<IPlacementWorker>();
       ((ITestPartPlacementWorker)sut).PlacementWorker = placementWorker;
 
-      // var nfpHelper = new NfpHelper();
-      // ((ITestNfpHelper)nfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(A.Fake<ISvgNestConfig>(), A.Fake<INestStateMinkowski>());
-      // ((ITestNfpHelper)nfpHelper).UseDllImport = useDllImport;
-
       ((ITestNfpHelper)((ITestPartPlacementWorker)sut).NfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(config, A.Fake<INestStateMinkowski>());
-      //((ITestNfpHelper)((ITestPartPlacementWorker)sut).NfpHelper).UseDllImport = useDllImport;
     }
 
     [Fact]

@@ -26,6 +26,19 @@
       config.Rotations = 1;
       var dispatcherService = A.Fake<IDispatcherService>();
       A.CallTo(() => dispatcherService.InvokeRequired).Returns(false);
+      sut.Config.ClipperScale.Should().Be(10000000);
+      sut.Config.Rotations.Should().Be(1);
+      sut.Config.PlacementType.Should().Be(PlacementTypeEnum.Gravity);
+      sut.Config.ExportExecutions.Should().BeTrue();
+      sut.Config.ExportExecutions = false;
+      sut.Config.ExportExecutions.Should().BeFalse();
+      sut.Config.Scale.Should().Be(25);
+      sut.Config.MergeLines.Should().BeFalse();
+      sut.Config.UsePriority.Should().BeFalse();
+      sut.Config.UseDllImport = true;
+      sut.Config.UseDllImport.Should().BeTrue();
+      sut.Config.UseDllImport = useDllImport;
+      sut.Config.UseDllImport.Should().Be(useDllImport);
 
       ((ITestPartPlacementWorker)sut).State = new NestState(config, dispatcherService);
       ((ITestPartPlacementWorker)sut).ExportExecutions = false;

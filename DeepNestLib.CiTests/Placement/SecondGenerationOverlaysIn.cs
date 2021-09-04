@@ -70,7 +70,7 @@
     public void SheetNfpShouldBeEquivalent()
     {
       sut.SheetNfp.Should().BeEquivalentTo(sutOutExpected.SheetNfp, options => options
-                                    .Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 0.001))
+                                    .Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 0.002))
                                     .WhenTypeIs<double>());
     }
 
