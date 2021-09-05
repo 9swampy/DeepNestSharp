@@ -1,5 +1,0 @@
-start
-load 1+2
-run 1+2
-run 2 alone
-run 1 alone wrong

@@ -1,5 +1,6 @@
 ﻿namespace DeepNestSharp.Domain.Models
 {
+  using System;
   using System.ComponentModel;
   using DeepNestLib;
   using DeepNestLib.NestProject;
@@ -103,11 +104,35 @@
     }
 
     /// <inheritdoc />
-    [Category("Genetic Algorithm")]
+    [Browsable(false)]
     public int MutationRate
     {
       get => svgNestConfig.MutationRate;
       set => SetProperty(nameof(MutationRate), () => svgNestConfig.MutationRate, v => svgNestConfig.MutationRate = v, value);
+    }
+
+    /// <inheritdoc />
+    [Browsable(false)]
+    public int MutationRateMin => this.svgNestConfig.MutationRateMin;
+
+    /// <inheritdoc />
+    [Browsable(false)]
+    public int MutationRateMax => this.svgNestConfig.MutationRateMax;
+
+    [Browsable(false)]
+    public double MutationRateMinAsPercent => MutationRateMin / 100D;
+
+    [Browsable(false)]
+    public double MutationRateMaxAsPercent => MutationRateMax / 100D;
+
+    [Description("Percentage chance that a gene will mutate during procreation. Set it too low and the nest could stagnate. Set it too high and fittest gene sequences may not get inherited.")]
+    /// <inheritdoc path="MutationRate">
+    [Category("Genetic Algorithm")]
+    [DisplayName("Mutation Rate")]
+    public double MutationRateAsPercent
+    {
+      get => svgNestConfig.MutationRate / 100D;
+      set => SetProperty(nameof(MutationRate), () => svgNestConfig.MutationRate, v => svgNestConfig.MutationRate = (int)v, Math.Round(value * 100D));
     }
 
     /// <inheritdoc />

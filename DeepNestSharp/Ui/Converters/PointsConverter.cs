@@ -1,6 +1,7 @@
 ﻿namespace DeepNestSharp.Ui.Converters
 {
   using System;
+  using System.Globalization;
   using System.Windows.Data;
   using System.Windows.Media;
   using DeepNestLib;
@@ -9,13 +10,13 @@
 
   public class PointsConverter : IValueConverter
   {
-    public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
       if (value is ObservablePoint obsPoint)
       {
         return new System.Windows.Point(obsPoint[0].X, obsPoint[0].Y);
       }
-      if (value is INfp item)
+      else if (value is INfp item)
       {
         var result = new PointCollection(item.Length);
         for (int i = 0; i < item.Length; i++)
@@ -39,7 +40,7 @@
       return Binding.DoNothing;
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
       if (value is INfp)
       {

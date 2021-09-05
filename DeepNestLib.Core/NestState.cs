@@ -43,12 +43,12 @@
     [Description("Average time per Nest Result since start of the run.")]
     [Category("Performance")]
     [DisplayName("Average Nest Time")]
-    public long AverageNestTime => nestCount == 0 ? 0 : totalPlacementTime / nestCount;
+    public long AverageNestTime => nestCount == 0 ? 0 : totalNestTime / nestCount;
 
     [Description("Average time per Nest Result since start of the run.")]
     [Category("Performance")]
     [DisplayName("Average Placement Time")]
-    public long AveragePlacementTime => nestCount == 0 ? 0 : totalNestTime / nestCount;
+    public long AveragePlacementTime => nestCount == 0 ? 0 : totalPlacementTime / nestCount;
 
     [Description("The number of times the external C++ Minkowski library has been called. " +
       "This should stabilise at the number of distinct parts in the nest times the number " +
@@ -133,8 +133,10 @@
     {
       Interlocked.Exchange(ref nestCount, 0);
       Interlocked.Exchange(ref totalNestTime, 0);
+      Interlocked.Exchange(ref totalPlacementTime, 0);
       Interlocked.Exchange(ref generations, 0);
       Interlocked.Exchange(ref population, 0);
+      Interlocked.Exchange(ref lastNestTime, 0);
       Interlocked.Exchange(ref lastPlacementTime, 0);
       Interlocked.Exchange(ref iterations, 0);
       Interlocked.Exchange(ref dllCallCounter, 0);
@@ -154,6 +156,7 @@
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Threads)));
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Iterations)));
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DllCallCounter)));
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ClipperCallCounter)));
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TopNestResults)));
     }
 

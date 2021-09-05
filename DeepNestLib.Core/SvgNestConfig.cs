@@ -10,8 +10,6 @@ namespace DeepNestLib
   {
     public const int PopulationMin = 50;
     public const int PopulationMax = 800;
-    public const int MutationRateMin = 1;
-    public const int MutationRateMax = 5000;
     public const int MultiplierMin = 1;
     public const int MultiplierMax = 100;
     public const int ParallelNestsMin = 1;
@@ -338,8 +336,16 @@ namespace DeepNestLib
       get
       {
         var result = (int)Properties.Settings.Default["MutationRate"];
-        if (result < MutationRateMin) return MutationRateMin;
-        if (result > MutationRateMax) return MutationRateMax;
+        if (result < MutationRateMin)
+        {
+          return MutationRateMin;
+        }
+
+        if (result > MutationRateMax)
+        {
+          return MutationRateMax;
+        }
+
         return result;
       }
 
@@ -350,6 +356,10 @@ namespace DeepNestLib
         Properties.Settings.Default.Upgrade();
       }
     }
+
+    public int MutationRateMin => 1;
+
+    public int MutationRateMax => 60;
 
     /// <inheritdoc />
     public int Multiplier

@@ -157,7 +157,7 @@
 
     internal static NFP CombinedPoints(IReadOnlyList<IPartPlacement> partPlacements)
     {
-      NFP allpoints = new NFP();
+      var allPoints = new List<SvgPoint>();
       for (var partIndex = 0; partIndex < partPlacements.Count; partIndex++)
       {
         var length = partPlacements[partIndex].Part.Points.Length;
@@ -165,14 +165,14 @@
         {
           var part = partPlacements[partIndex].Part.Points[pointIndex];
           var placement = partPlacements[partIndex];
-          allpoints.AddPoint(
+          allPoints.Add(
               new SvgPoint(
                part.X + placement.X,
                part.Y + placement.Y));
         }
       }
 
-      return allpoints;
+      return new NFP(allPoints);
     }
   }
 }

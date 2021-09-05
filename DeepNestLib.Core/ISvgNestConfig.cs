@@ -66,7 +66,14 @@
 
     bool UseMinkowskiCache { get; set; }
 
+    /// <summary>
+    /// Gets or sets the percentage chance that a gene will mutate during procreation. Set it too low and the nest could stagnate. Set it too high and fittest gene sequences may not get inherited.
+    /// </summary>
     int MutationRate { get; set; }
+
+    int MutationRateMin { get; }
+
+    int MutationRateMax { get; }
 
     bool OffsetTreePhase { get; set; }
 

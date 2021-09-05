@@ -100,7 +100,8 @@
         </GridView>
       </ListView.View>
     </ListView>
-    <Grid Grid.Column="1" Grid.Row="0" 
+    <Grid Grid.Column="1" 
+          Grid.Row="0" 
           Grid.RowSpan="4">
       <ScrollViewer VerticalScrollBarVisibility="Visible"
                     HorizontalScrollBarVisibility="Visible">
@@ -114,7 +115,34 @@
                ItemsSource="{Binding SelectedItem.UsedSheets, Converter={StaticResource DrawingContextConverter}}">
           <ListBox.ItemTemplate>
             <DataTemplate>
-              <userControls:ZoomPreview />
+              <Grid>
+                <Grid Margin="10,10"
+                      HorizontalAlignment="Left"
+                      VerticalAlignment="Top">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60" />
+                    <ColumnDefinition Width="80" />
+                  </Grid.ColumnDefinitions>
+                  <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                  </Grid.RowDefinitions>
+                  <TextBlock Grid.Column="0" Grid.Row="0" Text="Total" Margin="0,0,0,5" />
+                  <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding Fitness.Total, StringFormat={}{0:#,#.000}}" Margin="0,0,0,5" HorizontalAlignment="Right"/>
+                  <TextBlock Grid.Column="0" Grid.Row="1" Text="Sheets" />
+                  <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Fitness.Sheets, StringFormat={}{0:#,#.000}}" HorizontalAlignment="Right"/>
+                  <TextBlock Grid.Column="0" Grid.Row="2" Text="Bounds" />
+                  <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding Fitness.Bounds, StringFormat={}{0:#,#.000}}" HorizontalAlignment="Right"/>
+                  <TextBlock Grid.Column="0" Grid.Row="3" Text="Wasted" />
+                  <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding Fitness.MaterialWasted, StringFormat={}{0:#,#.000}}" HorizontalAlignment="Right"/>
+                  <TextBlock Grid.Column="0" Grid.Row="4" Text="Utilization" />
+                  <TextBlock Grid.Column="1" Grid.Row="4" Text="{Binding Fitness.MaterialUtilization, StringFormat={}{0:#,#.000}}" HorizontalAlignment="Right"/>
+                </Grid>
+                <userControls:ZoomPreview />
+              </Grid>
             </DataTemplate>
           </ListBox.ItemTemplate>
         </ListBox>

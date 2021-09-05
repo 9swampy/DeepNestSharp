@@ -77,6 +77,10 @@
 
     public bool UsePriority { get; set; } = false;
 
+    public int MutationRateMin => 1;
+
+    public int MutationRateMax => 60;
+
     public string ToJson()
     {
       return SvgNestConfigJsonConverter.ToJson(this);

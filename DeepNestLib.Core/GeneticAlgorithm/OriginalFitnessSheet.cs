@@ -20,13 +20,21 @@
 
     public double Evaluate()
     {
-      var result = 0d;
-      result += Bounds;
-      result += Sheets;
-      result += MaterialWasted;
-      result += MaterialUtilization;
+      return Total;
+    }
 
-      return result;
+    public double Total
+    {
+      get
+      {
+        var result = 0d;
+        result += Bounds;
+        result += Sheets;
+        result += MaterialWasted;
+        result += MaterialUtilization;
+
+        return result;
+      }
     }
 
     /// <summary>
