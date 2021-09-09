@@ -4,7 +4,6 @@ namespace DeepNestLib
 {
   using System;
   using DeepNestLib.NestProject;
-  using Properties = DeepNestLib.Core;
 
   public class SvgNestConfig : ISvgNestConfig
   {
@@ -61,14 +60,14 @@ namespace DeepNestLib
     {
       get
       {
-        return (bool)Properties.Settings.Default["ClipByHull"];
+        return (bool)Settings.Default["ClipByHull"];
       }
 
       set
       {
-        Properties.Settings.Default["ClipByHull"] = value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
+        Settings.Default["ClipByHull"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
       }
     }
 
@@ -77,14 +76,14 @@ namespace DeepNestLib
     {
       get
       {
-        return (double)Properties.Settings.Default["CurveTolerance"];
+        return (double)Settings.Default["CurveTolerance"];
       }
 
       set
       {
-        Properties.Settings.Default["CurveTolerance"] = value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
+        Settings.Default["CurveTolerance"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
       }
     }
 
@@ -93,14 +92,14 @@ namespace DeepNestLib
     {
       get
       {
-        return (bool)Properties.Settings.Default["DrawSimplification"];
+        return (bool)Settings.Default["DrawSimplification"];
       }
 
       set
       {
-        Properties.Settings.Default["DrawSimplification"] = value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
+        Settings.Default["DrawSimplification"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
       }
     }
 
@@ -109,14 +108,14 @@ namespace DeepNestLib
     {
       get
       {
-        return (bool)Properties.Settings.Default["ExportExecutions"];
+        return (bool)Settings.Default["ExportExecutions"];
       }
 
       set
       {
-        Properties.Settings.Default["ExportExecutions"] = value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
+        Settings.Default["ExportExecutions"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
       }
     }
 
@@ -125,14 +124,14 @@ namespace DeepNestLib
     {
       get
       {
-        return (string)Properties.Settings.Default["ExportExecutionPath"];
+        return (string)Settings.Default["ExportExecutionPath"];
       }
 
       set
       {
-        Properties.Settings.Default["ExportExecutionPath"] = value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
+        Settings.Default["ExportExecutionPath"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
       }
     }
 
@@ -140,14 +139,14 @@ namespace DeepNestLib
     {
       get
       {
-        return (string)Properties.Settings.Default["LastDebugFilePath"];
+        return (string)Settings.Default["LastDebugFilePath"];
       }
 
       set
       {
-        Properties.Settings.Default["LastDebugFilePath"] = value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
+        Settings.Default["LastDebugFilePath"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
       }
     }
 
@@ -155,14 +154,14 @@ namespace DeepNestLib
     {
       get
       {
-        return (string)Properties.Settings.Default["LastNestFilePath"];
+        return (string)Settings.Default["LastNestFilePath"];
       }
 
       set
       {
-        Properties.Settings.Default["LastNestFilePath"] = value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
+        Settings.Default["LastNestFilePath"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
       }
     }
 
@@ -171,14 +170,14 @@ namespace DeepNestLib
     {
       get
       {
-        return (int)Properties.Settings.Default["SaveAsFileTypeIndex"];
+        return (int)Settings.Default["SaveAsFileTypeIndex"];
       }
 
       set
       {
-        Properties.Settings.Default["SaveAsFileTypeIndex"] = value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
+        Settings.Default["SaveAsFileTypeIndex"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
       }
     }
 
@@ -187,14 +186,14 @@ namespace DeepNestLib
     {
       get
       {
-        return (int)Properties.Settings.Default["SheetWidth"];
+        return (int)Settings.Default["SheetWidth"];
       }
 
       set
       {
-        Properties.Settings.Default["SheetWidth"] = value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
+        Settings.Default["SheetWidth"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
       }
     }
 
@@ -203,14 +202,14 @@ namespace DeepNestLib
     {
       get
       {
-        return (int)Properties.Settings.Default["SheetHeight"];
+        return (int)Settings.Default["SheetHeight"];
       }
 
       set
       {
-        Properties.Settings.Default["SheetHeight"] = value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
+        Settings.Default["SheetHeight"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
       }
     }
 
@@ -219,14 +218,14 @@ namespace DeepNestLib
     {
       get
       {
-        return (int)Properties.Settings.Default["SheetQuantity"];
+        return (int)Settings.Default["SheetQuantity"];
       }
 
       set
       {
-        Properties.Settings.Default["SheetQuantity"] = value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
+        Settings.Default["SheetQuantity"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
       }
     }
 
@@ -235,14 +234,14 @@ namespace DeepNestLib
     {
       get
       {
-        return (PlacementTypeEnum)Properties.Settings.Default["PlacementType"];
+        return (PlacementTypeEnum)Settings.Default["PlacementType"];
       }
 
       set
       {
-        Properties.Settings.Default["PlacementType"] = (int)value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
+        Settings.Default["PlacementType"] = (int)value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
       }
     }
 
@@ -251,14 +250,14 @@ namespace DeepNestLib
     {
       get
       {
-        return (bool)Properties.Settings.Default["Simplify"];
+        return (bool)Settings.Default["Simplify"];
       }
 
       set
       {
-        Properties.Settings.Default["Simplify"] = value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
+        Settings.Default["Simplify"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
       }
     }
 
@@ -267,14 +266,14 @@ namespace DeepNestLib
     {
       get
       {
-        return (bool)Properties.Settings.Default["OffsetTreePhase"];
+        return (bool)Settings.Default["OffsetTreePhase"];
       }
 
       set
       {
-        Properties.Settings.Default["OffsetTreePhase"] = value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
+        Settings.Default["OffsetTreePhase"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
       }
     }
 
@@ -283,14 +282,14 @@ namespace DeepNestLib
     {
       get
       {
-        return (double)Properties.Settings.Default["Spacing"];
+        return (double)Settings.Default["Spacing"];
       }
 
       set
       {
-        Properties.Settings.Default["Spacing"] = value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
+        Settings.Default["Spacing"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
       }
     }
 
@@ -299,7 +298,7 @@ namespace DeepNestLib
     {
       get
       {
-        var result = (int)Properties.Settings.Default["PopulationSize"];
+        var result = (int)Settings.Default["PopulationSize"];
         if (result < PopulationMin) return PopulationMin;
         if (result > PopulationMax) return PopulationMax;
         return result;
@@ -307,9 +306,9 @@ namespace DeepNestLib
 
       set
       {
-        Properties.Settings.Default["PopulationSize"] = value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
+        Settings.Default["PopulationSize"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
       }
     }
 
@@ -318,15 +317,15 @@ namespace DeepNestLib
     {
       get
       {
-        var result = (int)Properties.Settings.Default["ProcreationTimeout"];
+        var result = (int)Settings.Default["ProcreationTimeout"];
         return result;
       }
 
       set
       {
-        Properties.Settings.Default["ProcreationTimeout"] = value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
+        Settings.Default["ProcreationTimeout"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
       }
     }
 
@@ -335,7 +334,7 @@ namespace DeepNestLib
     {
       get
       {
-        var result = (int)Properties.Settings.Default["MutationRate"];
+        var result = (int)Settings.Default["MutationRate"];
         if (result < MutationRateMin)
         {
           return MutationRateMin;
@@ -351,9 +350,9 @@ namespace DeepNestLib
 
       set
       {
-        Properties.Settings.Default["MutationRate"] = value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
+        Settings.Default["MutationRate"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
       }
     }
 
@@ -366,7 +365,7 @@ namespace DeepNestLib
     {
       get
       {
-        var result = (int)Properties.Settings.Default["Multiplier"];
+        var result = (int)Settings.Default["Multiplier"];
         if (result < MutationRateMin)
         {
           return MultiplierMin;
@@ -382,9 +381,9 @@ namespace DeepNestLib
 
       set
       {
-        Properties.Settings.Default["Multiplier"] = value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
+        Settings.Default["Multiplier"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
       }
     }
 
@@ -395,7 +394,7 @@ namespace DeepNestLib
       {
         try
         {
-          return (AnglesEnum)Properties.Settings.Default["StrictAngles"];
+          return (AnglesEnum)Settings.Default["StrictAngles"];
         }
         catch (System.Exception)
         {
@@ -405,9 +404,9 @@ namespace DeepNestLib
 
       set
       {
-        Properties.Settings.Default["StrictAngles"] = (int)value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
+        Settings.Default["StrictAngles"] = (int)value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
       }
     }
 
@@ -416,14 +415,14 @@ namespace DeepNestLib
     {
       get
       {
-        return (bool)Properties.Settings.Default["UseParallel"];
+        return (bool)Settings.Default["UseParallel"];
       }
 
       set
       {
-        Properties.Settings.Default["UseParallel"] = value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
+        Settings.Default["UseParallel"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
       }
     }
 
@@ -432,7 +431,7 @@ namespace DeepNestLib
     {
       get
       {
-        var result = (int)Properties.Settings.Default["ParallelNests"];
+        var result = (int)Settings.Default["ParallelNests"];
         if (result < ParallelNestsMin)
         {
           return ParallelNestsMin;
@@ -448,9 +447,9 @@ namespace DeepNestLib
 
       set
       {
-        Properties.Settings.Default["ParallelNests"] = value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
+        Settings.Default["ParallelNests"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
       }
     }
 
@@ -459,14 +458,14 @@ namespace DeepNestLib
     {
       get
       {
-        return (bool)Properties.Settings.Default["ShowPartPositions"];
+        return (bool)Settings.Default["ShowPartPositions"];
       }
 
       set
       {
-        Properties.Settings.Default["ShowPartPositions"] = value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
+        Settings.Default["ShowPartPositions"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
       }
     }
 
@@ -475,14 +474,14 @@ namespace DeepNestLib
     {
       get
       {
-        return (bool)Properties.Settings.Default["UseDllImport"];
+        return (bool)Settings.Default["UseDllImport"];
       }
 
       set
       {
-        Properties.Settings.Default["UseDllImport"] = value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
+        Settings.Default["UseDllImport"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
       }
     }
 
@@ -491,14 +490,14 @@ namespace DeepNestLib
     {
       get
       {
-        return (bool)Properties.Settings.Default["UseMinkowskiCache"];
+        return (bool)Settings.Default["UseMinkowskiCache"];
       }
 
       set
       {
-        Properties.Settings.Default["UseMinkowskiCache"] = value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
+        Settings.Default["UseMinkowskiCache"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
       }
     }
 
@@ -507,14 +506,14 @@ namespace DeepNestLib
     {
       get
       {
-        return (bool)Properties.Settings.Default["UsePriority"];
+        return (bool)Settings.Default["UsePriority"];
       }
 
       set
       {
-        Properties.Settings.Default["UsePriority"] = value;
-        Properties.Settings.Default.Save();
-        Properties.Settings.Default.Upgrade();
+        Settings.Default["UsePriority"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
       }
     }
 

@@ -54,11 +54,11 @@
 
     public INfp ToNfp()
     {
-      NFP result = null;
-      List<NFP> nfps = new List<NFP>();
+      NoFitPolygon result = null;
+      List<NoFitPolygon> nfps = new List<NoFitPolygon>();
       foreach (var item in this.Outers)
       {
-        var nn = new NFP();
+        var nn = new NoFitPolygon();
         nfps.Add(nn);
         foreach (var pitem in item.Points)
         {

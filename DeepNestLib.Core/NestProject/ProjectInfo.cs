@@ -132,7 +132,7 @@ namespace DeepNestLib.NestProject
       options.Converters.Add(new WrappableListJsonConverter<ISheetLoadInfo, SheetLoadInfo>());
       options.Converters.Add(new SheetLoadInfoJsonConverter());
       options.WriteIndented = true;
-      //options.Converters.Add(new SvgNestConfigJsonConverter());
+      options.Converters.Add(new SvgNestConfigJsonConverter());
       return JsonSerializer.Serialize(this, options);
     }
 

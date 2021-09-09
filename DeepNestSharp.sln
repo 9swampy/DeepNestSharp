@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31512.422
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeepNestLib.CiTests", "DeepNestLib.CiTests\DeepNestLib.CiTests.csproj", "{F83321E2-3935-40FA-8108-9DC47FC9E240}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeepNestLib.CiTests", "DeepNestLib.CiTests\DeepNestLib.CiTests.csproj", "{F83321E2-3935-40FA-8108-9DC47FC9E240}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinkowskiWrapper.CiTests", "MinkowskiWapper.CiTests\MinkowskiWrapper.CiTests.csproj", "{CD24C16B-789D-4A99-9136-73178B0236FD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MinkowskiWrapper.CiTests", "MinkowskiWapper.CiTests\MinkowskiWrapper.CiTests.csproj", "{CD24C16B-789D-4A99-9136-73178B0236FD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MinkowskiDlls", "MinkowskiDlls", "{448485F0-CDD4-4AB8-8EFA-D2EAC39421B4}"
 	ProjectSection(SolutionItems) = preProject
@@ -23,6 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.github\workflows\build.yml = .github\workflows\build.yml
 		icon.ico = icon.ico
 		package.ps1 = package.ps1
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeepNestLib.Core", "DeepNestLib.Core\DeepNestLib.Core.csproj", "{F3C3BE5A-9DD0-4B8B-A53F-FF81B5220E34}"

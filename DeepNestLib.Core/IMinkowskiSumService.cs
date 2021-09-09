@@ -1,11 +1,13 @@
 ﻿namespace DeepNestLib
 {
+  using System.Collections.Generic;
+
   public interface IMinkowskiSumService
   {
-    NFP ClipperExecuteOuterNfp(SvgPoint[] a, SvgPoint[] b, MinkowskiSumPick minkowskiSumPick);
+    NoFitPolygon ClipperExecuteOuterNfp(SvgPoint[] pattern, SvgPoint[] path, MinkowskiSumPick minkowskiSumPick);
 
     INfp[] DllImportExecute(INfp a, INfp b, MinkowskiSumCleaning minkowskiSumCleaning);
 
-    INfp[] NewMinkowskiSum(INfp pattern, INfp path, WithChildren withChildren, bool takeOnlyBiggestArea);
+    INfp[] NewMinkowskiSum(IList<SvgPoint> pattern, INfp path, WithChildren withChildren, bool takeOnlyBiggestArea);
   }
 }

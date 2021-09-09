@@ -5,7 +5,7 @@
   public class ObservableFrame : ObservableNfp
   {
     public ObservableFrame(INfp nfp)
-      : base(new NFP(nfp, WithChildren.Excluded))
+      : base(new NoFitPolygon(nfp, WithChildren.Excluded))
     {
     }
   }

@@ -6,7 +6,7 @@
 
   public static class IntPointArrayExtensions
   {
-    public static NFP ToNestCoordinates(this IntPoint[] polygon, double scale)
+    public static NoFitPolygon ToNestCoordinates(this IntPoint[] polygon, double scale)
     {
       var clone = new List<SvgPoint>();
 
@@ -17,7 +17,7 @@
              polygon[i].Y / scale));
       }
 
-      return new NFP(clone);
+      return new NoFitPolygon(clone);
     }
   }
 }

@@ -391,7 +391,7 @@
     {
       var sheet = new Sheet(sheetNfpViewModel.NfpCandidateList?.Sheet, WithChildren.Included);
       sheet.Children.Add(sheetNfpItem);
-      var part = new NFP(sheetNfpViewModel.NfpCandidateList?.Part, WithChildren.Included);
+      var part = new NoFitPolygon(sheetNfpViewModel.NfpCandidateList?.Part, WithChildren.Included);
       this.ZoomDrawingContext.For(new ObservableNfp(sheet));
       this.ZoomDrawingContext.AppendChild(new ObservableFrame(part));
       this.ZoomDrawingContext.AppendChild(new ObservablePoint(part));

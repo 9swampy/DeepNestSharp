@@ -1,15 +1,19 @@
 ﻿namespace DeepNestLib.CiTests
 {
+  using DeepNestLib.PairMap;
   using FakeItEasy;
   using FluentAssertions;
+  using System;
   using Xunit;
 
   public class PmapWorkerProcessFixture : PmapWorkerFixtureSetup
   {
     private NfpPair processed;
+    private const double aSize = 11D;
+    private const double bSize = 11D;
 
     public PmapWorkerProcessFixture()
-      : base()
+      : base(aSize, bSize)
     {
       processed = new PmapWorker(null, A.Fake<IProgressDisplayer>(), false, A.Dummy<MinkowskiSum>(), A.Dummy<NestState>()).Process(pair1);
     }
@@ -53,19 +57,19 @@
     [Fact]
     public void ShouldSetNfpHeight()
     {
-      processed.Nfp.HeightCalculated.Should().Be(22);
+      processed.Nfp.HeightCalculated.Should().Be(aSize + bSize);
     }
 
     [Fact]
     public void ShouldSetNfpWidth()
     {
-      processed.Nfp.WidthCalculated.Should().Be(22);
+      processed.Nfp.WidthCalculated.Should().Be(aSize + bSize);
     }
 
     [Fact]
     public void ShouldSetNfpArea()
     {
-      processed.Nfp.Area.Should().Be(484);
+      processed.Nfp.Area.Should().Be(Math.Pow(aSize + bSize, 2));
     }
 
     [Fact]

@@ -157,7 +157,7 @@
         return null;
       }
 
-      List<NFP> f = new List<NFP>();
+      List<NoFitPolygon> f = new List<NoFitPolygon>();
       for (var i = 0; i < finalNfp.Count; i++)
       {
         f.Add(finalNfp[i].ToArray().ToNestCoordinates(clipperScale));
@@ -231,7 +231,7 @@
       bounds.X -= 0.5 * (bounds.Width - (bounds.Width / 1.1));
       bounds.Y -= 0.5 * (bounds.Height - (bounds.Height / 1.1));
 
-      var frame = new NFP(new List<INfp>() { a });
+      var frame = new NoFitPolygon(new List<INfp>() { a });
       ((IHiddenNfp)frame).Push(new SvgPoint(bounds.X, bounds.Y));
       ((IHiddenNfp)frame).Push(new SvgPoint(bounds.X + bounds.Width, bounds.Y));
       ((IHiddenNfp)frame).Push(new SvgPoint(bounds.X + bounds.Width, bounds.Y + bounds.Height));
@@ -270,7 +270,7 @@
         if (part.WidthCalculated >= envelope.WidthCalculated ||
             part.HeightCalculated >= envelope.HeightCalculated)
         {
-          return new NFP();
+          return new NoFitPolygon();
         }
       }
 
@@ -281,7 +281,7 @@
       }
       else
       {
-        frame = new NFP(envelope, WithChildren.Excluded);
+        frame = new NoFitPolygon(envelope, WithChildren.Excluded);
         frame.EnsureIsClosed();
       }
 
@@ -311,8 +311,8 @@
           }
           else
           {
-            NFP clipperNfp = minkowskiSumService.ClipperExecuteOuterNfp(a.Points, b.Points, MinkowskiSumPick.Smallest);
-            nfpList = new NFP[] { new NFP(clipperNfp.Points) };
+            NoFitPolygon clipperNfp = minkowskiSumService.ClipperExecuteOuterNfp(a.Points, b.Points, MinkowskiSumPick.Smallest);
+            nfpList = new NoFitPolygon[] { new NoFitPolygon(clipperNfp.Points) };
           }
 
           if (nfpList == null || nfpList.Length == 0)
@@ -388,7 +388,7 @@
       }
       else
       {
-        res = minkowskiSumService.NewMinkowskiSum(pattern, path, WithChildren.Included, takeOnlyBiggestArea: false);
+        res = minkowskiSumService.NewMinkowskiSum(pattern.Points, path, WithChildren.Included, takeOnlyBiggestArea: false);
         foreach (var nfp in res)
         {
           nfp.EnsureIsClosed();

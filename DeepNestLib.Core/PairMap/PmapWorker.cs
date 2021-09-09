@@ -1,4 +1,4 @@
-﻿namespace DeepNestLib
+﻿namespace DeepNestLib.PairMap
 {
   using System;
   using System.Collections.Generic;
@@ -39,7 +39,7 @@
       }
       else
       {
-        for (int i = 0; i < pairs.Count; i++)
+        for (var i = 0; i < pairs.Count; i++)
         {
           var item = pairs[i];
           ret[i] = this.Process(item);
@@ -53,16 +53,16 @@
 
     internal NfpPair Process(NfpPair pair)
     {
-      var a = pair.A.Rotate(pair.ARotation, WithChildren.Excluded);
-      var b = pair.B.Rotate(pair.BRotation, WithChildren.Excluded);
+      var pattern = pair.A.Rotate(pair.ARotation, WithChildren.Excluded);
+      var path = pair.B.Rotate(pair.BRotation, WithChildren.Excluded);
 
-      NFP clipperNfp;
+      NoFitPolygon clipperNfp;
       lock (nfpPairCacheSyncLock)
       {
-        if (!NfpPairCache.TryGetValue(a.Points, b.Points, pair.ARotation, pair.BRotation, pair.Asource, pair.Bsource, MinkowskiSumPick.Largest, out clipperNfp))
+        if (!NfpPairCache.TryGetValue(pattern.Points, path.Points, pair.ARotation, pair.BRotation, pair.Asource, pair.Bsource, MinkowskiSumPick.Largest, out clipperNfp))
         {
-          clipperNfp = minkoskiSumService.ClipperExecuteOuterNfp(a.Points, b.Points, MinkowskiSumPick.Largest);
-          NfpPairCache.Add(a.Points, b.Points, pair.ARotation, pair.BRotation, pair.Asource, pair.Bsource, MinkowskiSumPick.Largest, clipperNfp);
+          clipperNfp = minkoskiSumService.ClipperExecuteOuterNfp(pattern.Points, path.Points, MinkowskiSumPick.Largest);
+          NfpPairCache.Add(pattern.Points, path.Points, pair.ARotation, pair.BRotation, pair.Asource, pair.Bsource, MinkowskiSumPick.Largest, clipperNfp);
         }
       }
 

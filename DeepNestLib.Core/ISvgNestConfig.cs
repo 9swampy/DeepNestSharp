@@ -2,45 +2,8 @@
 {
   using DeepNestLib.NestProject;
 
-  public interface ITopNestResultsConfig
-  {
-    int PopulationSize { get; set; }
-  }
-
-  public interface IPlacementConfig
-  {
-    double ClipperScale { get; set; }
-
-    double CurveTolerance { get; set; }
-
-    bool ExportExecutions { get; set; }
-
-    string ExportExecutionPath { get; set; }
-
-    bool MergeLines { get; set; }
-
-    PlacementTypeEnum PlacementType { get; set; }
-
-    int Rotations { get; set; }
-
-    double Scale { get; set; }
-
-    double TimeRatio { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the C++ imported Minkowski implementation should be used.
-    /// </summary>
-    bool UseDllImport { get; set; }
-
-    /// <summary>
-    /// Gets a value that indicates whether Priority settings should be applied.
-    /// </summary>
-    bool UsePriority { get; set; }
-  }
-
   public interface ISvgNestConfig : ITopNestResultsConfig, IPlacementConfig
   {
-
     /// <summary>
     /// Gets or sets whether to clip the simplified polygon used in nesting by the hull.
     /// This often improves the fit to the original part but may slightly increase the number

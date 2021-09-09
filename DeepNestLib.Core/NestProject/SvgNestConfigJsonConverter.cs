@@ -39,7 +39,14 @@
 #if NCRUNCH
         JsonSerializer.Serialize<TestSvgNestConfig>(writer, (TestSvgNestConfig)value, options);
 #else
-        JsonSerializer.Serialize<SvgNestConfig>(writer, (SvgNestConfig)value, options);
+        if (value is IExportableConfig obs)
+        {
+          JsonSerializer.Serialize<SvgNestConfig>(writer, (SvgNestConfig)obs.ExportableInstance, options);
+        }
+        else
+        {
+          JsonSerializer.Serialize<SvgNestConfig>(writer, (SvgNestConfig)value, options);
+        }
 #endif
       }
     }

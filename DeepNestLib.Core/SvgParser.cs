@@ -183,7 +183,7 @@
     public override string SaveFileDialogFilter => "Svg files (*.svg)|*.svg";
 
     // return a polygon from the given SVG element in the form of an array of points
-    public NFP Polygonify(XElement element)
+    public NoFitPolygon Polygonify(XElement element)
     {
       List<SvgPoint> poly = new List<SvgPoint>();
       switch (element.Name.LocalName)
@@ -362,7 +362,7 @@
         poly.RemoveAt(0);
       }
 
-      return new NFP(poly);
+      return new NoFitPolygon(poly);
     }
   }
 }

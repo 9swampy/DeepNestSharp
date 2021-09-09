@@ -2,7 +2,7 @@
 {
   using System.Text.Json;
 
-  public class Sheet : NFP, ISheet
+  public class Sheet : NoFitPolygon, ISheet
   {
     public Sheet()
     {

@@ -84,7 +84,7 @@
     public void SheetJsonConverterCannotConvertNfp()
     {
       var sut = new SheetJsonConverter();
-      sut.CanConvert(typeof(NFP)).Should().BeFalse();
+      sut.CanConvert(typeof(NoFitPolygon)).Should().BeFalse();
     }
 
     [Fact]
@@ -98,7 +98,7 @@
     public void NfpJsonConverterCannotConvertNfp()
     {
       var sut = new NfpJsonConverter();
-      sut.CanConvert(typeof(NFP)).Should().BeFalse();
+      sut.CanConvert(typeof(NoFitPolygon)).Should().BeFalse();
     }
 
     [Fact]

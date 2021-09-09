@@ -71,8 +71,8 @@
         json = reader.ReadToEnd();
       }
 
-      NFP.FromJson(json).WidthCalculated.Should().BeApproximately(159.34, 0.01);
-      NFP.FromJson(json).HeightCalculated.Should().BeApproximately(156.23, 0.01);
+      NoFitPolygon.FromJson(json).WidthCalculated.Should().BeApproximately(159.34, 0.01);
+      NoFitPolygon.FromJson(json).HeightCalculated.Should().BeApproximately(156.23, 0.01);
 
       using (Stream stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Minkowski.MinkowskiSum2A.dnpoly"))
       using (StreamReader reader = new StreamReader(stream))

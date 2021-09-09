@@ -122,7 +122,7 @@
           Export(inputPartIndex, "In.json", this.ToJson(true));
         }
 
-        var processedPart = new NFP(inputPart, WithChildren.Included) as INfp;
+        var processedPart = new NoFitPolygon(inputPart, WithChildren.Included) as INfp;
         //var processedPart = inputPart;
         this.VerboseLog($"ProcessPart {inputPart.ToShortString()}.");
 
@@ -276,14 +276,14 @@
           double area;
           PartPlacement shiftvector = null;
 
-          NFP allpoints = SheetPlacement.CombinedPoints(Placements);
+          NoFitPolygon allpoints = SheetPlacement.CombinedPoints(Placements);
           PolygonBounds allbounds = null;
           PolygonBounds partbounds = null;
           if (this.Config.PlacementType == PlacementTypeEnum.Gravity || this.Config.PlacementType == PlacementTypeEnum.BoundingBox)
           {
             allbounds = GeometryUtil.GetPolygonBounds(allpoints);
 
-            NFP partpoints = new NFP();
+            NoFitPolygon partpoints = new NoFitPolygon();
             for (int m = 0; m < processedPart.Length; m++)
             {
               partpoints.AddPoint(new SvgPoint(processedPart[m].X, processedPart[m].Y));
@@ -319,7 +319,7 @@
               PolygonBounds rectbounds = null;
               if (this.Config.PlacementType == PlacementTypeEnum.Gravity || this.Config.PlacementType == PlacementTypeEnum.BoundingBox)
               {
-                NFP poly = new NFP();
+                NoFitPolygon poly = new NoFitPolygon();
                 poly.AddPoint(new SvgPoint(allbounds.X, allbounds.Y));
                 poly.AddPoint(new SvgPoint(allbounds.X + allbounds.Width, allbounds.Y));
                 poly.AddPoint(new SvgPoint(allbounds.X + allbounds.Width, allbounds.Y + allbounds.Height));
@@ -501,7 +501,7 @@
     {
       var options = new JsonSerializerOptions();
       options.Converters.Add(new ListJsonConverter<INfp>());
-      options.Converters.Add(new IListInterfaceConverterFactory(typeof(NFP)));
+      options.Converters.Add(new IListInterfaceConverterFactory(typeof(NoFitPolygon)));
       options.Converters.Add(new WindowUnkJsonConverter());
       options.Converters.Add(new SvgNestConfigJsonConverter());
       options.Converters.Add(new SheetPlacementJsonConverter());

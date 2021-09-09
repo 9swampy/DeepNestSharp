@@ -137,7 +137,7 @@
       bool doSimplifyDouglasPeucker = true;
       if (cache.TryGetValue(new PolygonSimplificationKey(polygon.Points, curveTolerance, doSimplifyRadialDist, doSimplifyDouglasPeucker), out resultSource))
       {
-        return new NFP(resultSource);
+        return new NoFitPolygon(resultSource);
       }
 
       INfp simple = null;
@@ -448,7 +448,7 @@
     {
       for (int i = 0; i < simple.Length; i++)
       {
-        var seg = new NFP();
+        var seg = new NoFitPolygon();
         seg.AddPoint(simple[i]);
         seg.AddPoint(simple[i + 1 == simple.Length ? 0 : i + 1]);
 
@@ -544,7 +544,7 @@
       var newpaths = new List<List<ClipperLib.IntPoint>>();
       co.Execute(ref newpaths, offset * Config.ClipperScale);
 
-      var result = new List<NFP>();
+      var result = new List<NoFitPolygon>();
       for (var i = 0; i < newpaths.Count; i++)
       {
         result.Add(ClipperToSvg(newpaths[i]));
@@ -656,7 +656,7 @@
       return cleaned;
     }
 
-    private static NFP ClipperToSvg(IList<IntPoint> polygon)
+    private static NoFitPolygon ClipperToSvg(IList<IntPoint> polygon)
     {
       List<SvgPoint> ret = new List<SvgPoint>();
 
@@ -665,7 +665,7 @@
         ret.Add(new SvgPoint(polygon[i].X / Config.ClipperScale, polygon[i].Y / Config.ClipperScale));
       }
 
-      return new NFP(ret);
+      return new NoFitPolygon(ret);
     }
 
     private int ToTree(PolygonTreeItem[] list, int idstart = 0)

@@ -14,7 +14,7 @@
     public void Add(MinkowskiKey key, INfp item, bool roundTripTest = false)
     {
       System.Diagnostics.Debug.Print($"{(roundTripTest ? "Add" : "Test add")} {key.GetHashCode()}");
-      base.Add(key, new NFP(item, WithChildren.Included));
+      base.Add(key, new NoFitPolygon(item, WithChildren.Included));
       if (roundTripTest)
       {
         try

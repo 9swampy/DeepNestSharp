@@ -12,7 +12,7 @@
     [Fact]
     public void ShouldCtorSimpleNestResult()
     {
-      var nfp = new NFP() { Points = new SvgPoint[] { new SvgPoint(0, 0), new SvgPoint(1, 0), new SvgPoint(1, 1), new SvgPoint(0, 1), } };
+      var nfp = new NoFitPolygon() { Points = new SvgPoint[] { new SvgPoint(0, 0), new SvgPoint(1, 0), new SvgPoint(1, 1), new SvgPoint(0, 1), } };
       var partPlacement = new PartPlacement(nfp) { X = 11, Y = 22 };
       var partPlacementList = new List<IPartPlacement>();
       partPlacementList.Add(partPlacement);
@@ -29,7 +29,7 @@
     [Fact]
     public void ShouldSerializeSimpleNestResult()
     {
-      var nfp = new NFP() { Points = new SvgPoint[] { new SvgPoint(0, 0), new SvgPoint(1, 0), new SvgPoint(1, 1), new SvgPoint(0, 1), } };
+      var nfp = new NoFitPolygon() { Points = new SvgPoint[] { new SvgPoint(0, 0), new SvgPoint(1, 0), new SvgPoint(1, 1), new SvgPoint(0, 1), } };
       var partPlacement = new PartPlacement(nfp) { X = 11, Y = 22 };
       var partPlacementList = new List<IPartPlacement>();
       partPlacementList.Add(partPlacement);
@@ -47,8 +47,8 @@
     [Fact]
     public void ShouldRoundTripSerializeSimpleNestResult()
     {
-      var nfp = new NFP() { Points = new SvgPoint[] { new SvgPoint(0, 0), new SvgPoint(1, 0), new SvgPoint(1, 1), new SvgPoint(0, 1), } };
-      var unplacedNfp = new NFP() { Points = new SvgPoint[] { new SvgPoint(0, 0), new SvgPoint(2, 0), new SvgPoint(2, 2), new SvgPoint(0, 2), } };
+      var nfp = new NoFitPolygon() { Points = new SvgPoint[] { new SvgPoint(0, 0), new SvgPoint(1, 0), new SvgPoint(1, 1), new SvgPoint(0, 1), } };
+      var unplacedNfp = new NoFitPolygon() { Points = new SvgPoint[] { new SvgPoint(0, 0), new SvgPoint(2, 0), new SvgPoint(2, 2), new SvgPoint(0, 2), } };
       var partPlacement = new PartPlacement(nfp) { X = 11, Y = 22 };
       var partPlacementList = new List<IPartPlacement>();
       partPlacementList.Add(partPlacement);

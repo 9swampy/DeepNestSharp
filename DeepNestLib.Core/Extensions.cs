@@ -55,10 +55,10 @@
     /// <param name="a"></param>
     /// <param name="b"></param>
     /// <returns></returns>
-    public static NFP[] Splice(this NFP[] p, int a, int b)
+    public static NoFitPolygon[] Splice(this NoFitPolygon[] p, int a, int b)
     {
       //return p.Skip(a + 1).Take(b).ToArray();
-      List<NFP> ret = new List<NFP>();
+      List<NoFitPolygon> ret = new List<NoFitPolygon>();
       for (int i = 0; i < p.Length; i++)
       {
         if (i >= a && i < (a + b))

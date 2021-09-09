@@ -18,7 +18,7 @@
     }
 
     // returns an interior NFP for the special case where A is a rectangle
-    public static NFP[] NoFitPolygonRectangle(NFP a, NFP b)
+    public static NoFitPolygon[] NoFitPolygonRectangle(NoFitPolygon a, NoFitPolygon b)
     {
       var minAx = a[0].X;
       var minAy = a[0].Y;
@@ -85,9 +85,9 @@
         return null;
       }
 
-      var pnts = new NFP[]
+      var pnts = new NoFitPolygon[]
       {
-                new NFP(new SvgPoint[]
+                new NoFitPolygon(new SvgPoint[]
                 {
                     new SvgPoint(minAx - minBx + b[0].X, minAy - minBy + b[0].Y),
                     new SvgPoint(maxAx - maxBx + b[0].X, minAy - minBy + b[0].Y),
@@ -149,7 +149,7 @@
       return new PolygonBounds(xmin, ymin, w, h);
     }
 
-    public static bool IsRectangle(NFP poly, double? tolerance = null)
+    public static bool IsRectangle(NoFitPolygon poly, double? tolerance = null)
     {
       var bb = GetPolygonBounds(poly);
       if (tolerance == null)
@@ -173,7 +173,7 @@
       return true;
     }
 
-    public static PolygonWithBounds RotatePolygon(NFP polygon, double angle)
+    public static PolygonWithBounds RotatePolygon(NoFitPolygon polygon, double angle)
     {
       List<SvgPoint> rotated = new List<SvgPoint>();
       angle = (double)(angle * Math.PI / 180.0);
@@ -212,7 +212,7 @@
     }
 
     // returns true if point already exists in the given nfp
-    public static bool InNfp(SvgPoint p, NFP[] nfp)
+    public static bool InNfp(SvgPoint p, NoFitPolygon[] nfp)
     {
       if (nfp == null || nfp.Length == 0)
       {
@@ -669,7 +669,7 @@
 
     // searches for an arrangement of A and B such that they do not overlap
     // if an NFP is given, only search for startpoints that have not already been traversed in the given NFP
-    private static SvgPoint SearchStartPoint(INfp a, INfp b, bool inside, NFP[] nfp = null)
+    private static SvgPoint SearchStartPoint(INfp a, INfp b, bool inside, NoFitPolygon[] nfp = null)
     {
       // clone arrays
       a = a.Slice(0);
@@ -1061,7 +1061,7 @@
     // given a static polygon A and a movable polygon B, compute a no fit polygon by orbiting B about A
     // if the inside flag is set, B is orbited inside of A rather than outside
     // if the searchEdges flag is set, all edges of A are explored for NFPs - multiple
-    public static NFP[] NoFitPolygon(NFP a, NFP b, bool inside, bool searchEdges)
+    public static NoFitPolygon[] NoFitPolygon(NoFitPolygon a, NoFitPolygon b, bool inside, bool searchEdges)
     {
       if (a == null || a.Length < 3 || b == null || b.Length < 3)
       {
@@ -1113,7 +1113,7 @@
         startpoint = SearchStartPoint(a, b, true);
       }
 
-      List<NFP> nfpList = new List<NFP>();
+      List<NoFitPolygon> nfpList = new List<NoFitPolygon>();
 
       while (startpoint != null)
       {
@@ -1124,7 +1124,7 @@
         List<TouchingItem> touching = null;
 
         NVector prevvector = null; // keep track of previous vector
-        NFP nfp = new NFP();
+        NoFitPolygon nfp = new NoFitPolygon();
         /*var NFP = [{
             x: B[0].x + B.Offsetx,
             y: B[0].y + B.Offsety

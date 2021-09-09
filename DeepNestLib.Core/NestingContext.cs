@@ -84,7 +84,7 @@
         this.progressDisplayer.InitialiseLoopProgress(ProgressBar.Primary, "Pre-processing (Polygon Clone). . .", Polygons.Count);
         foreach (var item in Polygons)
         {
-          NFP clone = item.CloneExact();
+          NoFitPolygon clone = item.CloneExact();
           lpoly.Add(clone);
           this.progressDisplayer.IncrementLoopProgress(ProgressBar.Primary);
         }
@@ -99,7 +99,7 @@
           {
             foreach (var citem in item.Children)
             {
-              clone.Children.Add(new NFP());
+              clone.Children.Add(new NoFitPolygon());
               var l = clone.Children.Last();
               l.Id = citem.Id;
               l.Source = citem.Source;
@@ -343,7 +343,7 @@
     {
       int xx = 0;
       int yy = 0;
-      NFP pl = new NFP();
+      NoFitPolygon pl = new NoFitPolygon();
 
       Polygons.Add(pl);
       pl.Source = src;

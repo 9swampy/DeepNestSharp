@@ -52,7 +52,7 @@
     private static SvgPoint[] SimplifyRadialDist(SvgPoint[] points, double? sqTolerance)
     {
       var prevPoint = points[0];
-      var newPoints = new NFP();
+      var newPoints = new NoFitPolygon();
       newPoints.AddPoint(prevPoint);
 
       SvgPoint point = null;
@@ -76,7 +76,7 @@
       return newPoints.Points;
     }
 
-    public static void SimplifyDPStep(SvgPoint[] points, int first, int last, double? sqTolerance, ref NFP simplified)
+    public static void SimplifyDPStep(SvgPoint[] points, int first, int last, double? sqTolerance, ref NoFitPolygon simplified)
     {
       var maxSqDist = sqTolerance;
       var index = -1;
@@ -126,7 +126,7 @@
     {
       var last = points.Length - 1;
 
-      var simplified = new NFP();
+      var simplified = new NoFitPolygon();
       simplified.AddPoint(points[0]);
       SimplifyDPStep(points, 0, last, sqTolerance, ref simplified);
       ((IHiddenNfp)simplified).Push(points[last]);
@@ -142,7 +142,7 @@
     /// <param name="doSimplifyRadialDist">If .f then the simplifyRadialDist algorithym is skipped.</param>
     /// <param name="doSimplifyDouglasPeucker">If .f then the simplifyDouglasPeucker algorithym is skipped.</param>
     /// <returns></returns>
-    public static NFP SimplifyPolygon(IEnumerable<SvgPoint> points, double? tolerance, bool doSimplifyRadialDist, bool doSimplifyDouglasPeucker)
+    public static NoFitPolygon SimplifyPolygon(IEnumerable<SvgPoint> points, double? tolerance, bool doSimplifyRadialDist, bool doSimplifyDouglasPeucker)
     {
       SvgPoint[] resultSource = points.DeepClone();
       if (resultSource.Length > 2)
@@ -160,7 +160,7 @@
         }
       }
 
-      var result = new NFP();
+      var result = new NoFitPolygon();
       foreach (var point in resultSource)
       {
         result.AddPoint(point.Clone());

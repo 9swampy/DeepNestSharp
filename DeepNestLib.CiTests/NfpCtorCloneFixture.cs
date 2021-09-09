@@ -11,8 +11,8 @@
     [Fact]
     public void ShouldRoundTripSerialize()
     {
-      var sut = new NFP();
-      NFP.FromJson(sut.ToJson()).Should().BeEquivalentTo(sut);
+      var sut = new NoFitPolygon();
+      NoFitPolygon.FromJson(sut.ToJson()).Should().BeEquivalentTo(sut);
     }
 
     [Fact]
@@ -20,9 +20,9 @@
     {
       var children = new List<INfp>();
       var random = new Random();
-      children.Add(new NFP() { Points = new SvgPoint[] { new SvgPoint(0, 0) { Exact = true, Marked = false }, new SvgPoint(random.Next(), random.Next()) { Exact = random.NextBool(), Marked = random.NextBool() } } });
+      children.Add(new NoFitPolygon() { Points = new SvgPoint[] { new SvgPoint(0, 0) { Exact = true, Marked = false }, new SvgPoint(random.Next(), random.Next()) { Exact = random.NextBool(), Marked = random.NextBool() } } });
       var points = new List<SvgPoint>() { new SvgPoint(1, 1) { Exact = random.NextBool(), Marked = random.NextBool() }, new SvgPoint(random.Next(), random.Next()) { Exact = random.NextBool(), Marked = random.NextBool() } };
-      var expected = new NFP(points);
+      var expected = new NoFitPolygon(points);
       expected.Children = children;
       expected.Id = random.Next();
       expected.IsPriority = random.NextBool();
@@ -39,7 +39,7 @@
       expected.Y = random.NextDouble();
       var expectedJson = expected.ToJson();
 
-      var actual = new NFP(expected, WithChildren.Included);
+      var actual = new NoFitPolygon(expected, WithChildren.Included);
       actual.Should().BeEquivalentTo(expected);
       actual.ToJson().Should().Be(expectedJson);
       actual.Sheet.Should().Be(expected.Sheet, "it's a reference to the same sheet object.");

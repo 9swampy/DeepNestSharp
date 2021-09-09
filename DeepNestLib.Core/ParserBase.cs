@@ -16,7 +16,7 @@
         sheetPlacement.PartPlacements.Select(
         o =>
         {
-          var result = new NFP(o.Part, WithChildren.Included);
+          var result = new NoFitPolygon(o.Part, WithChildren.Included);
           result.Sheet = sheetPlacement.Sheet;
           result.X = o.X;
           result.Y = o.Y;

@@ -7,6 +7,7 @@
   using System.Runtime.InteropServices;
   using System.Threading.Tasks;
   using DeepNestLib.Geometry;
+  using DeepNestLib.PairMap;
 
   public class Background
   {
@@ -36,19 +37,6 @@
       this.state = state;
       this.useDllImport = useDllImport;
       this.nfpHelper = new NfpHelper(minkowskiSumService, window);
-    }
-
-    public INfp GetPart(int source, INfp[] parts)
-    {
-      for (var k = 0; k < parts.Length; k++)
-      {
-        if (parts[k].Source == source)
-        {
-          return parts[k];
-        }
-      }
-
-      return null;
     }
 
     internal void BackgroundStart(IDataInfo data, ISvgNestConfig config)
@@ -140,31 +128,28 @@
     {
       // returned data only contains outer nfp, we have to account for any holes separately in the synchronous portion
       // this is because the c++ addon which can process interior nfps cannot run in the worker thread
-      var a = this.GetPart(processed.Asource, parts);
-      var b = this.GetPart(processed.Bsource, parts);
+      var holeProvider = parts.FirstOrDefault(p => p.Source == processed.Asource);
+      var partToFit = parts.FirstOrDefault(p => p.Source == processed.Bsource);
 
-      var aChildren = new List<INfp>();
+      var holes = new List<INfp>();
 
-      if (a.Children != null)
+      if (holeProvider.Children != null && holeProvider.Children.Count > 0)
       {
-        for (int j = 0; j < a.Children.Count; j++)
+        for (int j = 0; j < holeProvider.Children.Count; j++)
         {
-          aChildren.Add(a.Children[j].Rotate(processed.ARotation));
+          holes.Add(holeProvider.Children[j].Rotate(processed.ARotation));
         }
-      }
 
-      if (aChildren.Count > 0)
-      {
-        var bRotated = b.Rotate(processed.BRotation);
-        var bBounds = GeometryUtil.GetPolygonBounds(bRotated);
+        var partRotated = partToFit.Rotate(processed.BRotation);
+        var partBounds = GeometryUtil.GetPolygonBounds(partRotated);
         var cnfp = new List<INfp>();
 
-        for (int j = 0; j < aChildren.Count; j++)
+        for (int j = 0; j < holes.Count; j++)
         {
-          var cbounds = GeometryUtil.GetPolygonBounds(aChildren[j]);
-          if (cbounds.Width > bBounds.Width && cbounds.Height > bBounds.Height)
+          var holeBounds = GeometryUtil.GetPolygonBounds(holes[j]);
+          if (holeBounds.Width > partBounds.Width && holeBounds.Height > partBounds.Height)
           {
-            var n = nfpHelper.GetInnerNfp(aChildren[j], bRotated, MinkowskiCache.NoCache, clipperScale, this.useDllImport);
+            var n = nfpHelper.GetInnerNfp(holes[j], partRotated, MinkowskiCache.NoCache, clipperScale, this.useDllImport);
             if (n != null && n.Count() > 0)
             {
               cnfp.AddRange(n);

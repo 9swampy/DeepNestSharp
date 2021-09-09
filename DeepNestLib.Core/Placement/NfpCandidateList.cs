@@ -31,7 +31,7 @@
 
       Items = items;
       Sheet = new Sheet(sheet, WithChildren.Included);
-      Part = new NFP(part, WithChildren.Included);
+      Part = new NoFitPolygon(part, WithChildren.Included);
     }
 
     // inner NFP

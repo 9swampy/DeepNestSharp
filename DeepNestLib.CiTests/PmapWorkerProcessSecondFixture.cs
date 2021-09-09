@@ -1,5 +1,6 @@
 ﻿namespace DeepNestLib.CiTests
 {
+  using DeepNestLib.PairMap;
   using FakeItEasy;
   using FluentAssertions;
   using Xunit;
@@ -9,6 +10,7 @@
     private NfpPair processed;
 
     public PmapWorkerProcessSecondFixture()
+      : base(11D, 11D)
     {
       processed = new PmapWorker(null, A.Fake<IProgressDisplayer>(), false, A.Dummy<MinkowskiSum>(), A.Dummy<NestState>()).Process(pair2);
     }

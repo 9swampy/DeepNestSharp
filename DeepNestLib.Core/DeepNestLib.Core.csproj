@@ -6,6 +6,7 @@
     <FileVersion>0.1.0.0</FileVersion>
     <InformationalVersion>0.1.0-beta.4+193.Branch.release-0.1.Sha.eef0f0c93c1b12f2acc3c31b76b1f082de114f73</InformationalVersion>
     <Version>0.1.0-beta0004</Version>
+    <RootNamespace>$(MSBuildProjectName.Replace(" ", "_").Replace(".Core",""))</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Dxfs\_._" />

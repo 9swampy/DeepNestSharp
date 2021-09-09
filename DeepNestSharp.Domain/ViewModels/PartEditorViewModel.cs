@@ -43,7 +43,7 @@
       }
     }
 
-    public override string FileDialogFilter => NFP.FileDialogFilter;
+    public override string FileDialogFilter => NoFitPolygon.FileDialogFilter;
 
     public IRelayCommand<string> RotateCommand => rotateCommand ?? (rotateCommand = new RelayCommand<string>(OnRotate));
 
@@ -74,7 +74,7 @@
       }
       else
       {
-        var part = NFP.LoadFromFile(this.FilePath);
+        var part = NoFitPolygon.LoadFromFile(this.FilePath);
         this.Part = new ObservableNfp(part.Shift(-part?.MinX ?? 0, -part?.MinY ?? 0));
       }
     }

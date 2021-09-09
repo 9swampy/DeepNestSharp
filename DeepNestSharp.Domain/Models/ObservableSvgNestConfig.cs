@@ -5,7 +5,7 @@
   using DeepNestLib;
   using DeepNestLib.NestProject;
 
-  public class ObservableSvgNestConfig : ObservablePropertyObject, ISvgNestConfig
+  public class ObservableSvgNestConfig : ObservablePropertyObject, ISvgNestConfig, IExportableConfig
   {
     private readonly ISvgNestConfig svgNestConfig;
 
@@ -341,6 +341,8 @@
       get => svgNestConfig.UseDllImport;
       set => SetProperty(nameof(UseDllImport), () => svgNestConfig.UseDllImport, v => svgNestConfig.UseDllImport = v, value);
     }
+
+    ISvgNestConfig IExportableConfig.ExportableInstance => svgNestConfig;
 
     public string ToJson()
     {

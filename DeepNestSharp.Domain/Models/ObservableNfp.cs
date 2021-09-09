@@ -189,13 +189,13 @@
     }
 
     /// <inheritdoc/>
-    public NFP Clone()
+    public NoFitPolygon Clone()
     {
       return this.item.Clone();
     }
 
     /// <inheritdoc/>
-    public NFP CloneExact()
+    public NoFitPolygon CloneExact()
     {
       return this.item.CloneExact();
     }
@@ -213,7 +213,7 @@
     }
 
     /// <inheritdoc/>
-    public NFP GetHull()
+    public NoFitPolygon GetHull()
     {
       return this.item.GetHull();
     }

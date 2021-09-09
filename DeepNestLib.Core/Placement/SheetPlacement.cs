@@ -17,7 +17,7 @@
   {
     public const string FileDialogFilter = "DeepNest SheetPlacement (*.dnsp)|*.dnsp|Json (*.json)|*.json|All files (*.*)|*.*";
 
-    private NFP hull;
+    private NoFitPolygon hull;
     private double clipperScale;
 
     [JsonConstructor]
@@ -151,11 +151,11 @@
 
     internal static PolygonBounds CombinedRectBounds(IReadOnlyList<IPartPlacement> partPlacements)
     {
-      NFP allpoints = CombinedPoints(partPlacements);
+      NoFitPolygon allpoints = CombinedPoints(partPlacements);
       return GeometryUtil.GetPolygonBounds(allpoints);
     }
 
-    internal static NFP CombinedPoints(IReadOnlyList<IPartPlacement> partPlacements)
+    internal static NoFitPolygon CombinedPoints(IReadOnlyList<IPartPlacement> partPlacements)
     {
       var allPoints = new List<SvgPoint>();
       for (var partIndex = 0; partIndex < partPlacements.Count; partIndex++)
@@ -172,7 +172,7 @@
         }
       }
 
-      return new NFP(allPoints);
+      return new NoFitPolygon(allPoints);
     }
   }
 }

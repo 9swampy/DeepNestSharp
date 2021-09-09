@@ -1,4 +1,4 @@
-﻿namespace DeepNestLib
+﻿namespace DeepNestLib.PairMap
 {
   using System;
   using System.Collections;

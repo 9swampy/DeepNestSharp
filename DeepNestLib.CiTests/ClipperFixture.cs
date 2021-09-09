@@ -12,8 +12,8 @@
     public void ArrayHashCodeShouldMatchDeprecated()
     {
       var source = new SvgPoint[] { new SvgPoint(new Random().Next(), new Random().Next()), new SvgPoint(new Random().Next(), new Random().Next()), new SvgPoint(new Random().Next(), new Random().Next()), new SvgPoint(new Random().Next(), new Random().Next()) };
-      var original = new NFP(source);
-      var alternate = new NFP(source);
+      var original = new NoFitPolygon(source);
+      var alternate = new NoFitPolygon(source);
       var sut = new DeepNestClipper() as IDeprecatedClipper;
       sut.ScaleUpPathsOriginal(original, 1D).Should().BeEquivalentTo(DeepNestClipper.ScaleUpPaths(alternate.Points, 1D));
     }
@@ -34,7 +34,7 @@
         source[i] = new SvgPoint(new Random().Next(), new Random().Next());
       }
 
-      var original = new NFP(source);
+      var original = new NoFitPolygon(source);
       var sut = new DeepNestClipper() as IDeprecatedClipper;
       var sw = new Stopwatch();
       long deprecatedOriginal = 0;

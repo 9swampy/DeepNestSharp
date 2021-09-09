@@ -2,7 +2,7 @@
 {
   using System.Collections.Generic;
 
-  public class PolygonWithBounds : NFP
+  public class PolygonWithBounds : NoFitPolygon
   {
     public PolygonWithBounds(IEnumerable<SvgPoint> points)
       : base(points)

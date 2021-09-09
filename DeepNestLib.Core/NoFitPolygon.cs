@@ -10,23 +10,23 @@
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
 
-  public class NFP : PolygonBase, INfp, IHiddenNfp, IStringify
+  public class NoFitPolygon : PolygonBase, INfp, IHiddenNfp, IStringify
   {
     public const string FileDialogFilter = "AutoCad Drawing Exchange Format (*.dxf)|*.dxf|DeepNest Polygon (*.dnpoly)|*.dnpoly|All files (*.*)|*.*";
     private double rotation;
 
-    public NFP(IList<INfp> children)
+    public NoFitPolygon(IList<INfp> children)
         : this()
     {
       Children = children;
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="NFP"/> class.
+    /// Initializes a new instance of the <see cref="NoFitPolygon"/> class.
     /// Creates a true clone of the source; only Sheet is a common object reference.
     /// </summary>
     /// <param name="source">The original object to clone.</param>
-    public NFP(INfp source, WithChildren withChildren)
+    public NoFitPolygon(INfp source, WithChildren withChildren)
       : this(source.Points)
     {
       this.Id = source.Id;
@@ -46,17 +46,17 @@
       {
         foreach (var child in source.Children)
         {
-          this.Children.Add(new NFP(child, withChildren));
+          this.Children.Add(new NoFitPolygon(child, withChildren));
         }
       }
     }
 
-    public NFP()
+    public NoFitPolygon()
       : base(new SvgPoint[0])
     {
     }
 
-    public NFP(IEnumerable<SvgPoint> points)
+    public NoFitPolygon(IEnumerable<SvgPoint> points)
       : base(points.DeepClone())
     {
     }
@@ -280,18 +280,18 @@
     }
 
     /// <summary>
-    /// Creates a new <see cref="NFP"/> from the json supplied.
+    /// Creates a new <see cref="NoFitPolygon"/> from the json supplied.
     /// </summary>
     /// <param name="json">Serialised representation of the NFP to create.</param>
-    /// <returns>New <see cref="NFP"/>.</returns>
-    public static NFP FromJson(string json)
+    /// <returns>New <see cref="NoFitPolygon"/>.</returns>
+    public static NoFitPolygon FromJson(string json)
     {
       var options = new JsonSerializerOptions();
       options.Converters.Add(new NfpJsonConverter());
-      return JsonSerializer.Deserialize<NFP>(json, options);
+      return JsonSerializer.Deserialize<NoFitPolygon>(json, options);
     }
 
-    public static NFP LoadFromFile(string fileName)
+    public static NoFitPolygon LoadFromFile(string fileName)
     {
       using (StreamReader inputFile = new StreamReader(fileName))
       {
@@ -353,7 +353,7 @@
     /// <inheritdoc />
     public INfp Slice(int v)
     {
-      var ret = new NFP();
+      var ret = new NoFitPolygon();
       List<SvgPoint> pp = new List<SvgPoint>();
       for (int i = v; i < this.Length; i++)
       {
@@ -380,13 +380,13 @@
     /// <inheritdoc />
     public string ToShortString()
     {
-      return $"{this.GetType().Name}: i:{this.Id};s:{this.Source};r:{this.Rotation}°@{this.X:0.###},{this.Y:0.###}";
+      return $"{(this.GetType().Name == "NoFitPolygon" ? "NFP" : this.GetType().Name)}: i:{this.Id};s:{this.Source};r:{this.Rotation}°@{this.X:0.###},{this.Y:0.###}";
     }
 
     /// <inheritdoc />
-    public NFP Clone()
+    public NoFitPolygon Clone()
     {
-      NFP result = new NFP();
+      NoFitPolygon result = new NoFitPolygon();
       result.Id = this.Id;
       result.Source = this.Source;
       result.Rotation = this.Rotation;
@@ -413,7 +413,7 @@
     /// <inheritdoc />
     public INfp CloneTop()
     {
-      var newp = new NFP();
+      var newp = new NoFitPolygon();
       for (var i = 0; i < this.Length; i++)
       {
         newp.AddPoint(new SvgPoint(
@@ -425,9 +425,9 @@
     }
 
     /// <inheritdoc />
-    public NFP CloneExact()
+    public NoFitPolygon CloneExact()
     {
-      NFP clone = new NFP();
+      NoFitPolygon clone = new NoFitPolygon();
       clone.Id = this.Id;
       clone.Source = this.Source;
       clone.IsPriority = this.IsPriority;
@@ -438,7 +438,7 @@
       {
         foreach (var citem in this.Children)
         {
-          clone.Children.Add(new NFP());
+          clone.Children.Add(new NoFitPolygon());
           var l = clone.Children.Last();
           l.Id = citem.Id;
           l.Source = citem.Source;
@@ -464,7 +464,7 @@
         pp.Add(new SvgPoint(x1, y1));
       }
 
-      NFP rotated = this.Clone();
+      NoFitPolygon rotated = this.Clone();
       rotated.Rotation = 0;
       rotated.ReplacePoints(pp);
 
@@ -497,7 +497,7 @@
       }
       else
       {
-        newtree = new NFP();
+        newtree = new NoFitPolygon();
       }
 
       foreach (var t in this.Points)
@@ -524,7 +524,7 @@
     }
 
     /// <inheritdoc />
-    public NFP GetHull()
+    public NoFitPolygon GetHull()
     {
       // convert to hulljs format
       /*var hull = new ConvexHullGrahamScan();
@@ -542,7 +542,7 @@
       var hullpoints = D3.PolygonHull(points);
       if (hullpoints == null)
       {
-        return new NFP(this.Points);
+        return new NoFitPolygon(this.Points);
       }
       else
       {
@@ -552,7 +552,7 @@
           svgPoints[i] = new SvgPoint(hullpoints[i][0], hullpoints[i][1]);
         }
 
-        return new NFP(svgPoints);
+        return new NoFitPolygon(svgPoints);
       }
     }
 
@@ -602,7 +602,7 @@
     /// <inheritdoc />
     public INfp Shift(double x, double y)
     {
-      NFP shifted = new NFP();
+      NoFitPolygon shifted = new NoFitPolygon();
       shifted.Id = this.Id;
       shifted.Name = this.Name;
       shifted.PlacementOrder = this.PlacementOrder;

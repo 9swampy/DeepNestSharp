@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DeepNestLib.Core {
+namespace DeepNestLib {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

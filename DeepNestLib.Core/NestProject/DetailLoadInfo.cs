@@ -2,16 +2,19 @@
 {
   using System.IO;
   using System.Text.Json;
+  using System.Text.Json.Serialization;
   using DeepNestLib.IO;
 
   public class DetailLoadInfo : Saveable, IDetailLoadInfo
   {
+    [JsonIgnore]
     public string Name => new FileInfo(Path).Name;
 
     public string Path { get; set; }
 
     public int Quantity { get; set; } = 1;
 
+    [JsonIgnore]
     public bool IsExists => new FileInfo(this.Path).Exists;
 
     public bool IsIncluded { get; set; } = true;

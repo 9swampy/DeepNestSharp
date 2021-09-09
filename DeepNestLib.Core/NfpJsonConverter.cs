@@ -25,12 +25,12 @@
     {
       public override INfp Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
       {
-        return JsonSerializer.Deserialize<NFP>(ref reader, options);
+        return JsonSerializer.Deserialize<NoFitPolygon>(ref reader, options);
       }
 
       public override void Write(Utf8JsonWriter writer, INfp value, JsonSerializerOptions options)
       {
-        JsonSerializer.Serialize<NFP>(writer, (NFP)value, options);
+        JsonSerializer.Serialize<NoFitPolygon>(writer, (NoFitPolygon)value, options);
       }
     }
   }

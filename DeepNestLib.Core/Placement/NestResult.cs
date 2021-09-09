@@ -155,7 +155,7 @@
     public static NestResult FromJson(string json)
     {
       var options = new JsonSerializerOptions();
-      options.Converters.Add(new InterfaceConverterFactory(typeof(NFP), typeof(INfp)));
+      options.Converters.Add(new InterfaceConverterFactory(typeof(NoFitPolygon), typeof(INfp)));
       options.Converters.Add(new IListInterfaceConverterFactory(typeof(INfp)));
       options.Converters.Add(new WrappableListJsonConverter<ISheetPlacement, SheetPlacement>());
       options.Converters.Add(new SheetPlacementJsonConverter());

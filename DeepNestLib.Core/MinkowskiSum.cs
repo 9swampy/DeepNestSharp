@@ -58,7 +58,7 @@
 
     INfp[] IMinkowskiSumService.DllImportExecute(INfp path, INfp pattern, MinkowskiSumCleaning minkowskiSumCleaning)
     {
-      var b = new NFP(pattern, WithChildren.Included);
+      var b = new NoFitPolygon(pattern, WithChildren.Included);
       Dictionary<string, List<PointF>> dic1 = new Dictionary<string, List<PointF>>();
       Dictionary<string, List<double>> dic2 = new Dictionary<string, List<double>>();
       dic2.Add("A", new List<double>());
@@ -167,7 +167,7 @@
             }
           }
 
-          ret = new NFP();
+          ret = new NoFitPolygon();
           foreach (var item in apts)
           {
             ret.AddPoint(new SvgPoint(item.X, item.Y));
@@ -175,7 +175,7 @@
 
           foreach (var item in holesout)
           {
-            ret.Children.Add(new NFP());
+            ret.Children.Add(new NoFitPolygon());
             foreach (var hitem in item)
             {
               ret.Children.Last().AddPoint(new SvgPoint(hitem.X, hitem.Y));
@@ -214,7 +214,7 @@
         else
         {
           VerboseLogAction?.Invoke($"{path.ToShortString()}-{b.ToShortString()} {key} found in {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)}. . .");
-          ret = new NFP(cacheRetrieval, WithChildren.Included);
+          ret = new NoFitPolygon(cacheRetrieval, WithChildren.Included);
         }
       }
 
@@ -227,26 +227,26 @@
       return new INfp[] { ret };
     }
 
-    NFP IMinkowskiSumService.ClipperExecuteOuterNfp(SvgPoint[] a, SvgPoint[] b, MinkowskiSumPick minkowskiSumPick)
+    NoFitPolygon IMinkowskiSumService.ClipperExecuteOuterNfp(SvgPoint[] pattern, SvgPoint[] path, MinkowskiSumPick minkowskiSumPick)
     {
-      var result = ClipperExecute(a, b, minkowskiSumPick);
+      var result = ClipperExecute(pattern, path, minkowskiSumPick);
       result.EnsureIsClosed();
       return result;
     }
 
-    private NFP ClipperExecute(SvgPoint[] a, SvgPoint[] b, MinkowskiSumPick minkowskiSumPick)
+    private NoFitPolygon ClipperExecute(SvgPoint[] pattern, SvgPoint[] path, MinkowskiSumPick minkowskiSumPick)
     {
       var scaler = 10000000;
-      var ac = DeepNestClipper.ScaleUpPaths(a, scaler);
-      var bc = DeepNestClipper.ScaleUpPaths(b, scaler);
-      for (var i = 0; i < bc.Length; i++)
+      var patternClipper = DeepNestClipper.ScaleUpPaths(pattern, scaler);
+      var pathClipper = DeepNestClipper.ScaleUpPaths(path, scaler);
+      for (var i = 0; i < pathClipper.Length; i++)
       {
-        bc[i].X *= -1;
-        bc[i].Y *= -1;
+        pathClipper[i].X *= -1;
+        pathClipper[i].Y *= -1;
       }
 
-      var solution = ClipperLib.Clipper.MinkowskiSum(new List<IntPoint>(ac), new List<IntPoint>(bc), true);
-      NFP clipperNfp = null;
+      var solution = ClipperLib.Clipper.MinkowskiSum(new List<IntPoint>(patternClipper), new List<IntPoint>(pathClipper), true);
+      NoFitPolygon clipperNfp = null;
 
       double? largestArea = null;
       for (int i = 0; i < solution.Count(); i++)
@@ -264,8 +264,8 @@
 
       for (var i = 0; i < clipperNfp.Length; i++)
       {
-        clipperNfp[i].X += b[0].X;
-        clipperNfp[i].Y += b[0].Y;
+        clipperNfp[i].X += path[0].X;
+        clipperNfp[i].Y += path[0].Y;
       }
 
       //clipperNfp.EnsureIsClosed();
@@ -280,11 +280,11 @@
     /// <param name="withChildren"></param>
     /// <param name="takeOnlyBiggestArea"></param>
     /// <returns></returns>
-    INfp[] IMinkowskiSumService.NewMinkowskiSum(INfp pattern, INfp path, WithChildren withChildren, bool takeOnlyBiggestArea = true)
+    INfp[] IMinkowskiSumService.NewMinkowskiSum(IList<SvgPoint> pattern, INfp path, WithChildren withChildren, bool takeOnlyBiggestArea)
     {
       State.IncrementClipperCallCounter();
       var scaler = 10000000;
-      var patternScaledUp = DeepNestClipper.ScaleUpPaths(pattern.Points, scaler);
+      var patternScaledUp = DeepNestClipper.ScaleUpPaths(pattern, scaler);
       List<List<IntPoint>> solution = null;
       if (withChildren == WithChildren.Included)
       {
@@ -321,7 +321,7 @@
         solution = Clipper.MinkowskiSum(new List<IntPoint>(patternScaledUp), new List<IntPoint>(pathScaledUp), true);
       }
 
-      NFP clipperNfp = null;
+      NoFitPolygon clipperNfp = null;
 
       double? largestArea = null;
       int largestIndex = -1;
@@ -356,8 +356,8 @@
       {
         clipperNfp[i].X *= -1;
         clipperNfp[i].Y *= -1;
-        clipperNfp[i].X += pattern[0].X;
-        clipperNfp[i].Y += pattern[0].Y;
+        clipperNfp[i].X += pattern.First().X;
+        clipperNfp[i].Y += pattern.First().Y;
       }
 
       if (clipperNfp.Children != null)
@@ -368,8 +368,8 @@
           {
             nFP.Points[j].X *= -1;
             nFP.Points[j].Y *= -1;
-            nFP.Points[j].X += pattern[0].X;
-            nFP.Points[j].Y += pattern[0].Y;
+            nFP.Points[j].X += pattern.First().X;
+            nFP.Points[j].Y += pattern.First().Y;
           }
         }
       }

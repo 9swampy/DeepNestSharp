@@ -1,4 +1,4 @@
-﻿namespace DeepNestLib
+﻿namespace DeepNestLib.PairMap
 {
   public class NfpPair
   {
@@ -6,6 +6,11 @@
 
     public INfp B { get; internal set; }
 
+    /// <summary>
+    /// Gets the Nfp product of the pair.
+    /// The parent is the outer Nfp.
+    /// The children are the inner Nfps fitting one inside the holes in the other.
+    /// </summary>
     public INfp Nfp { get; internal set; }
 
     public double ARotation { get; internal set; }

@@ -37,7 +37,7 @@
     [Fact]
     public void GivenPropertiesPopulatedWhenSerializedThenShouldNotThrow()
     {
-      var part = new NFP(new List<SvgPoint>() { new SvgPoint(1, 2) });
+      var part = new NoFitPolygon(new List<SvgPoint>() { new SvgPoint(1, 2) });
       var parts = new INfp[] { part };
       var placements = new List<IPartPlacement>() { new PartPlacement(part) };
       var sheet = new Sheet();
@@ -94,7 +94,7 @@
     [Fact]
     public void GivenPropertiesPopulatedShouldRoundTripSerialize()
     {
-      var part = new NFP(new List<SvgPoint>() { new SvgPoint(1, 2) });
+      var part = new NoFitPolygon(new List<SvgPoint>() { new SvgPoint(1, 2) });
       var parts = new INfp[] { part };
       var placements = new List<IPartPlacement>() { new PartPlacement(part) };
       var sheet = new Sheet();

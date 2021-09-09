@@ -34,13 +34,13 @@
 
     double WidthCalculated { get; }
 
-    NFP Clone();
+    NoFitPolygon Clone();
 
     /// <summary>
     /// Clone but only copy exact points.
     /// </summary>
     /// <returns>A clone.</returns>
-    NFP CloneExact();
+    NoFitPolygon CloneExact();
 
     INfp CloneTree();
 
@@ -56,7 +56,7 @@
     /// <returns>A partial clone of the polygon.</returns>
     INfp ShiftToOrigin();
 
-    NFP GetHull();
+    NoFitPolygon GetHull();
 
     /// <summary>
     /// Checks if the points collection is closed, and closes it by adding a point if needed.

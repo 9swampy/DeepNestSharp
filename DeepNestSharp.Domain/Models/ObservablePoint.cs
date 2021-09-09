@@ -12,7 +12,7 @@
 
     private static INfp FirstPoint(INfp nfp)
     {
-      var result = new NFP(nfp, WithChildren.Excluded);
+      var result = new NoFitPolygon(nfp, WithChildren.Excluded);
       result.ReplacePoints(new SvgPoint[] { nfp.Points[0] });
       return result;
     }

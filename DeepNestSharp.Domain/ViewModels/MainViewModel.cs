@@ -235,7 +235,7 @@
 
     public async Task OnLoadPartAsync()
     {
-      var filePath = await fileIoService.GetOpenFilePathAsync(NFP.FileDialogFilter, SvgNestConfigViewModel.SvgNestConfig.LastNestFilePath).ConfigureAwait(false);
+      var filePath = await fileIoService.GetOpenFilePathAsync(NoFitPolygon.FileDialogFilter, SvgNestConfigViewModel.SvgNestConfig.LastNestFilePath).ConfigureAwait(false);
       LoadPart(filePath);
     }
 

@@ -23,7 +23,7 @@
     [Fact]
     public void GivenNullSheetsPassedInThenNullReturned()
     {
-      new PlacementWorker(A.Dummy<NfpHelper>(), null, new NFP[] { new NFP() }, new TestSvgNestConfig(), A.Dummy<Stopwatch>(), A.Fake<INestState>()).PlaceParts().Should().BeNull();
+      new PlacementWorker(A.Dummy<NfpHelper>(), null, new NoFitPolygon[] { new NoFitPolygon() }, new TestSvgNestConfig(), A.Dummy<Stopwatch>(), A.Fake<INestState>()).PlaceParts().Should().BeNull();
     }
 
     [Fact]

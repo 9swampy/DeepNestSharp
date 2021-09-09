@@ -14,7 +14,7 @@
         throw new ArgumentNullException("relativeResourcePath");
       }
 
-      var resourcePath = string.Format("{0}.{1}", Regex.Replace(assembly.ManifestModule.Name, @"\.(exe|dll)$", string.Empty, RegexOptions.IgnoreCase), relativeResourcePath);
+      var resourcePath = string.Format("{0}.{1}", Regex.Replace(assembly.ManifestModule.Name, @"\.(exe|Core.dll)$", string.Empty, RegexOptions.IgnoreCase), relativeResourcePath);
       var stream = assembly.GetManifestResourceStream(resourcePath);
       if (stream == null)
       {
