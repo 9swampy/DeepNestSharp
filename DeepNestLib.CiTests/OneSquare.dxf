@@ -1,0 +1,160 @@
+  0
+SECTION
+  2
+HEADER
+  9
+$ACADVER
+  1
+AC1009
+  9
+$EXTMIN
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  9
+$EXTMAX
+ 10
+1000.0
+ 20
+1000.0
+ 30
+0.0
+  9
+$FILLMODE
+ 70
+ 0
+  9
+$SPLFRAME
+ 70
+ 1
+  0
+ENDSEC
+  0
+SECTION
+  2
+TABLES
+  0
+TABLE
+  2
+LAYER
+ 70
+1
+  0
+LAYER
+  2
+0
+ 70
+     0
+ 62
+     7
+  6
+CONTINUOUS
+  0
+ENDTAB
+  0
+ENDSEC
+  0
+SECTION
+  2
+ENTITIES
+  0
+POLYLINE
+  8
+0
+ 62
+     0
+ 66
+     1
+ 10
+0
+ 20
+0
+ 30
+0.0
+ 70
+     1
+ 40
+0
+ 41
+0
+  0
+VERTEX
+  8
+0
+ 10
+0
+ 20
+11
+ 30
+0.0
+ 40
+0
+ 41
+0
+  0
+VERTEX
+  8
+0
+ 10
+11
+ 20
+11
+ 30
+0.0
+ 40
+0
+ 41
+0
+  0
+VERTEX
+  8
+0
+ 10
+11
+ 20
+0
+ 30
+0.0
+ 40
+0
+ 41
+0
+  0
+VERTEX
+  8
+0
+ 10
+0
+ 20
+0
+ 30
+0.0
+ 40
+0
+ 41
+0
+  0
+VERTEX
+  8
+0
+ 10
+0
+ 20
+11
+ 30
+0.0
+ 40
+0
+ 41
+0
+  0
+SEQEND
+ 8
+0
+  0
+ENDSEC
+  0
+EOF

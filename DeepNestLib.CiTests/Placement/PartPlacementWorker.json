@@ -1,0 +1,129 @@
+{
+  "Placements": [
+    {
+      "Id": 0,
+      "Rotation": 0,
+      "X": 0,
+      "Y": 0,
+      "Source": 0,
+      "Part": {
+        "Fitted": false,
+        "Sheet": null,
+        "Name": "",
+        "X": 0,
+        "Y": 0,
+        "Children": [],
+        "Id": 0,
+        "OffsetX": null,
+        "OffsetY": null,
+        "Source": -1,
+        "PlacementOrder": -1,
+        "Rotation": 0,
+        "Points": [
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 1,
+            "Y": 2
+          }
+        ],
+        "IsPriority": false,
+        "StrictAngle": 0
+      }
+    }
+  ],
+  "MergedLength": 0,
+  "Config": {
+    "Scale": 25,
+    "ClipperScale": 10000000,
+    "ExploreConcave": false,
+    "Rotations": 4,
+    "SheetSpacing": 0,
+    "UseHoles": false,
+    "Tolerance": 2,
+    "ToleranceSvg": 0.0050000000000000001,
+    "TimeRatio": 0.5,
+    "MergeLines": false,
+    "ClipByHull": true,
+    "CurveTolerance": 0.71999999999999997,
+    "SaveAsFileTypeIndex": 1,
+    "SheetWidth": 3000,
+    "SheetHeight": 1500,
+    "SheetQuantity": 10,
+    "PlacementType": 0,
+    "Simplify": false,
+    "OffsetTreePhase": true,
+    "Spacing": 10,
+    "PopulationSize": 50,
+    "MutationRate": 10,
+    "Multiplier": 1,
+    "DrawSimplification": true,
+    "StrictAngles": 0,
+    "UseParallel": false,
+    "ParallelNests": 10,
+    "ShowPartPositions": true
+  },
+  "Parts": [
+    {
+      "Fitted": false,
+      "Sheet": null,
+      "Name": "",
+      "X": 0,
+      "Y": 0,
+      "Children": [],
+      "Id": 0,
+      "OffsetX": null,
+      "OffsetY": null,
+      "Source": -1,
+      "PlacementOrder": -1,
+      "Rotation": 0,
+      "Points": [
+        {
+          "Exact": true,
+          "Marked": false,
+          "X": 1,
+          "Y": 2
+        }
+      ],
+      "IsPriority": false,
+      "StrictAngle": 0
+    }
+  ],
+  "Sheet": {
+    "Width": 0,
+    "Height": 0,
+    "Fitted": false,
+    "Sheet": null,
+    "Name": "",
+    "X": 0,
+    "Y": 0,
+    "Children": [],
+    "Id": 0,
+    "OffsetX": null,
+    "OffsetY": null,
+    "Source": -1,
+    "PlacementOrder": -1,
+    "Rotation": 0,
+    "Points": [],
+    "IsPriority": false,
+    "StrictAngle": 0
+  },
+  "NfpHelper": { "Window": { "nfpCache": {} } },
+  "ClipCache": {
+    "item1": {
+      "index": 1,
+      "nfpp": [
+        [
+          {
+            "X": 0,
+            "Y": 0
+          },
+          {
+            "X": 1,
+            "Y": 1
+          }
+        ]
+      ]
+    }
+  }
+}

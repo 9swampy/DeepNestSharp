@@ -1,0 +1,80 @@
+﻿[*.cs]
+
+# IDE0009: Member access should be qualified.
+dotnet_diagnostic.IDE0009.severity = suggestion
+# SA1101: Prefix local calls with this
+dotnet_diagnostic.SA1101.severity = suggestion
+
+# SA1600: Elements should be documented
+dotnet_diagnostic.SA1600.severity =suggestion
+
+# IDE0065: Misplaced using directive
+csharp_using_directive_placement =inside_namespace:error
+
+# SA1633: File should have header
+dotnet_diagnostic.SA1633.severity = none
+
+# IDE0003: Remove qualification
+dotnet_diagnostic.IDE0003.severity = none
+
+# IDE0008: Use explicit type
+csharp_style_var_when_type_is_apparent = false
+
+# IDE0008: Use explicit type
+csharp_style_var_for_built_in_types = true
+
+# IDE0008: Use explicit type
+dotnet_diagnostic.IDE0008.severity = suggestion
+
+# SA1512: Single-line comments should not be followed by blank line
+dotnet_diagnostic.SA1512.severity = suggestion
+
+# SA1611: Element parameters should be documented
+dotnet_diagnostic.SA1611.severity = suggestion
+dotnet_diagnostic.SX1309.severity=none
+dotnet_diagnostic.SX1309S.severity=none
+
+# IDE0021: Use block body for constructors
+csharp_style_expression_bodied_constructors = when_on_single_line
+
+# IDE0090: Use 'new(...)'
+csharp_style_implicit_object_creation_when_type_is_apparent = false
+
+# IDE0019: Use pattern matching
+dotnet_diagnostic.IDE0019.severity = suggestion
+
+# CS8601: Possible null reference assignment.
+dotnet_diagnostic.CS8601.severity = suggestion
+
+# CS1717: Assignment made to same variable
+dotnet_diagnostic.CS1717.severity = error
+
+# CS8618: Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+dotnet_diagnostic.CS8618.severity = suggestion
+dotnet_diagnostic.SA1005.severity=suggestion
+
+# IDE0065: Misplaced using directive
+dotnet_diagnostic.IDE0065.severity = error
+
+# SA1516: Elements should be separated by blank line
+dotnet_diagnostic.SA1516.severity = warning
+dotnet_diagnostic.CA1805.severity=suggestion
+
+# SA1602: Enumeration items should be documented
+dotnet_diagnostic.SA1602.severity = silent
+
+# SA1601: Partial elements should be documented
+dotnet_diagnostic.SA1601.severity = silent
+
+# SA1515: Single-line comment should be preceded by blank line
+dotnet_diagnostic.SA1515.severity = suggestion
+
+[*.{cs,vb}]
+dotnet_diagnostic.CA1707.severity=warning
+
+# Default severity for analyzer diagnostics with category 'StyleCop.CSharp.OrderingRules'
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.OrderingRules.severity = warning
+
+# Default severity for analyzer diagnostics with category 'Style'
+dotnet_analyzer_diagnostic.category-Style.severity = suggestion
+dotnet_diagnostic.CA1710.severity=suggestion

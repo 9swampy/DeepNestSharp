@@ -1,0 +1,48 @@
+﻿{
+  "Fitted": false,
+  "Sheet": null,
+  "Name": "Part",
+  "X": 0,
+  "Y": 0,
+  "Children": [],
+  "Id": 0,
+  "OffsetX": null,
+  "OffsetY": null,
+  "Source": 3,
+  "PlacementOrder": -1,
+  "Rotation": 0,
+  "Points": [
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": 0,
+      "Y": 2
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": 1,
+      "Y": 2
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": 1,
+      "Y": 0
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": 0,
+      "Y": 0
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": 0,
+      "Y": 2
+    }
+  ],
+  "IsPriority": false,
+  "StrictAngle": 0
+}

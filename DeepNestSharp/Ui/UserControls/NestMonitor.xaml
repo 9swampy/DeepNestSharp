@@ -1,0 +1,152 @@
+﻿<UserControl x:Class="DeepNestSharp.Ui.UserControls.NestMonitor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:userControls="clr-namespace:DeepNestSharp.Ui.UserControls" 
+             xmlns:interactivity="http://schemas.microsoft.com/expression/2010/interactivity" 
+             xmlns:converters="clr-namespace:DeepNestSharp.Ui.Converters" 
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+  <UserControl.Resources>
+    <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    <converters:DrawingContextConverter x:Key="DrawingContextConverter" />
+  </UserControl.Resources>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="Auto" MinWidth="250" />
+      <ColumnDefinition Width="*" MinWidth="250" />
+    </Grid.ColumnDefinitions>
+    <StackPanel Orientation="Vertical" Grid.Row="0">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="1*" />
+          <ColumnDefinition Width="1*" />
+          <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+        <Button Grid.Column="0" Content="Stop" Command="{Binding StopNestCommand}" />
+        <Button Grid.Column="1" Content="Restart" Command="{Binding RestartNestCommand}" />
+        <Button Grid.Column="2" Content="Continue" Command="{Binding ContinueNestCommand}" />
+      </Grid>
+      <xctk:PropertyGrid 
+        HorizontalAlignment="Stretch" 
+        VerticalAlignment="Stretch"
+        SelectedObject="{Binding State}"
+        AutoGenerateProperties="true" 
+        ShowHorizontalScrollBar="false"
+        ShowAdvancedOptions="False"
+        ShowSortOptions="False"
+        ShowTitle="False"
+        ShowSearchBox="False"
+        MaxWidth="500">
+        <xctk:PropertyGrid.EditorDefinitions>
+          <xctk:EditorTemplateDefinition TargetProperties="NfpPairCachePercentCached">
+            <xctk:EditorTemplateDefinition.EditingTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Value, StringFormat={}{0:P2}}" Margin="5,0" IsEnabled="False" />
+              </DataTemplate>
+            </xctk:EditorTemplateDefinition.EditingTemplate>
+          </xctk:EditorTemplateDefinition>
+        </xctk:PropertyGrid.EditorDefinitions>
+      </xctk:PropertyGrid>
+    </StackPanel>
+    <ProgressBar Grid.Row="1" Height="10" HorizontalAlignment="Stretch" Minimum="0" Maximum="1" Value="{Binding Progress, Mode=OneWay}" Visibility="{Binding IsRunning, Converter={StaticResource BoolToVis}}" />
+    <ProgressBar Grid.Row="1" Margin="0,5,0,0" Height="5" HorizontalAlignment="Stretch" Minimum="0" Maximum="1" Value="{Binding ProgressSecondary, Mode=OneWay}" Visibility="{Binding IsSecondaryProgressVisible, Converter={StaticResource BoolToVis}}" Foreground="LightSeaGreen" />
+    <TextBlock Grid.Row="2" Text="{Binding LastLogMessage}" HorizontalAlignment="Stretch" />
+    <ListView Grid.Row="3"
+              ItemsSource="{Binding TopNestResults}" 
+              SelectedItem="{Binding SelectedItem, Mode=TwoWay}" 
+              SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}">
+      <ListView.Resources>
+        <Style TargetType="ListViewItem">
+          <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
+      </ListView.Resources>
+      <interactivity:Interaction.Triggers>
+        <interactivity:EventTrigger EventName="MouseDoubleClick">
+          <interactivity:InvokeCommandAction Command="{Binding LoadSheetPlacementCommand}" CommandParameter="{Binding Path=SelectedItem}"/>
+        </interactivity:EventTrigger>
+      </interactivity:Interaction.Triggers>
+      <ListView.View>
+        <GridView>
+          <GridViewColumn Header="Fitness" Width="80" DisplayMemberBinding="{Binding Path=Fitness, StringFormat=0.0000, Mode=OneWay}" />
+          <GridViewColumn Header="Placed" Width="60" DisplayMemberBinding="{Binding Path=TotalPlacedCount, Mode=OneWay}">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding TotalPlacedCount}" HorizontalAlignment="Center" />
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Header="Sheets" Width="60" DisplayMemberBinding="{Binding Path=UsedSheets.Count, Mode=OneWay}" />
+          <GridViewColumn Header="Created" Width="80" DisplayMemberBinding="{Binding Path=CreatedAt, StringFormat=ddd HH:mm:ss, Mode=OneWay}"/>
+          <GridViewColumn Width="60" >
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <DockPanel >
+                  <Button Command="{Binding DataContext.LoadNestResultCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                          CommandParameter="{Binding }" 
+                          Content="Pop-Out" />
+                </DockPanel>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+        </GridView>
+      </ListView.View>
+    </ListView>
+    <Grid Grid.Column="1" 
+          Grid.Row="0" 
+          Grid.RowSpan="4">
+      <ScrollViewer VerticalScrollBarVisibility="Visible"
+                    HorizontalScrollBarVisibility="Visible">
+        <ListBox Name="Container"
+               HorizontalAlignment="Stretch" 
+               HorizontalContentAlignment="Stretch"
+               Margin="5,5,5,5"
+               Padding="0"
+               Grid.IsSharedSizeScope="True"
+               UseLayoutRounding="True"
+               ItemsSource="{Binding SelectedItem.UsedSheets, Converter={StaticResource DrawingContextConverter}}">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <Grid>
+                <Grid Margin="10,10"
+                      HorizontalAlignment="Left"
+                      VerticalAlignment="Top">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60" />
+                    <ColumnDefinition Width="80" />
+                  </Grid.ColumnDefinitions>
+                  <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                  </Grid.RowDefinitions>
+                  <TextBlock Grid.Column="0" Grid.Row="0" Text="Total" Margin="0,0,0,5" />
+                  <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding Fitness.Total, StringFormat={}{0:#,#.000}}" Margin="0,0,0,5" HorizontalAlignment="Right"/>
+                  <TextBlock Grid.Column="0" Grid.Row="1" Text="Sheets" />
+                  <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Fitness.Sheets, StringFormat={}{0:#,#.000}}" HorizontalAlignment="Right"/>
+                  <TextBlock Grid.Column="0" Grid.Row="2" Text="Bounds" />
+                  <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding Fitness.Bounds, StringFormat={}{0:#,#.000}}" HorizontalAlignment="Right"/>
+                  <TextBlock Grid.Column="0" Grid.Row="3" Text="Wasted" />
+                  <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding Fitness.MaterialWasted, StringFormat={}{0:#,#.000}}" HorizontalAlignment="Right"/>
+                  <TextBlock Grid.Column="0" Grid.Row="4" Text="Utilization" />
+                  <TextBlock Grid.Column="1" Grid.Row="4" Text="{Binding Fitness.MaterialUtilization, StringFormat={}{0:#,#.000}}" HorizontalAlignment="Right"/>
+                </Grid>
+                <userControls:ZoomPreview />
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </ScrollViewer>
+    </Grid>
+  </Grid>
+</UserControl>

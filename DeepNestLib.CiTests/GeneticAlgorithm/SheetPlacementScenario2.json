@@ -1,0 +1,7732 @@
+{
+  "SheetId": 0,
+  "SheetSource": 3,
+  "PlacementType": 1,
+  "Sheet": {
+    "Width": 0,
+    "Height": 0,
+    "Fitted": false,
+    "Sheet": null,
+    "Name": "",
+    "X": 0,
+    "Y": 0,
+    "Children": [],
+    "Id": 0,
+    "OffsetX": null,
+    "OffsetY": null,
+    "Source": 3,
+    "PlacementOrder": -1,
+    "Rotation": 0,
+    "Points": [
+      {
+        "Exact": true,
+        "Marked": false,
+        "X": 595,
+        "Y": 395
+      },
+      {
+        "Exact": true,
+        "Marked": false,
+        "X": 0,
+        "Y": 395
+      },
+      {
+        "Exact": true,
+        "Marked": false,
+        "X": 0,
+        "Y": 0
+      },
+      {
+        "Exact": true,
+        "Marked": false,
+        "X": 595,
+        "Y": 0
+      }
+    ],
+    "IsPriority": false,
+    "StrictAngle": 0
+  },
+  "PartPlacements": [
+    {
+      "Id": 14,
+      "Rotation": 270,
+      "X": -117.9382,
+      "Y": 160.7735,
+      "Source": 1,
+      "Part": {
+        "Fitted": false,
+        "Sheet": null,
+        "Name": "DeepNestPort\\dxfs\\_2.dxf",
+        "X": 0,
+        "Y": 0,
+        "Children": [
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 92.1827,
+                "Y": 124.0599
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 98.7634,
+                "Y": 127.2828
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 98.7394,
+                "Y": 147.6831
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 95.2314,
+                "Y": 149.7598
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 88.3936,
+                "Y": 150.5836
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 81.9379,
+                "Y": 148.0435
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 79.4735,
+                "Y": 145.5242
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 76.8704,
+                "Y": 139.039
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 76.9091,
+                "Y": 135.515
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 79.6542,
+                "Y": 129.0887
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 82.1735,
+                "Y": 126.6242
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 88.6587,
+                "Y": 124.0212
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          },
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 124.0599,
+                "Y": -92.1827
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 127.2828,
+                "Y": -98.7634
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 147.6831,
+                "Y": -98.7394
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 149.7598,
+                "Y": -95.2314
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 150.5836,
+                "Y": -88.3936
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 148.0435,
+                "Y": -81.9379
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 145.5242,
+                "Y": -79.4735
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 139.039,
+                "Y": -76.8704
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 135.515,
+                "Y": -76.9091
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 129.0887,
+                "Y": -79.6542
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 126.6242,
+                "Y": -82.1735
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 124.0212,
+                "Y": -88.6587
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          }
+        ],
+        "Id": 14,
+        "OffsetX": null,
+        "OffsetY": null,
+        "Source": 1,
+        "PlacementOrder": -1,
+        "Rotation": 270,
+        "Points": [
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 118.5583,
+            "Y": -96.837
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 124.525,
+            "Y": -107.6599
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 124.7194,
+            "Y": -154.728
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 124.7242,
+            "Y": -154.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 124.9287,
+            "Y": -156.3264
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 125.5281,
+            "Y": -157.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 126.4816,
+            "Y": -159.0161
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 127.7242,
+            "Y": -159.9696
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 129.1713,
+            "Y": -160.569
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 130.7242,
+            "Y": -160.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 144.1242,
+            "Y": -160.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 145.6772,
+            "Y": -160.569
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 147.1242,
+            "Y": -159.9696
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 148.3669,
+            "Y": -159.0161
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 149.3204,
+            "Y": -157.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 149.9198,
+            "Y": -156.3264
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 150.1242,
+            "Y": -154.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 150.7425,
+            "Y": -148.8812
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 150.8737,
+            "Y": -106.427
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 156.2218,
+            "Y": -96.6573
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 156.4371,
+            "Y": -94.6048
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 156.9103,
+            "Y": -89.5363
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 156.0555,
+            "Y": -84.518
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 153.9311,
+            "Y": -79.892
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 150.6817,
+            "Y": -75.9735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 146.5288,
+            "Y": -73.0294
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 141.7555,
+            "Y": -71.2606
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 136.687,
+            "Y": -70.7874
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 131.6688,
+            "Y": -71.6422
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 127.0428,
+            "Y": -73.7666
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 123.1242,
+            "Y": -77.016
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 120.1802,
+            "Y": -81.1689
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 118.4113,
+            "Y": -85.9422
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 117.9382,
+            "Y": -91.0107
+          }
+        ],
+        "IsPriority": false,
+        "StrictAngle": 0
+      }
+    },
+    {
+      "Id": 15,
+      "Rotation": 180,
+      "X": 160.7735,
+      "Y": 240.7497,
+      "Source": 1,
+      "Part": {
+        "Fitted": false,
+        "Sheet": null,
+        "Name": "DeepNestPort\\dxfs\\_2.dxf",
+        "X": 0,
+        "Y": 0,
+        "Children": [
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 92.1827,
+                "Y": 124.0599
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 98.7634,
+                "Y": 127.2828
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 98.7394,
+                "Y": 147.6831
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 95.2314,
+                "Y": 149.7598
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 88.3936,
+                "Y": 150.5836
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 81.9379,
+                "Y": 148.0435
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 79.4735,
+                "Y": 145.5242
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 76.8704,
+                "Y": 139.039
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 76.9091,
+                "Y": 135.515
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 79.6542,
+                "Y": 129.0887
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 82.1735,
+                "Y": 126.6242
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 88.6587,
+                "Y": 124.0212
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          },
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -92.1827,
+                "Y": -124.0599
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -98.7634,
+                "Y": -127.2828
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -98.7394,
+                "Y": -147.6831
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -95.2314,
+                "Y": -149.7598
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -88.3936,
+                "Y": -150.5836
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -81.9379,
+                "Y": -148.0435
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -79.4735,
+                "Y": -145.5242
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -76.8704,
+                "Y": -139.039
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -76.9091,
+                "Y": -135.515
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -79.6542,
+                "Y": -129.0887
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -82.1735,
+                "Y": -126.6242
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -88.6587,
+                "Y": -124.0212
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          }
+        ],
+        "Id": 15,
+        "OffsetX": null,
+        "OffsetY": null,
+        "Source": 1,
+        "PlacementOrder": -1,
+        "Rotation": 180,
+        "Points": [
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -96.837,
+            "Y": -118.5583
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -107.6599,
+            "Y": -124.525
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -154.728,
+            "Y": -124.7194
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -154.7735,
+            "Y": -124.7242
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -156.3264,
+            "Y": -124.9287
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -157.7735,
+            "Y": -125.5281
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -159.0161,
+            "Y": -126.4816
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -159.9696,
+            "Y": -127.7242
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -160.569,
+            "Y": -129.1713
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -160.7735,
+            "Y": -130.7242
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -160.7735,
+            "Y": -144.1242
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -160.569,
+            "Y": -145.6772
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -159.9696,
+            "Y": -147.1242
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -159.0161,
+            "Y": -148.3669
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -157.7735,
+            "Y": -149.3204
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -156.3264,
+            "Y": -149.9198
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -154.7735,
+            "Y": -150.1242
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -148.8812,
+            "Y": -150.7425
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -106.427,
+            "Y": -150.8737
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -96.6573,
+            "Y": -156.2218
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -94.6048,
+            "Y": -156.4371
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -89.5363,
+            "Y": -156.9103
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -84.518,
+            "Y": -156.0555
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -79.892,
+            "Y": -153.9311
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -75.9735,
+            "Y": -150.6817
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -73.0294,
+            "Y": -146.5288
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -71.2606,
+            "Y": -141.7555
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -70.7874,
+            "Y": -136.687
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -71.6422,
+            "Y": -131.6688
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -73.7666,
+            "Y": -127.0428
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -77.016,
+            "Y": -123.1242
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -81.1689,
+            "Y": -120.1802
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -85.9422,
+            "Y": -118.4113
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -91.0107,
+            "Y": -117.9382
+          }
+        ],
+        "IsPriority": false,
+        "StrictAngle": 0
+      }
+    },
+    {
+      "Id": 11,
+      "Rotation": 90,
+      "X": 230.9488,
+      "Y": -70.7874,
+      "Source": 1,
+      "Part": {
+        "Fitted": false,
+        "Sheet": null,
+        "Name": "DeepNestPort\\dxfs\\_2.dxf",
+        "X": 0,
+        "Y": 0,
+        "Children": [
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 92.1827,
+                "Y": 124.0599
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 98.7634,
+                "Y": 127.2828
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 98.7394,
+                "Y": 147.6831
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 95.2314,
+                "Y": 149.7598
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 88.3936,
+                "Y": 150.5836
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 81.9379,
+                "Y": 148.0435
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 79.4735,
+                "Y": 145.5242
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 76.8704,
+                "Y": 139.039
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 76.9091,
+                "Y": 135.515
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 79.6542,
+                "Y": 129.0887
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 82.1735,
+                "Y": 126.6242
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 88.6587,
+                "Y": 124.0212
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          },
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -124.0599,
+                "Y": 92.1827
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -127.2828,
+                "Y": 98.7634
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -147.6831,
+                "Y": 98.7394
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -149.7598,
+                "Y": 95.2314
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -150.5836,
+                "Y": 88.3936
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -148.0435,
+                "Y": 81.9379
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -145.5242,
+                "Y": 79.4735
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -139.039,
+                "Y": 76.8704
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -135.515,
+                "Y": 76.9091
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -129.0887,
+                "Y": 79.6542
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -126.6242,
+                "Y": 82.1735
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -124.0212,
+                "Y": 88.6587
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          }
+        ],
+        "Id": 11,
+        "OffsetX": null,
+        "OffsetY": null,
+        "Source": 1,
+        "PlacementOrder": -1,
+        "Rotation": 90,
+        "Points": [
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -118.5583,
+            "Y": 96.837
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -124.525,
+            "Y": 107.6599
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -124.7194,
+            "Y": 154.728
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -124.7242,
+            "Y": 154.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -124.9287,
+            "Y": 156.3264
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -125.5281,
+            "Y": 157.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -126.4816,
+            "Y": 159.0161
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -127.7242,
+            "Y": 159.9696
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -129.1713,
+            "Y": 160.569
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -130.7242,
+            "Y": 160.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -144.1242,
+            "Y": 160.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -145.6772,
+            "Y": 160.569
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -147.1242,
+            "Y": 159.9696
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -148.3669,
+            "Y": 159.0161
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -149.3204,
+            "Y": 157.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -149.9198,
+            "Y": 156.3264
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -150.1242,
+            "Y": 154.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -150.7425,
+            "Y": 148.8812
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -150.8737,
+            "Y": 106.427
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -156.2218,
+            "Y": 96.6573
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -156.4371,
+            "Y": 94.6048
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -156.9103,
+            "Y": 89.5363
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -156.0555,
+            "Y": 84.518
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -153.9311,
+            "Y": 79.892
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -150.6817,
+            "Y": 75.9735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -146.5288,
+            "Y": 73.0294
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -141.7555,
+            "Y": 71.2606
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -136.687,
+            "Y": 70.7874
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -131.6688,
+            "Y": 71.6422
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -127.0428,
+            "Y": 73.7666
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -123.1242,
+            "Y": 77.016
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -120.1802,
+            "Y": 81.1689
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -118.4113,
+            "Y": 85.9422
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -117.9382,
+            "Y": 91.0107
+          }
+        ],
+        "IsPriority": false,
+        "StrictAngle": 0
+      }
+    },
+    {
+      "Id": 0,
+      "Rotation": 90,
+      "X": 40.0816,
+      "Y": 132.4274,
+      "Source": 0,
+      "Part": {
+        "Fitted": false,
+        "Sheet": null,
+        "Name": "DeepNestPort\\dxfs\\_1.dxf",
+        "X": 0,
+        "Y": 0,
+        "Children": [
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 19.2601,
+                "Y": 10.2343
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.2375,
+                "Y": 17.6582
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 15.7873,
+                "Y": 23.7863
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 8.1991,
+                "Y": 24.7853
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 2.1271,
+                "Y": 20.1261
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 1.1281,
+                "Y": 12.5379
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.7873,
+                "Y": 6.4658
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 13.3755,
+                "Y": 5.4668
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          },
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -10.2343,
+                "Y": 19.2601
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -17.6582,
+                "Y": 20.2375
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -23.7863,
+                "Y": 15.7873
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -24.7853,
+                "Y": 8.1991
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -20.1261,
+                "Y": 2.1271
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -12.5379,
+                "Y": 1.1281
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -6.4658,
+                "Y": 5.7873
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -5.4668,
+                "Y": 13.3755
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          }
+        ],
+        "Id": 0,
+        "OffsetX": null,
+        "OffsetY": null,
+        "Source": 0,
+        "PlacementOrder": -1,
+        "Rotation": 90,
+        "Points": [
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -40.0816,
+            "Y": 33.7844
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -40.0816,
+            "Y": -16.2156
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 9.9184,
+            "Y": -16.2156
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 9.9184,
+            "Y": 33.7844
+          }
+        ],
+        "IsPriority": false,
+        "StrictAngle": 0
+      }
+    },
+    {
+      "Id": 1,
+      "Rotation": 0,
+      "X": 66.2156,
+      "Y": 132.73,
+      "Source": 0,
+      "Part": {
+        "Fitted": false,
+        "Sheet": null,
+        "Name": "DeepNestPort\\dxfs\\_1.dxf",
+        "X": 0,
+        "Y": 0,
+        "Children": [
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 19.2601,
+                "Y": 10.2343
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.2375,
+                "Y": 17.6582
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 15.7873,
+                "Y": 23.7863
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 8.1991,
+                "Y": 24.7853
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 2.1271,
+                "Y": 20.1261
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 1.1281,
+                "Y": 12.5379
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.7873,
+                "Y": 6.4658
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 13.3755,
+                "Y": 5.4668
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          },
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 19.2601,
+                "Y": 10.2343
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.2375,
+                "Y": 17.6582
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 15.7873,
+                "Y": 23.7863
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 8.1991,
+                "Y": 24.7853
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 2.1271,
+                "Y": 20.1261
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 1.1281,
+                "Y": 12.5379
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.7873,
+                "Y": 6.4658
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 13.3755,
+                "Y": 5.4668
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          }
+        ],
+        "Id": 1,
+        "OffsetX": null,
+        "OffsetY": null,
+        "Source": 0,
+        "PlacementOrder": -1,
+        "Rotation": 0,
+        "Points": [
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 33.7844,
+            "Y": 40.0816
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -16.2156,
+            "Y": 40.0816
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -16.2156,
+            "Y": -9.9184
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 33.7844,
+            "Y": -9.9184
+          }
+        ],
+        "IsPriority": false,
+        "StrictAngle": 0
+      }
+    },
+    {
+      "Id": 2,
+      "Rotation": 180,
+      "X": 33.7844,
+      "Y": 206.2934,
+      "Source": 0,
+      "Part": {
+        "Fitted": false,
+        "Sheet": null,
+        "Name": "DeepNestPort\\dxfs\\_1.dxf",
+        "X": 0,
+        "Y": 0,
+        "Children": [
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 19.2601,
+                "Y": 10.2343
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.2375,
+                "Y": 17.6582
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 15.7873,
+                "Y": 23.7863
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 8.1991,
+                "Y": 24.7853
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 2.1271,
+                "Y": 20.1261
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 1.1281,
+                "Y": 12.5379
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.7873,
+                "Y": 6.4658
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 13.3755,
+                "Y": 5.4668
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          },
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -19.2601,
+                "Y": -10.2343
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -20.2375,
+                "Y": -17.6582
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -15.7873,
+                "Y": -23.7863
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -8.1991,
+                "Y": -24.7853
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -2.1271,
+                "Y": -20.1261
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -1.1281,
+                "Y": -12.5379
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -5.7873,
+                "Y": -6.4658
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -13.3755,
+                "Y": -5.4668
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          }
+        ],
+        "Id": 2,
+        "OffsetX": null,
+        "OffsetY": null,
+        "Source": 0,
+        "PlacementOrder": -1,
+        "Rotation": 180,
+        "Points": [
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -33.7844,
+            "Y": -40.0816
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 16.2156,
+            "Y": -40.0816
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 16.2156,
+            "Y": 9.9184
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -33.7844,
+            "Y": 9.9184
+          }
+        ],
+        "IsPriority": false,
+        "StrictAngle": 0
+      }
+    },
+    {
+      "Id": 3,
+      "Rotation": 270,
+      "X": 59.9184,
+      "Y": 206.5959,
+      "Source": 0,
+      "Part": {
+        "Fitted": false,
+        "Sheet": null,
+        "Name": "DeepNestPort\\dxfs\\_1.dxf",
+        "X": 0,
+        "Y": 0,
+        "Children": [
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 19.2601,
+                "Y": 10.2343
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.2375,
+                "Y": 17.6582
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 15.7873,
+                "Y": 23.7863
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 8.1991,
+                "Y": 24.7853
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 2.1271,
+                "Y": 20.1261
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 1.1281,
+                "Y": 12.5379
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.7873,
+                "Y": 6.4658
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 13.3755,
+                "Y": 5.4668
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          },
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 10.2343,
+                "Y": -19.2601
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 17.6582,
+                "Y": -20.2375
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 23.7863,
+                "Y": -15.7873
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 24.7853,
+                "Y": -8.1991
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.1261,
+                "Y": -2.1271
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 12.5379,
+                "Y": -1.1281
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 6.4658,
+                "Y": -5.7873
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.4668,
+                "Y": -13.3755
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          }
+        ],
+        "Id": 3,
+        "OffsetX": null,
+        "OffsetY": null,
+        "Source": 0,
+        "PlacementOrder": -1,
+        "Rotation": 270,
+        "Points": [
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 40.0816,
+            "Y": -33.7844
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 40.0816,
+            "Y": 16.2156
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -9.9184,
+            "Y": 16.2156
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -9.9184,
+            "Y": -33.7844
+          }
+        ],
+        "IsPriority": false,
+        "StrictAngle": 0
+      }
+    },
+    {
+      "Id": 4,
+      "Rotation": 90,
+      "X": 40.0816,
+      "Y": 239.0271,
+      "Source": 0,
+      "Part": {
+        "Fitted": false,
+        "Sheet": null,
+        "Name": "DeepNestPort\\dxfs\\_1.dxf",
+        "X": 0,
+        "Y": 0,
+        "Children": [
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 19.2601,
+                "Y": 10.2343
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.2375,
+                "Y": 17.6582
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 15.7873,
+                "Y": 23.7863
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 8.1991,
+                "Y": 24.7853
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 2.1271,
+                "Y": 20.1261
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 1.1281,
+                "Y": 12.5379
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.7873,
+                "Y": 6.4658
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 13.3755,
+                "Y": 5.4668
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          },
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -10.2343,
+                "Y": 19.2601
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -17.6582,
+                "Y": 20.2375
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -23.7863,
+                "Y": 15.7873
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -24.7853,
+                "Y": 8.1991
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -20.1261,
+                "Y": 2.1271
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -12.5379,
+                "Y": 1.1281
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -6.4658,
+                "Y": 5.7873
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -5.4668,
+                "Y": 13.3755
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          }
+        ],
+        "Id": 4,
+        "OffsetX": null,
+        "OffsetY": null,
+        "Source": 0,
+        "PlacementOrder": -1,
+        "Rotation": 90,
+        "Points": [
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -40.0816,
+            "Y": 33.7844
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -40.0816,
+            "Y": -16.2156
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 9.9184,
+            "Y": -16.2156
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 9.9184,
+            "Y": 33.7844
+          }
+        ],
+        "IsPriority": false,
+        "StrictAngle": 0
+      }
+    },
+    {
+      "Id": 5,
+      "Rotation": 0,
+      "X": 66.2156,
+      "Y": 232.73,
+      "Source": 0,
+      "Part": {
+        "Fitted": false,
+        "Sheet": null,
+        "Name": "DeepNestPort\\dxfs\\_1.dxf",
+        "X": 0,
+        "Y": 0,
+        "Children": [
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 19.2601,
+                "Y": 10.2343
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.2375,
+                "Y": 17.6582
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 15.7873,
+                "Y": 23.7863
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 8.1991,
+                "Y": 24.7853
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 2.1271,
+                "Y": 20.1261
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 1.1281,
+                "Y": 12.5379
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.7873,
+                "Y": 6.4658
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 13.3755,
+                "Y": 5.4668
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          },
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 19.2601,
+                "Y": 10.2343
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.2375,
+                "Y": 17.6582
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 15.7873,
+                "Y": 23.7863
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 8.1991,
+                "Y": 24.7853
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 2.1271,
+                "Y": 20.1261
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 1.1281,
+                "Y": 12.5379
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.7873,
+                "Y": 6.4658
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 13.3755,
+                "Y": 5.4668
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          }
+        ],
+        "Id": 5,
+        "OffsetX": null,
+        "OffsetY": null,
+        "Source": 0,
+        "PlacementOrder": -1,
+        "Rotation": 0,
+        "Points": [
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 33.7844,
+            "Y": 40.0816
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -16.2156,
+            "Y": 40.0816
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -16.2156,
+            "Y": -9.9184
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 33.7844,
+            "Y": -9.9184
+          }
+        ],
+        "IsPriority": false,
+        "StrictAngle": 0
+      }
+    },
+    {
+      "Id": 6,
+      "Rotation": 270,
+      "X": 9.9184,
+      "Y": 306.5959,
+      "Source": 0,
+      "Part": {
+        "Fitted": false,
+        "Sheet": null,
+        "Name": "DeepNestPort\\dxfs\\_1.dxf",
+        "X": 0,
+        "Y": 0,
+        "Children": [
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 19.2601,
+                "Y": 10.2343
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.2375,
+                "Y": 17.6582
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 15.7873,
+                "Y": 23.7863
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 8.1991,
+                "Y": 24.7853
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 2.1271,
+                "Y": 20.1261
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 1.1281,
+                "Y": 12.5379
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.7873,
+                "Y": 6.4658
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 13.3755,
+                "Y": 5.4668
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          },
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 10.2343,
+                "Y": -19.2601
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 17.6582,
+                "Y": -20.2375
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 23.7863,
+                "Y": -15.7873
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 24.7853,
+                "Y": -8.1991
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.1261,
+                "Y": -2.1271
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 12.5379,
+                "Y": -1.1281
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 6.4658,
+                "Y": -5.7873
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.4668,
+                "Y": -13.3755
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          }
+        ],
+        "Id": 6,
+        "OffsetX": null,
+        "OffsetY": null,
+        "Source": 0,
+        "PlacementOrder": -1,
+        "Rotation": 270,
+        "Points": [
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 40.0816,
+            "Y": -33.7844
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 40.0816,
+            "Y": 16.2156
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -9.9184,
+            "Y": 16.2156
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -9.9184,
+            "Y": -33.7844
+          }
+        ],
+        "IsPriority": false,
+        "StrictAngle": 0
+      }
+    },
+    {
+      "Id": 7,
+      "Rotation": 0,
+      "X": 66.2156,
+      "Y": 282.73,
+      "Source": 0,
+      "Part": {
+        "Fitted": false,
+        "Sheet": null,
+        "Name": "DeepNestPort\\dxfs\\_1.dxf",
+        "X": 0,
+        "Y": 0,
+        "Children": [
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 19.2601,
+                "Y": 10.2343
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.2375,
+                "Y": 17.6582
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 15.7873,
+                "Y": 23.7863
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 8.1991,
+                "Y": 24.7853
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 2.1271,
+                "Y": 20.1261
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 1.1281,
+                "Y": 12.5379
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.7873,
+                "Y": 6.4658
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 13.3755,
+                "Y": 5.4668
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          },
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 19.2601,
+                "Y": 10.2343
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.2375,
+                "Y": 17.6582
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 15.7873,
+                "Y": 23.7863
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 8.1991,
+                "Y": 24.7853
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 2.1271,
+                "Y": 20.1261
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 1.1281,
+                "Y": 12.5379
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.7873,
+                "Y": 6.4658
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 13.3755,
+                "Y": 5.4668
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          }
+        ],
+        "Id": 7,
+        "OffsetX": null,
+        "OffsetY": null,
+        "Source": 0,
+        "PlacementOrder": -1,
+        "Rotation": 0,
+        "Points": [
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 33.7844,
+            "Y": 40.0816
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -16.2156,
+            "Y": 40.0816
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -16.2156,
+            "Y": -9.9184
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 33.7844,
+            "Y": -9.9184
+          }
+        ],
+        "IsPriority": false,
+        "StrictAngle": 0
+      }
+    },
+    {
+      "Id": 16,
+      "Rotation": 180,
+      "X": 111.3973,
+      "Y": 365.0742,
+      "Source": 2,
+      "Part": {
+        "Fitted": false,
+        "Sheet": null,
+        "Name": "DeepNestPort\\dxfs\\_3.dxf",
+        "X": 0,
+        "Y": 0,
+        "Children": [
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.6658,
+                "Y": 12.0614
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 19.9165,
+                "Y": 29.5484
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.12,
+                "Y": 29.4719
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 7.5261,
+                "Y": 37.822
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.12,
+                "Y": 35.3238
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.12,
+                "Y": 7.62
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.8522,
+                "Y": 5.8522
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 8.2671,
+                "Y": 5.2052
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          },
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -20.6658,
+                "Y": -12.0614
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -19.9165,
+                "Y": -29.5484
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -20.12,
+                "Y": -29.4719
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -7.5261,
+                "Y": -37.822
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -5.12,
+                "Y": -35.3238
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -5.12,
+                "Y": -7.62
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -5.8522,
+                "Y": -5.8522
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -8.2671,
+                "Y": -5.2052
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          }
+        ],
+        "Id": 16,
+        "OffsetX": null,
+        "OffsetY": null,
+        "Source": 2,
+        "PlacementOrder": -1,
+        "Rotation": 180,
+        "Points": [
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -9.5611,
+            "Y": -0.3756
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -12.0707,
+            "Y": -0.819
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -32.6529,
+            "Y": -11.8228
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -77.9445,
+            "Y": -12.4593
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -79.1729,
+            "Y": -12.6763
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -80.62,
+            "Y": -13.2757
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -81.8626,
+            "Y": -14.2292
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -82.8161,
+            "Y": -15.4719
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -83.4156,
+            "Y": -16.919
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -83.62,
+            "Y": -18.4719
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -83.62,
+            "Y": -24.4719
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -83.4156,
+            "Y": -26.0248
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -82.8162,
+            "Y": -27.4719
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -81.8627,
+            "Y": -28.7145
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -80.62,
+            "Y": -29.668
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -79.1729,
+            "Y": -30.2674
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -78.3662,
+            "Y": -30.4102
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -77.62,
+            "Y": -30.4719
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -33.3478,
+            "Y": -30.9487
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -11.3973,
+            "Y": -42.2627
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -9.2876,
+            "Y": -42.6361
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -7.3382,
+            "Y": -42.8185
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -5.408,
+            "Y": -42.4902
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -3.6286,
+            "Y": -41.6735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -2.1212,
+            "Y": -40.4241
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -0.9885,
+            "Y": -38.8271
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -0.3077,
+            "Y": -36.9913
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -0.12,
+            "Y": -35.3238
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -0.12,
+            "Y": -7.62
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -0.3756,
+            "Y": -5.6789
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -1.1248,
+            "Y": -3.87
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -2.3167,
+            "Y": -2.3167
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -3.87,
+            "Y": -1.1248
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -5.6789,
+            "Y": -0.3756
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -7.62,
+            "Y": -0.12
+          }
+        ],
+        "IsPriority": false,
+        "StrictAngle": 0
+      }
+    },
+    {
+      "Id": 17,
+      "Rotation": 270,
+      "X": 94.314,
+      "Y": 123.1861,
+      "Source": 2,
+      "Part": {
+        "Fitted": false,
+        "Sheet": null,
+        "Name": "DeepNestPort\\dxfs\\_3.dxf",
+        "X": 0,
+        "Y": 0,
+        "Children": [
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.6658,
+                "Y": 12.0614
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 19.9165,
+                "Y": 29.5484
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.12,
+                "Y": 29.4719
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 7.5261,
+                "Y": 37.822
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.12,
+                "Y": 35.3238
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.12,
+                "Y": 7.62
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.8522,
+                "Y": 5.8522
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 8.2671,
+                "Y": 5.2052
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          },
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 12.0614,
+                "Y": -20.6658
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 29.5484,
+                "Y": -19.9165
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 29.4719,
+                "Y": -20.12
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 37.822,
+                "Y": -7.5261
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 35.3238,
+                "Y": -5.12
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 7.62,
+                "Y": -5.12
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.8522,
+                "Y": -5.8522
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.2052,
+                "Y": -8.2671
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          }
+        ],
+        "Id": 17,
+        "OffsetX": null,
+        "OffsetY": null,
+        "Source": 2,
+        "PlacementOrder": -1,
+        "Rotation": 270,
+        "Points": [
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 0.3756,
+            "Y": -9.5611
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 0.819,
+            "Y": -12.0707
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 11.8228,
+            "Y": -32.6529
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 12.4593,
+            "Y": -77.9445
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 12.6763,
+            "Y": -79.1729
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 13.2757,
+            "Y": -80.62
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 14.2292,
+            "Y": -81.8626
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 15.4719,
+            "Y": -82.8161
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 16.919,
+            "Y": -83.4156
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 18.4719,
+            "Y": -83.62
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 24.4719,
+            "Y": -83.62
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 26.0248,
+            "Y": -83.4156
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 27.4719,
+            "Y": -82.8162
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 28.7145,
+            "Y": -81.8627
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 29.668,
+            "Y": -80.62
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 30.2674,
+            "Y": -79.1729
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 30.4102,
+            "Y": -78.3662
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 30.4719,
+            "Y": -77.62
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 30.9487,
+            "Y": -33.3478
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 42.2627,
+            "Y": -11.3973
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 42.6361,
+            "Y": -9.2876
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 42.8185,
+            "Y": -7.3382
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 42.4902,
+            "Y": -5.408
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 41.6735,
+            "Y": -3.6286
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 40.4241,
+            "Y": -2.1212
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 38.8271,
+            "Y": -0.9885
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 36.9913,
+            "Y": -0.3077
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 35.3238,
+            "Y": -0.12
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 7.62,
+            "Y": -0.12
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 5.6789,
+            "Y": -0.3756
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 3.87,
+            "Y": -1.1248
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 2.3167,
+            "Y": -2.3167
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 1.1248,
+            "Y": -3.87
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 0.3756,
+            "Y": -5.6789
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 0.12,
+            "Y": -7.62
+          }
+        ],
+        "IsPriority": false,
+        "StrictAngle": 0
+      }
+    },
+    {
+      "Id": 12,
+      "Rotation": 180,
+      "X": 160.7735,
+      "Y": 510.0562,
+      "Source": 1,
+      "Part": {
+        "Fitted": false,
+        "Sheet": null,
+        "Name": "DeepNestPort\\dxfs\\_2.dxf",
+        "X": 0,
+        "Y": 0,
+        "Children": [
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 92.1827,
+                "Y": 124.0599
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 98.7634,
+                "Y": 127.2828
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 98.7394,
+                "Y": 147.6831
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 95.2314,
+                "Y": 149.7598
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 88.3936,
+                "Y": 150.5836
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 81.9379,
+                "Y": 148.0435
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 79.4735,
+                "Y": 145.5242
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 76.8704,
+                "Y": 139.039
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 76.9091,
+                "Y": 135.515
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 79.6542,
+                "Y": 129.0887
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 82.1735,
+                "Y": 126.6242
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 88.6587,
+                "Y": 124.0212
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          },
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -92.1827,
+                "Y": -124.0599
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -98.7634,
+                "Y": -127.2828
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -98.7394,
+                "Y": -147.6831
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -95.2314,
+                "Y": -149.7598
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -88.3936,
+                "Y": -150.5836
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -81.9379,
+                "Y": -148.0435
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -79.4735,
+                "Y": -145.5242
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -76.8704,
+                "Y": -139.039
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -76.9091,
+                "Y": -135.515
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -79.6542,
+                "Y": -129.0887
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -82.1735,
+                "Y": -126.6242
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -88.6587,
+                "Y": -124.0212
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          }
+        ],
+        "Id": 12,
+        "OffsetX": null,
+        "OffsetY": null,
+        "Source": 1,
+        "PlacementOrder": -1,
+        "Rotation": 180,
+        "Points": [
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -96.837,
+            "Y": -118.5583
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -107.6599,
+            "Y": -124.525
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -154.728,
+            "Y": -124.7194
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -154.7735,
+            "Y": -124.7242
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -156.3264,
+            "Y": -124.9287
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -157.7735,
+            "Y": -125.5281
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -159.0161,
+            "Y": -126.4816
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -159.9696,
+            "Y": -127.7242
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -160.569,
+            "Y": -129.1713
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -160.7735,
+            "Y": -130.7242
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -160.7735,
+            "Y": -144.1242
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -160.569,
+            "Y": -145.6772
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -159.9696,
+            "Y": -147.1242
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -159.0161,
+            "Y": -148.3669
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -157.7735,
+            "Y": -149.3204
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -156.3264,
+            "Y": -149.9198
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -154.7735,
+            "Y": -150.1242
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -148.8812,
+            "Y": -150.7425
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -106.427,
+            "Y": -150.8737
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -96.6573,
+            "Y": -156.2218
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -94.6048,
+            "Y": -156.4371
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -89.5363,
+            "Y": -156.9103
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -84.518,
+            "Y": -156.0555
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -79.892,
+            "Y": -153.9311
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -75.9735,
+            "Y": -150.6817
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -73.0294,
+            "Y": -146.5288
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -71.2606,
+            "Y": -141.7555
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -70.7874,
+            "Y": -136.687
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -71.6422,
+            "Y": -131.6688
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -73.7666,
+            "Y": -127.0428
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -77.016,
+            "Y": -123.1242
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -81.1689,
+            "Y": -120.1802
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -85.9422,
+            "Y": -118.4113
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -91.0107,
+            "Y": -117.9382
+          }
+        ],
+        "IsPriority": false,
+        "StrictAngle": 0
+      }
+    },
+    {
+      "Id": 18,
+      "Rotation": 180,
+      "X": 183.62,
+      "Y": 297.2834,
+      "Source": 2,
+      "Part": {
+        "Fitted": false,
+        "Sheet": null,
+        "Name": "DeepNestPort\\dxfs\\_3.dxf",
+        "X": 0,
+        "Y": 0,
+        "Children": [
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.6658,
+                "Y": 12.0614
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 19.9165,
+                "Y": 29.5484
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.12,
+                "Y": 29.4719
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 7.5261,
+                "Y": 37.822
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.12,
+                "Y": 35.3238
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.12,
+                "Y": 7.62
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.8522,
+                "Y": 5.8522
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 8.2671,
+                "Y": 5.2052
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          },
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -20.6658,
+                "Y": -12.0614
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -19.9165,
+                "Y": -29.5484
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -20.12,
+                "Y": -29.4719
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -7.5261,
+                "Y": -37.822
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -5.12,
+                "Y": -35.3238
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -5.12,
+                "Y": -7.62
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -5.8522,
+                "Y": -5.8522
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -8.2671,
+                "Y": -5.2052
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          }
+        ],
+        "Id": 18,
+        "OffsetX": null,
+        "OffsetY": null,
+        "Source": 2,
+        "PlacementOrder": -1,
+        "Rotation": 180,
+        "Points": [
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -9.5611,
+            "Y": -0.3756
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -12.0707,
+            "Y": -0.819
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -32.6529,
+            "Y": -11.8228
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -77.9445,
+            "Y": -12.4593
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -79.1729,
+            "Y": -12.6763
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -80.62,
+            "Y": -13.2757
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -81.8626,
+            "Y": -14.2292
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -82.8161,
+            "Y": -15.4719
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -83.4156,
+            "Y": -16.919
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -83.62,
+            "Y": -18.4719
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -83.62,
+            "Y": -24.4719
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -83.4156,
+            "Y": -26.0248
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -82.8162,
+            "Y": -27.4719
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -81.8627,
+            "Y": -28.7145
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -80.62,
+            "Y": -29.668
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -79.1729,
+            "Y": -30.2674
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -78.3662,
+            "Y": -30.4102
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -77.62,
+            "Y": -30.4719
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -33.3478,
+            "Y": -30.9487
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -11.3973,
+            "Y": -42.2627
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -9.2876,
+            "Y": -42.6361
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -7.3382,
+            "Y": -42.8185
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -5.408,
+            "Y": -42.4902
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -3.6286,
+            "Y": -41.6735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -2.1212,
+            "Y": -40.4241
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -0.9885,
+            "Y": -38.8271
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -0.3077,
+            "Y": -36.9913
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -0.12,
+            "Y": -35.3238
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -0.12,
+            "Y": -7.62
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -0.3756,
+            "Y": -5.6789
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -1.1248,
+            "Y": -3.87
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -2.3167,
+            "Y": -2.3167
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -3.87,
+            "Y": -1.1248
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -5.6789,
+            "Y": -0.3756
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -7.62,
+            "Y": -0.12
+          }
+        ],
+        "IsPriority": false,
+        "StrictAngle": 0
+      }
+    },
+    {
+      "Id": 19,
+      "Rotation": 270,
+      "X": 99.4275,
+      "Y": 392.0281,
+      "Source": 2,
+      "Part": {
+        "Fitted": false,
+        "Sheet": null,
+        "Name": "DeepNestPort\\dxfs\\_3.dxf",
+        "X": 0,
+        "Y": 0,
+        "Children": [
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.6658,
+                "Y": 12.0614
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 19.9165,
+                "Y": 29.5484
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.12,
+                "Y": 29.4719
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 7.5261,
+                "Y": 37.822
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.12,
+                "Y": 35.3238
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.12,
+                "Y": 7.62
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.8522,
+                "Y": 5.8522
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 8.2671,
+                "Y": 5.2052
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          },
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 12.0614,
+                "Y": -20.6658
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 29.5484,
+                "Y": -19.9165
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 29.4719,
+                "Y": -20.12
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 37.822,
+                "Y": -7.5261
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 35.3238,
+                "Y": -5.12
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 7.62,
+                "Y": -5.12
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.8522,
+                "Y": -5.8522
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.2052,
+                "Y": -8.2671
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          }
+        ],
+        "Id": 19,
+        "OffsetX": null,
+        "OffsetY": null,
+        "Source": 2,
+        "PlacementOrder": -1,
+        "Rotation": 270,
+        "Points": [
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 0.3756,
+            "Y": -9.5611
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 0.819,
+            "Y": -12.0707
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 11.8228,
+            "Y": -32.6529
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 12.4593,
+            "Y": -77.9445
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 12.6763,
+            "Y": -79.1729
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 13.2757,
+            "Y": -80.62
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 14.2292,
+            "Y": -81.8626
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 15.4719,
+            "Y": -82.8161
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 16.919,
+            "Y": -83.4156
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 18.4719,
+            "Y": -83.62
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 24.4719,
+            "Y": -83.62
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 26.0248,
+            "Y": -83.4156
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 27.4719,
+            "Y": -82.8162
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 28.7145,
+            "Y": -81.8627
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 29.668,
+            "Y": -80.62
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 30.2674,
+            "Y": -79.1729
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 30.4102,
+            "Y": -78.3662
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 30.4719,
+            "Y": -77.62
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 30.9487,
+            "Y": -33.3478
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 42.2627,
+            "Y": -11.3973
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 42.6361,
+            "Y": -9.2876
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 42.8185,
+            "Y": -7.3382
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 42.4902,
+            "Y": -5.408
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 41.6735,
+            "Y": -3.6286
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 40.4241,
+            "Y": -2.1212
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 38.8271,
+            "Y": -0.9885
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 36.9913,
+            "Y": -0.3077
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 35.3238,
+            "Y": -0.12
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 7.62,
+            "Y": -0.12
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 5.6789,
+            "Y": -0.3756
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 3.87,
+            "Y": -1.1248
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 2.3167,
+            "Y": -2.3167
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 1.1248,
+            "Y": -3.87
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 0.3756,
+            "Y": -5.6789
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 0.12,
+            "Y": -7.62
+          }
+        ],
+        "IsPriority": false,
+        "StrictAngle": 0
+      }
+    },
+    {
+      "Id": 20,
+      "Rotation": 180,
+      "X": 183.62,
+      "Y": 153.7926,
+      "Source": 2,
+      "Part": {
+        "Fitted": false,
+        "Sheet": null,
+        "Name": "DeepNestPort\\dxfs\\_3.dxf",
+        "X": 0,
+        "Y": 0,
+        "Children": [
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.6658,
+                "Y": 12.0614
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 19.9165,
+                "Y": 29.5484
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.12,
+                "Y": 29.4719
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 7.5261,
+                "Y": 37.822
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.12,
+                "Y": 35.3238
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.12,
+                "Y": 7.62
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.8522,
+                "Y": 5.8522
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 8.2671,
+                "Y": 5.2052
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          },
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -20.6658,
+                "Y": -12.0614
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -19.9165,
+                "Y": -29.5484
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -20.12,
+                "Y": -29.4719
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -7.5261,
+                "Y": -37.822
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -5.12,
+                "Y": -35.3238
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -5.12,
+                "Y": -7.62
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -5.8522,
+                "Y": -5.8522
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -8.2671,
+                "Y": -5.2052
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          }
+        ],
+        "Id": 20,
+        "OffsetX": null,
+        "OffsetY": null,
+        "Source": 2,
+        "PlacementOrder": -1,
+        "Rotation": 180,
+        "Points": [
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -9.5611,
+            "Y": -0.3756
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -12.0707,
+            "Y": -0.819
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -32.6529,
+            "Y": -11.8228
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -77.9445,
+            "Y": -12.4593
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -79.1729,
+            "Y": -12.6763
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -80.62,
+            "Y": -13.2757
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -81.8626,
+            "Y": -14.2292
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -82.8161,
+            "Y": -15.4719
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -83.4156,
+            "Y": -16.919
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -83.62,
+            "Y": -18.4719
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -83.62,
+            "Y": -24.4719
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -83.4156,
+            "Y": -26.0248
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -82.8162,
+            "Y": -27.4719
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -81.8627,
+            "Y": -28.7145
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -80.62,
+            "Y": -29.668
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -79.1729,
+            "Y": -30.2674
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -78.3662,
+            "Y": -30.4102
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -77.62,
+            "Y": -30.4719
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -33.3478,
+            "Y": -30.9487
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -11.3973,
+            "Y": -42.2627
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -9.2876,
+            "Y": -42.6361
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -7.3382,
+            "Y": -42.8185
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -5.408,
+            "Y": -42.4902
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -3.6286,
+            "Y": -41.6735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -2.1212,
+            "Y": -40.4241
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -0.9885,
+            "Y": -38.8271
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -0.3077,
+            "Y": -36.9913
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -0.12,
+            "Y": -35.3238
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -0.12,
+            "Y": -7.62
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -0.3756,
+            "Y": -5.6789
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -1.1248,
+            "Y": -3.87
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -2.3167,
+            "Y": -2.3167
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -3.87,
+            "Y": -1.1248
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -5.6789,
+            "Y": -0.3756
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -7.62,
+            "Y": -0.12
+          }
+        ],
+        "IsPriority": false,
+        "StrictAngle": 0
+      }
+    },
+    {
+      "Id": 21,
+      "Rotation": 0,
+      "X": 99.88,
+      "Y": 141.239,
+      "Source": 2,
+      "Part": {
+        "Fitted": false,
+        "Sheet": null,
+        "Name": "DeepNestPort\\dxfs\\_3.dxf",
+        "X": 0,
+        "Y": 0,
+        "Children": [
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.6658,
+                "Y": 12.0614
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 19.9165,
+                "Y": 29.5484
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.12,
+                "Y": 29.4719
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 7.5261,
+                "Y": 37.822
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.12,
+                "Y": 35.3238
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.12,
+                "Y": 7.62
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.8522,
+                "Y": 5.8522
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 8.2671,
+                "Y": 5.2052
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          },
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.6658,
+                "Y": 12.0614
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 19.9165,
+                "Y": 29.5484
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.12,
+                "Y": 29.4719
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 7.5261,
+                "Y": 37.822
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.12,
+                "Y": 35.3238
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.12,
+                "Y": 7.62
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.8522,
+                "Y": 5.8522
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 8.2671,
+                "Y": 5.2052
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          }
+        ],
+        "Id": 21,
+        "OffsetX": null,
+        "OffsetY": null,
+        "Source": 2,
+        "PlacementOrder": -1,
+        "Rotation": 0,
+        "Points": [
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 9.5611,
+            "Y": 0.3756
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 12.0707,
+            "Y": 0.819
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 32.6529,
+            "Y": 11.8228
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 77.9445,
+            "Y": 12.4593
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 79.1729,
+            "Y": 12.6763
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 80.62,
+            "Y": 13.2757
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 81.8626,
+            "Y": 14.2292
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 82.8161,
+            "Y": 15.4719
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 83.4156,
+            "Y": 16.919
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 83.62,
+            "Y": 18.4719
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 83.62,
+            "Y": 24.4719
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 83.4156,
+            "Y": 26.0248
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 82.8162,
+            "Y": 27.4719
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 81.8627,
+            "Y": 28.7145
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 80.62,
+            "Y": 29.668
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 79.1729,
+            "Y": 30.2674
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 78.3662,
+            "Y": 30.4102
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 77.62,
+            "Y": 30.4719
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 33.3478,
+            "Y": 30.9487
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 11.3973,
+            "Y": 42.2627
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 9.2876,
+            "Y": 42.6361
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 7.3382,
+            "Y": 42.8185
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 5.408,
+            "Y": 42.4902
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 3.6286,
+            "Y": 41.6735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 2.1212,
+            "Y": 40.4241
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 0.9885,
+            "Y": 38.8271
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 0.3077,
+            "Y": 36.9913
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 0.12,
+            "Y": 35.3238
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 0.12,
+            "Y": 7.62
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 0.3756,
+            "Y": 5.6789
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 1.1248,
+            "Y": 3.87
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 2.3167,
+            "Y": 2.3167
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 3.87,
+            "Y": 1.1248
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 5.6789,
+            "Y": 0.3756
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 7.62,
+            "Y": 0.12
+          }
+        ],
+        "IsPriority": false,
+        "StrictAngle": 0
+      }
+    },
+    {
+      "Id": 22,
+      "Rotation": 90,
+      "X": 75.4403,
+      "Y": 2.6047,
+      "Source": 2,
+      "Part": {
+        "Fitted": false,
+        "Sheet": null,
+        "Name": "DeepNestPort\\dxfs\\_3.dxf",
+        "X": 0,
+        "Y": 0,
+        "Children": [
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.6658,
+                "Y": 12.0614
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 19.9165,
+                "Y": 29.5484
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.12,
+                "Y": 29.4719
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 7.5261,
+                "Y": 37.822
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.12,
+                "Y": 35.3238
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.12,
+                "Y": 7.62
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.8522,
+                "Y": 5.8522
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 8.2671,
+                "Y": 5.2052
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          },
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -12.0614,
+                "Y": 20.6658
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -29.5484,
+                "Y": 19.9165
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -29.4719,
+                "Y": 20.12
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -37.822,
+                "Y": 7.5261
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -35.3238,
+                "Y": 5.12
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -7.62,
+                "Y": 5.12
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -5.8522,
+                "Y": 5.8522
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -5.2052,
+                "Y": 8.2671
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          }
+        ],
+        "Id": 22,
+        "OffsetX": null,
+        "OffsetY": null,
+        "Source": 2,
+        "PlacementOrder": -1,
+        "Rotation": 90,
+        "Points": [
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -0.3756,
+            "Y": 9.5611
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -0.819,
+            "Y": 12.0707
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -11.8228,
+            "Y": 32.6529
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -12.4593,
+            "Y": 77.9445
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -12.6763,
+            "Y": 79.1729
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -13.2757,
+            "Y": 80.62
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -14.2292,
+            "Y": 81.8626
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -15.4719,
+            "Y": 82.8161
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -16.919,
+            "Y": 83.4156
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -18.4719,
+            "Y": 83.62
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -24.4719,
+            "Y": 83.62
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -26.0248,
+            "Y": 83.4156
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -27.4719,
+            "Y": 82.8162
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -28.7145,
+            "Y": 81.8627
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -29.668,
+            "Y": 80.62
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -30.2674,
+            "Y": 79.1729
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -30.4102,
+            "Y": 78.3662
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -30.4719,
+            "Y": 77.62
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -30.9487,
+            "Y": 33.3478
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -42.2627,
+            "Y": 11.3973
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -42.6361,
+            "Y": 9.2876
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -42.8185,
+            "Y": 7.3382
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -42.4902,
+            "Y": 5.408
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -41.6735,
+            "Y": 3.6286
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -40.4241,
+            "Y": 2.1212
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -38.8271,
+            "Y": 0.9885
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -36.9913,
+            "Y": 0.3077
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -35.3238,
+            "Y": 0.12
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -7.62,
+            "Y": 0.12
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -5.6789,
+            "Y": 0.3756
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -3.87,
+            "Y": 1.1248
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -2.3167,
+            "Y": 2.3167
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -1.1248,
+            "Y": 3.87
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -0.3756,
+            "Y": 5.6789
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -0.12,
+            "Y": 7.62
+          }
+        ],
+        "IsPriority": false,
+        "StrictAngle": 0
+      }
+    },
+    {
+      "Id": 23,
+      "Rotation": 180,
+      "X": 183.62,
+      "Y": 214.5425,
+      "Source": 2,
+      "Part": {
+        "Fitted": false,
+        "Sheet": null,
+        "Name": "DeepNestPort\\dxfs\\_3.dxf",
+        "X": 0,
+        "Y": 0,
+        "Children": [
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.6658,
+                "Y": 12.0614
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 19.9165,
+                "Y": 29.5484
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 20.12,
+                "Y": 29.4719
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 7.5261,
+                "Y": 37.822
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.12,
+                "Y": 35.3238
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.12,
+                "Y": 7.62
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 5.8522,
+                "Y": 5.8522
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 8.2671,
+                "Y": 5.2052
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          },
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -20.6658,
+                "Y": -12.0614
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -19.9165,
+                "Y": -29.5484
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -20.12,
+                "Y": -29.4719
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -7.5261,
+                "Y": -37.822
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -5.12,
+                "Y": -35.3238
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -5.12,
+                "Y": -7.62
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -5.8522,
+                "Y": -5.8522
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -8.2671,
+                "Y": -5.2052
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          }
+        ],
+        "Id": 23,
+        "OffsetX": null,
+        "OffsetY": null,
+        "Source": 2,
+        "PlacementOrder": -1,
+        "Rotation": 180,
+        "Points": [
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -9.5611,
+            "Y": -0.3756
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -12.0707,
+            "Y": -0.819
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -32.6529,
+            "Y": -11.8228
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -77.9445,
+            "Y": -12.4593
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -79.1729,
+            "Y": -12.6763
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -80.62,
+            "Y": -13.2757
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -81.8626,
+            "Y": -14.2292
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -82.8161,
+            "Y": -15.4719
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -83.4156,
+            "Y": -16.919
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -83.62,
+            "Y": -18.4719
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -83.62,
+            "Y": -24.4719
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -83.4156,
+            "Y": -26.0248
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -82.8162,
+            "Y": -27.4719
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -81.8627,
+            "Y": -28.7145
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -80.62,
+            "Y": -29.668
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -79.1729,
+            "Y": -30.2674
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -78.3662,
+            "Y": -30.4102
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -77.62,
+            "Y": -30.4719
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -33.3478,
+            "Y": -30.9487
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -11.3973,
+            "Y": -42.2627
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -9.2876,
+            "Y": -42.6361
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -7.3382,
+            "Y": -42.8185
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -5.408,
+            "Y": -42.4902
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -3.6286,
+            "Y": -41.6735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -2.1212,
+            "Y": -40.4241
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -0.9885,
+            "Y": -38.8271
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -0.3077,
+            "Y": -36.9913
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -0.12,
+            "Y": -35.3238
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -0.12,
+            "Y": -7.62
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -0.3756,
+            "Y": -5.6789
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -1.1248,
+            "Y": -3.87
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -2.3167,
+            "Y": -2.3167
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -3.87,
+            "Y": -1.1248
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -5.6789,
+            "Y": -0.3756
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -7.62,
+            "Y": -0.12
+          }
+        ],
+        "IsPriority": false,
+        "StrictAngle": 0
+      }
+    },
+    {
+      "Id": 8,
+      "Rotation": 0,
+      "X": 29.2126,
+      "Y": 89.7359,
+      "Source": 1,
+      "Part": {
+        "Fitted": false,
+        "Sheet": null,
+        "Name": "DeepNestPort\\dxfs\\_2.dxf",
+        "X": 0,
+        "Y": 0,
+        "Children": [
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 92.1827,
+                "Y": 124.0599
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 98.7634,
+                "Y": 127.2828
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 98.7394,
+                "Y": 147.6831
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 95.2314,
+                "Y": 149.7598
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 88.3936,
+                "Y": 150.5836
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 81.9379,
+                "Y": 148.0435
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 79.4735,
+                "Y": 145.5242
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 76.8704,
+                "Y": 139.039
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 76.9091,
+                "Y": 135.515
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 79.6542,
+                "Y": 129.0887
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 82.1735,
+                "Y": 126.6242
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 88.6587,
+                "Y": 124.0212
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          },
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 92.1827,
+                "Y": 124.0599
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 98.7634,
+                "Y": 127.2828
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 98.7394,
+                "Y": 147.6831
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 95.2314,
+                "Y": 149.7598
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 88.3936,
+                "Y": 150.5836
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 81.9379,
+                "Y": 148.0435
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 79.4735,
+                "Y": 145.5242
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 76.8704,
+                "Y": 139.039
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 76.9091,
+                "Y": 135.515
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 79.6542,
+                "Y": 129.0887
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 82.1735,
+                "Y": 126.6242
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 88.6587,
+                "Y": 124.0212
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          }
+        ],
+        "Id": 8,
+        "OffsetX": null,
+        "OffsetY": null,
+        "Source": 1,
+        "PlacementOrder": -1,
+        "Rotation": 0,
+        "Points": [
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 96.837,
+            "Y": 118.5583
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 107.6599,
+            "Y": 124.525
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 154.728,
+            "Y": 124.7194
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 154.7735,
+            "Y": 124.7242
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 156.3264,
+            "Y": 124.9287
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 157.7735,
+            "Y": 125.5281
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 159.0161,
+            "Y": 126.4816
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 159.9696,
+            "Y": 127.7242
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 160.569,
+            "Y": 129.1713
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 160.7735,
+            "Y": 130.7242
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 160.7735,
+            "Y": 144.1242
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 160.569,
+            "Y": 145.6772
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 159.9696,
+            "Y": 147.1242
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 159.0161,
+            "Y": 148.3669
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 157.7735,
+            "Y": 149.3204
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 156.3264,
+            "Y": 149.9198
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 154.7735,
+            "Y": 150.1242
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 148.8812,
+            "Y": 150.7425
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 106.427,
+            "Y": 150.8737
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 96.6573,
+            "Y": 156.2218
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 94.6048,
+            "Y": 156.4371
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 89.5363,
+            "Y": 156.9103
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 84.518,
+            "Y": 156.0555
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 79.892,
+            "Y": 153.9311
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 75.9735,
+            "Y": 150.6817
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 73.0294,
+            "Y": 146.5288
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 71.2606,
+            "Y": 141.7555
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 70.7874,
+            "Y": 136.687
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 71.6422,
+            "Y": 131.6688
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 73.7666,
+            "Y": 127.0428
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 77.016,
+            "Y": 123.1242
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 81.1689,
+            "Y": 120.1802
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 85.9422,
+            "Y": 118.4113
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": 91.0107,
+            "Y": 117.9382
+          }
+        ],
+        "IsPriority": false,
+        "StrictAngle": 0
+      }
+    },
+    {
+      "Id": 10,
+      "Rotation": 90,
+      "X": 275.8787,
+      "Y": -70.7874,
+      "Source": 1,
+      "Part": {
+        "Fitted": false,
+        "Sheet": null,
+        "Name": "DeepNestPort\\dxfs\\_2.dxf",
+        "X": 0,
+        "Y": 0,
+        "Children": [
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 92.1827,
+                "Y": 124.0599
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 98.7634,
+                "Y": 127.2828
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 98.7394,
+                "Y": 147.6831
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 95.2314,
+                "Y": 149.7598
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 88.3936,
+                "Y": 150.5836
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 81.9379,
+                "Y": 148.0435
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 79.4735,
+                "Y": 145.5242
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 76.8704,
+                "Y": 139.039
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 76.9091,
+                "Y": 135.515
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 79.6542,
+                "Y": 129.0887
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 82.1735,
+                "Y": 126.6242
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 88.6587,
+                "Y": 124.0212
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          },
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -124.0599,
+                "Y": 92.1827
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -127.2828,
+                "Y": 98.7634
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -147.6831,
+                "Y": 98.7394
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -149.7598,
+                "Y": 95.2314
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -150.5836,
+                "Y": 88.3936
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -148.0435,
+                "Y": 81.9379
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -145.5242,
+                "Y": 79.4735
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -139.039,
+                "Y": 76.8704
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -135.515,
+                "Y": 76.9091
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -129.0887,
+                "Y": 79.6542
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -126.6242,
+                "Y": 82.1735
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -124.0212,
+                "Y": 88.6587
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          }
+        ],
+        "Id": 10,
+        "OffsetX": null,
+        "OffsetY": null,
+        "Source": 1,
+        "PlacementOrder": -1,
+        "Rotation": 90,
+        "Points": [
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -118.5583,
+            "Y": 96.837
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -124.525,
+            "Y": 107.6599
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -124.7194,
+            "Y": 154.728
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -124.7242,
+            "Y": 154.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -124.9287,
+            "Y": 156.3264
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -125.5281,
+            "Y": 157.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -126.4816,
+            "Y": 159.0161
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -127.7242,
+            "Y": 159.9696
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -129.1713,
+            "Y": 160.569
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -130.7242,
+            "Y": 160.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -144.1242,
+            "Y": 160.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -145.6772,
+            "Y": 160.569
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -147.1242,
+            "Y": 159.9696
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -148.3669,
+            "Y": 159.0161
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -149.3204,
+            "Y": 157.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -149.9198,
+            "Y": 156.3264
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -150.1242,
+            "Y": 154.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -150.7425,
+            "Y": 148.8812
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -150.8737,
+            "Y": 106.427
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -156.2218,
+            "Y": 96.6573
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -156.4371,
+            "Y": 94.6048
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -156.9103,
+            "Y": 89.5363
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -156.0555,
+            "Y": 84.518
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -153.9311,
+            "Y": 79.892
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -150.6817,
+            "Y": 75.9735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -146.5288,
+            "Y": 73.0294
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -141.7555,
+            "Y": 71.2606
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -136.687,
+            "Y": 70.7874
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -131.6688,
+            "Y": 71.6422
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -127.0428,
+            "Y": 73.7666
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -123.1242,
+            "Y": 77.016
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -120.1802,
+            "Y": 81.1689
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -118.4113,
+            "Y": 85.9422
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -117.9382,
+            "Y": 91.0107
+          }
+        ],
+        "IsPriority": false,
+        "StrictAngle": 0
+      }
+    },
+    {
+      "Id": 9,
+      "Rotation": 90,
+      "X": 288.0133,
+      "Y": 217.0421,
+      "Source": 1,
+      "Part": {
+        "Fitted": false,
+        "Sheet": null,
+        "Name": "DeepNestPort\\dxfs\\_2.dxf",
+        "X": 0,
+        "Y": 0,
+        "Children": [
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 92.1827,
+                "Y": 124.0599
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 98.7634,
+                "Y": 127.2828
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 98.7394,
+                "Y": 147.6831
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 95.2314,
+                "Y": 149.7598
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 88.3936,
+                "Y": 150.5836
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 81.9379,
+                "Y": 148.0435
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 79.4735,
+                "Y": 145.5242
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 76.8704,
+                "Y": 139.039
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 76.9091,
+                "Y": 135.515
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 79.6542,
+                "Y": 129.0887
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 82.1735,
+                "Y": 126.6242
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 88.6587,
+                "Y": 124.0212
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          },
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -124.0599,
+                "Y": 92.1827
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -127.2828,
+                "Y": 98.7634
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -147.6831,
+                "Y": 98.7394
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -149.7598,
+                "Y": 95.2314
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -150.5836,
+                "Y": 88.3936
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -148.0435,
+                "Y": 81.9379
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -145.5242,
+                "Y": 79.4735
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -139.039,
+                "Y": 76.8704
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -135.515,
+                "Y": 76.9091
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -129.0887,
+                "Y": 79.6542
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -126.6242,
+                "Y": 82.1735
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -124.0212,
+                "Y": 88.6587
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          }
+        ],
+        "Id": 9,
+        "OffsetX": null,
+        "OffsetY": null,
+        "Source": 1,
+        "PlacementOrder": -1,
+        "Rotation": 90,
+        "Points": [
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -118.5583,
+            "Y": 96.837
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -124.525,
+            "Y": 107.6599
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -124.7194,
+            "Y": 154.728
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -124.7242,
+            "Y": 154.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -124.9287,
+            "Y": 156.3264
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -125.5281,
+            "Y": 157.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -126.4816,
+            "Y": 159.0161
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -127.7242,
+            "Y": 159.9696
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -129.1713,
+            "Y": 160.569
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -130.7242,
+            "Y": 160.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -144.1242,
+            "Y": 160.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -145.6772,
+            "Y": 160.569
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -147.1242,
+            "Y": 159.9696
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -148.3669,
+            "Y": 159.0161
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -149.3204,
+            "Y": 157.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -149.9198,
+            "Y": 156.3264
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -150.1242,
+            "Y": 154.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -150.7425,
+            "Y": 148.8812
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -150.8737,
+            "Y": 106.427
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -156.2218,
+            "Y": 96.6573
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -156.4371,
+            "Y": 94.6048
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -156.9103,
+            "Y": 89.5363
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -156.0555,
+            "Y": 84.518
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -153.9311,
+            "Y": 79.892
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -150.6817,
+            "Y": 75.9735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -146.5288,
+            "Y": 73.0294
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -141.7555,
+            "Y": 71.2606
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -136.687,
+            "Y": 70.7874
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -131.6688,
+            "Y": 71.6422
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -127.0428,
+            "Y": 73.7666
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -123.1242,
+            "Y": 77.016
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -120.1802,
+            "Y": 81.1689
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -118.4113,
+            "Y": 85.9422
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -117.9382,
+            "Y": 91.0107
+          }
+        ],
+        "IsPriority": false,
+        "StrictAngle": 0
+      }
+    },
+    {
+      "Id": 13,
+      "Rotation": 90,
+      "X": 309.0225,
+      "Y": -49.7993,
+      "Source": 1,
+      "Part": {
+        "Fitted": false,
+        "Sheet": null,
+        "Name": "DeepNestPort\\dxfs\\_2.dxf",
+        "X": 0,
+        "Y": 0,
+        "Children": [
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 92.1827,
+                "Y": 124.0599
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 98.7634,
+                "Y": 127.2828
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 98.7394,
+                "Y": 147.6831
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 95.2314,
+                "Y": 149.7598
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 88.3936,
+                "Y": 150.5836
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 81.9379,
+                "Y": 148.0435
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 79.4735,
+                "Y": 145.5242
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 76.8704,
+                "Y": 139.039
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 76.9091,
+                "Y": 135.515
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 79.6542,
+                "Y": 129.0887
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 82.1735,
+                "Y": 126.6242
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": 88.6587,
+                "Y": 124.0212
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          },
+          {
+            "Fitted": false,
+            "Sheet": null,
+            "Name": "",
+            "X": 0,
+            "Y": 0,
+            "Children": [],
+            "Id": 0,
+            "OffsetX": null,
+            "OffsetY": null,
+            "Source": -1,
+            "PlacementOrder": -1,
+            "Rotation": 0,
+            "Points": [
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -124.0599,
+                "Y": 92.1827
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -127.2828,
+                "Y": 98.7634
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -147.6831,
+                "Y": 98.7394
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -149.7598,
+                "Y": 95.2314
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -150.5836,
+                "Y": 88.3936
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -148.0435,
+                "Y": 81.9379
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -145.5242,
+                "Y": 79.4735
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -139.039,
+                "Y": 76.8704
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -135.515,
+                "Y": 76.9091
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -129.0887,
+                "Y": 79.6542
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -126.6242,
+                "Y": 82.1735
+              },
+              {
+                "Exact": true,
+                "Marked": false,
+                "X": -124.0212,
+                "Y": 88.6587
+              }
+            ],
+            "IsPriority": false,
+            "StrictAngle": 0
+          }
+        ],
+        "Id": 13,
+        "OffsetX": null,
+        "OffsetY": null,
+        "Source": 1,
+        "PlacementOrder": -1,
+        "Rotation": 90,
+        "Points": [
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -118.5583,
+            "Y": 96.837
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -124.525,
+            "Y": 107.6599
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -124.7194,
+            "Y": 154.728
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -124.7242,
+            "Y": 154.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -124.9287,
+            "Y": 156.3264
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -125.5281,
+            "Y": 157.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -126.4816,
+            "Y": 159.0161
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -127.7242,
+            "Y": 159.9696
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -129.1713,
+            "Y": 160.569
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -130.7242,
+            "Y": 160.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -144.1242,
+            "Y": 160.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -145.6772,
+            "Y": 160.569
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -147.1242,
+            "Y": 159.9696
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -148.3669,
+            "Y": 159.0161
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -149.3204,
+            "Y": 157.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -149.9198,
+            "Y": 156.3264
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -150.1242,
+            "Y": 154.7735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -150.7425,
+            "Y": 148.8812
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -150.8737,
+            "Y": 106.427
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -156.2218,
+            "Y": 96.6573
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -156.4371,
+            "Y": 94.6048
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -156.9103,
+            "Y": 89.5363
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -156.0555,
+            "Y": 84.518
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -153.9311,
+            "Y": 79.892
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -150.6817,
+            "Y": 75.9735
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -146.5288,
+            "Y": 73.0294
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -141.7555,
+            "Y": 71.2606
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -136.687,
+            "Y": 70.7874
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -131.6688,
+            "Y": 71.6422
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -127.0428,
+            "Y": 73.7666
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -123.1242,
+            "Y": 77.016
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -120.1802,
+            "Y": 81.1689
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -118.4113,
+            "Y": 85.9422
+          },
+          {
+            "Exact": true,
+            "Marked": false,
+            "X": -117.9382,
+            "Y": 91.0107
+          }
+        ],
+        "IsPriority": false,
+        "StrictAngle": 0
+      }
+    }
+  ],
+  "MergedLength": 0
+}

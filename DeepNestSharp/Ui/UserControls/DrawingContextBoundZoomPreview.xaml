@@ -1,0 +1,97 @@
+﻿<UserControl x:Class="DeepNestSharp.Ui.UserControls.DrawingContextBoundZoomPreview"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:interactivity="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:converters="clr-namespace:DeepNestSharp.Ui.Converters"
+             xmlns:behaviors="clr-namespace:DeepNestSharp.Ui.Behaviors"
+             xmlns:domainModels="clr-namespace:DeepNestSharp.Domain.Models;assembly=DeepNestSharp.Domain"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+  <UserControl.Resources>
+    <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    <converters:IsSelectedToFillColorConverter x:Key="IsSelectedToFillColor" />
+    <converters:DrawingContextConverter x:Key="DrawingContextConverter" />
+    <converters:PointsConverter x:Key="PointsConverter" />
+  </UserControl.Resources>
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="Auto"/>
+      <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+    <Button Grid.Column="0" Grid.Row="0" Content="Fit" Command="{Binding FitAllCommand}" />
+    <Slider Grid.Column="0" Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Left" Minimum="1" x:Name="slider" Value="{Binding CanvasScale}"  />
+    <ScrollViewer Name="scrollViewer" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible">
+      <Grid Name="grid" Width="400" Height="400" RenderTransformOrigin="0.5,0.5">
+        <Grid.LayoutTransform>
+          <TransformGroup>
+            <ScaleTransform x:Name="scaleTransform"/>
+          </TransformGroup>
+        </Grid.LayoutTransform>
+        <Viewbox Grid.Column="0" Grid.Row="0">
+          <ItemsControl 
+                    Name="itemsControl"
+                    ItemsSource="{Binding ZoomDrawingContext}"
+                    ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                    ScrollViewer.VerticalScrollBarVisibility="Visible"
+                    MouseMove="ItemsControl_MouseMove">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <Canvas Width="{Binding ZoomDrawingContext.Width}"
+                        Height="{Binding ZoomDrawingContext.Height}" Background="Beige" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemContainerStyle>
+              <Style TargetType="ContentPresenter">
+                <Setter Property="Canvas.Left" Value="{Binding X}"/>
+                <Setter Property="Canvas.Top" Value="{Binding Y}"/>
+              </Style>
+            </ItemsControl.ItemContainerStyle>
+            <ItemsControl.Resources>
+              <DataTemplate DataType="{x:Type domainModels:ObservablePartPlacement}">
+                <Polygon Points="{Binding Converter={StaticResource PointsConverter}}" Stroke="Black" StrokeThickness="0.2"
+                                   MouseUp="Polygon_MouseUp">
+                  <Polygon.Fill>
+                    <MultiBinding Converter="{StaticResource IsSelectedToFillColor}">
+                      <Binding />
+                      <Binding Path="DataContext.SelectedPartPlacement" RelativeSource="{RelativeSource AncestorType=UserControl}" Mode="OneWay" />
+                      <Binding Path="DataContext.HoverPartPlacement" RelativeSource="{RelativeSource AncestorType=UserControl}" Mode="OneWay" />
+                    </MultiBinding>
+                  </Polygon.Fill>
+                  <interactivity:Interaction.Behaviors>
+                    <behaviors:PolygonMouseHover />
+                    <behaviors:PolygonMouseDrag />
+                  </interactivity:Interaction.Behaviors>
+                </Polygon>
+              </DataTemplate>
+              <DataTemplate DataType="{x:Type domainModels:ObservableSheetPlacement}">
+                <Polygon Points="{Binding Sheet, Converter={StaticResource PointsConverter}}" Fill="White" Stroke="Black" StrokeThickness="0.2" />
+              </DataTemplate>
+              <DataTemplate DataType="{x:Type domainModels:ObservableNfp}">
+                <Polygon Points="{Binding Converter={StaticResource PointsConverter}}" Fill="Aquamarine" Stroke="Black" StrokeThickness="0.2" />
+              </DataTemplate>
+              <DataTemplate DataType="{x:Type domainModels:ObservableHole}">
+                <Polygon Points="{Binding Converter={StaticResource PointsConverter}}" Fill="White" Stroke="DeepPink" StrokeThickness="0.2" />
+              </DataTemplate>
+              <DataTemplate DataType="{x:Type domainModels:ObservableFrame}">
+                <Polygon Points="{Binding Converter={StaticResource PointsConverter}}" Stroke="DarkOrange" StrokeThickness="0.4" />
+              </DataTemplate>
+              <DataTemplate DataType="{x:Type domainModels:ObservablePoint}">
+                <Path Name="Point" Fill="DarkOrange">
+                  <Path.Data>
+                    <EllipseGeometry Center="{Binding Converter={StaticResource PointsConverter}}" RadiusX="1.5" RadiusY="1.5"/>
+                  </Path.Data>
+                </Path>
+              </DataTemplate>
+            </ItemsControl.Resources>
+          </ItemsControl>
+        </Viewbox>
+      </Grid>
+    </ScrollViewer>
+  </Grid>
+</UserControl>

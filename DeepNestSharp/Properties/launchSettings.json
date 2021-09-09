@@ -1,0 +1,32 @@
+{
+  "profiles": {
+    "DeepNestSharp.dnr": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Git\\CanDispenserCnc\\CuttingLists\\Std320x164\\Recreate300x200GoodSwitchbackNest.dnr"
+    },
+    "DeepNestSharp.dnest": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Git\\CanDispenserCnc\\CuttingLists\\MixedSheetOfActimelAndStd320BackTopAndFront.dnest"
+    },
+    "DeepNestSharp.dnsp": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Git\\CanDispenserCnc\\CuttingLists\\Std320x164\\300x200GoodSwitchbackNestNew.dnsp"
+    },
+    "DeepNestOverlap.dnest": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Git\\CanDispenserCnc\\CuttingLists\\Std320x164\\OverlappingNestDebug180180Fixture.dnest"
+    },
+    "Overlay2ndGen.dnest": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\SecondGenerationOverlay.dnest"
+    },
+    "DxfNotFound.dnest": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\DxfNotExistExample.dnest"
+    },
+    "SimpleTest.dnest": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\SimpleTestExample.dnest"
+    }
+  }
+}

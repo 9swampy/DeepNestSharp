@@ -1,0 +1,42 @@
+{
+  "Fitted": false,
+  "Sheet": null,
+  "Name": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\10x10.dxf",
+  "X": 0,
+  "Y": 0,
+  "Children": [],
+  "Id": 0,
+  "OffsetX": null,
+  "OffsetY": null,
+  "Source": 0,
+  "PlacementOrder": -1,
+  "Rotation": 270,
+  "Points": [
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": 10,
+      "Y": -10
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": 10,
+      "Y": 0
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": 0,
+      "Y": 0
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": 0,
+      "Y": -10
+    }
+  ],
+  "IsPriority": false,
+  "StrictAngle": 0
+}

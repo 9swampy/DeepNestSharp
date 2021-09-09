@@ -1,0 +1,182 @@
+﻿{
+  "Placements": [],
+  "MergedLength": 0,
+  "Config": {
+    "Scale": 25,
+    "ClipperScale": 10000000,
+    "ExploreConcave": false,
+    "Rotations": 4,
+    "SheetSpacing": 0,
+    "UseHoles": false,
+    "Tolerance": 2,
+    "ToleranceSvg": 0.005,
+    "TimeRatio": 0.5,
+    "MergeLines": false,
+    "ClipByHull": true,
+    "CurveTolerance": 0.2,
+    "DrawSimplification": true,
+    "ExportExecutions": true,
+    "ExportExecutionPath": "C:\\Temp\\PartPlacementWorker",
+    "SaveAsFileTypeIndex": 1,
+    "SheetWidth": 10,
+    "SheetHeight": 10,
+    "SheetQuantity": 3,
+    "PlacementType": 1,
+    "Simplify": false,
+    "OffsetTreePhase": true,
+    "Spacing": 0,
+    "PopulationSize": 200,
+    "MutationRate": 400,
+    "Multiplier": 1,
+    "StrictAngles": 0,
+    "UseParallel": false,
+    "ParallelNests": 10,
+    "ShowPartPositions": true,
+    "UseMinkowskiCache": true,
+    "UsePriority": false
+  },
+  "Parts": [
+    {
+      "Fitted": false,
+      "Sheet": null,
+      "Name": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\10x10.dxf",
+      "X": 0,
+      "Y": 0,
+      "Children": [],
+      "Id": 0,
+      "OffsetX": null,
+      "OffsetY": null,
+      "Source": 0,
+      "PlacementOrder": -1,
+      "Rotation": 270,
+      "Points": [
+        {
+          "Exact": true,
+          "Marked": false,
+          "X": 10,
+          "Y": 10
+        },
+        {
+          "Exact": true,
+          "Marked": false,
+          "X": 0,
+          "Y": 10
+        },
+        {
+          "Exact": true,
+          "Marked": false,
+          "X": 0,
+          "Y": 0
+        },
+        {
+          "Exact": true,
+          "Marked": false,
+          "X": 10,
+          "Y": 0
+        }
+      ],
+      "IsPriority": false,
+      "StrictAngle": 0
+    }
+  ],
+  "Sheet": {
+    "Width": 0,
+    "Height": 0,
+    "Fitted": false,
+    "Sheet": null,
+    "Name": "",
+    "X": 0,
+    "Y": 0,
+    "Children": [],
+    "Id": 0,
+    "OffsetX": null,
+    "OffsetY": null,
+    "Source": 1,
+    "PlacementOrder": -1,
+    "Rotation": 0,
+    "Points": [
+      {
+        "Exact": true,
+        "Marked": false,
+        "X": 11,
+        "Y": 11
+      },
+      {
+        "Exact": true,
+        "Marked": false,
+        "X": 0,
+        "Y": 11
+      },
+      {
+        "Exact": true,
+        "Marked": false,
+        "X": 0,
+        "Y": 0
+      },
+      {
+        "Exact": true,
+        "Marked": false,
+        "X": 11,
+        "Y": 0
+      }
+    ],
+    "IsPriority": false,
+    "StrictAngle": 0
+  },
+  "SheetNfp": null,
+  "CombinedNfp": null,
+  "NfpHelper": {
+    "Window": {
+      "nfpCache": {}
+    },
+    "MinkowskiSumService": {
+      "MinkowskiCache": []
+    },
+    "UseDllImport": true
+  },
+  "ClipCache": {},
+  "FinalNfp": null,
+  "InputPart": {
+    "Fitted": false,
+    "Sheet": null,
+    "Name": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\10x10.dxf",
+    "X": 0,
+    "Y": 0,
+    "Children": [],
+    "Id": 0,
+    "OffsetX": null,
+    "OffsetY": null,
+    "Source": 0,
+    "PlacementOrder": -1,
+    "Rotation": 270,
+    "Points": [
+      {
+        "Exact": true,
+        "Marked": false,
+        "X": 10,
+        "Y": -10
+      },
+      {
+        "Exact": true,
+        "Marked": false,
+        "X": 10,
+        "Y": 0
+      },
+      {
+        "Exact": true,
+        "Marked": false,
+        "X": 0,
+        "Y": 0
+      },
+      {
+        "Exact": true,
+        "Marked": false,
+        "X": 0,
+        "Y": -10
+      }
+    ],
+    "IsPriority": false,
+    "StrictAngle": 0
+  },
+  "Log": []
+}

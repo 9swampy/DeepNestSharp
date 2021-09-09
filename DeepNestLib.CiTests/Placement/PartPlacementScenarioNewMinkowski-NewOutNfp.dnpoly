@@ -1,0 +1,174 @@
+﻿{
+  "Fitted": false,
+  "Sheet": null,
+  "Name": "",
+  "X": 0,
+  "Y": 0,
+  "Children": [],
+  "Id": 0,
+  "OffsetX": null,
+  "OffsetY": null,
+  "Source": -1,
+  "PlacementOrder": -1,
+  "Rotation": 0,
+  "Points": [
+    {
+    "Exact": true,
+      "Marked": false,
+      "X": -77.3485,
+      "Y": 19.1492
+    },
+    {
+    "Exact": true,
+      "Marked": false,
+      "X": -60.6065,
+      "Y": 6.8037
+    },
+    {
+    "Exact": true,
+      "Marked": false,
+      "X": -41.2398,
+      "Y": -0.7881
+    },
+    {
+    "Exact": true,
+      "Marked": false,
+      "X": -20.568,
+      "Y": -3.1087
+    },
+    {
+    "Exact": true,
+      "Marked": false,
+      "X": 139.432,
+      "Y": -3.1087
+    },
+    {
+    "Exact": true,
+      "Marked": false,
+      "X": 160,
+      "Y": 0
+    },
+    {
+    "Exact": true,
+      "Marked": false,
+      "X": 179.0625,
+      "Y": 8.3261
+    },
+    {
+    "Exact": true,
+      "Marked": false,
+      "X": 195.3206,
+      "Y": 21.3023
+    },
+    {
+    "Exact": true,
+      "Marked": false,
+      "X": 207.6661,
+      "Y": 38.0443
+    },
+    {
+    "Exact": true,
+      "Marked": false,
+      "X": 215.2579,
+      "Y": 57.411
+    },
+    {
+    "Exact": true,
+      "Marked": false,
+      "X": 217.5785,
+      "Y": 78.0828
+    },
+    {
+    "Exact": true,
+      "Marked": false,
+      "X": 217.5785,
+      "Y": 274.0828
+    },
+    {
+    "Exact": true,
+      "Marked": false,
+      "X": 214.4698,
+      "Y": 294.6508
+    },
+    {
+    "Exact": true,
+      "Marked": false,
+      "X": 206.1437,
+      "Y": 313.7133
+    },
+    {
+    "Exact": true,
+      "Marked": false,
+      "X": 193.1675,
+      "Y": 329.9714
+    },
+    {
+    "Exact": true,
+      "Marked": false,
+      "X": 176.4255,
+      "Y": 342.3169
+    },
+    {
+    "Exact": true,
+      "Marked": false,
+      "X": 160,
+      "Y": 349.1206
+    },
+    {
+    "Exact": true,
+      "Marked": false,
+      "X": -44.181,
+      "Y": 349.1206
+    },
+    {
+    "Exact": true,
+      "Marked": false,
+      "X": -63.2435,
+      "Y": 340.7945
+    },
+    {
+    "Exact": true,
+      "Marked": false,
+      "X": -79.5016,
+      "Y": 327.8183
+    },
+    {
+    "Exact": true,
+      "Marked": false,
+      "X": -91.8471,
+      "Y": 311.0763
+    },
+    {
+    "Exact": true,
+      "Marked": false,
+      "X": -99.4389,
+      "Y": 291.7096
+    },
+    {
+    "Exact": true,
+      "Marked": false,
+      "X": -101.7595,
+      "Y": 271.0378
+    },
+    {
+    "Exact": true,
+      "Marked": false,
+      "X": -101.7595,
+      "Y": 75.0378
+    },
+    {
+    "Exact": true,
+      "Marked": false,
+      "X": -98.6508,
+      "Y": 54.4698
+    },
+    {
+    "Exact": true,
+      "Marked": false,
+      "X": -90.3247,
+      "Y": 35.4073
+    }
+  ],
+  "IsPriority": false,
+  "StrictAngle": 0
+}

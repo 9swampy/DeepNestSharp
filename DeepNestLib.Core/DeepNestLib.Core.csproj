@@ -1,0 +1,94 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <Platforms>AnyCPU;x64;x86</Platforms>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>0.1.0.0</FileVersion>
+    <InformationalVersion>0.1.0-beta.4+193.Branch.release-0.1.Sha.eef0f0c93c1b12f2acc3c31b76b1f082de114f73</InformationalVersion>
+    <Version>0.1.0-beta0004</Version>
+    <RootNamespace>$(MSBuildProjectName.Replace(" ", "_").Replace(".Core",""))</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Dxfs\_._" />
+    <None Remove="GeneticAlgorithm\_._" />
+    <None Remove="Geometry\_._" />
+    <None Remove="IO\_._" />
+    <None Remove="NestProject\_._" />
+    <None Remove="Placement\_._" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="GeneticSharp" Version="2.6.0" />
+    <PackageReference Include="GeneticSharp.Extensions" Version="2.6.0" />
+    <PackageReference Include="IxMilia.Dxf" Version="0.8.1" />
+    <PackageReference Include="Light.GuardClauses" Version="9.0.0" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
+    <PackageReference Include="System.Text.Json" Version="5.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Clipper.Core\Clipper.Core.csproj" />
+    <ProjectReference Include="..\MinkowskiWrapper.Core\MinkowskiWrapper.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="IO\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\DeepNestLib.CiTests\OneSquare.dxf" Link="Dxfs\OneSquare.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\DeepNestLib.CiTests\Dxfs\_10.dxf" Link="Dxfs\_10.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\DeepNestPort\dxfs\_1.dxf" Link="Dxfs\_1.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\DeepNestPort\dxfs\_11.dxf" Link="Dxfs\_11.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\DeepNestPort\dxfs\_12.dxf" Link="Dxfs\_12.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\DeepNestPort\dxfs\_2.dxf" Link="Dxfs\_2.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\DeepNestPort\dxfs\_3.dxf" Link="Dxfs\_3.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\DeepNestPort\dxfs\_4.dxf" Link="Dxfs\_4.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\DeepNestPort\dxfs\_5.dxf" Link="Dxfs\_5.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\DeepNestPort\dxfs\_6.dxf" Link="Dxfs\_6.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\DeepNestPort\dxfs\_7.dxf" Link="Dxfs\_7.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\DeepNestPort\dxfs\_8.dxf" Link="Dxfs\_8.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\DeepNestPort\dxfs\_9.dxf" Link="Dxfs\_9.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

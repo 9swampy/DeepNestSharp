@@ -1,0 +1,50 @@
+{
+  "Fitted": false,
+  "Sheet": null,
+  "Name": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_1.dxf",
+  "X": 0,
+  "Y": 0,
+  "Children": [
+    {
+      "Area": 279.79743445000003,
+      "Fitted": false,
+      "HeightCalculated": 19.109400000000001,
+      "Length": 8,
+      "WidthCalculated": 19.3185
+    }
+  ],
+  "Id": 0,
+  "OffsetX": null,
+  "OffsetY": null,
+  "Source": 0,
+  "PlacementOrder": -1,
+  "Rotation": 90,
+  "Points": [
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": -40.0816,
+      "Y": 33.7844
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": -40.0816,
+      "Y": -16.2156
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": 9.9184,
+      "Y": -16.2156
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": 9.9184,
+      "Y": 33.7844
+    }
+  ],
+  "IsPriority": false,
+  "StrictAngle": 0
+}

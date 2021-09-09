@@ -1,0 +1,91 @@
+{
+  "Fitted": false,
+  "Sheet": null,
+  "Name": "",
+  "X": 0,
+  "Y": 0,
+  "Children": [
+    {
+      "Fitted": false,
+      "Sheet": null,
+      "Name": "",
+      "X": 0,
+      "Y": 0,
+      "Children": [],
+      "Id": 0,
+      "OffsetX": null,
+      "OffsetY": null,
+      "Source": 2,
+      "PlacementOrder": -1,
+      "Rotation": 0,
+      "Points": [
+        {
+          "Exact": true,
+          "Marked": false,
+          "X": 0,
+          "Y": 11
+        },
+        {
+          "Exact": true,
+          "Marked": false,
+          "X": 11,
+          "Y": 11
+        },
+        {
+          "Exact": true,
+          "Marked": false,
+          "X": 11,
+          "Y": 0
+        },
+        {
+          "Exact": true,
+          "Marked": false,
+          "X": 0,
+          "Y": 0
+        },
+        {
+          "Exact": true,
+          "Marked": false,
+          "X": 0,
+          "Y": 11
+        }
+      ],
+      "IsPriority": false,
+      "StrictAngle": 0
+    }
+  ],
+  "Id": 0,
+  "OffsetX": null,
+  "OffsetY": null,
+  "Source": 1,
+  "PlacementOrder": -1,
+  "Rotation": 0,
+  "Points": [
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": -0.55,
+      "Y": -0.55
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": 11.55,
+      "Y": -0.55
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": 11.55,
+      "Y": 11.55
+    },
+    {
+      "Exact": true,
+      "Marked": false,
+      "X": -0.55,
+      "Y": 11.55
+    }
+  ],
+  "IsPriority": false,
+  "StrictAngle": 0
+}
