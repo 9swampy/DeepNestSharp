@@ -36,7 +36,7 @@
         json = reader.ReadToEnd();
       }
 
-      part = NFP.FromJson(json);
+      part = NoFitPolygon.FromJson(json);
       part.EnsureIsClosed();
 
       using (Stream stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Minkowski.MinkowskiSumRet.dnpoly"))
@@ -45,7 +45,7 @@
         json = reader.ReadToEnd();
       }
 
-      ret = NFP.FromJson(json);
+      ret = NoFitPolygon.FromJson(json);
 
       var minkowski = MinkowskiSum.CreateInstance(false, A.Fake<INestStateMinkowski>());
 
@@ -68,7 +68,7 @@
     [Fact]
     public void BShouldBePart()
     {
-      part.Should().BeOfType<NFP>();
+      part.Should().BeOfType<NoFitPolygon>();
     }
 
     [Fact]
@@ -127,7 +127,7 @@
     public void Test(bool useDllImport)
     {
       var minkowski = MinkowskiSum.CreateInstance(false, A.Fake<INestStateMinkowski>());
-      var config = new DefaultSvgNestConfig();
+      var config = new TestSvgNestConfig();
 
       INfp[] result;
       SheetNfp sheetNfp;

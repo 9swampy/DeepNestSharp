@@ -15,7 +15,7 @@
     private static volatile object testSyncLock = new object();
 
     private readonly DxfGenerator dxfGenerator = new DxfGenerator();
-    private DefaultSvgNestConfig config;
+    private TestSvgNestConfig config;
     private RawDetail loadedRawDetail;
     private NestingContext nestingContext;
     private INfp loadedNfp;
@@ -33,7 +33,7 @@
       {
         if (!this.hasImportedRawDetail)
         {
-          this.config = new DefaultSvgNestConfig();
+          this.config = new TestSvgNestConfig();
           this.config.PlacementType = PlacementTypeEnum.BoundingBox;
           this.config.UseParallel = false;
           config.PopulationSize = 40;

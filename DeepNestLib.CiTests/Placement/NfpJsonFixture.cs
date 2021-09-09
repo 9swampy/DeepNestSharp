@@ -12,7 +12,7 @@
     [Fact]
     public void ShouldCtor()
     {
-      Action act = () => _ = new NFP();
+      Action act = () => _ = new NoFitPolygon();
 
       act.Should().NotThrow();
     }
@@ -20,7 +20,7 @@
     [Fact]
     public void GivenSimpleSutWhenToJsonThenShouldNotThrow()
     {
-      var sut = new NFP();
+      var sut = new NoFitPolygon();
       Action act = () => sut.ToJson();
 
       act.Should().NotThrow();
@@ -78,7 +78,7 @@
 
       var json = expected.ToJson();
 
-      var actual = NFP.FromJson(json);
+      var actual = NoFitPolygon.FromJson(json);
 
       actual.Should().BeEquivalentTo(expected, options => options.Excluding(o => o.Width)
                                                                  .Excluding(o => o.Height));

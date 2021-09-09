@@ -57,8 +57,8 @@
     public void GivenSmallerSquareWhenFitInLargeSquareThenItemsShouldHaveSingleNfpCandidateWithFourVertices(bool useDllImport, double sheetSize, double partSize)
     {
       SheetNfp sheetNfp = GivenPartWhenFitOnSheetThenGetSheetNfp(useDllImport, sheetSize, partSize);
-
-      SvgNest.CleanPolygon2(sheetNfp.Items[0]).Length.Should().Be(5, "it's closed, hence 5 vertices for a rectangle");
+      sheetNfp.Items[0].Clean();
+      sheetNfp.Items[0].Length.Should().Be(5, "it's closed, hence 5 vertices for a rectangle");
       sheetNfp.Items[0].IsClosed.Should().BeTrue();
     }
 
@@ -170,20 +170,15 @@
     private static SheetNfp GivenPartWhenFitOnSheetThenGetSheetNfp(bool useDllImport, double sheetSize, double partSize)
     {
       var generator = new DxfGenerator();
-      //var sheet = generator.GenerateRectangle("Sheet", sheetSize, sheetSize, RectangleType.FileLoad).ToSheet();
       var sheet = generator.GenerateRectangle("Sheet", sheetSize, sheetSize, RectangleType.TopLeftClockwise, false).ToSheet();
-      //sheet = new Sheet(SvgNest.CleanPolygon2(sheet), WithChildren.Excluded);
-      //sheet.Length.Should().Be(4);
       var part = generator.GenerateRectangle("Part", partSize, partSize, RectangleType.FileLoad).ToNfp();
-      //part = SvgNest.CleanPolygon2(part);
-      //part.Length.Should().Be(4);
       return GivenPartWhenFitOnSheetThenGetSheetNfp(useDllImport, sheet, part);
     }
 
     private static SheetNfp GivenPartWhenFitOnSheetThenGetSheetNfp(bool useDllImport, ISheet sheet, INfp part)
     {
       var nfpHelper = new NfpHelper();
-      ((ITestNfpHelper)nfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(A.Fake<ISvgNestConfig>(), A.Fake<INestStateMinkowski>());
+      ((ITestNfpHelper)nfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(false, A.Fake<INestStateMinkowski>());
       var sheetNfp = new SheetNfp(
         nfpHelper,
         sheet,

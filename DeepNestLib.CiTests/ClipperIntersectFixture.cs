@@ -13,7 +13,7 @@
     {
       var square = SvgNest.CleanPolygon2(GetNfp(new List<DxfEntity>() { new DxfGenerator().Rectangle(10) }));
       var triangle = SvgNest.CleanPolygon2(GetNfp(new List<DxfEntity>() { new DxfGenerator().IsoscelesTriangle(10) }));
-      var clip = SvgNest.ClipSubject(triangle, square, new SvgNestConfig().ClipperScale);
+      var clip = SvgNest.ClipSubject(triangle, square, new TestSvgNestConfig().ClipperScale);
 
       clip.Should().NotBeNull();
       clip.Area.Should().Be(triangle.Area);

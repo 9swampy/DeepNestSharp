@@ -14,7 +14,7 @@
     private const double ExpectedFitnessTolerance = 10000 * 3;
 
     private static volatile object testSyncLock = new object();
-    private DefaultSvgNestConfig config;
+    private TestSvgNestConfig config;
     private RawDetail loadedRawDetail;
     private NestingContext nestingContext;
     private INfp loadedNfp;
@@ -31,7 +31,7 @@
       {
         if (!this.hasImportedRawDetail)
         {
-          this.config = new DefaultSvgNestConfig();
+          this.config = new TestSvgNestConfig();
           this.config.PlacementType = PlacementTypeEnum.Squeeze;
           config.PopulationSize = 40;
           this.loadedRawDetail = DxfParser.LoadDxfStream(DxfTestFilename);

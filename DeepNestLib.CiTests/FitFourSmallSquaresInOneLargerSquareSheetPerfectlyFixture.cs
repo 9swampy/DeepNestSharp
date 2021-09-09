@@ -37,7 +37,7 @@
       DxfGenerator.GenerateSquare("fourthPart", 11D, RectangleType.FitFour).TryConvertToNfp(fourthPartIdSrc, out fourthPart).Should().BeTrue();
       // fourthPart = fourthPart.Rotate(180);
       fourthPart.Rotation = 180;
-      var config = new DefaultSvgNestConfig();
+      var config = new TestSvgNestConfig();
       config.PlacementType = PlacementTypeEnum.Gravity;
       this.nestResult = new PlacementWorker(A.Dummy<NfpHelper>(), new ISheet[] { firstSheet }, new INfp[] { firstPart, secondPart, thirdPart, fourthPart }.ApplyIndex(), config, A.Dummy<Stopwatch>(), A.Fake<INestState>()).PlaceParts();
     }
@@ -58,13 +58,13 @@
     [Obsolete]
     public void ShouldHaveExpectedFitness()
     {
-      this.nestResult.Fitness.Should().BeApproximately(1207, 10);
+      this.nestResult.Fitness.Should().BeApproximately(1036, 10);
     }
 
     [Fact]
     public void ShouldHaveSameFitnessBoundsAsOriginal()
     {
-      this.nestResult.FitnessBounds.Should().BeApproximately(598, 10);
+      this.nestResult.FitnessBounds.Should().BeApproximately(427, 10);
     }
 
     [Fact]

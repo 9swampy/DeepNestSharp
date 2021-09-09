@@ -22,7 +22,7 @@
 
     private Point partPlacementStartPos;
     private ObservablePartPlacement? capturePartPlacement;
-    private Polygon? capturePolygon;
+    private System.Windows.Shapes.Polygon? capturePolygon;
 
     public DrawingContextBoundZoomPreview()
     {
@@ -55,7 +55,7 @@
       }
     }
 
-    private static void BringToFront(Canvas parent, Polygon polygonToMove)
+    private static void BringToFront(Canvas parent, System.Windows.Shapes.Polygon polygonToMove)
     {
       try
       {
@@ -64,7 +64,7 @@
         int maxZ = 0;
         for (int i = 0; i < parent.Children.Count; i++)
         {
-          if (parent.Children[i] is Polygon child &&
+          if (parent.Children[i] is System.Windows.Shapes.Polygon child &&
               parent.Children[i] != polygonToMove)
           {
             zIndex = Panel.GetZIndex(child);
@@ -117,7 +117,7 @@
       }
       else if (DataContext is PreviewViewModel vm &&
             sender is ScrollViewer senderScrollViewer &&
-            senderScrollViewer.InputHitTest(mousePos) is Polygon polygon &&
+            senderScrollViewer.InputHitTest(mousePos) is System.Windows.Shapes.Polygon polygon &&
             polygon.GetVisualParent<Canvas>() is Canvas canvas &&
             polygon.DataContext is ObservablePartPlacement partPlacement)
       {
@@ -126,13 +126,13 @@
         if (IsDragModifierPressed && vm.MainViewModel.ActiveDocument is SheetPlacementViewModel)
         {
           vm.DragStart = new SvgPoint(mousePos.X, mousePos.Y);
-          scrollViewer.Cursor = Cursors.Hand;
-          partPlacementStartPos = new Point(vm.SelectedPartPlacement.X, vm.SelectedPartPlacement.Y);
+          this.scrollViewer.Cursor = Cursors.Hand;
+          this.partPlacementStartPos = new Point(vm.SelectedPartPlacement.X, vm.SelectedPartPlacement.Y);
           Debug.Print($"Drag start set@{vm.DragStart?.X},{vm.DragStart?.Y}. {vm.IsDragging}");
-          capturePartPlacement = partPlacement;
+          this.capturePartPlacement = partPlacement;
           partPlacement.IsDragging = true;
-          capturePolygon = polygon;
-          capturePolygon.CaptureMouse();
+          this.capturePolygon = polygon;
+          this.capturePolygon.CaptureMouse();
           e.Handled = true;
         }
       }

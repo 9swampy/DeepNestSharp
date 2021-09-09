@@ -1,53 +1,47 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <Platforms>AnyCPU;x64;x86</Platforms>
-    <PublishSingleFile>true</PublishSingleFile>
-    <ApplicationIcon>C:\Git\DeepNestPort\icon.ico</ApplicationIcon>
+    <PublishSingleFile>false</PublishSingleFile>
+    <ApplicationIcon>..\icon.ico</ApplicationIcon>
     <DebugType>embedded</DebugType>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>0.1.0.0</FileVersion>
+    <InformationalVersion>0.1.0+205.Branch.master.Sha.2bd132e3a86416395360520a0aa8bc11aeae26da</InformationalVersion>
+    <Version>0.1.0</Version>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <CodeAnalysisRuleSet />
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <CodeAnalysisRuleSet />
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <CodeAnalysisRuleSet />
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <CodeAnalysisRuleSet />
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <CodeAnalysisRuleSet />
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <CodeAnalysisRuleSet />
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Remove="Ui\Models\**" />
     <EmbeddedResource Remove="Ui\Models\**" />
     <None Remove="Ui\Models\**" />
     <Page Remove="Ui\Models\**" />
   </ItemGroup>
-
   <ItemGroup>
     <Compile Remove="Ui\ViewModels\ThemeProxy.cs" />
   </ItemGroup>
-
   <ItemGroup>
     <Content Include="..\MinkowskiDlls\minkowski.dll" Link="minkowski.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -59,10 +53,13 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Dirkster.AvalonDock" Version="4.60.0" />
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.1.0" />
+    <PackageReference Include="GitVersion.CommandLine" Version="5.7.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Light.GuardClauses" Version="9.0.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2">
       <PrivateAssets>all</PrivateAssets>
@@ -87,23 +84,19 @@
     <PackageReference Include="System.Text.Json" Version="5.0.2" />
     <PackageReference Include="System.Windows.Interactivity.WPF" Version="2.0.20525" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\DeepNestLib.Core\DeepNestLib.Core.csproj" />
     <ProjectReference Include="..\DeepNestSharp.Domain\DeepNestSharp.Domain.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Compile Update="Ui\UserControls\DrawingContextBoundZoomPreview.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
-
   <ItemGroup>
     <Page Update="Ui\UserControls\DrawingContextBoundZoomPreview.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
-
 </Project>

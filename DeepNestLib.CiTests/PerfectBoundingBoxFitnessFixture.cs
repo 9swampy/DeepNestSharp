@@ -1,6 +1,7 @@
 ﻿namespace DeepNestLib.CiTests
 {
   using System;
+  using DeepNestLib.CiTests.GeneticAlgorithm;
   using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Geometry;
   using DeepNestLib.Placement;
@@ -63,7 +64,7 @@
     public void GivenBoundsPenaltyShouldBeInLineWithSheetsPenaltyThenBoundsShouldBeComingCloseToSheets()
     {
       var sut = new OriginalFitnessSheet(sp);
-      sut.Bounds.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
+      FitnessAlignment.BoundsPenaltyShouldBeInLineWithSheetsPenalty(sut, FitnessRange.Upper);
     }
   }
 }

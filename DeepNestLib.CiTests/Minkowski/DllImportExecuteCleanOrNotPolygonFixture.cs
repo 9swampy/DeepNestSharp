@@ -242,7 +242,7 @@
         case MinkowskiExecutor.DllImportUncleaned:
           return minkowski.DllImportExecute(path, pattern, MinkowskiSumCleaning.None);
         case MinkowskiExecutor.NewMinkowskiSum:
-          return minkowski.NewMinkowskiSum(pattern, path, WithChildren.Included, false);
+          return minkowski.NewMinkowskiSum(pattern.Points, path, WithChildren.Included, false);
       }
 
       throw new ArgumentException();
@@ -257,7 +257,7 @@
         json = reader.ReadToEnd();
       }
 
-      return NFP.FromJson(json);
+      return NoFitPolygon.FromJson(json);
     }
 
     private static Sheet InitSheet()

@@ -30,7 +30,7 @@
         json = reader.ReadToEnd();
       }
 
-      a = NFP.FromJson(json);
+      a = NoFitPolygon.FromJson(json);
 
       using (Stream stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Minkowski.MinkowskiCacheA.dnpoly"))
       using (StreamReader reader = new StreamReader(stream))
@@ -38,7 +38,7 @@
         json = reader.ReadToEnd();
       }
 
-      b = NFP.FromJson(json);
+      b = NoFitPolygon.FromJson(json);
 
       using (Stream stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Minkowski.MinkowskiCacheRet.dnpoly"))
       using (StreamReader reader = new StreamReader(stream))
@@ -46,7 +46,7 @@
         json = reader.ReadToEnd();
       }
 
-      ret = NFP.FromJson(json);
+      ret = NoFitPolygon.FromJson(json);
     }
 
     [Fact]

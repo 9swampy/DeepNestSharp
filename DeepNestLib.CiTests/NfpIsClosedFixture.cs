@@ -27,7 +27,7 @@
         points.Enqueue(points.Dequeue());
       }
 
-      var rotatedPointNfp = new NFP(points);
+      var rotatedPointNfp = new NoFitPolygon(points);
 
       rotatedPointNfp.IsClosed.Should().BeFalse();
     }
@@ -59,7 +59,7 @@
         points.Enqueue(points.Dequeue());
       }
 
-      var rotatedPointNfp = new NFP(points);
+      var rotatedPointNfp = new NoFitPolygon(points);
 
       rotatedPointNfp.IsClosed.Should().BeTrue();
     }

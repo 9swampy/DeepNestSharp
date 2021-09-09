@@ -1,6 +1,7 @@
 ﻿namespace DeepNestLib.CiTests
 {
   using System;
+  using DeepNestLib.PairMap;
   using FluentAssertions;
 
   public class PmapWorkerFixtureSetup
@@ -42,12 +43,12 @@
     protected NfpPair pair1;
     protected NfpPair pair2;
 
-    public PmapWorkerFixtureSetup()
+    public PmapWorkerFixtureSetup(double pair1ASize, double pair1BSize)
     {
-      DxfGenerator.GenerateSquare("firstPart", 11D, RectangleType.FileLoad).TryConvertToNfp(firstPartIdSrc, out firstPart).Should().BeTrue();
+      DxfGenerator.GenerateSquare("firstPart", pair1ASize, RectangleType.FileLoad).TryConvertToNfp(firstPartIdSrc, out firstPart).Should().BeTrue();
       firstPart = SvgNest.CleanPolygon2(firstPart);
       firstPart.Rotation = 180;
-      DxfGenerator.GenerateSquare("secondPart", 11D, RectangleType.FileLoad).TryConvertToNfp(secondPartIdSrc, out secondPart).Should().BeTrue();
+      DxfGenerator.GenerateSquare("secondPart", pair1BSize, RectangleType.FileLoad).TryConvertToNfp(secondPartIdSrc, out secondPart).Should().BeTrue();
       secondPart = SvgNest.CleanPolygon2(secondPart);
       secondPart.Rotation = 90;
 

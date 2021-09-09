@@ -26,10 +26,22 @@
       config.Rotations = 1;
       var dispatcherService = A.Fake<IDispatcherService>();
       A.CallTo(() => dispatcherService.InvokeRequired).Returns(false);
+      sut.Config.ClipperScale.Should().Be(10000000);
+      sut.Config.Rotations.Should().Be(1);
+      sut.Config.PlacementType.Should().Be(PlacementTypeEnum.Gravity);
+      sut.Config.ExportExecutions.Should().BeTrue();
+      sut.Config.ExportExecutions = false;
+      sut.Config.ExportExecutions.Should().BeFalse();
+      sut.Config.Scale.Should().Be(25);
+      sut.Config.MergeLines.Should().BeFalse();
+      sut.Config.UsePriority.Should().BeFalse();
+      sut.Config.UseDllImport = true;
+      sut.Config.UseDllImport.Should().BeTrue();
+      sut.Config.UseDllImport = useDllImport;
+      sut.Config.UseDllImport.Should().Be(useDllImport);
 
       ((ITestPartPlacementWorker)sut).State = new NestState(config, dispatcherService);
-      ((ITestPartPlacementWorker)sut).ExportExecutions = false;
-
+      
       placementWorker = A.Fake<IPlacementWorker>();
       ((ITestPartPlacementWorker)sut).PlacementWorker = placementWorker;
       ((ITestNfpHelper)((ITestPartPlacementWorker)sut).NfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(config, A.Fake<INestStateMinkowski>());
@@ -59,8 +71,8 @@
         json = reader.ReadToEnd();
       }
 
-      NFP.FromJson(json).WidthCalculated.Should().BeApproximately(159.34, 0.01);
-      NFP.FromJson(json).HeightCalculated.Should().BeApproximately(156.23, 0.01);
+      NoFitPolygon.FromJson(json).WidthCalculated.Should().BeApproximately(159.34, 0.01);
+      NoFitPolygon.FromJson(json).HeightCalculated.Should().BeApproximately(156.23, 0.01);
 
       using (Stream stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Minkowski.MinkowskiSum2A.dnpoly"))
       using (StreamReader reader = new StreamReader(stream))

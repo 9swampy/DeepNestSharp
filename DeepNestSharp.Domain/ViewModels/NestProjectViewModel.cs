@@ -155,7 +155,7 @@
 
     private async Task OnAddPartAsync()
     {
-      var filePaths = await this.fileIoService.GetOpenFilePathsAsync(NFP.FileDialogFilter);
+      var filePaths = await this.fileIoService.GetOpenFilePathsAsync(NoFitPolygon.FileDialogFilter);
       foreach (var filePath in filePaths)
       {
         if (!string.IsNullOrWhiteSpace(filePath) && this.fileIoService.Exists(filePath))

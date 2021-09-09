@@ -87,7 +87,7 @@
         return raw.ToNfp();
       }
 
-      return new NFP();
+      return new NoFitPolygon();
     }
   }
 }

@@ -17,13 +17,13 @@
       DxfGenerator.GenerateSquare("Sheet", 22D, RectangleType.FileLoad).TryConvertToSheet(0, out sheet).Should().BeTrue();
       INfp part;
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryConvertToNfp(0, out part).Should().BeTrue();
-      this.nestResult = new PlacementWorker(A.Dummy<NfpHelper>(), new ISheet[] { sheet }, new INfp[] { part }, new SvgNestConfig(), A.Dummy<Stopwatch>(), A.Fake<INestState>()).PlaceParts();
+      this.nestResult = new PlacementWorker(A.Dummy<NfpHelper>(), new ISheet[] { sheet }, new INfp[] { part }, new TestSvgNestConfig(), A.Dummy<Stopwatch>(), A.Fake<INestState>()).PlaceParts();
     }
 
     [Fact]
     public void GivenNullSheetsPassedInThenNullReturned()
     {
-      new PlacementWorker(A.Dummy<NfpHelper>(), null, new NFP[] { new NFP() }, new SvgNestConfig(), A.Dummy<Stopwatch>(), A.Fake<INestState>()).PlaceParts().Should().BeNull();
+      new PlacementWorker(A.Dummy<NfpHelper>(), null, new NoFitPolygon[] { new NoFitPolygon() }, new TestSvgNestConfig(), A.Dummy<Stopwatch>(), A.Fake<INestState>()).PlaceParts().Should().BeNull();
     }
 
     [Fact]
@@ -52,7 +52,7 @@
     [Fact]
     public void ShouldHaveExpectedFitness()
     {
-      this.nestResult.Fitness.Should().BeApproximately(1679, 1);
+      this.nestResult.Fitness.Should().BeApproximately(1558, 100);
     }
 
     [Fact]

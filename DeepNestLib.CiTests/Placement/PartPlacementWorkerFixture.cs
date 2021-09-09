@@ -37,7 +37,7 @@
     [Fact]
     public void GivenPropertiesPopulatedWhenSerializedThenShouldNotThrow()
     {
-      var part = new NFP(new List<SvgPoint>() { new SvgPoint(1, 2) });
+      var part = new NoFitPolygon(new List<SvgPoint>() { new SvgPoint(1, 2) });
       var parts = new INfp[] { part };
       var placements = new List<IPartPlacement>() { new PartPlacement(part) };
       var sheet = new Sheet();
@@ -46,7 +46,7 @@
       clipCache.Add("item1", new ClipCacheItem() { index = 1, nfpp = new ClipperLib.IntPoint[][] { new ClipperLib.IntPoint[] { new ClipperLib.IntPoint(0, 0), new ClipperLib.IntPoint(1, 1) } } });
       var sut = new PartPlacementWorker(
         A.Fake<IPlacementWorker>(),
-        new SvgNestConfig(),
+        new TestSvgNestConfig(),
         parts,
         placements,
         sheet,
@@ -94,7 +94,7 @@
     [Fact]
     public void GivenPropertiesPopulatedShouldRoundTripSerialize()
     {
-      var part = new NFP(new List<SvgPoint>() { new SvgPoint(1, 2) });
+      var part = new NoFitPolygon(new List<SvgPoint>() { new SvgPoint(1, 2) });
       var parts = new INfp[] { part };
       var placements = new List<IPartPlacement>() { new PartPlacement(part) };
       var sheet = new Sheet();
@@ -106,7 +106,7 @@
       minkowskiSum.MinkowskiCache.Add(new MinkowskiKey(1, new double[] { 1, 2 }, 2, new int[] { 3, 4 }, new double[] { 1, 2 }, 5, new double[] { 6, 8 }), part);
       var sut = new PartPlacementWorker(
         A.Fake<IPlacementWorker>(),
-        new SvgNestConfig(),
+        new TestSvgNestConfig(),
         parts,
         placements,
         sheet,
