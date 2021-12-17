@@ -29,6 +29,12 @@
     }
 
     [Fact]
+    public void GivenSquareWithHoleWhenNetAreaThenShouldBeExpected()
+    {
+      squareWithHole.NetArea.Should().Be(20 * 20 - 10 * 10, "calculation discounts for the hole.");
+    }
+
+    [Fact]
     public void GivenGeneratedDxfWhenLoadedThenAreaExpected()
     {
       using (var inputStream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Dxfs.20x20outer10x10hole.dxf"))

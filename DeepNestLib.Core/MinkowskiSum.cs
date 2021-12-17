@@ -189,14 +189,17 @@
               if (ret.Points.Length == 0)
               {
                 System.Diagnostics.Debugger.Break();
-                var matchKvp = MinkowskiCache.ToList().First(o => o.Value.Equals(ret));
-                File.WriteAllText(@"C:\Temp\MinkowskiSum\MatchKey.json", matchKvp.Key.ToJson());
-                File.WriteAllText(@"C:\Temp\MinkowskiSum\MatchValue.json", matchKvp.Value.ToJson());
-                var nameSuffix = "Sum2";
-                File.WriteAllText($"C:\\Temp\\MinkowskiSum\\Minkowski{nameSuffix}.dnpoly", MinkowskiCache.ToJson());
-                File.WriteAllText($"C:\\Temp\\MinkowskiSum\\Minkowski{nameSuffix}A.dnpoly", path.ToJson());
-                File.WriteAllText($"C:\\Temp\\MinkowskiSum\\Minkowski{nameSuffix}B.dnpoly", b.ToJson());
-                File.WriteAllText($"C:\\Temp\\MinkowskiSum\\Minkowski{nameSuffix}Ret.dnpoly", ret.ToJson());
+                if (SvgNest.Config.ExportExecutions)
+                {
+                  var matchKvp = MinkowskiCache.ToList().First(o => o.Value.Equals(ret));
+                  File.WriteAllText(@"C:\Temp\MinkowskiSum\MatchKey.json", matchKvp.Key.ToJson());
+                  File.WriteAllText(@"C:\Temp\MinkowskiSum\MatchValue.json", matchKvp.Value.ToJson());
+                  var nameSuffix = "Sum2";
+                  File.WriteAllText($"C:\\Temp\\MinkowskiSum\\Minkowski{nameSuffix}.dnpoly", MinkowskiCache.ToJson());
+                  File.WriteAllText($"C:\\Temp\\MinkowskiSum\\Minkowski{nameSuffix}A.dnpoly", path.ToJson());
+                  File.WriteAllText($"C:\\Temp\\MinkowskiSum\\Minkowski{nameSuffix}B.dnpoly", b.ToJson());
+                  File.WriteAllText($"C:\\Temp\\MinkowskiSum\\Minkowski{nameSuffix}Ret.dnpoly", ret.ToJson());
+                }
               }
             }
 

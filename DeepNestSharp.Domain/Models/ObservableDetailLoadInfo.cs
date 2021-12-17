@@ -7,10 +7,15 @@
   using System.Threading.Tasks;
   using DeepNestLib;
   using DeepNestLib.NestProject;
+  using Microsoft.VisualStudio.Threading;
 
   public class ObservableDetailLoadInfo : ObservablePropertyObject, IWrapper<IDetailLoadInfo, DetailLoadInfo>, IDetailLoadInfo
   {
     private readonly DetailLoadInfo detailLoadInfo;
+    private int? netArea;
+    private INfp nfp;
+
+    private static JoinableTaskContext joinableTaskContext = new JoinableTaskContext();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ObservableDetailLoadInfo"/> class.
@@ -71,6 +76,19 @@
       set => SetProperty(nameof(Quantity), () => detailLoadInfo.Quantity, v => detailLoadInfo.Quantity = v, value);
     }
 
+    public int NetArea
+    {
+      get
+      {
+        if (netArea == null)
+        {
+          _ = joinableTaskContext.Factory.RunAsync(async () => this.netArea = (int)(await this.LoadAsync().ConfigureAwait(false)).NetArea);
+        }
+
+        return netArea.Value;
+      }
+    }
+
     public AnglesEnum StrictAngle
     {
       get => detailLoadInfo.StrictAngle;
@@ -81,13 +99,20 @@
 
     public async Task<INfp> LoadAsync()
     {
-      if (new FileInfo(detailLoadInfo.Path).Exists)
+      if (this.nfp == null)
       {
-        var raw = await DxfParser.LoadDxfFile(detailLoadInfo.Path);
-        return raw.ToNfp();
+        if (new FileInfo(detailLoadInfo.Path).Exists)
+        {
+          var raw = await DxfParser.LoadDxfFile(detailLoadInfo.Path);
+          this.nfp = raw.ToNfp();
+        }
+        else
+        {
+          this.nfp = new NoFitPolygon();
+        }
       }
 
-      return new NoFitPolygon();
+      return this.nfp;
     }
   }
 }

@@ -226,6 +226,15 @@
     }
 
     [JsonIgnore]
+    public double NetArea
+    {
+      get
+      {
+        return this.Area - this.Children.Sum(o => o.Area);
+      }
+    }
+
+    [JsonIgnore]
     /// <inheritdoc />
     public bool IsClosed
     {

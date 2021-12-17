@@ -8,6 +8,11 @@
     <Version>0.1.0</Version>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Converters\**" />
+    <EmbeddedResource Remove="Converters\**" />
+    <None Remove="Converters\**" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Light.GuardClauses" Version="9.0.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2">
       <PrivateAssets>all</PrivateAssets>
@@ -18,6 +23,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.0.2" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading" Version="16.10.56" />
     <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="16.10.56">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -29,8 +35,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DeepNestLib.Core\DeepNestLib.Core.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Converters\" />
   </ItemGroup>
 </Project>
