@@ -5,11 +5,11 @@
   using System.Windows.Data;
   using System.Windows.Media;
 
-  public class IsExistsToListViewItemBackgroundColor : IValueConverter
+  public class IsValidToListViewItemBackgroundColor : IValueConverter
   {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-      if (value is bool isExists && !isExists)
+      if (value is bool isValid && !isValid)
       {
         return Brushes.PaleVioletRed;
       }

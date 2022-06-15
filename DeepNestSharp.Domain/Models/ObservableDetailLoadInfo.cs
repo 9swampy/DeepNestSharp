@@ -39,6 +39,8 @@
 
     public override bool IsDirty => this.detailLoadInfo.IsDirty;
 
+    public bool IsValid => this.IsExists && !(this.Nfp is InvalidNoFitPolygon);
+
     public bool IsExists => this.detailLoadInfo.IsExists;
 
     public bool IsIncluded
@@ -82,7 +84,7 @@
       {
         if (netArea == null)
         {
-          _ = joinableTaskContext.Factory.RunAsync(async () => this.netArea = (int)(await this.LoadAsync().ConfigureAwait(false)).NetArea);
+          this.netArea = (int)this.Nfp.NetArea;
         }
 
         return netArea.Value;
@@ -97,19 +99,35 @@
 
     public DetailLoadInfo Item => detailLoadInfo;
 
+    internal INfp Nfp
+    {
+      get
+      {
+        _ = joinableTaskContext.Factory.RunAsync(async () => this.netArea = (int)(await this.LoadAsync().ConfigureAwait(false)).NetArea);
+        return this.nfp;
+      }
+    }
+
     public async Task<INfp> LoadAsync()
     {
-      if (this.nfp == null)
+      try
       {
-        if (new FileInfo(detailLoadInfo.Path).Exists)
+        if (this.nfp == null)
         {
-          var raw = await DxfParser.LoadDxfFile(detailLoadInfo.Path);
-          this.nfp = raw.ToNfp();
+          if (new FileInfo(detailLoadInfo.Path).Exists)
+          {
+            var raw = await DxfParser.LoadDxfFile(detailLoadInfo.Path);
+            this.nfp = raw.ToNfp();
+          }
+          else
+          {
+            this.nfp = new NoFitPolygon();
+          }
         }
-        else
-        {
-          this.nfp = new NoFitPolygon();
-        }
+      }
+      catch
+      {
+        this.nfp = new InvalidNoFitPolygon();
       }
 
       return this.nfp;

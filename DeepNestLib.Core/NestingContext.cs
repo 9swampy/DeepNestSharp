@@ -429,7 +429,7 @@
     public void StopNest()
     {
       this.isStopped = true;
-      this.Nest.Stop();
+      this.Nest?.Stop();
     }
   }
 }
