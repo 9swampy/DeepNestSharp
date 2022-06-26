@@ -9,7 +9,7 @@
   {
     public abstract string SaveFileDialogFilter { get; }
 
-    public async Task Export(string path, ISheetPlacement sheetPlacement)
+    public async Task Export(string path, ISheetPlacement sheetPlacement, bool doMergeLines)
     {
       await this.Export(
         path,
@@ -22,9 +22,10 @@
           result.Y = o.Y;
           return result;
         }),
-        new ISheet[] { sheetPlacement.Sheet, }).ConfigureAwait(false);
+        new ISheet[] { sheetPlacement.Sheet, },
+        doMergeLines).ConfigureAwait(false);
     }
 
-    protected abstract Task Export(string path, IEnumerable<INfp> polygons, IEnumerable<ISheet> sheets);
+    protected abstract Task Export(string path, IEnumerable<INfp> polygons, IEnumerable<ISheet> sheets, bool doMergeLines);
   }
 }

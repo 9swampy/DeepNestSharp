@@ -95,8 +95,9 @@
       set => SetProperty(nameof(LastNestFilePath), () => svgNestConfig.LastNestFilePath, v => svgNestConfig.LastNestFilePath = v, value);
     }
 
+    [Description("Experimental feature merging coaligned and coincident lines when exporting to Dxf so they'll only get cut once (no effect if you're exporting Svg).")]
     /// <inheritdoc />
-    [Category("Unimplemented")]
+    [Category("Experimental")]
     public bool MergeLines
     {
       get => svgNestConfig.MergeLines;

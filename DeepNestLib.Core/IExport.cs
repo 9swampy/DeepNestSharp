@@ -7,6 +7,6 @@
     {
         string SaveFileDialogFilter { get; }
 
-        Task Export(string path, ISheetPlacement sheetPlacement);
+        Task Export(string path, ISheetPlacement sheetPlacement, bool doMergeLines);
     }
 }

@@ -53,7 +53,20 @@ namespace DeepNestLib
     public double TimeRatio { get; set; } = 0.5;
 
     /// <inheritdoc />
-    public bool MergeLines { get; set; } = false;
+    public bool MergeLines
+    {
+      get
+      {
+        return (bool)Settings.Default["MergeLines"];
+      }
+
+      set
+      {
+        Settings.Default["MergeLines"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
+      }
+    }
 
     /// <inheritdoc />
     public bool ClipByHull

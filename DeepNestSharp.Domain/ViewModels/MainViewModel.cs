@@ -333,7 +333,7 @@
         var filePath = fileIoService.GetSaveFilePath(exporter.SaveFileDialogFilter);
         if (!string.IsNullOrWhiteSpace(filePath))
         {
-          await exporter.Export(filePath, sheetPlacement);
+          await exporter.Export(filePath, sheetPlacement, SvgNest.Config.MergeLines);
         }
       }
     }

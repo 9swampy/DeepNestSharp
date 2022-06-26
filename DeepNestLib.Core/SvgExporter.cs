@@ -13,7 +13,7 @@
     {
         public override string SaveFileDialogFilter => "Svg files (*.svg)|*.svg";
 
-        protected override async Task Export(string path, IEnumerable<INfp> polygons, IEnumerable<ISheet> sheets)
+        protected override async Task Export(string path, IEnumerable<INfp> polygons, IEnumerable<ISheet> sheets, bool doMergeLines)
         {
             await Task.Run(() =>
             {
