@@ -295,7 +295,13 @@
       var entities = GetOffsetDxfEntities(polygons.Where(o => o.Sheet.Id == sheet.Id), sheet, i);
       if (doMergeLines)
       {
-        entities = new DxfLineMerger().MergeLines(entities);
+        int entityCount = entities.Count();
+        do
+        {
+          entityCount = entities.Count();
+          entities = new DxfLineMerger().MergeLines(entities);
+        }
+        while (entityCount != entities.Count());
       }
 
       foreach (var entity in entities)
