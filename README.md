@@ -7,8 +7,8 @@ Jack and Felix have done some great work but the Original's use of a remote serv
 to translate between image formats was an issue and the Port just wasn't proving flexible/stable 
 enough for my needs. I really needed the ability to save projects, nest results and 
 individual sheet placements, and wanted to add the ability to seed subsequent nests with 
-the results of prior nests (outstanding) and the ability to edit placements (implemented) 
-- to slip that last piece in to the gaps on the sheet that the algorithm just wasn't finding.
+the results of prior nests (outstanding) and the ability to edit placements (implemented) - to 
+slip that last piece in to the gaps on the sheet that the algorithm just wasn't finding.
 
 Felix was keen to keep true to the original DeepNest code in DeepNestPort...
 > > [Hope you consider breaking away from the legacy code base because it's getting really hard to merge.](https://github.com/fel88/DeepNestPort/issues/12#issuecomment-875273391)

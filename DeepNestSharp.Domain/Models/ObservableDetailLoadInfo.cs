@@ -7,10 +7,15 @@
   using System.Threading.Tasks;
   using DeepNestLib;
   using DeepNestLib.NestProject;
+  using Microsoft.VisualStudio.Threading;
 
   public class ObservableDetailLoadInfo : ObservablePropertyObject, IWrapper<IDetailLoadInfo, DetailLoadInfo>, IDetailLoadInfo
   {
     private readonly DetailLoadInfo detailLoadInfo;
+    private int? netArea;
+    private INfp nfp;
+
+    private static JoinableTaskContext joinableTaskContext = new JoinableTaskContext();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ObservableDetailLoadInfo"/> class.
@@ -33,6 +38,8 @@
     public IList<AnglesEnum> AnglesList => Enum.GetValues(typeof(AnglesEnum)).OfType<AnglesEnum>().ToList();
 
     public override bool IsDirty => this.detailLoadInfo.IsDirty;
+
+    public bool IsValid => this.IsExists && !(this.Nfp is InvalidNoFitPolygon);
 
     public bool IsExists => this.detailLoadInfo.IsExists;
 
@@ -71,6 +78,19 @@
       set => SetProperty(nameof(Quantity), () => detailLoadInfo.Quantity, v => detailLoadInfo.Quantity = v, value);
     }
 
+    public int NetArea
+    {
+      get
+      {
+        if (netArea == null)
+        {
+          this.netArea = (int)this.Nfp.NetArea;
+        }
+
+        return netArea.Value;
+      }
+    }
+
     public AnglesEnum StrictAngle
     {
       get => detailLoadInfo.StrictAngle;
@@ -79,15 +99,38 @@
 
     public DetailLoadInfo Item => detailLoadInfo;
 
+    internal INfp Nfp
+    {
+      get
+      {
+        _ = joinableTaskContext.Factory.RunAsync(async () => this.netArea = (int)(await this.LoadAsync().ConfigureAwait(false)).NetArea);
+        return this.nfp;
+      }
+    }
+
     public async Task<INfp> LoadAsync()
     {
-      if (new FileInfo(detailLoadInfo.Path).Exists)
+      try
       {
-        var raw = await DxfParser.LoadDxfFile(detailLoadInfo.Path);
-        return raw.ToNfp();
+        if (this.nfp == null)
+        {
+          if (new FileInfo(detailLoadInfo.Path).Exists)
+          {
+            var raw = await DxfParser.LoadDxfFile(detailLoadInfo.Path);
+            this.nfp = raw.ToNfp();
+          }
+          else
+          {
+            this.nfp = new NoFitPolygon();
+          }
+        }
+      }
+      catch
+      {
+        this.nfp = new InvalidNoFitPolygon();
       }
 
-      return new NoFitPolygon();
+      return this.nfp;
     }
   }
 }

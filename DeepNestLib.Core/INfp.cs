@@ -11,6 +11,11 @@
     double Area { get; }
 
     /// <summary>
+    /// Gets the gross outer area, discounting for any holes.
+    /// </summary>
+    double NetArea { get; }
+
+    /// <summary>
     /// Cleans the points of the parent and all children, maintaining IsClosed state.
     /// </summary>
     void Clean();

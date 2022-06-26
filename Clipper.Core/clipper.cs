@@ -4744,7 +4744,9 @@ namespace ClipperLib
     }
     //------------------------------------------------------------------------------
 
+#pragma warning disable CA1002 // Do not expose generic lists
     public void Execute(ref Paths solution, double delta)
+#pragma warning restore CA1002 // Do not expose generic lists
     {
       solution.Clear();
       FixOrientations();
@@ -4775,7 +4777,9 @@ namespace ClipperLib
     }
     //------------------------------------------------------------------------------
 
+#pragma warning disable CA1045 // Do not pass types by reference
     public void Execute(ref PolyTree solution, double delta)
+#pragma warning restore CA1045 // Do not pass types by reference
     {
       solution.Clear();
       FixOrientations();

@@ -4,16 +4,16 @@
 
   public static class ExporterFactory
   {
-    public static IExport GetExporter(ICollection<INfp> polygons, ISvgNestConfig config)
+    public static IExport GetExporter(ICollection<INfp> polygons)
     {
       IExport exporter;
       if (polygons.ContainsDxfs())
       {
-        exporter = new DxfParser();
+        exporter = new DxfExporter();
       }
       else
       {
-        exporter = new SvgParser(config);
+        exporter = new SvgExporter();
       }
 
       return exporter;

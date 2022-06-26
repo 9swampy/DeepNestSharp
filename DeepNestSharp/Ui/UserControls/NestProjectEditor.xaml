@@ -9,7 +9,7 @@
                         d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
     <BooleanToVisibilityConverter x:Key="BoolToVis" />
-    <converters:IsExistsToListViewItemBackgroundColor x:Key="IsExistsToListViewItemBackgroundColor" />
+    <converters:IsValidToListViewItemBackgroundColor x:Key="IsValidToListViewItemBackgroundColor" />
     <converters:BooleanToWidthConverter x:Key="BooleanToWidthConverter" />
   </UserControl.Resources>
   <Grid>
@@ -34,6 +34,7 @@
       <Button Grid.Column="1" Content="Clear Parts" Command="{Binding ClearPartsCommand}" Margin="5,5,5,5" />
     </Grid>
     <ListView Grid.Row="1" 
+              GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler"
               ItemsSource="{Binding Path=ProjectInfo.DetailLoadInfos}" 
               SelectedItem="{Binding SelectedDetailLoadInfo}" 
               SelectedIndex="{Binding SelectedDetailLoadInfoIndex, Mode=TwoWay}">
@@ -45,7 +46,7 @@
         </DataTemplate>
         <Style TargetType="ListViewItem">
           <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-          <Setter Property="Background" Value="{Binding IsExists, Converter={StaticResource IsExistsToListViewItemBackgroundColor}}" />
+          <Setter Property="Background" Value="{Binding IsValid, Converter={StaticResource IsValidToListViewItemBackgroundColor}}" />
         </Style>
       </ListView.Resources>
       <interactivity:Interaction.Triggers>
@@ -66,6 +67,7 @@
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
+          <GridViewColumn Header="Area" Width="auto" DisplayMemberBinding="{Binding Path=NetArea, Mode=OneWay}" />
           <GridViewColumn Header="Included" Width="auto">
             <GridViewColumn.CellTemplate>
               <DataTemplate>

@@ -95,7 +95,7 @@
     }
 
     [JsonIgnore]
-    public double TotalPartsArea => this.PartPlacements.Sum(p => p.Part.Area);
+    public double TotalPartsArea => this.PartPlacements.Sum(p => p.Part.NetArea);
 
     [JsonIgnore]
     public double MaterialUtilization => Math.Abs(TotalPartsArea / this.Sheet.Area);

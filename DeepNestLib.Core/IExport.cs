@@ -1,15 +1,12 @@
 ﻿namespace DeepNestLib
 {
-  using System.Collections.Generic;
-  using System.Threading.Tasks;
-  using DeepNestLib.Placement;
+    using System.Threading.Tasks;
+    using DeepNestLib.Placement;
 
-  public interface IExport
-  {
-    Task Export(string path, ISheetPlacement sheetPlacement);
+    public interface IExport
+    {
+        string SaveFileDialogFilter { get; }
 
-    Task Export(string path, IEnumerable<INfp> polygons, IEnumerable<ISheet> sheets);
-
-    string SaveFileDialogFilter { get; }
-  }
+        Task Export(string path, ISheetPlacement sheetPlacement, bool doMergeLines);
+    }
 }
