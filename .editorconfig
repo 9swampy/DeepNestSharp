@@ -1,4 +1,6 @@
-﻿[*.cs]
+﻿root=true
+
+[*.cs]
 
 # IDE0009: Member access should be qualified.
 dotnet_diagnostic.IDE0009.severity = suggestion
