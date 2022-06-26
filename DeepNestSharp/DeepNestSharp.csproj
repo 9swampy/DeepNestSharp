@@ -10,7 +10,7 @@
     <DebugType>embedded</DebugType>
     <AssemblyVersion>0.2.0.0</AssemblyVersion>
     <FileVersion>0.2.0.0</FileVersion>
-    <InformationalVersion>0.2.0-beta.1+0.Branch.release-0.2.Sha.b14d8e11e23ab277dd98278bf6c947e53a282c8b</InformationalVersion>
+    <InformationalVersion>0.2.0-beta.1+2.Branch.release-0.2.Sha.de7a708fde06a230ca598ed59d961863df8072bb</InformationalVersion>
     <Version>0.2.0-beta0001</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

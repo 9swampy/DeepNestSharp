@@ -187,6 +187,24 @@
     }
 
     [Fact]
+    public void GivenVerticalCoalignedWhenNotOverlappingThenExpectFalse()
+    {
+      var a = new MergeLine(new DxfLine(new DxfPoint(0, 0, 0), new DxfPoint(0, 10, 0)));
+      var b = new MergeLine(new DxfLine(new DxfPoint(0, 20, 0), new DxfPoint(0, 30, 0)));
+
+      DxfLineMerger.Coincident(a, b).Should().BeFalse();
+    }
+
+    [Fact]
+    public void GivenVerticalCoalignedWhenReverseNotOverlappingThenExpectFalse()
+    {
+      var a = new MergeLine(new DxfLine(new DxfPoint(0, 0, 0), new DxfPoint(0, 10, 0)));
+      var b = new MergeLine(new DxfLine(new DxfPoint(0, 30, 0), new DxfPoint(0, 20, 0)));
+
+      DxfLineMerger.Coincident(a, b).Should().BeFalse();
+    }
+
+    [Fact]
     public void GivenVerticalDxfLineTwiceWhenMergedThenExpectOneLine()
     {
       var line = new DxfLine(new DxfPoint(0, 0, 0), new DxfPoint(0, 10, 0));

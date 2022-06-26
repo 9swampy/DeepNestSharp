@@ -28,13 +28,21 @@
 
     internal static bool Coincident(MergeLine prior, MergeLine current)
     {
-      return current.Left.X >= prior.Left.X &&
-             current.Left.X <= prior.Right.X;
+      if (prior.IsVertical)
+      {
+        return current.Left.Y >= prior.Left.Y &&
+               current.Left.Y <= prior.Right.Y;
+      }
+      else
+      {
+        return current.Left.X >= prior.Left.X &&
+               current.Left.X <= prior.Right.X;
+      }
     }
 
     internal static bool Coaligned(MergeLine prior, MergeLine current)
     {
-      return ((double.IsInfinity(current.Slope) && double.IsInfinity(prior.Slope)) || (current.Slope - prior.Slope < Tolerance)) &&
+      return ((current.IsVertical && prior.IsVertical) || (current.Slope - prior.Slope < Tolerance)) &&
              current.Intercept - prior.Intercept < Tolerance;
     }
 
