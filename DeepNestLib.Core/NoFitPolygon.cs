@@ -495,10 +495,10 @@
     /// <inheritdoc />
     public INfp CloneTree()
     {
-      INfp newtree;
+      INfp result;
       if (this is Sheet sheet)
       {
-        newtree = new Sheet()
+        result = new Sheet()
         {
           Width = sheet.Width,
           Height = sheet.Height,
@@ -506,30 +506,30 @@
       }
       else
       {
-        newtree = new NoFitPolygon();
+        result = new NoFitPolygon();
       }
 
       foreach (var t in this.Points)
       {
-        newtree.AddPoint(new SvgPoint(t.X, t.Y) { Exact = t.Exact });
+        result.AddPoint(new SvgPoint(t.X, t.Y) { Exact = t.Exact });
       }
 
       // jwb added the properties
       // newtree.Id = this.Id; //Id is set unique within the chromosome
       // newtree.Source = this.Source; //Source is set to the original Id cloned to form Adam.
-      newtree.IsPriority = this.IsPriority;
-      newtree.StrictAngle = this.StrictAngle;
-      newtree.Name = this.Name;
+      result.IsPriority = this.IsPriority;
+      result.StrictAngle = this.StrictAngle;
+      result.Name = this.Name;
 
       if (this.Children != null && this.Children.Count > 0)
       {
         foreach (var c in this.Children)
         {
-          newtree.Children.Add(c.CloneTree());
+          result.Children.Add(c.CloneTree());
         }
       }
 
-      return newtree;
+      return result;
     }
 
     /// <inheritdoc />

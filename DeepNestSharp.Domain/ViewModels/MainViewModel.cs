@@ -329,7 +329,7 @@
       }
       else
       {
-        IExport exporter = ExporterFactory.GetExporter(parts, SvgNestConfigViewModel.SvgNestConfig);
+        IExport exporter = ExporterFactory.GetExporter(parts);
         var filePath = fileIoService.GetSaveFilePath(exporter.SaveFileDialogFilter);
         if (!string.IsNullOrWhiteSpace(filePath))
         {

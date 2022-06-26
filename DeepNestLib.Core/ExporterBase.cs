@@ -5,7 +5,7 @@
   using System.Threading.Tasks;
   using DeepNestLib.Placement;
 
-  public abstract class ParserBase : IExport
+  public abstract class ExporterBase : IExport
   {
     public abstract string SaveFileDialogFilter { get; }
 
@@ -25,6 +25,6 @@
         new ISheet[] { sheetPlacement.Sheet, }).ConfigureAwait(false);
     }
 
-    public abstract Task Export(string path, IEnumerable<INfp> polygons, IEnumerable<ISheet> sheets);
+    protected abstract Task Export(string path, IEnumerable<INfp> polygons, IEnumerable<ISheet> sheets);
   }
 }

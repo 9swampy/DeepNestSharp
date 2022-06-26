@@ -31,7 +31,7 @@
 
     public ICollection<INfp> Polygons { get; } = new HashSet<INfp>();
 
-    public IList<ISheet> Sheets { get; private set; } = new List<ISheet>();
+    public IList<ISheet> Sheets { get; } = new List<ISheet>();
 
     public INestResult Current { get; private set; } = null;
 
