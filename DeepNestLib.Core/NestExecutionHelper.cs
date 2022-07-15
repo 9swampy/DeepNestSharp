@@ -9,7 +9,7 @@
   {
     public void InitialiseNest(NestingContext context, IList<ISheetLoadInfo> sheetLoadInfos, IList<IDetailLoadInfo> detailLoadInfos, IProgressDisplayer progressDisplayer)
     {
-      progressDisplayer.SetIsVisibleSecondaryProgressBar(false);
+      progressDisplayer.IsVisibleSecondaryProgressBar = false;
       context.Reset();
       int src = 0;
       foreach (var item in sheetLoadInfos)
@@ -38,7 +38,7 @@
       progressDisplayer.DisplayTransientMessage(string.Empty);
     }
 
-    public void AddToPolygons(NestingContext context, int src, RawDetail det, int quantity, IProgressDisplayer progressDisplayer, bool isIncluded = true, bool isPriority = false, bool isMultiplied = false, AnglesEnum strictAngles = AnglesEnum.Vertical)
+    public void AddToPolygons(NestingContext context, int src, RawDetail det, int quantity, IProgressDisplayer progressDisplayer, bool isIncluded = true, bool isPriority = false, bool isMultiplied = false, AnglesEnum strictAngles = AnglesEnum.AsPreviewed)
     {
       var item = new DetailLoadInfo() { Quantity = quantity, IsIncluded = isIncluded, IsPriority = isPriority, IsMultiplied = isMultiplied, StrictAngle = strictAngles };
       AddToPolygons(context, src, det, item, progressDisplayer);

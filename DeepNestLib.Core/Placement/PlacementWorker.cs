@@ -7,7 +7,7 @@
   using DeepNestLib.Placement;
   using Light.GuardClauses;
 
-  public class PlacementWorker : IPlacementWorker
+  public class PlacementWorker : IPlacementWorker, ITestPlacementWorker
   {
 #if NCRUNCH
     internal const bool NCrunchTrace = false;
@@ -24,6 +24,7 @@
     private Stopwatch sw;
     private Stack<ISheet> unusedSheets;
     private List<INfp> unplacedParts;
+    private PartPlacementWorker lastPartPlacementWorker;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlacementWorker"/> class.
@@ -42,6 +43,14 @@
       this.config = config;
       this.backgroundStopwatch = backgroundStopwatch;
       this.state = state;
+    }
+
+    PartPlacementWorker ITestPlacementWorker.LastPartPlacementWorker
+    {
+      get
+      {
+        return lastPartPlacementWorker;
+      }
     }
 
     /// <summary>
@@ -78,13 +87,13 @@
           VerboseLog("Priority Placement.");
         }
 
-        var partPlacementWorker = new PartPlacementWorker(this, config, parts, placements, sheet, nfpHelper, state);
-        var processingParts = (isPriorityPlacement ? unplacedParts.Where(o => o.IsPriority) : unplacedParts).ToArray();
+        lastPartPlacementWorker = new PartPlacementWorker(this, config, parts, placements, sheet, nfpHelper, state);
+        var processingParts = (isPriorityPlacement ? unplacedParts.Where(o => o.IsPriority).Union(unplacedParts.Where(o => !o.IsPriority)) : unplacedParts).ToArray();
         for (int processingPartIndex = 0; processingPartIndex < processingParts.Length; processingPartIndex++)
         {
           var processingPart = processingParts[processingPartIndex];
           var partIndex = parts.IndexOf(parts.Single(o => o.Id == processingPart.Id));
-          var processPartResult = partPlacementWorker.ProcessPart(processingParts[processingPartIndex], partIndex);
+          var processPartResult = lastPartPlacementWorker.ProcessPart(processingParts[processingPartIndex], partIndex);
           if (processPartResult == InnerFlowResult.Break)
           {
             break;
@@ -112,10 +121,10 @@
           unusedSheets.Push(requeue.Dequeue());
         }
 
-        if (partPlacementWorker.Placements != null && partPlacementWorker.Placements.Count > 0)
+        if (lastPartPlacementWorker.Placements != null && lastPartPlacementWorker.Placements.Count > 0)
         {
           VerboseLog($"Add {config.PlacementType} placement {sheet.ToShortString()}.");
-          allPlacements.Add(new SheetPlacement(config.PlacementType, sheet, partPlacementWorker.Placements, partPlacementWorker.MergedLength, config.ClipperScale));
+          allPlacements.Add(new SheetPlacement(config.PlacementType, sheet, lastPartPlacementWorker.Placements, lastPartPlacementWorker.MergedLength, config.ClipperScale));
         }
         else
         {

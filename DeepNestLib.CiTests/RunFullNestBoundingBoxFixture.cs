@@ -36,7 +36,8 @@
           this.config = new TestSvgNestConfig();
           this.config.PlacementType = PlacementTypeEnum.BoundingBox;
           this.config.UseParallel = false;
-          config.PopulationSize = 40;
+          this.config.PopulationSize = 40;
+          this.config.UseDllImport = false;
           this.loadedRawDetail = DxfParser.LoadDxfStream(DxfTestFilename);
           this.loadedRawDetail.Should().NotBeNull();
           var progressCapture = new ProgressTestResponse();
@@ -50,7 +51,7 @@
           dxfGenerator.GenerateRectangle("Sheet", 595D, 395D, RectangleType.FileLoad).TryConvertToSheet(firstSheetIdSrc, out firstSheet).Should().BeTrue();
           this.nestingContext.Sheets.Add(firstSheet);
 
-          this.nestingContext.StartNest();
+          this.nestingContext.StartNest().Wait();
           int i = 0;
           while (i < 50 && this.nestingContext.State.TopNestResults.Count < terminateNestResultCount)
           {

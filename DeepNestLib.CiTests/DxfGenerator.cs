@@ -3,6 +3,7 @@
   using System;
   using System.Collections.Generic;
   using System.Linq;
+  using IxMilia.Dxf;
   using IxMilia.Dxf.Entities;
 
   public class DxfGenerator
@@ -17,7 +18,14 @@
       return DxfParser.ConvertDxfToRawDetail(name, new List<DxfEntity>() { Rectangle(width, height, type, isClosed) });
     }
 
-    public DxfPolyline Rectangle(double side, RectangleType rectangleType = RectangleType.FileLoad, bool isClosed = false)
+    public DxfFile GenerateRectangle(double width, double height, RectangleType type, bool isClosed = false)
+    {
+      var result = new DxfFile();
+      result.Entities.Add(Rectangle(width, height, type, isClosed));
+      return result;
+    }
+
+    public DxfPolyline Square(double side, RectangleType rectangleType = RectangleType.FileLoad, bool isClosed = false)
     {
       return Rectangle(side, side, rectangleType, isClosed);
     }

@@ -43,17 +43,29 @@
 
     public INestState State { get; }
 
-    public void StartNest()
+    /// <summary>
+    /// Reinitializes the context and start a new nest.
+    /// </summary>
+    /// <returns>awaitable Task.</returns>
+    public async Task StartNest()
     {
+      this.progressDisplayer.DisplayTransientMessage($"Pre-processing. . .");
       this.ReorderSheets();
       this.InternalReset();
       this.Current = null;
+
+      (NestItem<INfp>[] PartsLocal, List<NestItem<ISheet>> SheetsLocal) nestItems = await Task.Run(
+        () =>
+        {
+          return SvgNestInitializer.BuildNestItems(config, this.Polygons, this.Sheets, progressDisplayer);
+        }).ConfigureAwait(false);
+
       this.Nest = new SvgNest(
         this.messageService,
         this.progressDisplayer,
-        MinkowskiSum.CreateInstance(this.config, this.state),
-        state);
-      this.progressDisplayer.DisplayTransientMessage($"Pre-processing. . .");
+        this.state,
+        this.config,
+        nestItems);
       this.isStopped = false;
     }
 
@@ -62,138 +74,34 @@
       this.isStopped = false;
     }
 
-    public void NestIterate(ISvgNestConfig config)
+    public async Task NestIterate(ISvgNestConfig config)
     {
       try
       {
-        var lsheets = new List<ISheet>();
-        var lpoly = new List<INfp>();
-
-        int id = 0;
-        foreach (var item in Polygons)
+        if (!this.isStopped)
         {
-          item.Id = id;
-          id++;
-        }
-
-        for (int i = 0; i < Sheets.Count; i++)
-        {
-          Sheets[i].Id = i;
-        }
-
-        this.progressDisplayer.InitialiseLoopProgress(ProgressBar.Primary, "Pre-processing (Polygon Clone). . .", Polygons.Count);
-        foreach (var item in Polygons)
-        {
-          NoFitPolygon clone = item.CloneExact();
-          lpoly.Add(clone);
-          this.progressDisplayer.IncrementLoopProgress(ProgressBar.Primary);
-        }
-
-        foreach (var item in Sheets)
-        {
-          var clone = new Sheet();
-          clone.Id = item.Id;
-          clone.Source = item.Source;
-          clone.ReplacePoints(item.Points.Select(z => new SvgPoint(z.X, z.Y) { Exact = z.Exact }));
-          if (item.Children != null)
+          if (Nest.IsStopped)
           {
-            foreach (var citem in item.Children)
-            {
-              clone.Children.Add(new NoFitPolygon());
-              var l = clone.Children.Last();
-              l.Id = citem.Id;
-              l.Source = citem.Source;
-              l.ReplacePoints(citem.Points.Select(z => new SvgPoint(z.X, z.Y) { Exact = z.Exact }));
-            }
-          }
-
-          lsheets.Add(clone);
-        }
-
-        if (config.OffsetTreePhase)
-        {
-          var grps = lpoly.GroupBy(z => z.Source).ToArray();
-          this.progressDisplayer.InitialiseLoopProgress(ProgressBar.Primary, "Pre-processing (Offset Tree Phase). . .", grps.Length);
-          if (config.UseParallel)
-          {
-            Parallel.ForEach(grps, (item) =>
-            {
-              OffsetTreeReplace(config, item);
-              this.progressDisplayer.IncrementLoopProgress(ProgressBar.Primary);
-            });
+            this.StopNest();
           }
           else
           {
-            foreach (var item in grps)
-            {
-              OffsetTreeReplace(config, item);
-              this.progressDisplayer.IncrementLoopProgress(ProgressBar.Primary);
-            }
+            Nest.LaunchWorkers(config, stateBackground);
           }
+        }
 
-          foreach (var item in lsheets)
+        if (state.TopNestResults != null && State.TopNestResults.Count > 0)
+        {
+          var plcpr = State.TopNestResults.Top;
+
+          if (Current == null || plcpr.Fitness < Current.Fitness)
           {
-            var gap = config.SheetSpacing - (config.Spacing / 2);
-            INfp sheet = item;
-            SvgNest.OffsetTree(ref sheet, -gap, config, true);
+            AssignPlacement(plcpr);
           }
         }
 
-        var p1 = lpoly.GroupBy(z => z.Source).Select(z => new NestItem<INfp>()
-        {
-          Polygon = z.First(),
-          Quantity = z.Count(),
-        });
-
-        var p2 = lsheets.GroupBy(z => z.Source).Select(z => new NestItem<ISheet>()
-        {
-          Polygon = z.First(),
-          Quantity = z.Count(),
-        });
-
-        var partsLocal = new List<NestItem<INfp>>(p1);
-        var sheetsLocal = new List<NestItem<ISheet>>(p2);
-        int srcc = 0;
-        foreach (var item in partsLocal)
-        {
-          item.Polygon.Source = srcc++;
-        }
-
-        foreach (var item in sheetsLocal)
-        {
-          item.Polygon.Source = srcc++;
-        }
-
-        if (Nest == null)
-        {
-          throw new FieldAccessException("Nest was null when it should not be possible.");
-        }
-        else
-        {
-          if (!this.isStopped)
-          {
-            if (Nest.IsStopped)
-            {
-              this.StopNest();
-            }
-            else
-            {
-              Nest.LaunchWorkers(partsLocal.ToArray(), sheetsLocal.ToArray(), config, stateBackground);
-            }
-          }
-
-          if (state.TopNestResults != null && State.TopNestResults.Count > 0)
-          {
-            var plcpr = State.TopNestResults.Top;
-
-            if (Current == null || plcpr.Fitness < Current.Fitness)
-            {
-              AssignPlacement(plcpr);
-            }
-          }
-
-          stateNestingContext.IncrementIterations();
-        }
+        this.progressDisplayer.InitialiseLoopProgress(ProgressBar.Secondary, config.PopulationSize);
+        stateNestingContext.IncrementIterations();
       }
       catch (Exception ex)
       {
@@ -271,22 +179,6 @@
           var w = maxx - minx;
           x += w + gap;
         }
-      }
-    }
-
-    /// <summary>
-    /// This is the only point where simplification feeds in to the process so use this in tests to apply config-simplifications to imports.
-    /// </summary>
-    /// <param name="config">Config to use when simplifying.</param>
-    /// <param name="item">The item that will be modified.</param>
-    private static void OffsetTreeReplace(ISvgNestConfig config, IGrouping<int, INfp> item)
-    {
-      // Don't see the reason to apply to all in the group because later we regroup and just use the first again.
-      var target = item.First();
-      SvgNest.OffsetTree(ref target, 0.5 * config.Spacing, config);
-      foreach (var zitem in item)
-      {
-        zitem.ReplacePoints(item.First().Points);
       }
     }
 
@@ -428,6 +320,7 @@
 
     public void StopNest()
     {
+      System.Diagnostics.Debug.Print("NestingContext.StopNest()");
       this.isStopped = true;
       this.Nest?.Stop();
     }

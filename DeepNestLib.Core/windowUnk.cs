@@ -1,6 +1,7 @@
 ﻿namespace DeepNestLib
 {
   using System.Collections.Generic;
+  using System.Text.Json;
 
   public class WindowUnk : IWindowUnk
   {
@@ -26,6 +27,24 @@
     public void Insert(DbCacheKey obj, bool inner = false)
     {
       this.db.Insert(obj, inner);
+    }
+
+    public string ToJson(bool writeIndented = false)
+    {
+      var options = new JsonSerializerOptions();
+      options.Converters.Add(new SheetJsonConverter());
+      options.Converters.Add(new NfpJsonConverter());
+      options.WriteIndented = writeIndented;
+      return System.Text.Json.JsonSerializer.Serialize(this, options);
+    }
+
+    internal static WindowUnk FromJson(string json)
+    {
+      var options = new JsonSerializerOptions();
+      options.Converters.Add(new WindowUnkJsonConverter());
+      options.Converters.Add(new SheetJsonConverter());
+      options.Converters.Add(new NfpJsonConverter());
+      return System.Text.Json.JsonSerializer.Deserialize<WindowUnk>(json, options);
     }
   }
 }

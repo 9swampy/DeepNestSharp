@@ -2,6 +2,7 @@
 {
   using DeepNestLib;
   using DeepNestLib.IO;
+  using DeepNestLib.Placement;
   using DeepNestSharp.Domain.ViewModels;
 
   public class ProgressDisplayer : ProgressDisplayerBase, IProgressDisplayer
@@ -16,6 +17,26 @@
       this.messageService = messageService;
       this.dispatcherService = dispatcherService;
       this.nestMonitorViewModel = nestMonitorViewModel;
+    }
+
+    public override bool IsVisibleSecondaryProgressBar
+    {
+      get
+      {
+        return nestMonitorViewModel.IsSecondaryProgressVisible;
+      }
+
+      set
+      {
+        if (dispatcherService.InvokeRequired)
+        {
+          dispatcherService.Invoke(() => IsVisibleSecondaryProgressBar = value);
+        }
+        else
+        {
+          nestMonitorViewModel.IsSecondaryProgressVisible = value;
+        }
+      }
     }
 
     public void DisplayMessageBox(string text, string caption, MessageBoxIcon icon)
@@ -40,7 +61,11 @@
           System.Diagnostics.Debug.Print($"{progressBar} {percentageComplete:0.0} {frame.GetMethod().DeclaringType.FullName}.{frame.GetMethod().Name} {frame.GetFileLineNumber()}");
         }
 
-        dispatcherService.Invoke(() => DisplayProgress(progressBar, percentageComplete));
+        if (progressBar == ProgressBar.Primary ||
+            (progressBar == ProgressBar.Secondary && nestMonitorViewModel.IsSecondaryProgressVisible))
+        {
+          dispatcherService.Invoke(() => DisplayProgress(progressBar, percentageComplete));
+        }
       }
       else
       {
@@ -54,12 +79,26 @@
             nestMonitorViewModel.ProgressSecondary = percentageComplete;
             break;
         }
+
+        System.Diagnostics.Debug.Print($"{progressBar} {percentageComplete}%");
       }
     }
 
-    public void DisplayProgress(int placedParts, int currentPopulation)
+    public void DisplayProgress(int currentPopulation, INestResult topNest)
     {
-      DisplayProgress(ProgressBar.Primary, CalculatePercentageComplete(placedParts, currentPopulation, SvgNest.Config.PopulationSize, nestMonitorViewModel.TopNestResults.Top.TotalPartsCount));
+      DisplayProgress(ProgressBar.Primary, CalculatePercentageComplete(topNest));
+    }
+
+    public override void ClearTransientMessage()
+    {
+      if (dispatcherService.InvokeRequired)
+      {
+        dispatcherService.Invoke(() => ClearTransientMessage());
+      }
+      else
+      {
+        SetTransientMessage(string.Empty);
+      }
     }
 
     public override void DisplayTransientMessage(string message)
@@ -72,27 +111,20 @@
       {
         if (!string.IsNullOrWhiteSpace(message))
         {
-          nestMonitorViewModel.LastLogMessage = message;
-          nestMonitorViewModel.MessageLogBuilder.AppendLine(message);
+          SetTransientMessage(message);
         }
       }
+    }
+
+    private void SetTransientMessage(string message)
+    {
+      nestMonitorViewModel.LastLogMessage = message;
+      nestMonitorViewModel.MessageLogBuilder.AppendLine(message);
     }
 
     public void InitialiseUiForStartNest()
     {
       // NOP
-    }
-
-    public override void SetIsVisibleSecondaryProgressBar(bool isVisible)
-    {
-      if (dispatcherService.InvokeRequired)
-      {
-        dispatcherService.Invoke(() => SetIsVisibleSecondaryProgressBar(isVisible));
-      }
-      else
-      {
-        nestMonitorViewModel.IsSecondaryProgressVisible = isVisible;
-      }
     }
 
     public void UpdateNestsList()

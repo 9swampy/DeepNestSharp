@@ -234,6 +234,7 @@
 
     /// <inheritdoc />
     [Category("Nest Settings")]
+    [Description("Space between parts. When laser cutting this should be 0 so you can benefit from the merge lines functionality.")]
     public double Spacing
     {
       get => svgNestConfig.Spacing;

@@ -25,9 +25,9 @@
     public CompareMinkowskiImplementationsFixture()
     {
       INfp firstPart;
-      DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Rectangle(11D) }).TryConvertToNfp(firstPartIdSrc, out firstPart).Should().BeTrue();
+      DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Square(11D) }).TryConvertToNfp(firstPartIdSrc, out firstPart).Should().BeTrue();
       INfp secondPart;
-      DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Rectangle(11D) }).TryConvertToNfp(secondPartIdSrc, out secondPart).Should().BeTrue();
+      DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Square(11D) }).TryConvertToNfp(secondPartIdSrc, out secondPart).Should().BeTrue();
       var sw = new Stopwatch();
       sw.Start();
       IMinkowskiSumService minkowskiSumService = A.Dummy<MinkowskiSum>();

@@ -118,7 +118,7 @@
     {
       var partPlacement = GetPartPlacementForFit12InDonutHole(useDllImport, out _, out _);
 
-      partPlacement.X.Should().BeApproximately(55.79, 0.11);
+      partPlacement.X.Should().BeApproximately(56, 0.11);
     }
 
     [Theory]
@@ -128,7 +128,7 @@
     {
       var partPlacement = GetPartPlacementForFit12InDonutHole(useDllImport, out _, out _);
 
-      partPlacement.Y.Should().BeApproximately(59.56, 1);
+      partPlacement.Y.Should().BeApproximately(62, 1);
     }
 
     [Theory]
@@ -150,7 +150,7 @@
       var inputPart = sut.InputPart;
       var partPlacementArg = new Capture<PartPlacement>();
       A.CallTo(() => localPlacementWorker.AddPlacement(inputPart, A<List<IPartPlacement>>._, A<INfp>._, partPlacementArg, A<PlacementTypeEnum>._, A<ISheet>._, A<double>._)).Returns(default);
-
+      ((ITestPartPlacementWorker)sut).ExportExecutions = false;
       sut.ProcessPart(sut.InputPart, 0);
 
       placementWorker = localPlacementWorker;

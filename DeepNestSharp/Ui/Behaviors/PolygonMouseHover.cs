@@ -3,9 +3,9 @@
   using System.Windows;
   using System.Windows.Controls;
   using System.Windows.Input;
-  using System.Windows.Interactivity;
   using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Domain.ViewModels;
+  using Microsoft.Xaml.Behaviors;
 
   public class PolygonMouseHover : Behavior<FrameworkElement>
   {

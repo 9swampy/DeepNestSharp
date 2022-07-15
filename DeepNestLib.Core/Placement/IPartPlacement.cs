@@ -2,15 +2,15 @@
 {
   public interface IPartPlacement : IMinMaxXY
   {
-    /// <summary>
-    /// Gets or sets a hull of the part captured only when not Gravity or BoundingBox (ie. Squeeze).
-    /// </summary>
-    INfp Hull { get; set; }
+    ///// <summary>
+    ///// Gets or sets a hull of the part captured only when not Gravity or BoundingBox (ie. Squeeze).
+    ///// </summary>
+    //INfp Hull { get; set; }
 
-    /// <summary>
-    /// Gets or sets a hull of the sheet captured only when not Gravity or BoundingBox (ie. Squeeze).
-    /// </summary>
-    INfp HullSheet { get; set; }
+    ///// <summary>
+    ///// Gets or sets a hull of the sheet captured only when not Gravity or BoundingBox (ie. Squeeze).
+    ///// </summary>
+    //INfp HullSheet { get; set; }
 
     int Id { get; set; }
 
@@ -28,6 +28,9 @@
 
     object MergedSegments { get; set; }
 
+    /// <summary>
+    /// Gets a clone of the part that was placed. The clone will have been rotated (potentially by 0') but NOT shifted.
+    /// </summary>
     INfp Part { get; }
 
     /// <summary>

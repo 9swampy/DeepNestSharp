@@ -35,9 +35,9 @@
     }
 
     // inner NFP
-    public NfpCandidateList(INfpHelper nfpHelper, ISheet sheet, INfp part, double clipperScale, bool useDllImport)
+    internal NfpCandidateList(INfpHelper nfpHelper, ISheet sheet, INfp part, double clipperScale, bool useDllImport)
     {
-      Items = nfpHelper.GetInnerNfp(sheet, part, MinkowskiCache.Cache, clipperScale, useDllImport); // ?? new INfp[0];
+      Items = nfpHelper.GetInnerNfp(sheet, part, MinkowskiCache.Cache, clipperScale, useDllImport, o => { }); // ?? new INfp[0];
       Sheet = sheet;
       Part = part;
     }

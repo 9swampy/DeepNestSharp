@@ -531,12 +531,12 @@ namespace ClipperLib
     internal PolyNode PolyNode;
   };
 
-  internal class OutPt
+  public class OutPt
   {
-    internal int Idx;
-    internal IntPoint Pt;
-    internal OutPt Next;
-    internal OutPt Prev;
+    public int Idx;
+    public IntPoint Pt;
+    public OutPt Next;
+    public OutPt Prev;
   };
 
   internal class Join
@@ -3857,7 +3857,7 @@ namespace ClipperLib
       }
       //------------------------------------------------------------------------------
 
-      private static bool Poly2ContainsPoly1(OutPt outPt1, OutPt outPt2)
+      public static bool Poly2ContainsPoly1(OutPt outPt1, OutPt outPt2)
       {
         OutPt op = outPt1;
         do

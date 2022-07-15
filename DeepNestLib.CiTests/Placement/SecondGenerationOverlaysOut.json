@@ -893,74 +893,74 @@
             {
               "Exact": true,
               "Marked": false,
-              "X": 21.3953,
-              "Y": 6.1217
+              "X": 92.1827,
+              "Y": 124.0599
             },
             {
               "Exact": true,
               "Marked": false,
-              "X": 27.976,
-              "Y": 9.3447
+              "X": 98.7634,
+              "Y": 127.2828
             },
             {
               "Exact": true,
               "Marked": false,
-              "X": 27.952,
-              "Y": 29.7449
+              "X": 98.7394,
+              "Y": 147.6831
             },
             {
               "Exact": true,
               "Marked": false,
-              "X": 24.444,
-              "Y": 31.8216
+              "X": 95.2314,
+              "Y": 149.7598
             },
             {
               "Exact": true,
               "Marked": false,
-              "X": 17.6062,
-              "Y": 32.6454
+              "X": 88.3936,
+              "Y": 150.5836
             },
             {
               "Exact": true,
               "Marked": false,
-              "X": 11.1505,
-              "Y": 30.1053
+              "X": 81.9379,
+              "Y": 148.0435
             },
             {
               "Exact": true,
               "Marked": false,
-              "X": 8.6861,
-              "Y": 27.5861
+              "X": 79.4735,
+              "Y": 145.5242
             },
             {
               "Exact": true,
               "Marked": false,
-              "X": 6.083,
-              "Y": 21.1009
+              "X": 76.8704,
+              "Y": 139.039
             },
             {
               "Exact": true,
               "Marked": false,
-              "X": 6.1217,
-              "Y": 17.5769
+              "X": 76.9091,
+              "Y": 135.515
             },
             {
               "Exact": true,
               "Marked": false,
-              "X": 8.8668,
-              "Y": 11.1505
+              "X": 79.6542,
+              "Y": 129.0887
             },
             {
               "Exact": true,
               "Marked": false,
-              "X": 11.3861,
-              "Y": 8.6861
+              "X": 82.1735,
+              "Y": 126.6242
             },
             {
               "Exact": true,
               "Marked": false,
-              "X": 17.8713,
-              "Y": 6.083
+              "X": 88.6587,
+              "Y": 124.0212
             }
           ],
           "IsPriority": false,
@@ -977,212 +977,211 @@
         {
           "Exact": true,
           "Marked": false,
-          "X": 26.0496,
-          "Y": 0.6201
+          "X": 96.837,
+          "Y": 118.5583
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 36.8725,
-          "Y": 6.5868
+          "X": 107.6599,
+          "Y": 124.525
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 83.9406,
-          "Y": 6.7812
+          "X": 154.728,
+          "Y": 124.7194
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 83.9861,
-          "Y": 6.7861
+          "X": 154.7735,
+          "Y": 124.7242
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 85.539,
-          "Y": 6.9905
+          "X": 156.3264,
+          "Y": 124.9287
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 86.9861,
-          "Y": 7.5899
+          "X": 157.7735,
+          "Y": 125.5281
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 88.2287,
-          "Y": 8.5434
+          "X": 159.0161,
+          "Y": 126.4816
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 89.1822,
-          "Y": 9.786
+          "X": 159.9696,
+          "Y": 127.7242
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 89.7816,
-          "Y": 11.2331
+          "X": 160.569,
+          "Y": 129.1713
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 89.9861,
-          "Y": 12.786
+          "X": 160.7735,
+          "Y": 130.7242
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 89.9861,
-          "Y": 26.1861
+          "X": 160.7735,
+          "Y": 144.1242
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 89.7816,
-          "Y": 27.739
+          "X": 160.569,
+          "Y": 145.6772
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 89.1822,
-          "Y": 29.1861
+          "X": 159.9696,
+          "Y": 147.1242
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 88.2287,
-          "Y": 30.4287
+          "X": 159.0161,
+          "Y": 148.3669
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 86.9861,
-          "Y": 31.3822
+          "X": 157.7735,
+          "Y": 149.3204
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 85.539,
-          "Y": 31.9816
+          "X": 156.3264,
+          "Y": 149.9198
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 83.9861,
-          "Y": 32.1861
+          "X": 154.7735,
+          "Y": 150.1242
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 78.0938,
-          "Y": 32.8043
+          "X": 148.8812,
+          "Y": 150.7425
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 35.6396,
-          "Y": 32.9355
+          "X": 106.427,
+          "Y": 150.8737
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 25.8699,
-          "Y": 38.2836
+          "X": 96.6573,
+          "Y": 156.2218
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 23.8174,
-          "Y": 38.499
+          "X": 94.6048,
+          "Y": 156.4371
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 18.7489,
-          "Y": 38.9721
+          "X": 89.5363,
+          "Y": 156.9103
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 13.7306,
-          "Y": 38.1173
+          "X": 84.518,
+          "Y": 156.0555
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 9.1046,
-          "Y": 35.9929
+          "X": 79.892,
+          "Y": 153.9311
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 5.1861,
-          "Y": 32.7435
+          "X": 75.9735,
+          "Y": 150.6817
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 2.242,
-          "Y": 28.5907
+          "X": 73.0294,
+          "Y": 146.5288
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 0.4732,
-          "Y": 23.8173
+          "X": 71.2606,
+          "Y": 141.7555
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 0,
-          "Y": 18.7489
+          "X": 70.7874,
+          "Y": 136.687
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 0.8548,
-          "Y": 13.7306
+          "X": 71.6422,
+          "Y": 131.6688
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 2.9792,
-          "Y": 9.1046
+          "X": 73.7666,
+          "Y": 127.0428
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 6.2286,
-          "Y": 5.1861
+          "X": 77.016,
+          "Y": 123.1242
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 10.3815,
-          "Y": 2.242
+          "X": 81.1689,
+          "Y": 120.1802
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 15.1548,
-          "Y": 0.4732
+          "X": 85.9422,
+          "Y": 118.4113
         },
         {
           "Exact": true,
           "Marked": false,
-          "X": 20.2233,
-          "Y": 0
+          "X": 91.0107,
+          "Y": 117.9382
         }
       ],
       "IsPriority": false,
       "StrictAngle": 0
     },
-    "Length": 1,
     "Items": [
       {
         "Fitted": false,
@@ -1202,13 +1201,13 @@
             "Exact": true,
             "Marked": false,
             "X": 36.0635,
-            "Y": 41.6479
+            "Y": 41.648
           },
           {
             "Exact": true,
             "Marked": false,
-            "X": 36.0635,
-            "Y": 0.6201
+            "X": 26.0496,
+            "Y": 41.648
           },
           {
             "Exact": true,
@@ -1219,14 +1218,14 @@
           {
             "Exact": true,
             "Marked": false,
-            "X": 26.0496,
-            "Y": 41.6479
+            "X": 36.0635,
+            "Y": 0.6201
           },
           {
             "Exact": true,
             "Marked": false,
             "X": 36.0635,
-            "Y": 41.6479
+            "Y": 41.648
           }
         ],
         "IsPriority": false,
@@ -2990,6 +2989,8 @@
   "Log": [
     "ProcessPart NFP: i:1;s:1;r:0\u00B0@0,0.",
     "Calculate first on SheetNfp",
+    "RemovedOuterNfps:0",
+    "SheetNfp has 1.Items",
     "NFP: i:1;s:1;r:0\u00B0@0,0 could be placed if sheet empty (only do this for the first part on each sheet).",
     "First placement, put it on the bottom left corner. . ."
   ]

@@ -29,6 +29,9 @@
 
     private static decimal Truncate(decimal d, byte decimals)
     {
+      //var decimalScale = Math.Pow(10, decimals);
+      //decimal r = (decimal)Math.Truncate(d * decimalScale) / (decimal)decimalScale;
+
       decimal r = Math.Round(d, decimals);
 
       if (d > 0 && r > d)

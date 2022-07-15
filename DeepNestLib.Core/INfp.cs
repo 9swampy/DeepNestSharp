@@ -103,9 +103,11 @@
     /// <summary>
     /// Rotate the part by the specified amount.
     /// </summary>
-    /// <param name="degrees">The amount to rotate, +ve clockwise, -ve anti-clockwise.</param>
-    /// <returns>A clone of the original, rotated.</returns>
+    /// <param name="degrees">The degrees to rotate, +ve clockwise, -ve anti-clockwise.</param>
+    /// <returns>A clone of the original, rotated. The original <see cref="NoFitPolygon"/> is unaltered.</returns>
     INfp Rotate(double degrees, WithChildren withChildren = WithChildren.Included);
+
+    bool Overlaps(INfp other);
 
     INfp Slice(int v);
 

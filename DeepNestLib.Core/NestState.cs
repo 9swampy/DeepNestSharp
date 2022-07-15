@@ -64,8 +64,6 @@
     [DisplayName("Clipper Call Counter")]
     public int ClipperCallCounter => clipperCallCounter;
 
-
-
     [Description("The number of generations processed.")]
     [Category("Genetic Algorithm")]
     public int Generations => generations;
@@ -112,6 +110,7 @@
     [DisplayName("NfpPair % Cached")]
     public double NfpPairCachePercentCached => nfpPairCachePercentCached;
 
+    /// <inheritdoc />
     [Description("Population of the current generation.")]
     [Category("Genetic Algorithm")]
     public int Population => population;

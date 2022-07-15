@@ -31,8 +31,8 @@
     [Fact]
     public void ShouldSetPoints1()
     {
-      processed[0].Nfp.Points.Should().BeEquivalentTo(PmapWorkerProcessFixture.ExpectedPoints1, options => options.Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 1))
-                                    .WhenTypeIs<double>());
+      processed[0].Nfp.Points.Should().BeEquivalentTo(PmapWorkerProcessSecondFixture.ExpectedPoints1, options => options.Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 1))
+                                      .WhenTypeIs<double>());
     }
 
     [Fact]

@@ -1,6 +1,6 @@
 ﻿namespace DeepNestLib
 {
-  public partial class SvgNest
+  internal partial class NfpSimplifier
   {
     public class InrangeItem
     {
