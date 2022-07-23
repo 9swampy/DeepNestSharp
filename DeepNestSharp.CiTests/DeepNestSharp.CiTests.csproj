@@ -5,8 +5,8 @@
     <Platforms>AnyCPU;x64;x86</Platforms>
     <AssemblyVersion>0.2.0.0</AssemblyVersion>
     <FileVersion>0.2.0.0</FileVersion>
-    <InformationalVersion>0.2.0-ArrayListBackForth.1+20.Branch.ArrayListBackForth.Sha.7f050f5d3b4763a6c11087e6f34cd1528b38d0b7</InformationalVersion>
-    <Version>0.2.0-arraylistbackfor0001</Version>
+    <InformationalVersion>0.2.0-beta.2+0.Branch.release-0.2.Sha.1c9007f1804360e9b5ec30637563729f1e28e956</InformationalVersion>
+    <Version>0.2.0-beta0002</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FakeItEasy" Version="7.3.1" />
