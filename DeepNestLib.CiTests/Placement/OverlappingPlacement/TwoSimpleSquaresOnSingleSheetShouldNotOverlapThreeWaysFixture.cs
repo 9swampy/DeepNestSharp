@@ -42,7 +42,7 @@
       secondPart.Id = 2;
       secondPart.Source = 2;
       secondPart.Rotation = secondRotation;
-      
+
       config = new TestSvgNestConfig();
       //config = A.Fake<ISvgNestConfig>();
       config.Simplify = true;
@@ -63,14 +63,14 @@
       config.ParallelNests = 10;
       config.Spacing = 0;
       nfpHelper = A.Dummy<NfpHelper>();
-      var placementWorker = new PlacementWorker(nfpHelper, new ISheet[] { firstSheet }, new INfp[] { firstPart, secondPart }.ApplyIndex(), config, A.Dummy<Stopwatch>(), A.Fake<INestState>());
+      var placementWorker = new PlacementWorker(nfpHelper, new ISheet[] { firstSheet }, new Chromosome[] { firstPart.ToChromosome(), secondPart.ToChromosome() }.ApplyIndex(), config, A.Dummy<Stopwatch>(), A.Fake<INestState>());
       ITestPlacementWorker sut = placementWorker;
       nestResult = placementWorker.PlaceParts();
 
       nestResult.UnplacedParts.Count().Should().Be(0);
       nestResult.UsedSheets[0].PartPlacements[0].Part.Should().NotBe(firstPart);
       nestResult.UsedSheets[0].PartPlacements[0].Part.Id.Should().Be(firstPart.Id);
-      nestResult.UsedSheets[0].PartPlacements[0].Part.Should().BeEquivalentTo(firstPart.Rotate(firstRotation), opt => opt.Excluding(o=> o.Rotation));
+      nestResult.UsedSheets[0].PartPlacements[0].Part.Should().BeEquivalentTo(firstPart.Rotate(firstRotation), opt => opt.Excluding(o => o.Rotation));
       nestResult.UsedSheets[0].PartPlacements[1].Part.Should().NotBe(secondPart);
       nestResult.UsedSheets[0].PartPlacements[1].Part.Id.Should().Be(secondPart.Id);
 

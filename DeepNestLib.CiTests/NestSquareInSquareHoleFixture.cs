@@ -40,7 +40,7 @@
     [InlineData(180, 40, 40, 70, 17.18, 26.58)]
 
     [InlineData(270, 40, 0, 70, 17.18, 26.58)]
-    
+
     public void NestSquareInSquareHoleShouldBeObserved(double firstRotation, double firstX, double firstY, double secondRotation, double secondX, double secondY)
     {
       ISvgNestConfig config;
@@ -85,7 +85,7 @@
       config.ToleranceSvg = 0.005;
       config.ParallelNests = 10;
       nfpHelper = A.Dummy<NfpHelper>();
-      var placementWorker = new PlacementWorker(nfpHelper, new ISheet[] { firstSheet }, new INfp[] { firstPart, secondPart }.ApplyIndex(), config, A.Dummy<Stopwatch>(), A.Fake<INestState>());
+      var placementWorker = new PlacementWorker(nfpHelper, new ISheet[] { firstSheet }, new Chromosome[] { firstPart.ToChromosome(), secondPart.ToChromosome() }.ApplyIndex(), config, A.Dummy<Stopwatch>(), A.Fake<INestState>());
       ITestPlacementWorker sut = placementWorker;
       nestResult = placementWorker.PlaceParts();
 

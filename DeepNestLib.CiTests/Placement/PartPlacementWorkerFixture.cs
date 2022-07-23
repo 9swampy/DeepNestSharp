@@ -38,7 +38,7 @@
     public void GivenPropertiesPopulatedWhenSerializedThenShouldNotThrow()
     {
       var part = new NoFitPolygon(new List<SvgPoint>() { new SvgPoint(1, 2) });
-      var parts = new INfp[] { part };
+      var parts = new Chromosome[] { part.ToChromosome() };
       var placements = new List<IPartPlacement>() { new PartPlacement(part) };
       var sheet = new Sheet();
       var window = new WindowUnk();
@@ -95,7 +95,7 @@
     public void GivenPropertiesPopulatedShouldRoundTripSerialize()
     {
       var part = new NoFitPolygon(new List<SvgPoint>() { new SvgPoint(1, 2) });
-      var parts = new INfp[] { part };
+      var parts = new Chromosome[] { part.ToChromosome() };
       var placements = new List<IPartPlacement>() { new PartPlacement(part) };
       var sheet = new Sheet();
       var window = new WindowUnk();

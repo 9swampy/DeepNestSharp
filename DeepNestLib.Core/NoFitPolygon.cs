@@ -595,6 +595,11 @@
       }
     }
 
+    public Chromosome ToChromosome()
+    {
+      return new Chromosome(this);
+    }
+
     /// <inheritdoc />
     public virtual string ToJson()
     {

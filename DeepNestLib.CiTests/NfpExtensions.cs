@@ -11,5 +11,15 @@
 
       return nfps;
     }
+
+    public static Chromosome[] ApplyIndex(this Chromosome[] gene)
+    {
+      for (int idx = 0; idx < gene.Length; idx++)
+      {
+        gene[idx].Part.Id = idx;
+      }
+
+      return gene;
+    }
   }
 }

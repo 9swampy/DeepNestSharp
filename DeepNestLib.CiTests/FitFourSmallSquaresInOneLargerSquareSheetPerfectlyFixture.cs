@@ -21,25 +21,17 @@
     {
       ISheet firstSheet;
       DxfGenerator.GenerateSquare("Sheet", 23D, RectangleType.FileLoad).TryConvertToSheet(firstSheetIdSrc, out firstSheet).Should().BeTrue();
-      INfp firstPart;
-      DxfGenerator.GenerateSquare("firstPart", 11D, RectangleType.FitFour).TryConvertToNfp(firstPartIdSrc, out firstPart).Should().BeTrue();
-      // firstPart = firstPart.Rotate(180);
-      firstPart.Rotation = 180;
-      INfp secondPart;
-      DxfGenerator.GenerateSquare("secondPart", 11D, RectangleType.FitFour).TryConvertToNfp(secondPartIdSrc, out secondPart).Should().BeTrue();
-      // secondPart = secondPart.Rotate(180);
-      secondPart.Rotation = 180;
-      INfp thirdPart;
-      DxfGenerator.GenerateSquare("thirdPart", 11D, RectangleType.FitFour).TryConvertToNfp(thirdPartIdSrc, out thirdPart).Should().BeTrue();
-      // thirdPart = thirdPart.Rotate(180);
-      thirdPart.Rotation = 180;
-      INfp fourthPart;
-      DxfGenerator.GenerateSquare("fourthPart", 11D, RectangleType.FitFour).TryConvertToNfp(fourthPartIdSrc, out fourthPart).Should().BeTrue();
-      // fourthPart = fourthPart.Rotate(180);
-      fourthPart.Rotation = 180;
+      Chromosome firstPart;
+      DxfGenerator.GenerateSquare("firstPart", 11D, RectangleType.FitFour).TryConvertToNfp(firstPartIdSrc, 180, out firstPart).Should().BeTrue();
+      Chromosome secondPart;
+      DxfGenerator.GenerateSquare("secondPart", 11D, RectangleType.FitFour).TryConvertToNfp(secondPartIdSrc, 180, out secondPart).Should().BeTrue();
+      Chromosome thirdPart;
+      DxfGenerator.GenerateSquare("thirdPart", 11D, RectangleType.FitFour).TryConvertToNfp(thirdPartIdSrc, 180, out thirdPart).Should().BeTrue();
+      Chromosome fourthPart;
+      DxfGenerator.GenerateSquare("fourthPart", 11D, RectangleType.FitFour).TryConvertToNfp(fourthPartIdSrc, 180, out fourthPart).Should().BeTrue();
       var config = new TestSvgNestConfig();
       config.PlacementType = PlacementTypeEnum.Gravity;
-      this.nestResult = new PlacementWorker(A.Dummy<NfpHelper>(), new ISheet[] { firstSheet }, new INfp[] { firstPart, secondPart, thirdPart, fourthPart }.ApplyIndex(), config, A.Dummy<Stopwatch>(), A.Fake<INestState>()).PlaceParts();
+      this.nestResult = new PlacementWorker(A.Dummy<NfpHelper>(), new ISheet[] { firstSheet }, new Chromosome[] { firstPart, secondPart, thirdPart, fourthPart }.ApplyIndex(), config, A.Dummy<Stopwatch>(), A.Fake<INestState>()).PlaceParts();
     }
 
     [Fact]

@@ -14,15 +14,15 @@
       this.window = window;
     }
 
-    public List<NfpPair> Generate(bool useParallel, INfp[] parts)
+    public List<NfpPair> Generate(bool useParallel, Chromosome[] gene)
     {
       List<NfpPair> pairs = new List<NfpPair>();
       if (useParallel)
       {
-        Parallel.For(0, parts.Length, i =>
+        Parallel.For(0, gene.Length, i =>
         {
           {
-            foreach (var pair in CreatePairs(i, parts))
+            foreach (var pair in CreatePairs(i, gene))
             {
               var doc = new DbCacheKey(pair.Asource, pair.Bsource, pair.ARotation, pair.BRotation);
               AddToPairs(pairs, pair, doc);
@@ -32,9 +32,9 @@
       }
       else
       {
-        for (var i = 0; i < parts.Length; i++)
+        for (var i = 0; i < gene.Length; i++)
         {
-          foreach (var pair in CreatePairs(i, parts))
+          foreach (var pair in CreatePairs(i, gene))
           {
             var doc = new DbCacheKey(pair.Asource, pair.Bsource, pair.ARotation, pair.BRotation);
             AddToPairs(pairs, pair, doc);
@@ -45,20 +45,20 @@
       return pairs;
     }
 
-    private IEnumerable<NfpPair> CreatePairs(int i, INfp[] parts)
+    private IEnumerable<NfpPair> CreatePairs(int i, Chromosome[] gene)
     {
-      var b = parts[i];
+      var b = gene[i];
       for (var j = 0; j < i; j++)
       {
-        var a = parts[j];
+        var a = gene[j];
         yield return new NfpPair()
         {
-          A = a,
-          B = b,
+          A = a.Part,
+          B = b.Part,
           ARotation = a.Rotation,
           BRotation = b.Rotation,
-          Asource = a.Source,
-          Bsource = b.Source,
+          Asource = a.Part.Source,
+          Bsource = b.Part.Source,
         };
       }
     }

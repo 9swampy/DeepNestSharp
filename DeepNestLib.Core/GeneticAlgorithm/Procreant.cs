@@ -70,7 +70,7 @@
 
     private bool IsUnique(PopulationItem citizen)
     {
-      var chromosome = $"{string.Join(",", citizen.Parts.Select(p => p.Id))},{string.Join(",", citizen.Rotation.Select(r => r))}";
+      var chromosome = $"{string.Join(",", citizen.Gene.Select(p => p.Part.Id))},{string.Join(",", citizen.Gene.Select(r => r.Rotation))}";
       if (ancestors.Add(chromosome))
       {
         this.progressDisplayer.IncrementLoopProgress(ProgressBar.Primary);
@@ -144,25 +144,25 @@
 
     private PopulationItem Mutate(PopulationItem p)
     {
-      var clone = new PopulationItem(p.Parts.ToList(), p.Rotation.Clone() as double[]);
-      for (var i = 0; i < clone.Parts.Count(); i++)
+      var clone = new PopulationItem(p.Gene.Clone() as Chromosome[]);
+      for (var i = 0; i < clone.Gene.Length; i++)
       {
         var rand = r.NextDouble();
         if (rand < 0.01 * config.MutationRate)
         {
           var j = i + 1;
-          if (j < clone.Parts.Count)
+          if (j < clone.Gene.Length)
           {
-            var temp = clone.Parts[i];
-            clone.Parts[i] = clone.Parts[j];
-            clone.Parts[j] = temp;
+            var temp = clone.Gene[i];
+            clone.Gene[i] = clone.Gene[j];
+            clone.Gene[j] = temp;
           }
         }
 
         rand = r.NextDouble();
         if (rand < 0.01 * config.MutationRate)
         {
-          clone.Rotation[i] = GetRandomRotation(clone.Parts[i]);
+          clone.Gene[i].Rotation = GetRandomRotation(clone.Gene[i].Part);
         }
       }
 
@@ -224,39 +224,40 @@
     // single point crossover
     private PopulationItem[] Mate(PopulationItem male, PopulationItem female)
     {
-      var cutpoint = (int)Math.Round(Math.Min(Math.Max(r.NextDouble(), 0.1), 0.9) * (male.Parts.Count - 1));
+      var cutpoint = (int)Math.Round(Math.Min(Math.Max(r.NextDouble(), 0.1), 0.9) * (male.Gene.Length - 1));
 
-      var gene1 = new List<INfp>(male.Parts.Take(cutpoint).ToArray());
-      var rot1 = new List<double>(male.Rotation.Take(cutpoint).ToArray());
-
-      var gene2 = new List<INfp>(female.Parts.Take(cutpoint).ToArray());
-      var rot2 = new List<double>(female.Rotation.Take(cutpoint).ToArray());
-
-      var i = 0;
-
-      for (i = 0; i < female.Parts.Count; i++)
-      {
-        if (!gene1.Any(z => z.Id == female.Parts[i].Id))
-        {
-          gene1.Add(female.Parts[i]);
-          rot1.Add(female.Rotation[i]);
-        }
-      }
-
-      for (i = 0; i < male.Parts.Count; i++)
-      {
-        if (!gene2.Any(z => z.Id == male.Parts[i].Id))
-        {
-          gene2.Add(male.Parts[i]);
-          rot2.Add(male.Rotation[i]);
-        }
-      }
+      var son = CompleteGene(male.Gene.Take(cutpoint), female.Gene);
+      var daughter = CompleteGene(female.Gene.Take(cutpoint), male.Gene);
 
       return new[]
       {
-        new PopulationItem(gene1, rot1.ToArray()),
-        new PopulationItem(gene2, rot2.ToArray()),
+        new PopulationItem(son.ToArray()),
+        new PopulationItem(daughter.ToArray()),
       };
+    }
+
+    /// <summary>
+    /// Given partial gene add any missing chromosomes from the population gene.
+    /// </summary>
+    /// <param name="initiantPartialGene">Partial gene from initiant parent.</param>
+    /// <param name="populationItem">Full gene from supplicant parent.</param>
+    /// <returns>Completed child gene.</returns>
+    private static Chromosome[] CompleteGene(IEnumerable<Chromosome> initiantPartialGene, Chromosome[] supplicantParentGene)
+    {
+      var result = initiantPartialGene.ToArray();
+      var idx = result.Length;
+      Array.Resize(ref result, supplicantParentGene.Length);
+      var i = 0;
+      for (i = 0; i < supplicantParentGene.Length; i++)
+      {
+        if (!initiantPartialGene.Any(z => z.Part.Id == supplicantParentGene[i].Part.Id))
+        {
+          result[idx] = supplicantParentGene[i];
+          idx++;
+        }
+      }
+
+      return result;
     }
 
     public void Generate()
