@@ -17,19 +17,20 @@
       this.item = nfp;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="INfp" />
     public INfp SourceItem => item;
-
 
     /// <inheritdoc/>
     public override bool IsDirty => true;
 
-    [Description("The gross outer area, not discounting for any holes."), Category("Dimensions")]
+    [Description("The gross outer area, not discounting for any holes.")]
+    [Category("Dimensions")]
     /// <inheritdoc/>
     public double Area => this.item.Area;
 
     /// <inheritdoc/>
-    [Description("The children (aka holes) nested inside the part."), Category("Definition")]
+    [Description("The children (aka holes) nested inside the part.")]
+    [Category("Definition")]
     public IList<INfp> Children
     {
       get => this.item.Children;
@@ -39,12 +40,14 @@
     /// <inheritdoc/>
     public bool Fitted => this.item.Fitted;
 
-    [Description("The overall height of the part."), Category("Dimensions")]
+    [Description("The overall height of the part.")]
+    [Category("Dimensions")]
     /// <inheritdoc/>
     public double HeightCalculated => this.item.HeightCalculated;
 
     /// <inheritdoc/>
-    [Description("The Id of the part."), Category("Description")]
+    [Description("The Id of the part.")]
+    [Category("Description")]
     public int Id
     {
       get => this.item.Id;
@@ -70,31 +73,39 @@
     public int Length => this.item.Length;
 
     /// <inheritdoc/>
-    [Description("The MaxX of part's points."), Category("Placement")]
+    [Description("The MaxX of part's points.")]
+    [Category("Placement")]
     public double MaxX => this.item.MaxX;
 
     /// <inheritdoc/>
-    [Description("The MaxY of part's points."), Category("Placement")]
+    [Description("The MaxY of part's points.")]
+    [Category("Placement")]
     public double MaxY => this.item.MaxY;
 
     /// <inheritdoc/>
-    [Description("The MinX of part's points."), Category("Placement")]
+    [Description("The MinX of part's points.")]
+    [Category("Placement")]
     public double MinX => this.item.MinX;
 
     /// <inheritdoc/>
-    [Description("The MinY of part's points."), Category("Placement")]
+    [Description("The MinY of part's points.")]
+    [Category("Placement")]
     public double MinY => this.item.MinY;
 
     /// <inheritdoc/>
-    [Description("The name of file loaded as the part."), Category("Description")]
+    [Description("The name of file loaded as the part.")]
+    [Category("Description")]
     public string Name
     {
       get => this.item.Name;
       set => SetProperty(nameof(Name), () => this.item.Name, v => this.item.Name = v, value);
     }
 
+    public double NetArea => item.NetArea;
+
     /// <inheritdoc/>
-    [Description("The X offset (Set and used by the export process)."), Category("Placement")]
+    [Description("The X offset (Set and used by the export process).")]
+    [Category("Placement")]
     public double? OffsetX
     {
       get => this.item.OffsetX;
@@ -102,7 +113,8 @@
     }
 
     /// <inheritdoc/>
-    [Description("The Y offset (Set and used by the export process)."), Category("Placement")]
+    [Description("The Y offset (Set and used by the export process).")]
+    [Category("Placement")]
     public double? OffsetY
     {
       get => this.item.OffsetY;
@@ -110,7 +122,11 @@
     }
 
     /// <inheritdoc/>
-    [Description("An index noting the order in the plcement sequence at which this part got inserted."), Category("Placement")]
+    public bool Overlaps(INfp other) => this.item.Overlaps(other);
+
+    /// <inheritdoc/>
+    [Description("An index noting the order in the plcement sequence at which this part got inserted.")]
+    [Category("Placement")]
     public int PlacementOrder
     {
       get => this.item.PlacementOrder;
@@ -118,11 +134,13 @@
     }
 
     /// <inheritdoc/>
-    [Description("The points that make up the outer edge of the part."), Category("Definition")]
+    [Description("The points that make up the outer edge of the part.")]
+    [Category("Definition")]
     SvgPoint[] IPolygon.Points => this.item.Points;
 
     /// <inheritdoc/>
-    [Description("The degrees of rotation from the original imported part (tbc)."), Category("Placement")]
+    [Description("The degrees of rotation from the original imported part (tbc).")]
+    [Category("Placement")]
     public double Rotation
     {
       get => this.item.Rotation;
@@ -144,19 +162,22 @@
     }
 
     /// <inheritdoc/>
-    [Description("Denotes whether any restrictions on angle of placement have been imposed."), Category("Placement")]
+    [Description("Denotes whether any restrictions on angle of placement have been imposed.")]
+    [Category("Placement")]
     public AnglesEnum StrictAngle
     {
       get => this.item.StrictAngle;
       set => SetProperty(nameof(StrictAngle), () => this.item.StrictAngle, v => this.item.StrictAngle = v, value);
     }
 
-    [Description("The overall width of the part."), Category("Dimensions")]
+    [Description("The overall width of the part.")]
+    [Category("Dimensions")]
     /// <inheritdoc/>
     public double WidthCalculated => this.item.WidthCalculated;
 
     /// <inheritdoc/>
-    [Description("The X offset of the part from the origin."), Category("Placement")]
+    [Description("The X offset of the part from the origin.")]
+    [Category("Placement")]
     public double X
     {
       get => this.item.X;
@@ -164,7 +185,8 @@
     }
 
     /// <inheritdoc/>
-    [Description("The Y offset of the part from the origin."), Category("Placement")]
+    [Description("The Y offset of the part from the origin.")]
+    [Category("Placement")]
     public double Y
     {
       get => this.item.Y;

@@ -6,6 +6,7 @@
   using System.Windows.Input;
   using DeepNestLib;
   using DeepNestLib.NestProject;
+  using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Domain.Services;
   using DeepNestSharp.Ui.Docking;
   using DeepNestSharp.Ui.Models;
@@ -59,16 +60,16 @@
 
     public IRelayCommand<ISheetLoadInfo> RemoveSheetCommand => removeSheetCommand ?? (removeSheetCommand = new RelayCommand<ISheetLoadInfo>(OnRemoveSheet));
 
-    public ICommand ExecuteNestCommand => this.executeNestCommand ?? (this.executeNestCommand = new AsyncRelayCommand(this.OnExecuteNest, CanExecuteNest));
+    public AsyncRelayCommand ExecuteNestCommand => this.executeNestCommand ?? (this.executeNestCommand = new AsyncRelayCommand(this.OnExecuteNest, CanExecuteNest));
 
     private bool CanExecuteNest()
     {
-      if (MainViewModel.NestMonitorViewModel.IsRunning)
+      if (MainViewModel.NestMonitorViewModel.IsRunning || this.ProjectInfo.DetailLoadInfos.Count == 0)
       {
         return false;
       }
 
-      return !this.ProjectInfo.DetailLoadInfos.Any(o => !o.IsExists);
+      return !this.ProjectInfo.DetailLoadInfos.Any(o => o is ObservableDetailLoadInfo cast && !cast.IsValid);
     }
 
     public override string FileDialogFilter => DeepNestLib.NestProject.ProjectInfo.FileDialogFilter;
@@ -118,7 +119,7 @@
 
     protected override void NotifyContentUpdated()
     {
-      OnPropertyChanged(nameof(ProjectInfo));
+      Contextualise();
       OnPropertyChanged(nameof(SelectedDetailLoadInfoIndex));
       OnPropertyChanged(nameof(SelectedDetailLoadInfo));
     }
@@ -169,7 +170,7 @@
         }
       }
 
-      OnPropertyChanged(nameof(ProjectInfo));
+      Contextualise();
       this.IsDirty = true;
     }
 
@@ -178,15 +179,21 @@
       var newSheet = new SheetLoadInfo(this.ProjectInfo.Config);
       observableProjectInfo?.SheetLoadInfos.Add(newSheet);
 
-      OnPropertyChanged(nameof(ProjectInfo));
+      Contextualise();
       this.IsDirty = true;
     }
 
     private void OnClearParts()
     {
       observableProjectInfo?.DetailLoadInfos.Clear();
-      OnPropertyChanged(nameof(ProjectInfo));
+      Contextualise();
       this.IsDirty = true;
+    }
+
+    private void Contextualise()
+    {
+      OnPropertyChanged(nameof(ProjectInfo));
+      this.executeNestCommand.NotifyCanExecuteChanged();
     }
 
     private async Task OnExecuteNest()
@@ -208,7 +215,7 @@
       if (arg != null)
       {
         this.ProjectInfo.DetailLoadInfos.Remove(arg);
-        OnPropertyChanged(nameof(ProjectInfo));
+        Contextualise();
       }
     }
 
@@ -217,7 +224,7 @@
       if (arg != null)
       {
         this.ProjectInfo.SheetLoadInfos.Remove(arg);
-        OnPropertyChanged(nameof(ProjectInfo));
+        Contextualise();
       }
     }
 

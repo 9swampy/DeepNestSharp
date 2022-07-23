@@ -97,6 +97,10 @@
           if (!materialUtilization.HasValue)
           {
             materialUtilization = (double)Math.Pow(1 - this.sheetPlacement.MaterialUtilization, 1.1) * sheetPlacement.Sheet.Area;
+            if (!materialUtilization.HasValue || double.IsNaN(materialUtilization.Value))
+            {
+              materialUtilization = sheetPlacement.Sheet.Area;
+            }
           }
 
           return materialUtilization.Value;

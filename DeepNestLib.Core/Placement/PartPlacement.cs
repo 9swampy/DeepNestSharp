@@ -53,12 +53,12 @@
     public bool IsDragging { get; set; }
 
     /// <inheritdoc />
-    [JsonIgnore]
-    public INfp Hull { get; set; }
+    //[JsonIgnore]
+    //public INfp Hull { get; set; }
 
     /// <inheritdoc />
-    [JsonIgnore]
-    public INfp HullSheet { get; set; }
+    //[JsonIgnore]
+    //public INfp HullSheet { get; set; }
 
     /// <inheritdoc />
     [JsonIgnore]

@@ -11,6 +11,11 @@
     double Area { get; }
 
     /// <summary>
+    /// Gets the gross outer area, discounting for any holes.
+    /// </summary>
+    double NetArea { get; }
+
+    /// <summary>
     /// Cleans the points of the parent and all children, maintaining IsClosed state.
     /// </summary>
     void Clean();
@@ -98,9 +103,11 @@
     /// <summary>
     /// Rotate the part by the specified amount.
     /// </summary>
-    /// <param name="degrees">The amount to rotate, +ve clockwise, -ve anti-clockwise.</param>
-    /// <returns>A clone of the original, rotated.</returns>
+    /// <param name="degrees">The degrees to rotate, +ve clockwise, -ve anti-clockwise.</param>
+    /// <returns>A clone of the original, rotated. The original <see cref="NoFitPolygon"/> is unaltered.</returns>
     INfp Rotate(double degrees, WithChildren withChildren = WithChildren.Included);
+
+    bool Overlaps(INfp other);
 
     INfp Slice(int v);
 

@@ -52,6 +52,12 @@
 
     bool Simplify { get; set; }
 
+    /// <summary>
+    /// Gets or sets the spacing to apply to sheet edges during the nest. 
+    /// Rounding errors result in approx 1mm margin necessary even with 0 Spacing set.
+    /// If spacing set then tbc the full amount is taken off sheet width available area.
+    /// If spacing set then tbc half the amount is taken off sheet height available area.
+    /// </summary>
     double Spacing { get; set; }
 
     /// <summary>
@@ -72,6 +78,8 @@
     /// <summary>
     /// If set then parts will be restricted to <see cref="StrictAngles"/>.
     /// If also set on an individual part, part wins.
+    /// AsPreviewed: parts will be restricted to the orientation shown in the part preview (and 180').
+    /// Rotate90: parts will be restricted to the orientation shown in the part preview rotated by +/-90'.
     /// </summary>
     AnglesEnum StrictAngles { get; set; }
 

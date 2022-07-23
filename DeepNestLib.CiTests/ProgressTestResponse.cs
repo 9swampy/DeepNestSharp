@@ -1,9 +1,13 @@
 ﻿namespace DeepNestLib.CiTests
 {
+  using DeepNestLib.Placement;
   using System.Threading;
+  using System.Threading.Tasks;
 
   public class ProgressTestResponse : IProgressDisplayer
   {
+    private bool isVisibleSecondaryProgressBar;
+
     public AutoResetEvent Are { get; } = new AutoResetEvent(false);
 
     public void DisplayMessageBox(string text, string caption, MessageBoxIcon icon)
@@ -16,7 +20,12 @@
       Are.Set();
     }
 
-    public void DisplayProgress(int placedParts, int currentPopulation)
+    public void DisplayProgress(int currentPopulation, INestResult top)
+    {
+      Are.Set();
+    }
+
+    public void ClearTransientMessage()
     {
       Are.Set();
     }
@@ -26,7 +35,7 @@
       Are.Set();
     }
 
-    public void IncrementLoopProgress(ProgressBar progressBar)
+    public async Task IncrementLoopProgress(ProgressBar progressBar)
     {
       Are.Set();
     }
@@ -46,9 +55,17 @@
       throw new System.NotImplementedException();
     }
 
-    public void SetIsVisibleSecondaryProgressBar(bool isVisible)
+    public bool IsVisibleSecondaryProgressBar
     {
-      Are.Set();
+      get
+      {
+        return isVisibleSecondaryProgressBar;
+      }
+      set
+      {
+        isVisibleSecondaryProgressBar = value;
+        Are.Set();
+      }
     }
 
     public void UpdateNestsList()

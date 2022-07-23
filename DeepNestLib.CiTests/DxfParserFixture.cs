@@ -76,7 +76,7 @@
     [Fact]
     public void GivenCreatedOneSquareWhenComparedToLoadedOneSquareThenShouldBeEquivalent()
     {
-      var created = DxfParser.ConvertDxfToRawDetail(this.loadedNfp.Name, new List<DxfEntity>() { DxfGenerator.Rectangle(11D) });
+      var created = DxfParser.ConvertDxfToRawDetail(this.loadedNfp.Name, new List<DxfEntity>() { DxfGenerator.Square(11D) });
       created.Should().BeEquivalentTo(this.loadedRawDetail);
     }
   }

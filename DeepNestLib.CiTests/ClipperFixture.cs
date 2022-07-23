@@ -15,7 +15,7 @@
       var original = new NoFitPolygon(source);
       var alternate = new NoFitPolygon(source);
       var sut = new DeepNestClipper() as IDeprecatedClipper;
-      sut.ScaleUpPathsOriginal(original, 1D).Should().BeEquivalentTo(DeepNestClipper.ScaleUpPaths(alternate.Points, 1D));
+      sut.ScaleUpPathsOriginal(original, 1D).Should().BeEquivalentTo(DeepNestClipper.ScaleUpPath(alternate.Points, 1D));
     }
 
     [Fact]
@@ -46,7 +46,7 @@
         _ = sut.ScaleUpPathsOriginal(original, 1D);
         deprecatedOriginal += sw.ElapsedTicks;
         sw.Restart();
-        _ = DeepNestClipper.ScaleUpPaths(original.Points, 1D);
+        _ = DeepNestClipper.ScaleUpPath(original.Points, 1D);
         current += sw.ElapsedTicks;
         sw.Restart();
         _ = sut.ScaleUpPathsSlowerParallel(original.Points, 1D);

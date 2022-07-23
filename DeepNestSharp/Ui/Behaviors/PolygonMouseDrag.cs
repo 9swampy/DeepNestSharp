@@ -1,9 +1,9 @@
 ﻿namespace DeepNestSharp.Ui.Behaviors
 {
   using System.Windows;
-  using System.Windows.Interactivity;
   using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Domain.ViewModels;
+  using Microsoft.Xaml.Behaviors;
 
   public class PolygonMouseDrag : Behavior<FrameworkElement>
   {

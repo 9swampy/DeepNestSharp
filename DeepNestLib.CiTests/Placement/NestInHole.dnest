@@ -1,0 +1,65 @@
+{
+  "DetailLoadInfos": [
+    {
+      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\200x100With160x80Hole.dxf",
+      "Quantity": 1,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": true,
+      "StrictAngle": 0
+    },
+    {
+      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\20x20.dxf",
+      "Quantity": 1,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": true,
+      "StrictAngle": 0
+    }
+  ],
+  "SheetLoadInfos": [
+    {
+      "Width": 210,
+      "Height": 110,
+      "Quantity": 1
+    }
+  ],
+  "Config": {
+    "Scale": 25,
+    "ClipperScale": 10000000,
+    "ExploreConcave": false,
+    "Rotations": 4,
+    "SheetSpacing": 0,
+    "UseHoles": false,
+    "Tolerance": 2,
+    "ToleranceSvg": 0.005,
+    "TimeRatio": 0.5,
+    "MergeLines": true,
+    "ClipByHull": true,
+    "CurveTolerance": 0.72,
+    "DrawSimplification": true,
+    "ExportExecutionPath": "",
+    "LastDebugFilePath": "C:\\Temp",
+    "SaveAsFileTypeIndex": 1,
+    "SheetWidth": 210,
+    "SheetHeight": 110,
+    "SheetQuantity": 1,
+    "PlacementType": 0,
+    "Simplify": false,
+    "OffsetTreePhase": true,
+    "Spacing": 0,
+    "PopulationSize": 50,
+    "ProcreationTimeout": 15000,
+    "MutationRate": 10,
+    "MutationRateMin": 1,
+    "MutationRateMax": 60,
+    "Multiplier": 1,
+    "StrictAngles": 0,
+    "UseParallel": false,
+    "ParallelNests": 10,
+    "ShowPartPositions": true,
+    "UseDllImport": false,
+    "UseMinkowskiCache": false,
+    "UsePriority": false
+  }
+}

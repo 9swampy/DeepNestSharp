@@ -3,6 +3,7 @@
 namespace DeepNestLib
 {
   using System;
+  using System.Text.Json.Serialization;
   using DeepNestLib.NestProject;
 
   public class SvgNestConfig : ISvgNestConfig
@@ -53,7 +54,20 @@ namespace DeepNestLib
     public double TimeRatio { get; set; } = 0.5;
 
     /// <inheritdoc />
-    public bool MergeLines { get; set; } = false;
+    public bool MergeLines
+    {
+      get
+      {
+        return (bool)Settings.Default["MergeLines"];
+      }
+
+      set
+      {
+        Settings.Default["MergeLines"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
+      }
+    }
 
     /// <inheritdoc />
     public bool ClipByHull
@@ -103,6 +117,7 @@ namespace DeepNestLib
       }
     }
 
+    [JsonIgnore]
     /// <inheritdoc />
     public bool ExportExecutions
     {
@@ -150,6 +165,7 @@ namespace DeepNestLib
       }
     }
 
+    [JsonIgnore]
     public string LastNestFilePath
     {
       get

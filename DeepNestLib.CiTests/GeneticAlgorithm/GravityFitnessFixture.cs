@@ -25,7 +25,7 @@
     [Fact]
     public void GivenTwoSheetPlacementsWhenSamePartsPlacedOnEachThenMaterialUtilizationShouldBeSame()
     {
-      scenario1.Fitness.MaterialUtilization.Should().Be(scenario2.Fitness.MaterialUtilization);
+      scenario1.Fitness.MaterialUtilization.Should().BeApproximately(scenario2.Fitness.MaterialUtilization, 0.0001);
     }
 
     [Fact]

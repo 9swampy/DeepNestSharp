@@ -317,24 +317,31 @@
 
     public async Task ExportSheetPlacementAsync(ISheetPlacement sheetPlacement)
     {
-      if (sheetPlacement == null)
+      try
       {
-        return;
-      }
-
-      var parts = sheetPlacement.PartPlacements.Select(o => o.Part).ToList();
-      if (parts.ContainsDxfs() && parts.ContainsSvgs())
-      {
-        MessageService.DisplayMessageBox("It's not possible to export when your parts were a mix of Svg's and Dxf's.", "DeepNestPort: Not Implemented", MessageBoxIcon.Information);
-      }
-      else
-      {
-        IExport exporter = ExporterFactory.GetExporter(parts, SvgNestConfigViewModel.SvgNestConfig);
-        var filePath = fileIoService.GetSaveFilePath(exporter.SaveFileDialogFilter);
-        if (!string.IsNullOrWhiteSpace(filePath))
+        if (sheetPlacement == null)
         {
-          await exporter.Export(filePath, sheetPlacement);
+          return;
         }
+
+        var parts = sheetPlacement.PartPlacements.Select(o => o.Part).ToList();
+        if (parts.ContainsDxfs() && parts.ContainsSvgs())
+        {
+          MessageService.DisplayMessageBox("It's not possible to export when your parts were a mix of Svg's and Dxf's.", "DeepNestPort: Not Implemented", MessageBoxIcon.Information);
+        }
+        else
+        {
+          IExport exporter = ExporterFactory.GetExporter(parts);
+          var filePath = fileIoService.GetSaveFilePath(exporter.SaveFileDialogFilter);
+          if (!string.IsNullOrWhiteSpace(filePath))
+          {
+            await exporter.Export(filePath, sheetPlacement, SvgNest.Config.MergeLines);
+          }
+        }
+      }
+      catch (Exception ex)
+      {
+        MessageService.DisplayMessageBox(ex.Message, "Error Saving", MessageBoxIcon.Exclamation);
       }
     }
 

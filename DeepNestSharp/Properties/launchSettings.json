@@ -2,11 +2,11 @@
   "profiles": {
     "DeepNestSharp.dnr": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Git\\CanDispenserCnc\\CuttingLists\\Std320x164\\Recreate300x200GoodSwitchbackNest.dnr"
+      "commandLineArgs": "C:\\Git\\DeepNestSharp\\DeepNestLib.CiTests\\Dxfs\\320&355Gy;rYkCarg.dnr"
     },
     "DeepNestSharp.dnest": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Git\\CanDispenserCnc\\CuttingLists\\MixedSheetOfActimelAndStd320BackTopAndFront.dnest"
+      "commandLineArgs": "C:\\Git\\DeepNestSharp\\DeepNestLib.CiTests\\Dxfs\\320&355TopsOnCast.dnest"
     },
     "DeepNestSharp.dnsp": {
       "commandName": "Project",
@@ -14,7 +14,7 @@
     },
     "DeepNestOverlap.dnest": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Git\\CanDispenserCnc\\CuttingLists\\Std320x164\\OverlappingNestDebug180180Fixture.dnest"
+      "commandLineArgs": "C:\\Git\\DeepNestSharp\\DeepNestPort\\WideOverlapError.dnest"
     },
     "Overlay2ndGen.dnest": {
       "commandName": "Project",

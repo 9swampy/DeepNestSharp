@@ -3,29 +3,8 @@
   using System;
   using System.Collections.Generic;
   using System.Linq;
+  using IxMilia.Dxf;
   using IxMilia.Dxf.Entities;
-
-  public enum RectangleType
-  {
-    Normal,
-    FileLoad,
-    FitFour,
-    TopRightAntiClockwise,
-    TopLeftClockwise,
-    BottomLeftClockwise,
-  }
-
-  public class NfpGenerator
-  {
-    public INfp GenerateRectangle(string name, double width, double height, RectangleType type, bool isClosed = false)
-    {
-      var generator = new DxfGenerator();
-      var points = generator.RectanglePoints(width, height, type, isClosed);
-      var result = new NoFitPolygon(points.Select(o => new SvgPoint(o.X, o.Y)));
-      result.Name = name;
-      return result;
-    }
-  }
 
   public class DxfGenerator
   {
@@ -39,7 +18,14 @@
       return DxfParser.ConvertDxfToRawDetail(name, new List<DxfEntity>() { Rectangle(width, height, type, isClosed) });
     }
 
-    public DxfPolyline Rectangle(double side, RectangleType rectangleType = RectangleType.FileLoad, bool isClosed = false)
+    public DxfFile GenerateRectangle(double width, double height, RectangleType type, bool isClosed = false)
+    {
+      var result = new DxfFile();
+      result.Entities.Add(Rectangle(width, height, type, isClosed));
+      return result;
+    }
+
+    public DxfPolyline Square(double side, RectangleType rectangleType = RectangleType.FileLoad, bool isClosed = false)
     {
       return Rectangle(side, side, rectangleType, isClosed);
     }
@@ -53,6 +39,11 @@
         new DxfVertex(new IxMilia.Dxf.DxfPoint(0D, 0D, 0D)),
         new DxfVertex(new IxMilia.Dxf.DxfPoint(0D, side, 0D)),
       });
+    }
+
+    internal DxfLine Line(int length)
+    {
+      return new DxfLine(new IxMilia.Dxf.DxfPoint(0, 0, 0), new IxMilia.Dxf.DxfPoint(length, 0, 0));
     }
 
     public DxfPolyline Rectangle(double width, double height, RectangleType rectangleType = RectangleType.FileLoad, bool isClosed = false)

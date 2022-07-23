@@ -9,6 +9,7 @@
   using System.Text.Json.Serialization;
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
+  using IxMilia.Dxf.Entities;
 
   public class NoFitPolygon : PolygonBase, INfp, IHiddenNfp, IStringify
   {
@@ -226,6 +227,15 @@
     }
 
     [JsonIgnore]
+    public double NetArea
+    {
+      get
+      {
+        return this.Area - this.Children.Sum(o => o.Area);
+      }
+    }
+
+    [JsonIgnore]
     /// <inheritdoc />
     public bool IsClosed
     {
@@ -326,6 +336,35 @@
     public void Reverse()
     {
       this.points.Reverse();
+    }
+
+    public bool Overlaps(INfp other)
+    {
+      bool result = NfpSimplifier.IsIntersect(this, other, SvgNest.Config.ClipperScale);
+      if (result)
+      {
+        if (other.Children.Count == 0)
+        {
+          return true;
+        }
+        else
+        {
+          foreach (var hole in other.Children)
+          {
+            if (hole.Children.Count == 0)
+            {
+              if (NfpSimplifier.PolygonInsidePolygon(this, hole))
+              {
+                return false;
+              }
+            }
+          }
+
+          return true;
+        }
+      }
+
+      return false;
     }
 
     /// <inheritdoc />
@@ -452,7 +491,7 @@
     /// <inheritdoc/>
     public INfp Rotate(double degrees, WithChildren withChildren = WithChildren.Included)
     {
-      var angle = degrees * Math.PI / 180;
+      var angle = degrees * Math.PI / -180;
       List<SvgPoint> pp = new List<SvgPoint>();
       for (var i = 0; i < this.Length; i++)
       {
@@ -486,10 +525,10 @@
     /// <inheritdoc />
     public INfp CloneTree()
     {
-      INfp newtree;
+      INfp result;
       if (this is Sheet sheet)
       {
-        newtree = new Sheet()
+        result = new Sheet()
         {
           Width = sheet.Width,
           Height = sheet.Height,
@@ -497,30 +536,30 @@
       }
       else
       {
-        newtree = new NoFitPolygon();
+        result = new NoFitPolygon();
       }
 
       foreach (var t in this.Points)
       {
-        newtree.AddPoint(new SvgPoint(t.X, t.Y) { Exact = t.Exact });
+        result.AddPoint(new SvgPoint(t.X, t.Y) { Exact = t.Exact });
       }
 
       // jwb added the properties
       // newtree.Id = this.Id; //Id is set unique within the chromosome
       // newtree.Source = this.Source; //Source is set to the original Id cloned to form Adam.
-      newtree.IsPriority = this.IsPriority;
-      newtree.StrictAngle = this.StrictAngle;
-      newtree.Name = this.Name;
+      result.IsPriority = this.IsPriority;
+      result.StrictAngle = this.StrictAngle;
+      result.Name = this.Name;
 
       if (this.Children != null && this.Children.Count > 0)
       {
         foreach (var c in this.Children)
         {
-          newtree.Children.Add(c.CloneTree());
+          result.Children.Add(c.CloneTree());
         }
       }
 
-      return newtree;
+      return result;
     }
 
     /// <inheritdoc />
@@ -665,6 +704,23 @@
         closedPoints.Add(closedPoints.First());
         ReplacePoints(closedPoints);
       }
+    }
+
+    internal static INfp FromDxf(DxfPolyline dxfPolyline)
+    {
+      return FromDxf(new List<DxfEntity>()
+      {
+        dxfPolyline
+      });
+    }
+
+    public static INfp FromDxf(List<DxfEntity> dxfEntities)
+    {
+      RawDetail raw;
+      raw = DxfParser.ConvertDxfToRawDetail(string.Empty, dxfEntities);
+      INfp result;
+      raw.TryConvertToNfp(0, out result);
+      return result;
     }
   }
 }

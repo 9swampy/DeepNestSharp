@@ -531,12 +531,12 @@ namespace ClipperLib
     internal PolyNode PolyNode;
   };
 
-  internal class OutPt
+  public class OutPt
   {
-    internal int Idx;
-    internal IntPoint Pt;
-    internal OutPt Next;
-    internal OutPt Prev;
+    public int Idx;
+    public IntPoint Pt;
+    public OutPt Next;
+    public OutPt Prev;
   };
 
   internal class Join
@@ -3857,7 +3857,7 @@ namespace ClipperLib
       }
       //------------------------------------------------------------------------------
 
-      private static bool Poly2ContainsPoly1(OutPt outPt1, OutPt outPt2)
+      public static bool Poly2ContainsPoly1(OutPt outPt1, OutPt outPt2)
       {
         OutPt op = outPt1;
         do
@@ -4744,7 +4744,9 @@ namespace ClipperLib
     }
     //------------------------------------------------------------------------------
 
+#pragma warning disable CA1002 // Do not expose generic lists
     public void Execute(ref Paths solution, double delta)
+#pragma warning restore CA1002 // Do not expose generic lists
     {
       solution.Clear();
       FixOrientations();
@@ -4775,7 +4777,9 @@ namespace ClipperLib
     }
     //------------------------------------------------------------------------------
 
+#pragma warning disable CA1045 // Do not pass types by reference
     public void Execute(ref PolyTree solution, double delta)
+#pragma warning restore CA1045 // Do not pass types by reference
     {
       solution.Clear();
       FixOrientations();

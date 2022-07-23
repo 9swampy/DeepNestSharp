@@ -127,10 +127,12 @@
 
           MinkowskiWrapper.getResults(dat1, hdat1);
 
+#if DEBUG
           if (sizes1.Count() > 1)
           {
             throw new ArgumentException("sizes1 cnt >1");
           }
+#endif
 
           // convert back to answer here
           List<PointF> apts = new List<PointF>();
@@ -189,14 +191,17 @@
               if (ret.Points.Length == 0)
               {
                 System.Diagnostics.Debugger.Break();
-                var matchKvp = MinkowskiCache.ToList().First(o => o.Value.Equals(ret));
-                File.WriteAllText(@"C:\Temp\MinkowskiSum\MatchKey.json", matchKvp.Key.ToJson());
-                File.WriteAllText(@"C:\Temp\MinkowskiSum\MatchValue.json", matchKvp.Value.ToJson());
-                var nameSuffix = "Sum2";
-                File.WriteAllText($"C:\\Temp\\MinkowskiSum\\Minkowski{nameSuffix}.dnpoly", MinkowskiCache.ToJson());
-                File.WriteAllText($"C:\\Temp\\MinkowskiSum\\Minkowski{nameSuffix}A.dnpoly", path.ToJson());
-                File.WriteAllText($"C:\\Temp\\MinkowskiSum\\Minkowski{nameSuffix}B.dnpoly", b.ToJson());
-                File.WriteAllText($"C:\\Temp\\MinkowskiSum\\Minkowski{nameSuffix}Ret.dnpoly", ret.ToJson());
+                if (SvgNest.Config.ExportExecutions)
+                {
+                  var matchKvp = MinkowskiCache.ToList().First(o => o.Value.Equals(ret));
+                  File.WriteAllText(@"C:\Temp\MinkowskiSum\MatchKey.json", matchKvp.Key.ToJson());
+                  File.WriteAllText(@"C:\Temp\MinkowskiSum\MatchValue.json", matchKvp.Value.ToJson());
+                  var nameSuffix = "Sum2";
+                  File.WriteAllText($"C:\\Temp\\MinkowskiSum\\Minkowski{nameSuffix}.dnpoly", MinkowskiCache.ToJson());
+                  File.WriteAllText($"C:\\Temp\\MinkowskiSum\\Minkowski{nameSuffix}A.dnpoly", path.ToJson());
+                  File.WriteAllText($"C:\\Temp\\MinkowskiSum\\Minkowski{nameSuffix}B.dnpoly", b.ToJson());
+                  File.WriteAllText($"C:\\Temp\\MinkowskiSum\\Minkowski{nameSuffix}Ret.dnpoly", ret.ToJson());
+                }
               }
             }
 
@@ -229,23 +234,18 @@
 
     NoFitPolygon IMinkowskiSumService.ClipperExecuteOuterNfp(SvgPoint[] pattern, SvgPoint[] path, MinkowskiSumPick minkowskiSumPick)
     {
-      var result = ClipperExecute(pattern, path, minkowskiSumPick);
+      var result = ClipperExecuteOuterNfp(pattern, path, minkowskiSumPick);
       result.EnsureIsClosed();
       return result;
     }
 
-    private NoFitPolygon ClipperExecute(SvgPoint[] pattern, SvgPoint[] path, MinkowskiSumPick minkowskiSumPick)
+    private NoFitPolygon ClipperExecuteOuterNfp(SvgPoint[] pattern, SvgPoint[] path, MinkowskiSumPick minkowskiSumPick)
     {
       var scaler = 10000000;
-      var patternClipper = DeepNestClipper.ScaleUpPaths(pattern, scaler);
-      var pathClipper = DeepNestClipper.ScaleUpPaths(path, scaler);
-      for (var i = 0; i < pathClipper.Length; i++)
-      {
-        pathClipper[i].X *= -1;
-        pathClipper[i].Y *= -1;
-      }
+      var patternClipper = DeepNestClipper.ScaleUpPath(pattern, scaler);
+      var pathClipper = DeepNestClipper.ScaleUpPath(path, -scaler);
 
-      var solution = ClipperLib.Clipper.MinkowskiSum(new List<IntPoint>(patternClipper), new List<IntPoint>(pathClipper), true);
+      var solution = ClipperLib.Clipper.MinkowskiSum(patternClipper, pathClipper, true);
       NoFitPolygon clipperNfp = null;
 
       double? largestArea = null;
@@ -255,7 +255,7 @@
         var sarea = -GeometryUtil.PolygonArea(n);
         if (largestArea == null ||
             (minkowskiSumPick == MinkowskiSumPick.Largest && largestArea < sarea) ||
-            (minkowskiSumPick == MinkowskiSumPick.Smallest && largestArea > sarea))
+            (minkowskiSumPick == MinkowskiSumPick.Smallest && sarea > 0 && largestArea > sarea))
         {
           clipperNfp = n;
           largestArea = sarea;
@@ -284,21 +284,11 @@
     {
       State.IncrementClipperCallCounter();
       var scaler = 10000000;
-      var patternScaledUp = DeepNestClipper.ScaleUpPaths(pattern, scaler);
-      List<List<IntPoint>> solution = null;
+      var patternScaledUp = DeepNestClipper.ScaleUpPath(pattern, scaler);
+      List<List<IntPoint>> solution;
       if (withChildren == WithChildren.Included)
       {
-        var pathScaledUpList = NfpHelper.NfpToClipperCoordinates(path, scaler);
-        for (var i = 0; i < pathScaledUpList.Length; i++)
-        {
-          var pathScaledUp = pathScaledUpList[i];
-          for (int j = 0; j < pathScaledUp.Length; j++)
-          {
-            pathScaledUp[j].X *= -1;
-            pathScaledUp[j].Y *= -1;
-          }
-        }
-
+        var pathScaledUpList = NfpHelper.NfpToClipperCoordinates(path, -scaler);
         // var options = new System.Text.Json.JsonSerializerOptions();
         // options.IncludeFields = true;
         // var json = System.Text.Json.JsonSerializer.Serialize(patternScaledUp, options);
@@ -306,19 +296,12 @@
         // json = System.Text.Json.JsonSerializer.Serialize(pathScaledUpList, options);
         // File.WriteAllText(@"C:\Temp\pathScaledUpList.json", json);
 
-        solution = ClipperLib.Clipper.MinkowskiSum(new List<IntPoint>(patternScaledUp), new List<List<IntPoint>>(pathScaledUpList.Select(pointsArray => pointsArray.ToList())), false);
+        solution = ClipperLib.Clipper.MinkowskiSum(patternScaledUp, pathScaledUpList, false);
       }
       else
       {
         throw new NotImplementedException("Fel88 added this but it was uncalled so I havn't validated it's substitutable.");
-        var pathScaledUp = DeepNestClipper.ScaleUpPaths(path.Points, scaler);
-        for (var i = 0; i < pathScaledUp.Length; i++)
-        {
-          pathScaledUp[i].X *= -1;
-          pathScaledUp[i].Y *= -1;
-        }
-
-        solution = Clipper.MinkowskiSum(new List<IntPoint>(patternScaledUp), new List<IntPoint>(pathScaledUp), true);
+        solution = Clipper.MinkowskiSum(patternScaledUp, DeepNestClipper.ScaleUpPath(path.Points, -scaler), true);
       }
 
       NoFitPolygon clipperNfp = null;
@@ -379,4 +362,5 @@
       return res;
     }
   }
+
 }

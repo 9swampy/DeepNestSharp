@@ -135,6 +135,8 @@
     [JsonIgnore]
     public int TotalPlacedCount => this.UsedSheets.Sum(o => o.PartPlacements.Count);
 
+    public int TotalUnplacedCount => this.UnplacedParts.Count;
+
     [JsonIgnore]
     public int TotalPartsCount => this.TotalPlacedCount + this.UnplacedParts.Count;
 
@@ -142,7 +144,7 @@
     public double PartsPlacedPercent => (double)this.TotalPlacedCount / this.TotalPartsCount;
 
     [JsonIgnore]
-    public double TotalPartsArea => this.UsedSheets.Sum(s => s.PartPlacements.Sum(p => p.Part.Area));
+    public double TotalPartsArea => this.UsedSheets.Sum(s => s.PartPlacements.Sum(p => p.Part.NetArea));
 
     [JsonIgnore]
     public double TotalSheetsArea => this.UsedSheets.Sum(s => s.Sheet.Area);
