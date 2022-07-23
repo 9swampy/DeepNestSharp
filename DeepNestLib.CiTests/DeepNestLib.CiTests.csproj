@@ -67,6 +67,9 @@
     <None Remove="Placement\SimpleRectangleNfp.json" />
     <None Remove="Placement\SimpleRectangleNfpOnSheetPlacement.json" />
     <None Remove="Placement\SimpleRectangleSheet.json" />
+    <None Remove="ReadMe\ReadMeExampleSmall.dnest" />
+    <None Remove="ReadMe\ReadMeExampleSmall.dnr" />
+    <None Remove="ReadMe\ReadMeExampleSmall.dxf" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="20x20outer10x10hole.dxf">
@@ -223,6 +226,9 @@
     <EmbeddedResource Include="Placement\SimpleRectangleSheet.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="ReadMe\ReadMeExampleSmall.dnest" />
+    <EmbeddedResource Include="ReadMe\ReadMeExampleSmall.dnr" />
+    <EmbeddedResource Include="ReadMe\ReadMeExampleSmall.dxf" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Placement\PartPlacementScenarioNewMinkowski-MinkowskiOutNfp.dnpoly" />

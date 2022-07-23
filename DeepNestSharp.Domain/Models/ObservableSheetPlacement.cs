@@ -2,6 +2,8 @@
 {
   using System.Collections.Generic;
   using System.Collections.ObjectModel;
+  using System.IO;
+  using System.Threading.Tasks;
   using DeepNestLib;
   using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Geometry;
@@ -100,6 +102,8 @@
 
     public double TotalPartsArea => sheetPlacement.TotalPartsArea;
 
+    public IEnumerable<NoFitPolygon> PolygonsForExport => sheetPlacement.PolygonsForExport;
+
     public string ToJson(bool writeIndented = false)
     {
       return this.sheetPlacement.ToJson(writeIndented);
@@ -109,6 +113,11 @@
     {
       /*Havn't coded yet... but let's not throw just continue IsDirty.
       observablePartPlacements[0].SaveState();*/
+    }
+
+    public async Task ExportDxf(Stream stream, bool mergeLines)
+    {
+      await sheetPlacement.ExportDxf(stream, mergeLines);
     }
   }
 }

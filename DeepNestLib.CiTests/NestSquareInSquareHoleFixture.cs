@@ -14,33 +14,30 @@
   {
     [Theory]
     [InlineData(0, 0, 0, 0, 20, 20)]
-    [InlineData(0, 0, 0, 360, 20, 20)]
-    [InlineData(0, 0, 0, 90, 20, 30)]
-    [InlineData(0, 0, 0, 270, 30, 20)]
+    [InlineData(0, 0, 0, -360, 20, 20)]
+    [InlineData(0, 0, 0, -90, 20, 30)]
+    [InlineData(0, 0, 0, -270, 30, 20)]
 
-    [InlineData(180, 40, 40, 0, 20, 20)]
-    [InlineData(180, 40, 40, 90, 20, 30)]
-    [InlineData(180, 40, 40, 360, 20, 20)]
+    [InlineData(-180, 40, 40, 0, 20, 20)]
+    [InlineData(-180, 40, 40, -90, 20, 30)]
+    [InlineData(-180, 40, 40, -270, 30, 20)]
+    [InlineData(-180, 40, 40, -360, 20, 20)]
 
-    [InlineData(270, 40, 0, 0, 20, 20)]
-    [InlineData(270, 40, 0, 90, 20, 30)]
-    [InlineData(270, 40, 0, 360, 20, 20)]
+    [InlineData(-270, 40, 0, 0, 20, 20)]
+    [InlineData(-270, 40, 0, -90, 20, 30)]
+    [InlineData(-270, 40, 0, -270, 30, 20)]
+    [InlineData(-270, 40, 0, -360, 20, 20)]
 
-    [InlineData(360, 0, 0, 0, 20, 20)]
-    [InlineData(360, 0, 0, 360, 20, 20)]
-    [InlineData(360, 0, 0, 90, 20, 30)]
-    [InlineData(360, 0, 0, 270, 30, 20)]
+    [InlineData(-360, 0, 0, 0, 20, 20)]
+    [InlineData(-360, 0, 0, -360, 20, 20)]
+    [InlineData(-360, 0, 0, -90, 20, 30)]
+    [InlineData(-360, 0, 0, -270, 30, 20)]
 
     //Invalid results; second placements should only ever be 20 or 30?
-    [InlineData(90, 0, 40, 0, 20, 14)]
-    [InlineData(90, 0, 40, 90, 20, 24)]
-    [InlineData(90, 0, 40, 70, 17.18, 26.58)]
-    [InlineData(90, 0, 40, 360, 20, 14)]
-
-    [InlineData(180, 40, 40, 70, 17.18, 26.58)]
-
-    [InlineData(270, 40, 0, 70, 17.18, 26.58)]
-
+    [InlineData(-90, 0, 40, -0, 20, 14)]
+    [InlineData(-90, 0, 40, -90, 20, 24)]
+    [InlineData(-90, 0, 40, -270, 30, 14)]
+    [InlineData(-90, 0, 40, -360, 20, 14)]
     public void NestSquareInSquareHoleShouldBeObserved(double firstRotation, double firstX, double firstY, double secondRotation, double secondX, double secondY)
     {
       ISvgNestConfig config;

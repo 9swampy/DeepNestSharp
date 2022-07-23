@@ -5,12 +5,35 @@
   using System.IO;
   using System.Linq;
   using System.Threading.Tasks;
+  using DeepNestLib.Geometry;
+  using DeepNestLib.Placement;
   using IxMilia.Dxf;
   using IxMilia.Dxf.Entities;
 
   public class DxfExporter : ExporterBase, IExport
   {
     public override string SaveFileDialogFilter => "Dxf files (*.dxf)|*.dxf";
+
+    public async Task Export(Stream stream, ISheetPlacement sheetPlacement, bool doMergeLines)
+    {
+      await Export(stream, sheetPlacement.PolygonsForExport, sheetPlacement.Sheet, doMergeLines);
+    }
+
+    public async Task Export(Stream stream, IEnumerable<INfp> polygons, ISheet sheet, bool doMergeLines)
+    {
+      DxfFile sheetdxf = GenerateDxfFile(polygons, sheet, sheet.Id, doMergeLines);
+      var dxf = sheetdxf;
+      var id = sheet.Id;
+
+      if (dxf.Entities.Count != 1)
+      {
+        await Task.Run(() =>
+        {
+          dxf.Save(stream, true);
+          //dxf.Save(@"C:\Temp\DeepnestSharp.dxf");
+        }).ConfigureAwait(false);
+      }
+    }
 
     protected async override Task Export(string path, IEnumerable<INfp> polygons, IEnumerable<ISheet> sheets, bool doMergeLines)
     {
@@ -25,7 +48,6 @@
           dxfexports.Add(sheetdxf, sheet.Id);
         }
 
-        int sheetcount = 0;
         for (int i = 0; i < dxfexports.Count(); i++)
         {
           var dxf = dxfexports.ElementAt(i).Key;
@@ -33,7 +55,6 @@
 
           if (dxf.Entities.Count != 1)
           {
-            sheetcount += 1;
             FileInfo fi = new FileInfo(path);
             await Task.Run(() =>
             {
@@ -295,7 +316,7 @@
 
     private static DxfPoint RotateLocation(double rotationAngle, DxfPoint pt)
     {
-      var angle = (double)(rotationAngle * Math.PI / 180.0f);
+      var angle = GeometryUtil.ToRadians(rotationAngle);
       var x = pt.X;
       var y = pt.Y;
       var x1 = (double)((x * Math.Cos(angle)) - (y * Math.Sin(angle)));

@@ -3,7 +3,6 @@
   using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
   using FluentAssertions;
-  using System;
   using Xunit;
 
   public class BoundingBoxFitnessFixture

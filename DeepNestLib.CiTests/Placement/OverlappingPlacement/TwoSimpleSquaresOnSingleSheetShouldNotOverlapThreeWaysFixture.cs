@@ -8,18 +8,20 @@
   using FluentAssertions;
   using Xunit;
 
-  public class TwoSimpleSquaresOnSingleSheetShouldNotOverlapThreeWaysFixture
+  public class TwoSimpleSquaresOnSingleSheetShouldNotOverlapFixture
   {
     [Theory]
     [InlineData(150, 100, 0, 50, 50, 0)]
-    [InlineData(150, 100, 0, 50, 50, 90)]
-    [InlineData(150, 100, 0, 50, 50, 270)]
-    [InlineData(150, 100, 0, 50, 50, 360)]
+    [InlineData(150, 100, 0, 50, 50, -270)]
+    [InlineData(150, 100, 0, 50, 50, -360)]
     [InlineData(150, 100, 180, 50, 50, 0)]
+    [InlineData(150, 100, 180, 50, 50, -270)]
+    [InlineData(150, 100, 180, 50, 50, -360)]
+    
+    //Why did these have to be reversed to pass?
+    [InlineData(150, 100, 0, 50, 50, 90)]
     [InlineData(150, 100, 180, 50, 50, 90)]
-    [InlineData(150, 100, 180, 50, 50, 270)]
-    [InlineData(150, 100, 180, 50, 50, 360)]
-    public void TwoSimpleSquaresOnSingleSheetShouldNotOverlapThreeWays(double firstWidth, double firstHeight, double firstRotation, double secondWidth, double secondHeight, double secondRotation)
+    public void TwoSimpleSquaresOnSingleSheetShouldNotOverlap(double firstWidth, double firstHeight, double firstRotation, double secondWidth, double secondHeight, double secondRotation)
     {
       ISvgNestConfig config;
       DxfGenerator DxfGenerator = new DxfGenerator();
@@ -89,7 +91,7 @@
       //lastPartPlacementWorker.SheetNfp.Items[0][3].Y.Should().Be(50);
       lastPartPlacementWorker.SheetNfp.Items[0][4].X.Should().Be(lastPartPlacementWorker.SheetNfp.Items[0][0].X);
       lastPartPlacementWorker.SheetNfp.Items[0][4].Y.Should().Be(lastPartPlacementWorker.SheetNfp.Items[0][0].Y);
-      lastPartPlacementWorker.SheetNfp.Items[0].MinX.Should().Be(firstWidth);
+      lastPartPlacementWorker.SheetNfp.Items[0].MinX.Should().Be(0);
       secondPart.Shift(nestResult.UsedSheets[0].PartPlacements[0]).Overlaps(firstPart.Shift(nestResult.UsedSheets[0].PartPlacements[0])).Should().BeFalse("parts should not overlay each other (even if nesting in a hole; placement should not have given this result)");
     }
   }

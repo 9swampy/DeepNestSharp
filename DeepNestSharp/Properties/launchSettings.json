@@ -27,6 +27,9 @@
     "SimpleTest.dnest": {
       "commandName": "Project",
       "commandLineArgs": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\SimpleTestExample.dnest"
+    },
+    "Debug": {
+      "commandName": "Project"
     }
   }
 }

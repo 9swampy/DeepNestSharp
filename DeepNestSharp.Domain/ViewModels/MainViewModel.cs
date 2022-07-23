@@ -331,7 +331,7 @@
         }
         else
         {
-          IExport exporter = ExporterFactory.GetExporter(parts);
+          IExport exporter = ExporterFactory.GetExporter(sheetPlacement.PartPlacements.Select(o => o.Part).ToList());
           var filePath = fileIoService.GetSaveFilePath(exporter.SaveFileDialogFilter);
           if (!string.IsNullOrWhiteSpace(filePath))
           {

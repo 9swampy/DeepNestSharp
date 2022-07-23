@@ -491,7 +491,7 @@
     /// <inheritdoc/>
     public INfp Rotate(double degrees, WithChildren withChildren = WithChildren.Included)
     {
-      var angle = degrees * Math.PI / -180;
+      var angle = Geometry.GeometryUtil.ToRadians(degrees);
       List<SvgPoint> pp = new List<SvgPoint>();
       for (var i = 0; i < this.Length; i++)
       {

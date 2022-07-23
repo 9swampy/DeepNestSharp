@@ -66,7 +66,7 @@
     public void GivenRectangleWhenRotatedClockwiseExpectPoints()
     {
       var sut = NoFitPolygon.FromDxf(new DxfGenerator().Rectangle(10, 20, RectangleType.BottomLeftClockwise));
-      sut.Rotate(90).Points.Should().BeEquivalentTo(new List<SvgPoint>() {
+      sut.Rotate(-90).Points.Should().BeEquivalentTo(new List<SvgPoint>() {
         new SvgPoint(0, 0),
         new SvgPoint(20, 0),
         new SvgPoint(20, -10),
@@ -83,7 +83,7 @@
     {
       var sut = NoFitPolygon.FromDxf(new DxfGenerator().Square(20, RectangleType.BottomLeftClockwise));
       sut.Children.Add(NoFitPolygon.FromDxf(new DxfGenerator().Square(10, RectangleType.BottomLeftClockwise)).Shift(5, 5));
-      sut.Rotate(90).Children[0].Points.Should().BeEquivalentTo(new List<SvgPoint>() {
+      sut.Rotate(-90).Children[0].Points.Should().BeEquivalentTo(new List<SvgPoint>() {
         new SvgPoint(5, -5),
         new SvgPoint(15, -5),
         new SvgPoint(15, -15),
@@ -99,7 +99,7 @@
     public void GivenRectangleWhenRotatedAntiClockwiseExpectPoints()
     {
       var sut = NoFitPolygon.FromDxf(new DxfGenerator().Rectangle(10, 20, RectangleType.BottomLeftClockwise));
-      sut.Rotate(-90).Points.Should().BeEquivalentTo(new List<SvgPoint>() {
+      sut.Rotate(90).Points.Should().BeEquivalentTo(new List<SvgPoint>() {
         new SvgPoint(0, 0),
         new SvgPoint(-20, 0),
         new SvgPoint(-20, 10),

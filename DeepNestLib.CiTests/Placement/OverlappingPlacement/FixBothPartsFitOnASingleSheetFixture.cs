@@ -39,7 +39,7 @@
       //dxfFile.Save(@"C:\temp\150x100.dxf");
       secondPart = DxfGenerator.GenerateSquare("50x50gen", 50, RectangleType.FileLoad, true).ToNfp();
       secondPart.Source = secondPartIdSrc;
-      secondPart.Rotation = 90;
+      secondPart.Rotation = -90;
       config = new TestSvgNestConfig();
       //config = A.Fake<ISvgNestConfig>();
       config.Simplify = true;
@@ -261,7 +261,7 @@
     [Fact]
     public void ShouldHaveOnePartOnSecondPlacementWithExpectedRotation()
     {
-      nestResult.UsedSheets[1].PartPlacements[0].Rotation.Should().Be(90);
+      nestResult.UsedSheets[1].PartPlacements[0].Rotation.Should().Be(-90);
     }
 
     [Fact]
