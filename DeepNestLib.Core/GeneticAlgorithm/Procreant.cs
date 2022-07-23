@@ -40,19 +40,7 @@
       var angles = new List<double>();
       for (var i = 0; i < adam.Length; i++)
       {
-        if (adam[i].StrictAngle == AnglesEnum.AsPreviewed || (adam[i].StrictAngle == AnglesEnum.None && this.config.StrictAngles == AnglesEnum.AsPreviewed))
-        {
-          angles.Add(this.strictAsPreviewedAngles[this.random.Next() % this.strictAsPreviewedAngles.Length]);
-        }
-        else if (adam[i].StrictAngle == AnglesEnum.Rotate90 || (adam[i].StrictAngle == AnglesEnum.None && this.config.StrictAngles == AnglesEnum.Rotate90))
-        {
-          angles.Add(this.strictRotate90Angles[this.random.Next() % this.strictRotate90Angles.Length]);
-        }
-        else
-        {
-          var angle = Math.Floor(this.r.NextDouble() * this.config.Rotations) * (360f / this.config.Rotations);
-          angles.Add(angle);
-        }
+        angles.Add(GetRandomRotation(adam[i]));
       }
 
       var population = new PopulationItem[config.PopulationSize];
@@ -174,22 +162,32 @@
         rand = r.NextDouble();
         if (rand < 0.01 * config.MutationRate)
         {
-          if (clone.Parts[i].StrictAngle == AnglesEnum.AsPreviewed || (clone.Parts[i].StrictAngle == AnglesEnum.None && config.StrictAngles == AnglesEnum.AsPreviewed))
-          {
-            clone.Rotation[i] = strictAsPreviewedAngles[random.Next() % strictAsPreviewedAngles.Length];
-          }
-          else if (clone.Parts[i].StrictAngle == AnglesEnum.Rotate90 || (clone.Parts[i].StrictAngle == AnglesEnum.None && config.StrictAngles == AnglesEnum.Rotate90))
-          {
-            clone.Rotation[i] = strictRotate90Angles[random.Next() % strictRotate90Angles.Length];
-          }
-          else
-          {
-            clone.Rotation[i] = Math.Floor(r.NextDouble() * config.Rotations) * (360f / config.Rotations);
-          }
+          clone.Rotation[i] = GetRandomRotation(clone.Parts[i]);
         }
       }
 
       return clone;
+    }
+
+    private double GetRandomRotation(INfp part)
+    {
+      if (IsPartRotationRestricted(part, AnglesEnum.AsPreviewed))
+      {
+        return strictAsPreviewedAngles[random.Next() % strictAsPreviewedAngles.Length];
+      }
+      else if (IsPartRotationRestricted(part, AnglesEnum.Rotate90))
+      {
+        return strictRotate90Angles[random.Next() % strictRotate90Angles.Length];
+      }
+      else
+      {
+        return Math.Floor(r.NextDouble() * config.Rotations) * (360f / config.Rotations);
+      }
+    }
+
+    private bool IsPartRotationRestricted(INfp part, AnglesEnum restriction)
+    {
+      return part.StrictAngle == restriction || (part.StrictAngle == AnglesEnum.None && this.config.StrictAngles == restriction);
     }
 
     // returns a random individual from the population, weighted to the front of the list (lower fitness value is more likely to be selected)
