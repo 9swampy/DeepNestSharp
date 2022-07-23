@@ -10,8 +10,8 @@
     <DebugType>embedded</DebugType>
     <AssemblyVersion>0.2.0.0</AssemblyVersion>
     <FileVersion>0.2.0.0</FileVersion>
-    <InformationalVersion>0.2.0-UsabilityEnhancements.1+13.Branch.UsabilityEnhancements.Sha.1968f510a197ac14640c09f25165baef5d1036a9</InformationalVersion>
-    <Version>0.2.0-usabilityenhance0001</Version>
+    <InformationalVersion>0.2.0-beta.1+4.Branch.release-0.2.Sha.95688df27d82d069837ee3955f4a6ab92b4e9c72</InformationalVersion>
+    <Version>0.2.0-beta0001</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <CodeAnalysisRuleSet />

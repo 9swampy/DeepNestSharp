@@ -359,25 +359,6 @@
 
               // console.timeEnd('evalbounds');
               // console.time('evalmerge');
-              MergedResult merged = null;
-              if (this.Config.MergeLines)
-              {
-                throw new NotImplementedException();
-
-                // if lines can be merged, subtract savings from area calculation
-                var shiftedpart = processedPart.Shift(shiftvector);
-                List<INfp> shiftedplaced = new List<INfp>();
-
-                for (int m = 0; m < Placements.Count; m++)
-                {
-                  shiftedplaced.Add(Placements[m].Part.Shift(Placements[m]));
-                }
-
-                // don't check small lines, cut off at about 1/2 in
-                double minlength = 0.5 * this.Config.Scale;
-                merged = CalculateMergedLength(shiftedplaced.ToArray(), shiftedpart, minlength, 0.1 * this.Config.CurveTolerance);
-                area -= merged.TotalLength * this.Config.TimeRatio;
-              }
 
               this.VerboseLog("evalmerge");
               if (minarea == null ||
@@ -398,12 +379,6 @@
                 if (miny == null || shiftvector.Y < miny)
                 {
                   miny = shiftvector.Y;
-                }
-
-                if (this.Config.MergeLines)
-                {
-                  position.MergedLength = merged.TotalLength;
-                  position.MergedSegments = merged.Segments;
                 }
 
                 this.VerboseLog($"evalmerge-exit minarea={minarea ?? -1:0.000000} x={shiftvector?.X ?? -1:0.000000} y={shiftvector?.Y ?? -1:0.000000}");
