@@ -4,13 +4,20 @@
     <IsPackable>false</IsPackable>
     <AssemblyVersion>0.2.0.0</AssemblyVersion>
     <FileVersion>0.2.0.0</FileVersion>
-    <InformationalVersion>0.2.0-beta.1+4.Branch.release-0.2.Sha.95688df27d82d069837ee3955f4a6ab92b4e9c72</InformationalVersion>
-    <Version>0.2.0-beta0001</Version>
+    <InformationalVersion>0.2.0-ArrayListBackForth.1+20.Branch.ArrayListBackForth.Sha.7f050f5d3b4763a6c11087e6f34cd1528b38d0b7</InformationalVersion>
+    <Version>0.2.0-arraylistbackfor0001</Version>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="20x20outer10x10hole.dxf" />
     <None Remove="Dxfs\20x20outer10x10hole.dxf" />
     <None Remove="Dxfs\20x20outer10x10hole.scad" />
+    <None Remove="Dxfs\N16-S0-5-P1-In.json" />
+    <None Remove="Dxfs\N20-S0-5-P1-In.json" />
+    <None Remove="Dxfs\TopsNest.dxf" />
+    <None Remove="Dxfs\TopsNestVert.dxf" />
+    <None Remove="Dxfs\TopsNestVert2.dxf" />
+    <None Remove="Dxfs\Tops_2.dxf" />
+    <None Remove="Dxfs\Tops_2vert.dxf" />
     <None Remove="Dxfs\_10.dxf" />
     <None Remove="Dxfs\_5.dxf" />
     <None Remove="GeneticAlgorithm\ReadMeExampleTwoSheetsBetterThanOne1.dnr" />
@@ -41,6 +48,10 @@
     <None Remove="Placement\Fit12InDonutHoleOut-SheetNfp.dnsnfp" />
     <None Remove="Placement\Fit12InDonutHoleOut.json" />
     <None Remove="Placement\MinkowskiKeyExample.json" />
+    <None Remove="Placement\OverlappingPlacement\FixBothPartsFitOnASingleSheetFixtureCombinedNfp.scad" />
+    <None Remove="Placement\OverlappingPlacement\FixBothPartsFitOnASingleSheetFixtureFinalNfp.scad" />
+    <None Remove="Placement\OverlappingPlacement\FixBothPartsFitOnASingleSheetFixtureSheetNfp.dnsnfp" />
+    <None Remove="Placement\PartPlacementScenarioDoNotOverlap.json" />
     <None Remove="Placement\PartPlacementScenarioNewMinkowski-MinkowskiOutNfp.dnpoly" />
     <None Remove="Placement\PartPlacementScenarioNewMinkowski-NewOutNfp.dnpoly" />
     <None Remove="Placement\PartPlacementScenarioNewMinkowski.json" />
@@ -67,6 +78,16 @@
     <EmbeddedResource Include="Dxfs\20x20outer10x10hole.scad">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Dxfs\Tops_2.dxf" />
+    <EmbeddedResource Include="Dxfs\Tops_2vert.dxf" />
+    <EmbeddedResource Include="Placement\OverlappingPlacement\FixBothPartsFitOnASingleSheetFixtureCombinedNfp.scad" />
+    <EmbeddedResource Include="Placement\OverlappingPlacement\FixBothPartsFitOnASingleSheetFixtureFinalNfp.scad" />
+    <EmbeddedResource Include="Placement\OverlappingPlacement\FixBothPartsFitOnASingleSheetFixtureSheetNfp.dnsnfp" />
+    <EmbeddedResource Include="Placement\OverlappingPlacement\N16-S0-5-P1-In.json" />
+    <EmbeddedResource Include="Placement\OverlappingPlacement\N20-S0-5-P1-In.json" />
+    <EmbeddedResource Include="Dxfs\TopsNest.dxf" />
+    <EmbeddedResource Include="Dxfs\TopsNestVert.dxf" />
+    <EmbeddedResource Include="Dxfs\TopsNestVert2.dxf" />
     <EmbeddedResource Include="Dxfs\_10.dxf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
@@ -163,6 +184,9 @@
     <EmbeddedResource Include="Placement\PartPlacementScenarioNewMinkowski.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Placement\PartPlacementScenarioDoNotOverlap.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Placement\PartPlacementScenarioPartPlacementWorker.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
@@ -207,6 +231,12 @@
     <EmbeddedResource Include="..\DeepNestPort\dxfs\_1.dxf" Link="Dxfs\_1.dxf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="..\DeepNestPort\dxfs\_2.dxf" Link="Dxfs\_2.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\DeepNestPort\dxfs\_4.dxf" Link="Dxfs\_4.dxf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <None Include="..\MinkowskiDlls\minkowski.dll" Link="minkowski.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -218,16 +248,16 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FakeItEasy" Version="7.2.0" />
-    <PackageReference Include="FluentAssertions" Version="6.1.0" />
-    <PackageReference Include="IxMilia.Dxf" Version="0.8.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
+    <PackageReference Include="FakeItEasy" Version="7.3.1" />
+    <PackageReference Include="FluentAssertions" Version="6.7.0" />
+    <PackageReference Include="IxMilia.Dxf" Version="0.8.3" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="coverlet.collector" Version="3.0.2">
+    <PackageReference Include="coverlet.collector" Version="3.1.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

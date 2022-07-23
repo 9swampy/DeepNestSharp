@@ -7,6 +7,7 @@ namespace DeepNestLib
   using System.Collections.Generic;
   using System.IO;
   using System.Linq;
+  using System.Reflection;
   using System.Text.Json;
   using System.Text.Json.Serialization;
 #if NCRUNCH
@@ -16,6 +17,7 @@ namespace DeepNestLib
   public class SheetNfp : NfpCandidateList
   {
     public new const string FileDialogFilter = "DeepNest SheetNfp (*.dnsnfp)|*.dnsnfp|All files (*.*)|*.*";
+    private readonly Action<string> verboseLog;
 
     public SheetNfp(NfpCandidateList nfpCandidateList)
       : base(nfpCandidateList.Items, nfpCandidateList.Sheet, nfpCandidateList.Part)
@@ -28,17 +30,22 @@ namespace DeepNestLib
     {
     }
 
-    // Inner NFP aka SheetNfp
-    public SheetNfp(INfpHelper nfpHelper, ISheet sheet, INfp part, double clipperScale, bool useDllImport)
-      : this(RemoveOuterNfps(nfpHelper.GetInnerNfp(sheet, part, MinkowskiCache.Cache, clipperScale, useDllImport) ?? new INfp[0], sheet), sheet, part)
+    internal SheetNfp(INfpHelper nfpHelper, ISheet sheet, INfp part, double clipperScale, bool useDllImport)
+      : this(nfpHelper, sheet, part, clipperScale, useDllImport, o => { })
     {
     }
 
-    private static INfp[] RemoveOuterNfps(INfp[] nfps, ISheet sheet)
+    // Inner NFP aka SheetNfp
+    public SheetNfp(INfpHelper nfpHelper, ISheet sheet, INfp part, double clipperScale, bool useDllImport, Action<string> verboseLog)
+      : this(RemoveOuterNfps(nfpHelper.GetInnerNfp(sheet, part, MinkowskiCache.Cache, clipperScale, useDllImport, verboseLog) ?? new INfp[0], sheet, verboseLog), sheet, part)
+    {
+    }
+
+    private static INfp[] RemoveOuterNfps(INfp[] nfps, ISheet sheet, Action<string> verboseLog)
     {
       IEnumerable<INfp> result = new List<INfp>(nfps);
-      result = result.Where(o => o.WidthCalculated < sheet.WidthCalculated &&
-                                 o.HeightCalculated < sheet.HeightCalculated)
+      verboseLog($"RemovedOuterNfps:{result.Where(o => !SmallerThanSheet(sheet, o)).Count()}");
+      result = result.Where<INfp>(o => SmallerThanSheet(sheet, o))
                      .Select(o =>
                      {
                        o.Clean();
@@ -46,6 +53,12 @@ namespace DeepNestLib
                        return o;
                      });
       return result.ToArray();
+    }
+
+    private static bool SmallerThanSheet(ISheet sheet, INfp o)
+    {
+      return o.WidthCalculated < sheet.WidthCalculated &&
+             o.HeightCalculated < sheet.HeightCalculated;
     }
 
     internal bool CanAcceptPart
@@ -82,6 +95,22 @@ namespace DeepNestLib
       using (StreamReader inputFile = new StreamReader(fileName))
       {
         return FromJson(inputFile.ReadToEnd());
+      }
+    }
+
+    internal static SheetNfp LoadFromStream(string path)
+    {
+      using (var stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream(path))
+      {
+        return LoadFromStream(stream);
+      }
+    }
+
+    internal static SheetNfp LoadFromStream(Stream stream)
+    {
+      using (StreamReader reader = new StreamReader(stream))
+      {
+        return FromJson(reader.ReadToEnd());
       }
     }
 

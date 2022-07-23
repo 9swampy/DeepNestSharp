@@ -16,7 +16,7 @@
     [Fact]
     public void GivenVerticalWhenMergedLineCreatedThenExpectSlopeInfinity()
     {
-      new MergeLine(new DxfLine(new DxfPoint(0, 0, 0), new DxfPoint(0, 10, 0))).Slope.Should().Be(double.PositiveInfinity);
+      new MergeLine(new DxfLine(new DxfPoint(0, 0, 0), new DxfPoint(0, 10, 0))).Slope.Should().Be(decimal.MaxValue);
     }
 
     [Fact]

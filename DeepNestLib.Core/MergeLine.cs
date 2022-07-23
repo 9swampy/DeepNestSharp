@@ -8,8 +8,8 @@
   {
     private const int FractionalDigits = 4;
 
-    private double? slope;
-    private double? intercept;
+    private decimal? slope;
+    private decimal? intercept;
     private DxfPoint? left;
     private DxfPoint? right;
 
@@ -18,9 +18,9 @@
       this.Line = line;
     }
 
-    public double Slope => slope ?? (slope = CalcSlope()).Value;
+    public decimal Slope => slope ?? (slope = CalcSlope()).Value;
 
-    public double Intercept => intercept ?? (intercept = CalcIntercept(Line)).Value;
+    public decimal Intercept => intercept ?? (intercept = CalcIntercept(Line)).Value;
 
     public DxfPoint Left
     {
@@ -50,7 +50,7 @@
 
     public DxfLine Line { get; }
 
-    public bool IsVertical => Line.P1.X == Line.P2.X;
+    public bool IsVertical => Math.Round(Line.P1.X, FractionalDigits) == Math.Round(Line.P2.X, FractionalDigits);
 
     private void SetLeftRight()
     {
@@ -79,27 +79,27 @@
       }
     }
 
-    private double CalcSlope()
+    private decimal CalcSlope()
     {
       if (IsVertical)
       {
-        return double.PositiveInfinity;
+        return decimal.MaxValue;
       }
       else
       {
-        return Math.Round((Right.Y - Left.Y) / (Right.X - Left.X), FractionalDigits);
+        return (decimal)Math.Round((Right.Y - Left.Y) / (Right.X - Left.X), FractionalDigits);
       }
     }
 
-    private double CalcIntercept(DxfLine line)
+    private decimal CalcIntercept(DxfLine line)
     {
       if (IsVertical)
       {
-        return line.P1.X;
+        return (decimal)Math.Round(line.P1.X, FractionalDigits);
       }
       else
       {
-        return Math.Round(line.P1.Y - (Slope * line.P1.X), FractionalDigits);
+        return (decimal)Math.Round(line.P1.Y - ((double)Slope * line.P1.X), FractionalDigits);
       }
     }
   }

@@ -75,7 +75,7 @@
       var random = new Random();
       var sut = new NoFitPolygon();
       sut.IsPriority = true;
-      sut.StrictAngle = DeepNestLib.NestProject.AnglesEnum.Vertical;
+      sut.StrictAngle = DeepNestLib.NestProject.AnglesEnum.AsPreviewed;
       sut.Name = DateTime.Now.ToString();
       var firstPoint = new SvgPoint(0, 0);
       sut.AddPoint(firstPoint);

@@ -2,8 +2,14 @@
 {
   public interface INestState
   {
+    /// <summary>
+    /// Gets the average time per Nest Result since start of the run.
+    /// </summary>
     long AveragePlacementTime { get; }
 
+    /// <summary>
+    /// Gets the average time per Nest Result since start of the run.
+    /// </summary>
     long AverageNestTime { get; }
 
     int DllCallCounter { get; }
@@ -14,12 +20,21 @@
 
     int Iterations { get; }
 
+    /// <summary>
+    /// Gets the last placement Time (milliseconds).
+    /// </summary>
     long LastPlacementTime { get; }
 
     int NestCount { get; }
 
+    /// <summary>
+    /// Gets the NfpPair % Cached.
+    /// </summary>
     double NfpPairCachePercentCached { get; }
 
+    /// <summary>
+    /// Gets the Population of the current generation.
+    /// </summary>
     int Population { get; }
 
     int Threads { get; }

@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:interactivity="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:msbehaviors="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:converters="clr-namespace:DeepNestSharp.Ui.Converters"
              xmlns:behaviors="clr-namespace:DeepNestSharp.Ui.Behaviors"
              xmlns:domainModels="clr-namespace:DeepNestSharp.Domain.Models;assembly=DeepNestSharp.Domain"
@@ -63,10 +63,10 @@
                       <Binding Path="DataContext.HoverPartPlacement" RelativeSource="{RelativeSource AncestorType=UserControl}" Mode="OneWay" />
                     </MultiBinding>
                   </Polygon.Fill>
-                  <interactivity:Interaction.Behaviors>
+                  <msbehaviors:Interaction.Behaviors>
                     <behaviors:PolygonMouseHover />
                     <behaviors:PolygonMouseDrag />
-                  </interactivity:Interaction.Behaviors>
+                  </msbehaviors:Interaction.Behaviors>
                 </Polygon>
               </DataTemplate>
               <DataTemplate DataType="{x:Type domainModels:ObservableSheetPlacement}">

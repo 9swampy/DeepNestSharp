@@ -1,15 +1,18 @@
 ﻿namespace DeepNestLib.IO
 {
   using System;
+  using System.Threading.Tasks;
+  using DeepNestLib.Placement;
 
   public abstract class ProgressDisplayerBase
   {
+    private readonly Func<INestState> stateFactory;
+
     private double loopIndex;
     private double loopMax;
 
     private double loopIndexSecondary;
     private double loopMaxSecondary;
-    private readonly Func<INestState> stateFactory;
     private INestState state;
 
     protected ProgressDisplayerBase(Func<INestState> stateFactory)
@@ -19,7 +22,9 @@
 
     protected INestState State => state ?? (state = stateFactory());
 
-    public void IncrementLoopProgress(ProgressBar progressBar)
+    public abstract bool IsVisibleSecondaryProgressBar { get; set; }
+
+    public async Task IncrementLoopProgress(ProgressBar progressBar)
     {
       switch (progressBar)
       {
@@ -50,9 +55,9 @@
           break;
       }
 
-      if (progressBar == ProgressBar.Secondary && (State.AverageNestTime == 0 || State.AverageNestTime > 2000))
+      if (progressBar == ProgressBar.Secondary)
       {
-        SetIsVisibleSecondaryProgressBar(true);
+        IsVisibleSecondaryProgressBar = true;
       }
 
       this.DisplayProgress(progressBar, 0);
@@ -69,9 +74,9 @@
       InitialiseLoopProgress(progressBar, loopMax);
     }
 
-    public abstract void SetIsVisibleSecondaryProgressBar(bool isVisible);
-
     public abstract void DisplayProgress(ProgressBar progressBar, double percentageComplete);
+
+    public abstract void ClearTransientMessage();
 
     public abstract void DisplayTransientMessage(string message);
 
@@ -79,6 +84,14 @@
     {
       double progressPopulation = 0.66f * ((double)currentPopulation / populationSize);
       double progressPlacements = 0.34f * ((double)placedParts / totalPartsToPlace);
+      var percentageComplete = progressPopulation + progressPlacements;
+      return percentageComplete;
+    }
+
+    protected internal static double CalculatePercentageComplete(INestResult topNest)
+    {
+      double progressPopulation = 0.66f * ((double)topNest.MaterialUtilization);
+      double progressPlacements = 0.34f * ((double)topNest.TotalPlacedCount / topNest.TotalPartsCount);
       var percentageComplete = progressPopulation + progressPlacements;
       return percentageComplete;
     }

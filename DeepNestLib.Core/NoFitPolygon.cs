@@ -9,6 +9,7 @@
   using System.Text.Json.Serialization;
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
+  using IxMilia.Dxf.Entities;
 
   public class NoFitPolygon : PolygonBase, INfp, IHiddenNfp, IStringify
   {
@@ -337,6 +338,35 @@
       this.points.Reverse();
     }
 
+    public bool Overlaps(INfp other)
+    {
+      bool result = NfpSimplifier.IsIntersect(this, other, SvgNest.Config.ClipperScale);
+      if (result)
+      {
+        if (other.Children.Count == 0)
+        {
+          return true;
+        }
+        else
+        {
+          foreach (var hole in other.Children)
+          {
+            if (hole.Children.Count == 0)
+            {
+              if (NfpSimplifier.PolygonInsidePolygon(this, hole))
+              {
+                return false;
+              }
+            }
+          }
+
+          return true;
+        }
+      }
+
+      return false;
+    }
+
     /// <inheritdoc />
     void IHiddenNfp.Push(SvgPoint svgPoint)
     {
@@ -461,7 +491,7 @@
     /// <inheritdoc/>
     public INfp Rotate(double degrees, WithChildren withChildren = WithChildren.Included)
     {
-      var angle = degrees * Math.PI / 180;
+      var angle = degrees * Math.PI / -180;
       List<SvgPoint> pp = new List<SvgPoint>();
       for (var i = 0; i < this.Length; i++)
       {
@@ -674,6 +704,23 @@
         closedPoints.Add(closedPoints.First());
         ReplacePoints(closedPoints);
       }
+    }
+
+    internal static INfp FromDxf(DxfPolyline dxfPolyline)
+    {
+      return FromDxf(new List<DxfEntity>()
+      {
+        dxfPolyline
+      });
+    }
+
+    public static INfp FromDxf(List<DxfEntity> dxfEntities)
+    {
+      RawDetail raw;
+      raw = DxfParser.ConvertDxfToRawDetail(string.Empty, dxfEntities);
+      INfp result;
+      raw.TryConvertToNfp(0, out result);
+      return result;
     }
   }
 }

@@ -73,19 +73,19 @@
       set => SetProperty(nameof(Y), () => partPlacement.Y, v => partPlacement.Y = v, value);
     }
 
-    /// <inheritdoc/>
-    public INfp Hull
-    {
-      get => partPlacement.Hull;
-      set => SetProperty(nameof(Hull), () => partPlacement.Hull, v => partPlacement.Hull = v, value);
-    }
+    ///// <inheritdoc/>
+    //public INfp Hull
+    //{
+    //  get => partPlacement.Hull;
+    //  set => SetProperty(nameof(Hull), () => partPlacement.Hull, v => partPlacement.Hull = v, value);
+    //}
 
-    /// <inheritdoc/>
-    public INfp HullSheet
-    {
-      get => partPlacement.HullSheet;
-      set => SetProperty(nameof(HullSheet), () => partPlacement.HullSheet, v => partPlacement.HullSheet = v, value);
-    }
+    ///// <inheritdoc/>
+    //public INfp HullSheet
+    //{
+    //  get => partPlacement.HullSheet;
+    //  set => SetProperty(nameof(HullSheet), () => partPlacement.HullSheet, v => partPlacement.HullSheet = v, value);
+    //}
 
     /// <inheritdoc/>
     public override bool IsDirty

@@ -16,13 +16,13 @@
     private readonly Stopwatch chaperone = new Stopwatch();
     private int terminations = 0;
 
-    private double[] strictVerticalAngles = new double[]
+    private double[] strictAsPreviewedAngles = new double[]
     {
       0,
       180,
     };
 
-    private double[] strictHorizontalAngles = new double[]
+    private double[] strictRotate90Angles = new double[]
     {
       90,
       270,
@@ -40,13 +40,13 @@
       var angles = new List<double>();
       for (var i = 0; i < adam.Length; i++)
       {
-        if (adam[i].StrictAngle == AnglesEnum.Vertical || (adam[i].StrictAngle == AnglesEnum.None && this.config.StrictAngles == AnglesEnum.Vertical))
+        if (adam[i].StrictAngle == AnglesEnum.AsPreviewed || (adam[i].StrictAngle == AnglesEnum.None && this.config.StrictAngles == AnglesEnum.AsPreviewed))
         {
-          angles.Add(this.strictVerticalAngles[this.random.Next() % this.strictVerticalAngles.Length]);
+          angles.Add(this.strictAsPreviewedAngles[this.random.Next() % this.strictAsPreviewedAngles.Length]);
         }
-        else if (adam[i].StrictAngle == AnglesEnum.Horizontal || (adam[i].StrictAngle == AnglesEnum.None && this.config.StrictAngles == AnglesEnum.Horizontal))
+        else if (adam[i].StrictAngle == AnglesEnum.Rotate90 || (adam[i].StrictAngle == AnglesEnum.None && this.config.StrictAngles == AnglesEnum.Rotate90))
         {
-          angles.Add(this.strictHorizontalAngles[this.random.Next() % this.strictHorizontalAngles.Length]);
+          angles.Add(this.strictRotate90Angles[this.random.Next() % this.strictRotate90Angles.Length]);
         }
         else
         {
@@ -174,13 +174,13 @@
         rand = r.NextDouble();
         if (rand < 0.01 * config.MutationRate)
         {
-          if (clone.Parts[i].StrictAngle == AnglesEnum.Vertical || (clone.Parts[i].StrictAngle == AnglesEnum.None && config.StrictAngles == AnglesEnum.Vertical))
+          if (clone.Parts[i].StrictAngle == AnglesEnum.AsPreviewed || (clone.Parts[i].StrictAngle == AnglesEnum.None && config.StrictAngles == AnglesEnum.AsPreviewed))
           {
-            clone.Rotation[i] = strictVerticalAngles[random.Next() % strictVerticalAngles.Length];
+            clone.Rotation[i] = strictAsPreviewedAngles[random.Next() % strictAsPreviewedAngles.Length];
           }
-          else if (clone.Parts[i].StrictAngle == AnglesEnum.Horizontal || (clone.Parts[i].StrictAngle == AnglesEnum.None && config.StrictAngles == AnglesEnum.Horizontal))
+          else if (clone.Parts[i].StrictAngle == AnglesEnum.Rotate90 || (clone.Parts[i].StrictAngle == AnglesEnum.None && config.StrictAngles == AnglesEnum.Rotate90))
           {
-            clone.Rotation[i] = strictHorizontalAngles[random.Next() % strictHorizontalAngles.Length];
+            clone.Rotation[i] = strictRotate90Angles[random.Next() % strictRotate90Angles.Length];
           }
           else
           {
@@ -271,8 +271,8 @@
       var fittestSurvivors = config.PopulationSize / 10;
       newPopulation.AddRange(this.Population.Take(this.Population.Count() < fittestSurvivors ? this.Population.Count() : fittestSurvivors));
       chaperone.Restart();
-      this.progressDisplayer.SetIsVisibleSecondaryProgressBar(false);
-      this.progressDisplayer.InitialiseLoopProgress(ProgressBar.Primary, "Procreate. . .", config.PopulationSize);
+      //this.progressDisplayer.IsVisibleSecondaryProgressBar = false;
+      //this.progressDisplayer.InitialiseLoopProgress(ProgressBar.Primary, "Procreate. . .", config.PopulationSize);
       while (newPopulation.Count() < config.PopulationSize && chaperone.ElapsedMilliseconds <= config.ProcreationTimeout)
       {
         var male = RandomWeightedIndividual(newPopulation);

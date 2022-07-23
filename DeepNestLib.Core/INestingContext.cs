@@ -1,5 +1,6 @@
 ﻿namespace DeepNestLib
 {
+  using System.Threading.Tasks;
   using DeepNestLib.Placement;
 
   public interface INestingContext : INestingContextState
@@ -16,7 +17,7 @@
 
     void LoadXml(string v);
 
-    void NestIterate(ISvgNestConfig config);
+    Task NestIterate(ISvgNestConfig config);
 
     void ReorderSheets();
 
@@ -24,7 +25,7 @@
 
     void ResumeNest();
 
-    void StartNest();
+    Task StartNest();
 
     void StopNest();
   }

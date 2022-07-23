@@ -3,6 +3,7 @@
 namespace DeepNestLib
 {
   using System;
+  using System.Text.Json.Serialization;
   using DeepNestLib.NestProject;
 
   public class SvgNestConfig : ISvgNestConfig
@@ -116,6 +117,7 @@ namespace DeepNestLib
       }
     }
 
+    [JsonIgnore]
     /// <inheritdoc />
     public bool ExportExecutions
     {
@@ -163,6 +165,7 @@ namespace DeepNestLib
       }
     }
 
+    [JsonIgnore]
     public string LastNestFilePath
     {
       get

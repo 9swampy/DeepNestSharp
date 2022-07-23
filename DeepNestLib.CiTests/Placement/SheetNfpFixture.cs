@@ -47,7 +47,7 @@
       var sheet = new Sheet();
       var part = new NoFitPolygon(new SvgPoint[] { new SvgPoint(1, 1) });
       var nfpHelper = A.Fake<INfpHelper>();
-      A.CallTo(() => nfpHelper.GetInnerNfp(A<ISheet>._, A<INfp>._, A<MinkowskiCache>._, A<double>._, A<bool>.Ignored)).Returns(new INfp[] { part });
+      A.CallTo(() => nfpHelper.GetInnerNfp(A<ISheet>._, A<INfp>._, A<MinkowskiCache>._, A<double>._, A<bool>.Ignored, A<Action<string>>._)).Returns(new INfp[] { part });
       var sut = new NfpCandidateList(nfpHelper, sheet, part, 1, true);
       var json = sut.ToJson();
       NfpCandidateList actual = NfpCandidateList.FromJson(json);

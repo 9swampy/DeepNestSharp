@@ -4,6 +4,7 @@
   using System.Collections.Generic;
   using System.IO;
   using System.Linq;
+  using System.Text;
   using System.Text.Json;
   using System.Text.Json.Serialization;
 #if NCRUNCH
@@ -17,7 +18,9 @@
 
   public class PartPlacementWorker : ITestPartPlacementWorker
   {
-    private const bool EnableCaches = true;
+    bool ITestPartPlacementWorker.EnableCaches { get; set; } = true;
+
+    bool EnableCaches => ((ITestPartPlacementWorker)this).EnableCaches;
 
     private readonly IList<string> logList = new List<string>();
     private INestState state;
@@ -25,6 +28,8 @@
     private IPlacementWorker placementWorker;
     private volatile object processPartLock = new object();
     private int exportIndex = 0;
+
+    private IList<(string Filename, string Content)> exportList = new List<(string, string)>();
 
     [JsonConstructor]
     public PartPlacementWorker(Dictionary<string, ClipCacheItem> clipCache)
@@ -50,7 +55,20 @@
     }
 
     [JsonIgnore]
-    public bool ExportExecutions { get => Config?.ExportExecutions ?? false && this.state.NestCount <= 5; private set => Config.ExportExecutions = value; }
+    public bool ExportExecutions { get => this.Config?.ExportExecutions ?? false; private set => this.Config.ExportExecutions = value; }
+
+    bool ITestPartPlacementWorker.ExportExecutions
+    {
+      get
+      {
+        return this.ExportExecutions;
+      }
+
+      set
+      {
+        this.ExportExecutions = value;
+      }
+    }
 
     [JsonInclude]
     public List<IPartPlacement> Placements { get; private set; }
@@ -76,15 +94,18 @@
     [JsonInclude]
     public NfpHelper NfpHelper { get; private set; }
 
-    NfpHelper ITestPartPlacementWorker.NfpHelper { get => NfpHelper; set => NfpHelper = value; }
+    NfpHelper ITestPartPlacementWorker.NfpHelper { get => this.NfpHelper; set => this.NfpHelper = value; }
 
     [JsonInclude]
-    public Dictionary<string, ClipCacheItem> ClipCache { get => clipCache; set => clipCache = value; }
+    public Dictionary<string, ClipCacheItem> ClipCache { get => this.clipCache; set => this.clipCache = value; }
 
     IPlacementWorker ITestPartPlacementWorker.PlacementWorker { get => this.placementWorker; set => this.placementWorker = value; }
 
     [JsonInclude]
     public INfpCandidateList FinalNfp { get; private set; }
+
+    [JsonInclude]
+    public SheetPlacement SheetPlacement { get; private set; }
 
     [JsonInclude]
     public INfp InputPart { get; private set; }
@@ -94,15 +115,15 @@
     {
       get
       {
-        return logList;
+        return this.logList;
       }
 
       private set
       {
-        logList.Clear();
+        this.logList.Clear();
         foreach (var log in value)
         {
-          logList.Add(log);
+          this.logList.Add(log);
         }
       }
     }
@@ -111,303 +132,370 @@
 
     public InnerFlowResult ProcessPart(INfp inputPart, int inputPartIndex)
     {
-      lock (processPartLock)
+      try
       {
-        SheetNfp = null;
-        CombinedNfp = null;
-        InputPart = inputPart;
-        logList.Clear();
-        if (ExportExecutions)
+        lock (this.processPartLock)
         {
-          Export(inputPartIndex, "In.json", this.ToJson(true));
-        }
+          this.SheetNfp = null;
+          this.SheetPlacement = null;
+          this.FinalNfp = null;
+          this.CombinedNfp = null;
+          this.InputPart = inputPart;
+          this.logList.Clear();
+          this.exportList.Clear();
+          this.PrepExport(inputPartIndex, "In.json", () => this.ToJson(true));
 
-        var processedPart = new NoFitPolygon(inputPart, WithChildren.Included) as INfp;
-        //var processedPart = inputPart;
-        this.VerboseLog($"ProcessPart {inputPart.ToShortString()}.");
+          var processedPart = new NoFitPolygon(inputPart, WithChildren.Included) as INfp;
+          this.VerboseLog($"ProcessPart {inputPart.ToShortString()}.");
 
-        if (Placements.Count == 0)
-        {
-          // try all possible rotations until it fits
-          // (only do this for the first part of each sheet, to ensure that all parts that can be placed are, even if we have to to open a lot of sheets)
+          if (this.Placements.Count == 0)
+          {
+            // try all possible rotations until it fits
+            // (only do this for the first part of each sheet, to ensure that all parts that can be placed are, even if we have to to open a lot of sheets)
 #if NCRUNCH
           this.Config.Rotations.MustBeGreaterThan(0, "Config.Rotations", "is this a test and you've passed in a Fake<Config>?");
 #endif
-          for (int j = 0; j < this.Config.Rotations; j++)
-          {
-            this.VerboseLog("Calculate first on SheetNfp");
-            SheetNfp = new SheetNfp(NfpHelper, Sheet, processedPart, this.Config.ClipperScale, this.Config.UseDllImport);
-            if (SheetNfp.CanAcceptPart)
+            for (int j = 0; j < this.Config.Rotations; j++)
             {
-              this.VerboseLog($"{processedPart.ToShortString()} could be placed if sheet empty (only do this for the first part on each sheet).");
-              break;
-            }
-
-            var r = processedPart.Rotate(360D / this.Config.Rotations);
-            r.Rotation = processedPart.Rotation + (360D / this.Config.Rotations);
-            r.Source = processedPart.Source;
-            r.Id = processedPart.Id;
-
-            // rotation is not in-place
-            processedPart = r;
-          }
-
-          // part unplaceable, skip
-          if (!SheetNfp.CanAcceptPart)
-          {
-            this.VerboseLog($"{processedPart.ToShortString()} could not be placed even if sheet empty (only do this for the first part on each sheet).");
-            if (ExportExecutions)
-            {
-              Export(inputPartIndex, $"Out-UnplaceableSheetNfp.dnsnfp", SheetNfp.ToJson());
-            }
-
-            return InnerFlowResult.Continue;
-          }
-        }
-        else
-        {
-          this.VerboseLog("Already has a first placement.");
-        }
-
-        if (SheetNfp == null)
-        {
-          this.VerboseLog($"Calculate placement #{Placements.Count} on SheetNfp");
-          SheetNfp = new SheetNfp(NfpHelper, Sheet, processedPart, this.Config.ClipperScale, this.Config.UseDllImport);
-        }
-
-        if (Placements.Count == 0)
-        {
-          this.VerboseLog("First placement, put it on the bottom left corner. . .");
-          var candidatePoint = SheetNfp.GetCandidatePointClosestToOrigin();
-          var position = new PartPlacement(processedPart)
-          {
-            X = candidatePoint.X - processedPart[0].X,
-            Y = candidatePoint.Y - processedPart[0].Y,
-            Id = processedPart.Id,
-            Rotation = processedPart.Rotation,
-            Source = processedPart.Source,
-          };
-
-          SheetNfp = new SheetNfp(SheetNfp.Items, Sheet, processedPart.Shift(position));
-          AddPlacement(inputPart, processedPart, position, inputPartIndex);
-        }
-        else if (SheetNfp != null && SheetNfp.CanAcceptPart)
-        {
-          this.VerboseLog($"Placement #{Placements.Count}. . .");
-          var clipper = new Clipper();
-          string clipkey = "s:" + processedPart.Source + "r:" + processedPart.Rotation;
-          bool error;
-          IntPoint[][] clipperSheetNfp = NfpHelper.InnerNfpToClipperCoordinates(SheetNfp.Items, this.Config.ClipperScale);
-
-          // check if stored in clip cache
-          // var startindex = 0;
-          var startIndex = 0;
-          if (EnableCaches && this.ClipCache.ContainsKey(clipkey))
-          {
-            var prevNfp = this.ClipCache[clipkey].nfpp;
-            clipper.AddPaths(prevNfp.Select(z => z.ToList()).ToList(), PolyType.ptSubject, true);
-            startIndex = this.ClipCache[clipkey].index;
-            this.VerboseLog($"Retrieve {clipkey}:{startIndex} from {nameof(ClipCache)}; populate {nameof(clipper)}");
-          }
-
-          List<List<IntPoint>> combinedNfp;
-          if (!this.TryGetCombinedNfp(this.Config.ClipperScale, Placements, processedPart, clipper, startIndex, out combinedNfp))
-          {
-            this.VerboseLog($"{nameof(TryGetCombinedNfp)} clipper error.");
-            error = true;
-            return InnerFlowResult.Continue;
-          }
-          else
-          {
-            CombinedNfp = combinedNfp;
-          }
-
-          if (EnableCaches)
-          {
-            this.VerboseLog($"Add {clipkey} to {nameof(ClipCache)}");
-            this.ClipCache[clipkey] = new ClipCacheItem()
-            {
-              index = Placements.Count - 1,
-              nfpp = CombinedNfp.Select(z => z.ToArray()).ToArray(),
-            };
-          }
-
-          // console.log('save cache', placed.length - 1);
-
-          List<INfp> finalNfp;
-          InnerFlowResult clipperForDifferenceResult = this.TryGetDifferenceWithSheetPolygon(this.Config.ClipperScale, CombinedNfp, processedPart, clipperSheetNfp, out finalNfp);
-          if (clipperForDifferenceResult == InnerFlowResult.Break)
-          {
-            return InnerFlowResult.Break;
-          }
-          else if (clipperForDifferenceResult == InnerFlowResult.Continue)
-          {
-            return InnerFlowResult.Continue;
-          }
-
-#if NCRUNCH
-            try
-            {
-              var openScadBuilder = new StringBuilder();
-              foreach (var item in finalNfp)
+              this.VerboseLog("Calculate first on SheetNfp");
+              if (this.WouldFitOnRectangularSheet(processedPart))
               {
-                openScadBuilder.AppendLine(item.ToOpenScadPolygon());
+                this.SheetNfp = this.InitialiseSheetNfp(processedPart);
+                if (this.SheetNfp.CanAcceptPart)
+                {
+                  this.VerboseLog($"{processedPart.ToShortString()} could be placed if sheet empty (only do this for the first part on each sheet).");
+                  break;
+                }
               }
 
-              var openScad = openScadBuilder.ToString();
+              var r = processedPart.Rotate(360D / this.Config.Rotations);
+              r.Rotation = processedPart.Rotation + (360D / this.Config.Rotations);
+              r.Source = processedPart.Source;
+              r.Id = processedPart.Id;
+
+              // rotation is not in-place
+              processedPart = r;
             }
-            catch (Exception)
+
+            // part unplaceable, skip
+            if (this.SheetNfp == null || !this.SheetNfp.CanAcceptPart)
             {
-              // NOP
+              this.VerboseLog($"{processedPart.ToShortString()} could not be placed even if sheet empty (only do this for the first part on each sheet).");
+              this.PrepExport(inputPartIndex, $"Out-UnplaceableSheetNfp.dnsnfp", () => this.SheetNfp.ToJson());
+
+              return InnerFlowResult.Continue;
             }
-#endif
-          // choose placement that results in the smallest bounding box/hull etc
-          // todo: generalize gravity direction
-          /*var minwidth = null;
-          var minarea = null;
-          var minx = null;
-          var miny = null;
-          var nf, area, shiftvector;*/
-          double? minwidth = null;
-          double? minarea = null;
-          double? minx = null;
-          double? miny = null;
-          INfp nf;
-          double area;
-          PartPlacement shiftvector = null;
-
-          NoFitPolygon allpoints = SheetPlacement.CombinedPoints(Placements);
-          PolygonBounds allbounds = null;
-          PolygonBounds partbounds = null;
-          if (this.Config.PlacementType == PlacementTypeEnum.Gravity || this.Config.PlacementType == PlacementTypeEnum.BoundingBox)
-          {
-            allbounds = GeometryUtil.GetPolygonBounds(allpoints);
-
-            NoFitPolygon partpoints = new NoFitPolygon();
-            for (int m = 0; m < processedPart.Length; m++)
-            {
-              partpoints.AddPoint(new SvgPoint(processedPart[m].X, processedPart[m].Y));
-            }
-
-            partbounds = GeometryUtil.GetPolygonBounds(partpoints);
           }
           else
           {
-            allpoints = allpoints.GetHull();
+            this.VerboseLog("Already has a first placement.");
           }
 
-          this.VerboseLog($"Iterate nfps in differenceWithSheetPolygonNfp:");
-          PartPlacement position = null;
-          for (int j = 0; j < finalNfp.Count; j++)
+          if (this.SheetNfp == null)
           {
-            this.VerboseLog($"  For j={j}");
-            nf = finalNfp[j];
-
-            this.VerboseLog($"evalnf {nf.Length}");
-            for (int k = 0; k < nf.Length; k++)
+            this.VerboseLog($"Calculate placement #{this.Placements.Count} on SheetNfp");
+            this.SheetNfp = this.InitialiseSheetNfp(processedPart);
+            if (this.SheetNfp.CanAcceptPart && this.Placements.Count != 0)
             {
-              this.VerboseLog($"    For k={k}");
-              shiftvector = new PartPlacement(processedPart)
+              this.VerboseLog($"{processedPart.ToShortString()} could be placed if sheet empty (but there's already {this.Placements.Count} placement[s] on the sheet - unconsidered).");
+            }
+
+            this.PrepExport(inputPartIndex, "SheetNfpItems.scad", () => this.SheetNfp.Items.ToOpenScadPolygon());
+          }
+
+          if (this.Placements.Count == 0)
+          {
+            this.VerboseLog("First placement, put it on the bottom left corner. . .");
+            var candidatePoint = this.SheetNfp.GetCandidatePointClosestToOrigin();
+            var position = new PartPlacement(processedPart)
+            {
+              X = candidatePoint.X - processedPart[0].X,
+              Y = candidatePoint.Y - processedPart[0].Y,
+              Id = processedPart.Id,
+              Rotation = processedPart.Rotation,
+              Source = processedPart.Source,
+            };
+
+            this.SheetPlacement = this.AddPlacement(inputPart, processedPart, position, inputPartIndex);
+          }
+          else if (this.SheetNfp != null && this.SheetNfp.CanAcceptPart)
+          {
+            this.VerboseLog($"Placement #{this.Placements.Count + 1}. . .");
+            string clipkey = "s:" + processedPart.Source + "r:" + processedPart.Rotation;
+
+            List<List<IntPoint>> combinedNfp;
+            if (!TryGetCombinedNfp(this.Placements, processedPart, clipkey, out combinedNfp))
+            {
+              this.VerboseLog($"{nameof(this.TryGetCombinedNfp)} clipper error.");
+              return InnerFlowResult.Continue;
+            }
+            else
+            {
+              this.CombinedNfp = combinedNfp;
+              this.PrepExport(inputPartIndex, "combinedNfp.scad", () => combinedNfp.ToOpenScadPolygon());
+            }
+
+            if (this.EnableCaches)
+            {
+              this.VerboseLog($"Add {clipkey} to {nameof(this.ClipCache)}");
+              this.ClipCache[clipkey] = new ClipCacheItem()
               {
-                Id = processedPart.Id,
-                X = nf[k].X - processedPart[0].X,
-                Y = nf[k].Y - processedPart[0].Y,
-                Source = processedPart.Source,
-                Rotation = processedPart.Rotation,
+                index = this.Placements.Count - 1,
+                nfpp = this.CombinedNfp.Select(z => z.ToArray()).ToArray(),
               };
+            }
 
-              PolygonBounds rectbounds = null;
-              if (this.Config.PlacementType == PlacementTypeEnum.Gravity || this.Config.PlacementType == PlacementTypeEnum.BoundingBox)
+            // console.log('save cache', placed.length - 1);
+
+            //Moved because I'm certain SheetNfp isn't accessed between where this was and here...
+            var clipperSheetNfp = NfpHelper.InnerNfpToClipperCoordinates(this.SheetNfp.Items, this.Config.ClipperScale);
+            this.PrepExport(inputPartIndex, "clipperSheetNfp.scad", () => clipperSheetNfp.ToOpenScadPolygon());
+
+            List<INfp> finalNfp;
+            InnerFlowResult clipperForDifferenceResult = this.TryGetDifferenceWithSheetPolygon(this.Config.ClipperScale, this.CombinedNfp, processedPart, clipperSheetNfp, out finalNfp);
+            if (clipperForDifferenceResult == InnerFlowResult.Break)
+            {
+              this.VerboseLog("ProcessPart returns InnerFlowResult.Break");
+              return InnerFlowResult.Break;
+            }
+            else if (clipperForDifferenceResult == InnerFlowResult.Continue)
+            {
+              this.VerboseLog("ProcessPart returns InnerFlowResult.Continue");
+              return InnerFlowResult.Continue;
+            }
+
+            this.PrepExport(inputPartIndex, "finalNfp.scad", () => finalNfp.ToOpenScadPolygon());
+            PartPlacement position = GetBestPosition(
+                                              this.Sheet,
+                                              processedPart,
+                                              finalNfp,
+                                              this.VerboseLog,
+                                              this.Config.PlacementType,
+                                              SheetPlacement.CombinedPoints(this.Placements));
+            if (position != null)
+            {
+              this.FinalNfp = new NfpCandidateList(finalNfp.ToArray(), this.Sheet, processedPart.Shift(position));
+              this.SheetPlacement = this.AddPlacement(inputPart, processedPart, position, inputPartIndex);
+              if (position.MergedLength.HasValue)
               {
-                NoFitPolygon poly = new NoFitPolygon();
-                poly.AddPoint(new SvgPoint(allbounds.X, allbounds.Y));
-                poly.AddPoint(new SvgPoint(allbounds.X + allbounds.Width, allbounds.Y));
-                poly.AddPoint(new SvgPoint(allbounds.X + allbounds.Width, allbounds.Y + allbounds.Height));
-                poly.AddPoint(new SvgPoint(allbounds.X, allbounds.Y + allbounds.Height));
+                this.MergedLength += position.MergedLength.Value;
+              }
+            }
+            else
+            {
+              this.VerboseLog($"Could not place {processedPart}.");
+              return InnerFlowResult.Continue;
+            }
+          }
+          else
+          {
+            this.VerboseLog($"Could not place {processedPart.ToShortString()} even on empty {this.Sheet.ToShortString()}.");
+          }
 
-                poly.AddPoint(new SvgPoint(partbounds.X + shiftvector.X, partbounds.Y + shiftvector.Y));
-                poly.AddPoint(new SvgPoint(partbounds.X + partbounds.Width + shiftvector.X, partbounds.Y + shiftvector.Y));
-                poly.AddPoint(new SvgPoint(partbounds.X + partbounds.Width + shiftvector.X, partbounds.Y + partbounds.Height + shiftvector.Y));
-                poly.AddPoint(new SvgPoint(partbounds.X + shiftvector.X, partbounds.Y + partbounds.Height + shiftvector.Y));
+          return InnerFlowResult.Success;
+        }
+      }
+      finally
+      {
+        if (this.ExportExecutions && this.Placements.Count == 2)
+        {
+          this.PrepExport(inputPartIndex, "LogOut", JsonSerializer.Serialize(this.logList));
+          this.PersistExports();
+        }
+      }
+    }
 
-                rectbounds = GeometryUtil.GetPolygonBounds(poly);
+    private PartPlacement GetBestPosition(ISheet sheet, INfp processedPart, List<INfp> finalNfp, Action<string> verboseLog, PlacementTypeEnum placementType, NoFitPolygon allPlacementsFlattened)
+    {
+      // choose placement that results in the smallest bounding box/hull etc
+      // todo: generalize gravity direction
+      /*var minwidth = null;
+      var minarea = null;
+      var minx = null;
+      var miny = null;
+      var nf, area, shiftvector;*/
+      double? minwidth = null;
+      double? minarea = null;
+      double? minx = null;
+      double? miny = null;
+      INfp nf;
+      double area;
 
-                // weigh width more, to help compress in direction of gravity
-                if (this.Config.PlacementType == PlacementTypeEnum.Gravity)
-                {
-                  area = (rectbounds.Width * 3) + rectbounds.Height;
-                }
-                else
-                {
-                  area = rectbounds.Width * rectbounds.Height;
-                }
+      NoFitPolygon allpoints = allPlacementsFlattened;
+      PolygonBounds allbounds = null;
+      PolygonBounds partbounds = null;
+      if (placementType == PlacementTypeEnum.Gravity || placementType == PlacementTypeEnum.BoundingBox)
+      {
+        allbounds = GeometryUtil.GetPolygonBounds(allpoints);
+
+        NoFitPolygon partpoints = new NoFitPolygon();
+        for (int m = 0; m < processedPart.Length; m++)
+        {
+          partpoints.AddPoint(new SvgPoint(processedPart[m].X, processedPart[m].Y));
+        }
+
+        partbounds = GeometryUtil.GetPolygonBounds(partpoints);
+      }
+      else
+      {
+        allpoints = allpoints.GetHull();
+      }
+
+      verboseLog($"Iterate nfps in differenceWithSheetPolygonNfp:");
+      PartPlacement position = null;
+      bool isRejected = false;
+      for (int j = 0; j < finalNfp.Count; j++)
+      {
+        verboseLog($"  For j={j}");
+        nf = finalNfp[j];
+
+        verboseLog($"evalnf {nf.Length}");
+        for (int k = 0; k < nf.Length; k++)
+        {
+          verboseLog($"    For k={k}");
+          PartPlacement shiftvector = new PartPlacement(processedPart)
+          {
+            Id = processedPart.Id,
+            X = nf[k].X - processedPart[0].X,
+            Y = nf[k].Y - processedPart[0].Y,
+            Source = processedPart.Source,
+            Rotation = processedPart.Rotation,
+          };
+
+          var shiftedPart = processedPart.Shift(shiftvector);
+          if (!IsPositionValid(allpoints, shiftedPart, shiftvector))
+          {
+            isRejected = true;
+            verboseLog("Would overlap with allPoints so skip");
+          }
+          else
+          {
+            PolygonBounds rectbounds = null;
+            if (placementType == PlacementTypeEnum.Gravity || placementType == PlacementTypeEnum.BoundingBox)
+            {
+              NoFitPolygon poly = new NoFitPolygon();
+              poly.AddPoint(new SvgPoint(allbounds.X, allbounds.Y));
+              poly.AddPoint(new SvgPoint(allbounds.X + allbounds.Width, allbounds.Y));
+              poly.AddPoint(new SvgPoint(allbounds.X + allbounds.Width, allbounds.Y + allbounds.Height));
+              poly.AddPoint(new SvgPoint(allbounds.X, allbounds.Y + allbounds.Height));
+
+              poly.AddPoint(new SvgPoint(partbounds.X + shiftvector.X, partbounds.Y + shiftvector.Y));
+              poly.AddPoint(new SvgPoint(partbounds.X + partbounds.Width + shiftvector.X, partbounds.Y + shiftvector.Y));
+              poly.AddPoint(new SvgPoint(partbounds.X + partbounds.Width + shiftvector.X, partbounds.Y + partbounds.Height + shiftvector.Y));
+              poly.AddPoint(new SvgPoint(partbounds.X + shiftvector.X, partbounds.Y + partbounds.Height + shiftvector.Y));
+
+              rectbounds = GeometryUtil.GetPolygonBounds(poly);
+
+              // weigh width more, to help compress in direction of gravity
+              if (placementType == PlacementTypeEnum.Gravity)
+              {
+                area = (rectbounds.Width * 3) + rectbounds.Height;
               }
               else
               {
-                // must be convex hull
-                var localpoints = allpoints.Clone();
-
-                for (int m = 0; m < processedPart.Length; m++)
-                {
-                  localpoints.AddPoint(new SvgPoint(processedPart[m].X + shiftvector.X, processedPart[m].Y + shiftvector.Y));
-                }
-
-                area = Math.Abs(GeometryUtil.PolygonArea(localpoints.GetHull()));
-                shiftvector.Hull = localpoints.GetHull();
-                shiftvector.HullSheet = Sheet.GetHull();
-              }
-
-              // console.timeEnd('evalbounds');
-              // console.time('evalmerge');
-
-              this.VerboseLog("evalmerge");
-              if (minarea == null ||
-                  area < minarea ||
-                  (GeometryUtil.AlmostEqual(minarea, area) && (minx == null || shiftvector.X < minx)) ||
-                  (GeometryUtil.AlmostEqual(minarea, area) && minx != null && GeometryUtil.AlmostEqual(shiftvector.X, minx) && shiftvector.Y < miny))
-              {
-                this.VerboseLog($"evalmerge-entered minarea={minarea ?? -1:0.000000} x={shiftvector?.X ?? -1:0.000000} y={shiftvector?.Y ?? -1:0.000000}");
-                minarea = area;
-
-                minwidth = rectbounds != null ? rectbounds.Width : 0;
-                position = shiftvector;
-                if (minx == null || shiftvector.X < minx)
-                {
-                  minx = shiftvector.X;
-                }
-
-                if (miny == null || shiftvector.Y < miny)
-                {
-                  miny = shiftvector.Y;
-                }
-
-                this.VerboseLog($"evalmerge-exit minarea={minarea ?? -1:0.000000} x={shiftvector?.X ?? -1:0.000000} y={shiftvector?.Y ?? -1:0.000000}");
+                area = rectbounds.Width * rectbounds.Height;
               }
             }
-          }
-
-          if (position != null)
-          {
-            FinalNfp = new NfpCandidateList(finalNfp.ToArray(), Sheet, processedPart.Shift(position));
-            AddPlacement(inputPart, processedPart, position, inputPartIndex);
-            if (position.MergedLength.HasValue)
+            else
             {
-              this.MergedLength += position.MergedLength.Value;
+              // must be convex hull
+              var localpoints = allpoints.Clone();
+
+              for (int m = 0; m < processedPart.Length; m++)
+              {
+                localpoints.AddPoint(new SvgPoint(processedPart[m].X + shiftvector.X, processedPart[m].Y + shiftvector.Y));
+              }
+
+              area = Math.Abs(GeometryUtil.PolygonArea(localpoints.GetHull()));
+              //shiftvector.Hull = localpoints.GetHull();
+              //shiftvector.HullSheet = sheet.GetHull();
+            }
+
+            // console.timeEnd('evalbounds');
+            // console.time('evalmerge');
+
+            verboseLog("evalmerge");
+            if (minarea == null ||
+                area < minarea ||
+                (GeometryUtil.AlmostEqual(minarea, area) && (minx == null || shiftvector.X < minx)) ||
+                (GeometryUtil.AlmostEqual(minarea, area) && minx != null && GeometryUtil.AlmostEqual(shiftvector.X, minx) && shiftvector.Y < miny))
+            {
+              LogCondition("minArea == null : {0}", () => minarea == null, verboseLog);
+              LogCondition($"area < minarea : {0}", () => area < minarea, verboseLog);
+              LogCondition($"minx condition : {0}", () => GeometryUtil.AlmostEqual(minarea, area) && (minx == null || shiftvector.X < minx), verboseLog);
+              LogCondition($"miny condition : {0}", () => GeometryUtil.AlmostEqual(minarea, area) && minx != null && GeometryUtil.AlmostEqual(shiftvector.X, minx) && shiftvector.Y < miny, verboseLog);
+              verboseLog($"evalmerge-entered minarea={minarea ?? -1:0.000000} x={shiftvector?.X ?? -1:0.000000} y={shiftvector?.Y ?? -1:0.000000}");
+              minarea = area;
+
+              minwidth = rectbounds == null ? 0 : rectbounds.Width;
+              position = shiftvector;
+              if (minx == null || shiftvector.X < minx)
+              {
+                minx = shiftvector.X;
+              }
+
+              if (miny == null || shiftvector.Y < miny)
+              {
+                miny = shiftvector.Y;
+              }
+
+              verboseLog($"evalmerge-exit minarea={minarea ?? -1:0.000000} x={shiftvector?.X ?? -1:0.000000} y={shiftvector?.Y ?? -1:0.000000}");
             }
           }
-          else if (processedPart.IsPriority && Config.UsePriority)
-          {
-            this.VerboseLog($"Could not place {processedPart}. As it's Priority skip to next part.");
-            return InnerFlowResult.Break;
-          }
         }
-        else
-        {
-          this.VerboseLog($"Could not place {processedPart.ToShortString()} even on empty {Sheet.ToShortString()}.");
-        }
-
-        return InnerFlowResult.Success;
       }
+
+      if (position == null && isRejected && state is INestStateSvgNest nestStateSvgNest)
+      {
+        nestStateSvgNest.IncrementRejected();
+      }
+
+      return position;
+    }
+
+    private bool IsPositionValid(NoFitPolygon allpoints, INfp shiftedPart, PartPlacement position)
+    {
+      var proposed = position.Part.Shift(position);
+      foreach (var prior in this.Placements)
+      {
+        var shiftedPrior = prior.Part.Shift(prior);
+        if (proposed.Overlaps(shiftedPrior))
+        {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    private static void LogCondition(string description, Func<bool> condition, Action<string> verboseLog)
+    {
+      try
+      {
+        verboseLog($"{description} : {condition()}");
+      }
+      catch (Exception ex)
+      {
+        // verboseLog($"{description} : {ex.Message}");
+      }
+    }
+
+    /// <summary>
+    /// Pre-filter check that if the sheet was a full regular rectangle would the part even fit?
+    /// </summary>
+    /// <param name="processedPart"></param>
+    /// <returns>.t if it would (so go ahead with expensive Clipper fitment.</returns>
+    private bool WouldFitOnRectangularSheet(INfp processedPart)
+    {
+      return processedPart.WidthCalculated <= this.Sheet.WidthCalculated &&
+                        processedPart.HeightCalculated <= this.Sheet.HeightCalculated;
+    }
+
+    private SheetNfp InitialiseSheetNfp(INfp processedPart)
+    {
+      var result = new SheetNfp(this.NfpHelper, this.Sheet, processedPart, this.Config.ClipperScale, this.Config.UseDllImport, this.VerboseLog);
+      this.VerboseLog($"SheetNfp has {result.NumberOfNfps}.Items");
+      return result;
     }
 
     public string ToJson(bool writeIndented = false)
@@ -425,50 +513,102 @@
       return System.Text.Json.JsonSerializer.Serialize(this, options);
     }
 
-    private void AddPlacement(INfp inputPart, INfp processedPart, PartPlacement position, int inputPartIndex)
+    private SheetPlacement AddPlacement(INfp inputPart, INfp processedPart, PartPlacement position, int inputPartIndex)
     {
-      var sheetPlacement = this.placementWorker.AddPlacement(inputPart, Placements, processedPart, position, this.Config.PlacementType, Sheet, MergedLength);
-      if (ExportExecutions)
+      var result = this.placementWorker.AddPlacement(inputPart, this.Placements, processedPart, position, this.Config.PlacementType, this.Sheet, this.MergedLength);
+      if (this.ExportExecutions)
       {
-        Export(inputPartIndex, "Out.json", this.ToJson(true));
-        Export(inputPartIndex, $"Out-Parts{sheetPlacement.PartPlacements.Count}.dnsp", sheetPlacement.ToJson(true));
-        if (SheetNfp == null)
+        this.PrepExport(inputPartIndex, "Out.json", () => this.ToJson(true));
+        this.PrepExport(inputPartIndex, $"Out-Parts{result.PartPlacements.Count}.dnsp", () => result.ToJson(true));
+        if (this.SheetNfp == null)
         {
-          Export(inputPartIndex, $"Out-SheetNfpNone.dnsnfp", string.Empty);
+          this.PrepExport(inputPartIndex, $"Out-SheetNfpNone.dnsnfp", string.Empty);
         }
         else
         {
-          Export(inputPartIndex, $"Out-SheetNfp.dnsnfp", SheetNfp.ToJson());
+          this.PrepExport(inputPartIndex, $"Out-SheetNfp.dnsnfp", this.SheetNfp.ToJson());
         }
 
-        if (FinalNfp == null)
+        if (this.FinalNfp == null)
         {
-          Export(inputPartIndex, $"Out-FinalNfpNone.dnnfps", string.Empty);
+          this.PrepExport(inputPartIndex, $"Out-FinalNfpNone.dnnfps", string.Empty);
         }
         else
         {
-          Export(inputPartIndex, $"Out-FinalNfp.dnnfps", FinalNfp.ToJson());
+          this.PrepExport(inputPartIndex, $"Out-FinalNfp.dnnfps", this.FinalNfp.ToJson());
         }
+      }
+
+      return result;
+    }
+
+    private void PrepExport(int inputPartIndex, string fileNameSuffix, string content)
+    {
+      try
+      {
+        if (this.state == null)
+        {
+          return;
+        }
+
+        var fileName = $"N{this.state.NestCount}-S{this.Sheet.Id}-{this.exportIndex}-P{inputPartIndex}-{fileNameSuffix}";
+        this.exportList.Add((fileName, content));
+        System.Diagnostics.Debug.Print($"Prep-Export {fileName}");
+        this.exportIndex++;
+      }
+      catch (Exception)
+      {
+        // NOP
       }
     }
 
-    private void Export(int inputPartIndex, string fileNameSuffix, string json)
+    /// <summary>
+    /// Call this overload to only evaluate the content if ExportExecutions set.
+    /// </summary>
+    /// <param name="inputPartIndex"></param>
+    /// <param name="fileNameSuffix"></param>
+    /// <param name="contentFunc"></param>
+    private void PrepExport(int inputPartIndex, string fileNameSuffix, Func<string> contentFunc)
     {
-      if (this.state?.NestCount <= 5)
+      try
       {
-        var dirInfo = new DirectoryInfo(Config.ExportExecutionPath);
+        if (this.ExportExecutions)
+        {
+          this.PrepExport(inputPartIndex, fileNameSuffix, contentFunc());
+        }
+      }
+      catch (Exception)
+      {
+        // NOP
+      }
+    }
+
+    private void PersistExports()
+    {
+      if (!string.IsNullOrEmpty(this.Config.ExportExecutionPath)
+          //&& ((Placements[0].Part.Name.Contains("4.dxf")
+          //&& Placements[0].Rotation == 270
+          //&& Placements[1].Part.Name.Contains("2.dxf")
+          //&& Placements[1].Rotation == 180) ||
+          //   CombinedNfp.Count == 19 ||
+          //   SheetPlacement.Fitness.Total < 130000)
+          //&& Placements[1].X > 290
+          )
+      {
+        var dirInfo = new DirectoryInfo(this.Config.ExportExecutionPath);
         if (dirInfo.Exists)
         {
-          var filePath = Path.Combine(Config.ExportExecutionPath, $"N{state.NestCount}-S{Sheet.Id}-{exportIndex}-P{inputPartIndex}-{fileNameSuffix}");
-          System.Diagnostics.Debug.Print($"Export {filePath}");
-          File.WriteAllText(filePath, json);
+          foreach (var export in this.exportList)
+          {
+            var filePath = Path.Combine(this.Config.ExportExecutionPath, export.Filename);
+            System.Diagnostics.Debug.Print($"Export {filePath}");
+            File.WriteAllText(filePath, export.Content);
+          }
         }
         else
         {
-          System.Diagnostics.Debug.Print($"Export path {Config.ExportExecutionPath} does not exist.");
+          System.Diagnostics.Debug.Print($"Export path {this.Config.ExportExecutionPath} does not exist.");
         }
-
-        exportIndex++;
       }
     }
 
@@ -497,24 +637,37 @@
     /// <param name="placed"></param>
     /// <param name="placements"></param>
     /// <param name="part"></param>
-    /// <param name="clipper"></param>
-    /// <param name="startIndex"></param>
+    /// <param name="clipper">Has been preloaded with the paths of the SheetNfp for the processing part, and up to startIndex if prior clip found in the cache.</param>
+    /// <param name="startIndex">If cache enabled this will be the index to start adding previously loaded parts to clipper; otherwise it'll build all from 0</param>
     /// <param name="combinedNfp"></param>
     /// <returns></returns>
-    private bool TryGetCombinedNfp(double clipperScale, List<IPartPlacement> placements, INfp part, Clipper clipper, int startIndex, out List<List<IntPoint>> combinedNfp)
+    private bool TryGetCombinedNfp(List<IPartPlacement> placements, INfp part, string clipkey, out List<List<IntPoint>> combinedNfp)
     {
+      // check if stored in clip cache
+      var startIndex = 0;
+      var clipper = new Clipper();
+      if (this.EnableCaches && this.ClipCache.ContainsKey(clipkey))
+      {
+        var prevNfp = this.ClipCache[clipkey].nfpp;
+        clipper.AddPaths(prevNfp.Select(z => z.ToList()).ToList(), PolyType.ptSubject, true);
+        startIndex = this.ClipCache[clipkey].index;
+        this.VerboseLog($"Retrieve {clipkey}:{startIndex} from {nameof(this.ClipCache)}; populate {nameof(clipper)}");
+      }
+
       this.VerboseLog("TryGetCombinedNfp");
       combinedNfp = new List<List<IntPoint>>();
+
+      // For each part not already in clipper add the outerNfp of already placed part and the processing part.
       for (int j = startIndex; j < placements.Count; j++)
       {
         this.VerboseLog($"TryGetCombinedNfp(j={j})=>NfpHelper.GetOuterNfp");
-        ((MinkowskiSum)((ITestNfpHelper)this.NfpHelper).MinkowskiSumService).VerboseLogAction = s => VerboseLog(s);
-        var outerNfp = NfpHelper.GetOuterNfp(placements[j].Part, part, MinkowskiCache.Cache, Config.UseDllImport);
+        ((MinkowskiSum)((ITestNfpHelper)this.NfpHelper).MinkowskiSumService).VerboseLogAction = s => this.VerboseLog(s);
+        var outerNfp = this.NfpHelper.GetOuterNfp(placements[j].Part, part, MinkowskiCache.Cache, this.Config.UseDllImport);
         ((MinkowskiSum)((ITestNfpHelper)this.NfpHelper).MinkowskiSumService).VerboseLogAction = s => { };
         this.VerboseLog($"NfpHelper.GetOuterNfp=>TryGetCombinedNfp(j={j})");
         if (outerNfp == null)
         {
-          VerboseLog("Minkowski difference failed: very rare but could happen. . .");
+          this.VerboseLog("Minkowski difference failed: very rare but could happen. . .");
           return false;
         }
 
@@ -538,9 +691,9 @@
           }
         }
 
-        var clipperNfp = NfpHelper.NfpToClipperCoordinates(outerNfp, clipperScale);
+        var clipperNfp = NfpHelper.NfpToClipperCoordinates(outerNfp, this.Config.ClipperScale);
         this.VerboseLog($"Add {placements[j].Part.ToShortString()} paths to {nameof(clipper)} ({placements[j].Part.Name})");
-        clipper.AddPaths(clipperNfp.Select(z => z.ToList()).ToList(), PolyType.ptSubject, true);
+        clipper.AddPaths(clipperNfp, PolyType.ptSubject, true);
       }
 
       // TODO: a lot here to insert
@@ -563,7 +716,7 @@
       this.placementWorker.VerboseLog(message);
     }
 
-    private InnerFlowResult TryGetDifferenceWithSheetPolygon(double clipperScale, List<List<IntPoint>> combinedNfp, INfp part, IntPoint[][] clipperSheetNfp, out List<INfp> differenceWithSheetPolygonNfp)
+    private InnerFlowResult TryGetDifferenceWithSheetPolygon(double clipperScale, List<List<IntPoint>> combinedNfp, INfp partx, List<List<IntPoint>> clipperSheetNfp, out List<INfp> differenceWithSheetPolygonNfp)
     {
       differenceWithSheetPolygonNfp = new List<INfp>();
 
@@ -574,7 +727,7 @@
       clipperForDifference.AddPaths(combinedNfp, PolyType.ptClip, true);
 
       this.VerboseLog($"Add subject {nameof(clipperSheetNfp)} to {nameof(clipperForDifference)}");
-      clipperForDifference.AddPaths(clipperSheetNfp.Select(z => z.ToList()).ToList(), PolyType.ptSubject, true);
+      clipperForDifference.AddPaths(clipperSheetNfp, PolyType.ptSubject, true);
 
       if (!clipperForDifference.Execute(ClipType.ctDifference, differenceWithSheetPolygonNfpPoints, PolyFillType.pftEvenOdd, PolyFillType.pftNonZero))
       {
@@ -583,22 +736,16 @@
       }
       else
       {
-        this.VerboseLog($"{nameof(clipperForDifference)} execute => {nameof(differenceWithSheetPolygonNfpPoints)}");
+        this.VerboseLog($"{nameof(clipperForDifference)} execute completed normally => {nameof(differenceWithSheetPolygonNfpPoints)}");
       }
 
       if (differenceWithSheetPolygonNfpPoints == null || differenceWithSheetPolygonNfpPoints.Count == 0)
       {
-        if (part.IsPriority)
-        {
-          this.VerboseLog("Could not place part. As it's Priority add another sheet.");
-          return InnerFlowResult.Break; /* However that means we'll leave additional space on the first sheet though that won't get used again
-                          as everything remaining will be fit to the consequent sheet? */
-        }
-
-        this.VerboseLog("Could not place part. As it's not Priority move on to next part.");
-        return InnerFlowResult.Continue; // Part can't be fitted but it wasn't a primary, so move on to the next part
+        this.VerboseLog("Could not place part. Move on to next part.");
+        return InnerFlowResult.Continue; // Part can't be fitted, so move on to the next part
       }
 
+      this.VerboseLog($"Found {differenceWithSheetPolygonNfpPoints.Count} difference Nfps.");
       for (int j = 0; j < differenceWithSheetPolygonNfpPoints.Count; j++)
       {
         // back to normal scale
@@ -770,10 +917,14 @@
 
   public interface ITestPartPlacementWorker
   {
+    bool EnableCaches { get; set; }
+
     NfpHelper NfpHelper { get; set; }
 
     IPlacementWorker PlacementWorker { get; set; }
 
     INestState State { get; set; }
+
+    bool ExportExecutions { get; set; }
   }
 }

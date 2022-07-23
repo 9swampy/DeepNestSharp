@@ -189,40 +189,42 @@
         }
 
         this.IsRunning = true;
-        this.nestExecutionHelper.InitialiseNest(
-                          this.Context,
-                          nestProjectViewModel.ProjectInfo.SheetLoadInfos,
-                          nestProjectViewModel.ProjectInfo.DetailLoadInfos,
-                          this.ProgressDisplayer);
-        if (this.Context.Sheets.Count == 0)
-        {
-          this.ProgressDisplayer.DisplayMessageBox("There are no sheets. Please add some and try again.", "DeepNest", MessageBoxIcon.Error);
-        }
-        else if (this.Context.Polygons.Count == 0)
-        {
-          this.ProgressDisplayer.DisplayMessageBox("There are no parts. Please add some and try again.", "DeepNest", MessageBoxIcon.Error);
-        }
-        else
-        {
-          this.nestWorker = new NestWorker(this);
-          this.nestWorkerTask = this.nestWorker.ExecuteAsync();
-          this.nestWorkerConfiguredTaskAwaitable = this.nestWorkerTask.ConfigureAwait(false);
-          this.nestWorkerConfiguredTaskAwaitable?.GetAwaiter().OnCompleted(() =>
-          {
-            this.IsRunning = false;
-          });
-
-          this.nestWorkerTask.Start();
-        }
-
-        return true;
       }
+
+      this.nestExecutionHelper.InitialiseNest(
+                        this.Context,
+                        nestProjectViewModel.ProjectInfo.SheetLoadInfos,
+                        nestProjectViewModel.ProjectInfo.DetailLoadInfos,
+                        this.ProgressDisplayer);
+      if (this.Context.Sheets.Count == 0)
+      {
+        this.ProgressDisplayer.DisplayMessageBox("There are no sheets. Please add some and try again.", "DeepNest", MessageBoxIcon.Error);
+      }
+      else if (this.Context.Polygons.Count == 0)
+      {
+        this.ProgressDisplayer.DisplayMessageBox("There are no parts. Please add some and try again.", "DeepNest", MessageBoxIcon.Error);
+      }
+      else
+      {
+        this.nestWorker = new NestWorker(this);
+        this.nestWorkerTask = this.nestWorker.ExecuteAsync();
+        this.nestWorkerConfiguredTaskAwaitable = this.nestWorkerTask.ConfigureAwait(false);
+        this.nestWorkerConfiguredTaskAwaitable?.GetAwaiter().OnCompleted(() =>
+        {
+          this.IsRunning = false;
+        });
+
+        this.nestWorkerTask.Start();
+      }
+
+      return true;
     }
 
     public void Stop()
     {
       lock (syncLock)
       {
+        Debug.Print("NestMonitorViewModel.Stop()");
         this.IsStopping = true;
         this.context?.StopNest();
         this.nestWorkerTask?.Wait(5000);
@@ -273,6 +275,7 @@
 
     private void OnStopNest()
     {
+      System.Diagnostics.Debug.Print("NestMonitorViewModel.OnStopNest()");
       this.mouseCursorService.OverrideCursor = Cursors.Wait;
       this.Stop();
     }
@@ -290,8 +293,8 @@
       {
         try
         {
-          Debug.Print("Start-Execute");
-          nestMonitorViewModel.Context.StartNest();
+          Debug.Print("NestMonitorViewModel.Start-Execute");
+          await nestMonitorViewModel.Context.StartNest();
           nestMonitorViewModel.ProgressDisplayer.UpdateNestsList();
           while (!nestMonitorViewModel.IsStopping)
           {
@@ -315,12 +318,12 @@
             }
           }
 
-          Debug.Print("Exit-Execute");
+          Debug.Print("NestMonitorViewModel.Exit-Execute");
         }
         catch (Exception ex)
         {
           this.nestMonitorViewModel.State.SetIsErrored();
-          Debug.Print("Error-Execute");
+          Debug.Print("NestMonitorViewModel.Error-Execute");
           Debug.Print(ex.Message);
           Debug.Print(ex.StackTrace);
         }
@@ -330,9 +333,11 @@
           {
             this.nestMonitorViewModel.mouseCursorService.OverrideCursor = null;
             this.nestMonitorViewModel.IsStopping = false;
+            this.nestMonitorViewModel.ProgressDisplayer.ClearTransientMessage();
+            this.nestMonitorViewModel.ProgressDisplayer.IsVisibleSecondaryProgressBar = false;
           });
 
-          Debug.Print("Finally-Execute");
+          Debug.Print("NestMonitorViewModel.Finally-Execute");
         }
       }
 

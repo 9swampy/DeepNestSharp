@@ -87,10 +87,10 @@
 
         var combinedNfp = new List<List<ClipperLib.IntPoint>>();
         var clipper = new ClipperLib.Clipper();
-        _ = clipper.AddPaths(clipperNfp.Select(z => z.ToList()).ToList(), ClipperLib.PolyType.ptSubject, true);
+        _ = clipper.AddPaths(clipperNfp, ClipperLib.PolyType.ptSubject, true);
         _ = clipper.Execute(ClipperLib.ClipType.ctUnion, combinedNfp, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero);
 
-        return SvgNest.SimplifyFunction(combinedNfp[0].ToArray().ToNestCoordinates(clipperScale), false, 1, false);
+        return NfpSimplifier.SimplifyFunction(combinedNfp[0].ToArray().ToNestCoordinates(clipperScale), false, 1, false);
       }
     }
 

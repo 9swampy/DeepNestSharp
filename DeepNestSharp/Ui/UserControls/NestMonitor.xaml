@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:userControls="clr-namespace:DeepNestSharp.Ui.UserControls" 
-             xmlns:interactivity="http://schemas.microsoft.com/expression/2010/interactivity" 
+             xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:converters="clr-namespace:DeepNestSharp.Ui.Converters" 
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d" 
@@ -69,11 +69,11 @@
           <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         </Style>
       </ListView.Resources>
-      <interactivity:Interaction.Triggers>
-        <interactivity:EventTrigger EventName="MouseDoubleClick">
-          <interactivity:InvokeCommandAction Command="{Binding LoadSheetPlacementCommand}" CommandParameter="{Binding Path=SelectedItem}"/>
-        </interactivity:EventTrigger>
-      </interactivity:Interaction.Triggers>
+      <behaviors:Interaction.Triggers>
+        <behaviors:EventTrigger EventName="MouseDoubleClick">
+          <behaviors:InvokeCommandAction Command="{Binding LoadSheetPlacementCommand}" CommandParameter="{Binding Path=SelectedItem}"/>
+        </behaviors:EventTrigger>
+      </behaviors:Interaction.Triggers>
       <ListView.View>
         <GridView>
           <GridViewColumn Header="Fitness" Width="80" DisplayMemberBinding="{Binding Path=Fitness, StringFormat=0.0000, Mode=OneWay}" />

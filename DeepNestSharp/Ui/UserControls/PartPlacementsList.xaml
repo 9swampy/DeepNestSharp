@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:interactivity="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <!--<UserControl.Resources>
@@ -32,11 +32,11 @@
           <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         </Style>
       </ListView.Resources>
-      <interactivity:Interaction.Triggers>
-        <interactivity:EventTrigger EventName="MouseDoubleClick">
-          <interactivity:InvokeCommandAction Command="{Binding LoadPartFileCommand}" CommandParameter="{Binding Path=SelectedItem}"/>
-        </interactivity:EventTrigger>
-      </interactivity:Interaction.Triggers>
+      <behaviors:Interaction.Triggers>
+        <behaviors:EventTrigger EventName="MouseDoubleClick">
+          <behaviors:InvokeCommandAction Command="{Binding LoadPartFileCommand}" CommandParameter="{Binding Path=SelectedItem}"/>
+        </behaviors:EventTrigger>
+      </behaviors:Interaction.Triggers>
       <ListView.View>
         <GridView>
           <GridViewColumn Header="Order" Width="25" DisplayMemberBinding="{Binding Path=Order, Mode=OneWay}" />

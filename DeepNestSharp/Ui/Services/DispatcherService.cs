@@ -20,6 +20,12 @@
 
     public void Invoke(Action callback) => joinableTaskContext.Factory.Run(async () => await InvokeAsync(callback).ConfigureAwait(false));
 
+    public async Task InvokeAsync(Func<Task> asyncMethod)
+    {
+      await joinableTaskContext.Factory.SwitchToMainThreadAsync();
+      await joinableTaskContext.Factory.RunAsync(asyncMethod);
+    }
+
     public async Task InvokeAsync(Action callback)
     {
       await joinableTaskContext.Factory.SwitchToMainThreadAsync();

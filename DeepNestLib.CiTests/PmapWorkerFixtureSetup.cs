@@ -7,13 +7,13 @@
   public class PmapWorkerFixtureSetup
   {
     internal static SvgPoint[] ExpectedPoints1 = new SvgPoint[]
-    {
-      new SvgPoint(0, 11),
-      new SvgPoint(-22, 11),
-      new SvgPoint(-22, -11),
-      new SvgPoint(0, -11),
-      new SvgPoint(0, 11),
-    };
+      {
+        new SvgPoint(11, 0),
+        new SvgPoint(-11, 0),
+        new SvgPoint(-11, -22),
+        new SvgPoint(11, -22),
+        new SvgPoint(11, 0),
+      };
 
     internal static SvgPoint[] ExpectedPoints2 = new SvgPoint[]
     {

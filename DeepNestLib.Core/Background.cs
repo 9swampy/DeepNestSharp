@@ -149,7 +149,7 @@
           var holeBounds = GeometryUtil.GetPolygonBounds(holes[j]);
           if (holeBounds.Width > partBounds.Width && holeBounds.Height > partBounds.Height)
           {
-            var n = nfpHelper.GetInnerNfp(holes[j], partRotated, MinkowskiCache.NoCache, clipperScale, this.useDllImport);
+            var n = nfpHelper.GetInnerNfp(holes[j], partRotated, MinkowskiCache.NoCache, clipperScale, this.useDllImport, o => { });
             if (n != null && n.Count() > 0)
             {
               cnfp.AddRange(n);
@@ -175,7 +175,13 @@
 
     private void ThenDeepNest(NfpPair[] nfpPairs, INfp[] parts, ISheet[] sheets, ISvgNestConfig config, int index, Stopwatch backgroundStopwatch)
     {
-      progressDisplayer.InitialiseLoopProgress(ProgressBar.Secondary, "Placement. . .", nfpPairs.Length);
+      bool hideSecondaryProgress = false;
+      if (state.NestCount == 0 || state.AverageNestTime > 2000)
+      {
+        hideSecondaryProgress = true;
+        progressDisplayer.InitialiseLoopProgress(ProgressBar.Secondary, "Placement. . .", nfpPairs.Length);
+      }
+
       if (config.UseParallel)
       {
         Parallel.For(0, nfpPairs.Count(), (i) =>
@@ -194,7 +200,10 @@
       // console.timeEnd('Total');
       // console.log('before sync');
       this.SyncPlaceParts(parts, sheets, config, index, backgroundStopwatch);
-      progressDisplayer.SetIsVisibleSecondaryProgressBar(false);
+      if (hideSecondaryProgress)
+      {
+        progressDisplayer.IsVisibleSecondaryProgressBar = false;
+      }
     }
   }
 }

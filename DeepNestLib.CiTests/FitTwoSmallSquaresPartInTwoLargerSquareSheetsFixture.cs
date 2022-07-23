@@ -31,6 +31,7 @@
       A.CallTo(() => config.PlacementType).Returns(PlacementTypeEnum.BoundingBox);
       A.CallTo(() => config.UseDllImport).Returns(false);
       A.CallTo(() => config.Rotations).Returns(2);
+      A.CallTo(() => config.ExportExecutions).Returns(false);
       this.nestResult = new PlacementWorker(A.Dummy<NfpHelper>(), new ISheet[] { firstSheet, secondSheet }, new INfp[] { firstPart, secondPart }.ApplyIndex(), config, A.Dummy<Stopwatch>(), A.Fake<INestState>()).PlaceParts();
     }
 

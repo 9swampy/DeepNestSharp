@@ -89,5 +89,41 @@
     {
       squareWithHole.MinY.Should().Be(0);
     }
+
+    [Fact]
+    public void GivenSquareWithHoleWhenSelfOverlappedThenShouldIndicateIntersect()
+    {
+      NfpSimplifier.IsIntersect(squareWithHole, squareWithHole, new TestSvgNestConfig().ClipperScale).Should().BeTrue();
+    }
+
+    [Fact]
+    public void GivenSquareWithHoleWhenOverlappedThenShouldIndicateIntersect()
+    {
+      var second = new DxfGenerator().GenerateSquare("hole", 20, RectangleType.BottomLeftClockwise).ToNfp();
+
+      NfpSimplifier.IsIntersect(squareWithHole, second, new TestSvgNestConfig().ClipperScale).Should().BeTrue();
+    }
+
+    [Fact]
+    public void GivenSquareWhenOverlappedWithHoleThenShouldIndicateIntersect()
+    {
+      var second = new DxfGenerator().GenerateSquare("hole", 20, RectangleType.BottomLeftClockwise).ToNfp();
+
+      NfpSimplifier.IsIntersect(second, squareWithHole, new TestSvgNestConfig().ClipperScale).Should().BeTrue();
+    }
+
+    [Fact]
+    public void GivenSquareWithHoleWhenHoleOverlappedThenShouldIndicateNoIntersect()
+    {
+      var second = new DxfGenerator().GenerateSquare("hole", 10, RectangleType.BottomLeftClockwise).ToNfp();
+      NfpSimplifier.IsIntersect(squareWithHole, second.Shift(5, 5), new TestSvgNestConfig().ClipperScale).Should().BeFalse();
+    }
+
+    [Fact]
+    public void GivenSquareWithHoleWhenHoleOnlyPartOverlappedThenShouldIndicateIntersect()
+    {
+      var second = new DxfGenerator().GenerateSquare("hole", 10, RectangleType.BottomLeftClockwise).ToNfp();
+      NfpSimplifier.IsIntersect(squareWithHole, second.Shift(4, 4), new TestSvgNestConfig().ClipperScale).Should().BeTrue();
+    }
   }
 }

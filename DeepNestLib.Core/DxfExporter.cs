@@ -14,37 +14,44 @@
 
     protected async override Task Export(string path, IEnumerable<INfp> polygons, IEnumerable<ISheet> sheets, bool doMergeLines)
     {
-      Dictionary<DxfFile, int> dxfexports = new Dictionary<DxfFile, int>();
-      var sheetList = sheets.ToList();
-      for (int i = 0; i < sheets.Count(); i++)
+      try
       {
-        var sheet = sheetList[i];
-        DxfFile sheetdxf = GenerateDxfFile(polygons, sheet, i, doMergeLines);
-        dxfexports.Add(sheetdxf, sheet.Id);
-      }
-
-      int sheetcount = 0;
-      for (int i = 0; i < dxfexports.Count(); i++)
-      {
-        var dxf = dxfexports.ElementAt(i).Key;
-        var id = dxfexports.ElementAt(i).Value;
-
-        if (dxf.Entities.Count != 1)
+        Dictionary<DxfFile, int> dxfexports = new Dictionary<DxfFile, int>();
+        var sheetList = sheets.ToList();
+        for (int i = 0; i < sheets.Count(); i++)
         {
-          sheetcount += 1;
-          FileInfo fi = new FileInfo(path);
-          await Task.Run(() =>
-          {
-            if (dxfexports.Count() == 1)
-            {
-              dxf.Save(fi.FullName, true);
-            }
-            else
-            {
-              dxf.Save($"{fi.FullName.Substring(0, fi.FullName.Length - 4)}{id}.dxf", true);
-            }
-          }).ConfigureAwait(false);
+          var sheet = sheetList[i];
+          DxfFile sheetdxf = GenerateDxfFile(polygons, sheet, i, doMergeLines);
+          dxfexports.Add(sheetdxf, sheet.Id);
         }
+
+        int sheetcount = 0;
+        for (int i = 0; i < dxfexports.Count(); i++)
+        {
+          var dxf = dxfexports.ElementAt(i).Key;
+          var id = dxfexports.ElementAt(i).Value;
+
+          if (dxf.Entities.Count != 1)
+          {
+            sheetcount += 1;
+            FileInfo fi = new FileInfo(path);
+            await Task.Run(() =>
+            {
+              if (dxfexports.Count() == 1)
+              {
+                dxf.Save(fi.FullName, true);
+              }
+              else
+              {
+                dxf.Save($"{fi.FullName.Substring(0, fi.FullName.Length - 4)}{id}.dxf", true);
+              }
+            }).ConfigureAwait(false);
+          }
+        }
+      }
+      catch (Exception ex)
+      {
+        throw;
       }
     }
 
@@ -90,7 +97,14 @@
         }
         else
         {
-          fl = DxfFile.Load(polygon.Name);
+          try
+          {
+            fl = DxfFile.Load(polygon.Name);
+          }
+          catch
+          {
+            throw new FileNotFoundException($"The file {polygon.Name} could not be loaded. When exporting the original files that generated the nest are used for precision, instead of the copies rotated and manipulated potentially many times during the nest; degrading potentially their accuracy. It would be possible to load and store the original files but that'd take some effort...");
+          }
         }
 
         double sheetXoffset = -sheet.WidthCalculated * i;
@@ -291,25 +305,38 @@
 
     private DxfFile GenerateDxfFile(IEnumerable<INfp> polygons, ISheet sheet, int i = 0, bool doMergeLines = false)
     {
-      DxfFile sheetdxf = GenerateDxfFileWithSheetOutline(sheet);
-      var entities = GetOffsetDxfEntities(polygons.Where(o => o.Sheet.Id == sheet.Id), sheet, i);
-      if (doMergeLines)
+      try
       {
-        int entityCount = entities.Count();
-        do
+        DxfFile sheetdxf = GenerateDxfFileWithSheetOutline(sheet);
+        var entities = GetOffsetDxfEntities(polygons.Where(o => o.Sheet.Id == sheet.Id), sheet, i);
+
+        if (doMergeLines)
         {
-          entityCount = entities.Count();
           entities = new DxfLineMerger().MergeLines(entities);
+          //Have seen oddness where splitting out verticals and non verticals prevented an errant output; but then it just stopped happening!
+          //var mergeLines = entities.Where(o => o is DxfLine).Cast<DxfLine>().Select(o => new MergeLine(o));
+          //var over = mergeLines.Where(o => o.IsVertical && Math.Max(o.Left.Y, o.Right.Y) > sheet.MaxY);
+          //var under = mergeLines.Where(o => o.IsVertical && Math.Min(o.Left.Y, o.Right.Y) < sheet.MinY);
+          //if (over.Any() || under.Any())
+          //{
+          //  System.Diagnostics.Debugger.Break();
+          //}
+
+          //entities = mergeLines.Where(o => !o.IsVertical).Select(o => o.Line as DxfEntity).ToList();
+          //entities.AddRange(mergeLines.Where(o => o.IsVertical).Select(o => o.Line));
         }
-        while (entityCount != entities.Count());
-      }
 
-      foreach (var entity in entities)
+        foreach (var entity in entities)
+        {
+          sheetdxf.Entities.Add(entity);
+        }
+
+        return sheetdxf;
+      }
+      catch (Exception ex)
       {
-        sheetdxf.Entities.Add(entity);
+        throw;
       }
-
-      return sheetdxf;
     }
   }
 }

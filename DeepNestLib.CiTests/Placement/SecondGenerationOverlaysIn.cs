@@ -48,6 +48,8 @@
     [Fact]
     public void LogEntriesHaveBeenSameUpTo()
     {
+      //This brittle tests breaks when the Logging changes.
+      //If you've updated logging then add new entries to the Out.json
       for (int i = 0; i < sutOutExpected.Log.Count; i++)
       {
         sutOutExpected.Log[i].Should().Be(sut.Log[i]);

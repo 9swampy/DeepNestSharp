@@ -7,7 +7,7 @@
 
   public class DeepNestClipper : IDeprecatedClipper
   {
-    ClipperLib.IntPoint[] IDeprecatedClipper.ScaleUpPathsOriginal(NoFitPolygon p, double scale)
+    List<ClipperLib.IntPoint> IDeprecatedClipper.ScaleUpPathsOriginal(NoFitPolygon p, double scale)
     {
       List<ClipperLib.IntPoint> ret = new List<ClipperLib.IntPoint>();
 
@@ -18,7 +18,7 @@
             (long)Math.Round((decimal)p.Points[i].Y * (decimal)scale)));
       }
 
-      return ret.ToArray();
+      return ret;
     } // 5 secs
 
     ClipperLib.IntPoint[] IDeprecatedClipper.ScaleUpPathsSlowerParallel(SvgPoint[] points, double scale)
@@ -29,13 +29,13 @@
       return result.ToArray();
     } // 2 secs
 
-    public static ClipperLib.IntPoint[] ScaleUpPaths(IList<SvgPoint> points, double scale = 1)
+    public static List<ClipperLib.IntPoint> ScaleUpPath(IList<SvgPoint> points, double scale)
     {
       var result = new ClipperLib.IntPoint[points.Count];
 
       Parallel.For(0, points.Count, i => result[i] = new ClipperLib.IntPoint((long)Math.Round((decimal)points[i].X * (decimal)scale), (long)Math.Round((decimal)points[i].Y * (decimal)scale)));
 
-      return result.ToArray();
+      return result.ToList();
     } // 2 secs
 
     /*public static IntPoint[] ScaleUpPath(IntPoint[] p, double scale = 1)
