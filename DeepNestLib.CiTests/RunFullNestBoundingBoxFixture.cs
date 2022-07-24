@@ -1,26 +1,20 @@
 ﻿namespace DeepNestLib.CiTests
 {
   using System;
-  using System.Threading;
   using FakeItEasy;
   using FluentAssertions;
   using Xunit;
 
-  public class RunFullNestBoundingBoxFixture
+  public class RunFullNestBoundingBoxFixture : TerminatingRunFullFixture
   {
     private const string DxfTestFilename = "Dxfs._5.dxf";
-    private const double ExpectedFitness = 494512;
-    private const double ExpectedFitnessTolerance = 10000;
 
     private static volatile object testSyncLock = new object();
 
     private readonly DxfGenerator dxfGenerator = new DxfGenerator();
-    private TestSvgNestConfig config;
     private RawDetail loadedRawDetail;
-    private NestingContext nestingContext;
     private INfp loadedNfp;
     private bool hasImportedRawDetail;
-    private int terminateNestResultCount = 4;
     private int firstSheetIdSrc = new Random().Next();
 
     /// <summary>
@@ -28,20 +22,14 @@
     /// MinkowskiWrapper.CalculateNfp occasionally sticks; not sure why; seems fine at runtime only nCrunch has the problem.
     /// </summary>
     public RunFullNestBoundingBoxFixture()
+      : base(PlacementTypeEnum.BoundingBox, 494512, 10000, 10, 50)
     {
       lock (testSyncLock)
       {
         if (!this.hasImportedRawDetail)
         {
-          this.config = new TestSvgNestConfig();
-          this.config.PlacementType = PlacementTypeEnum.BoundingBox;
-          this.config.UseParallel = false;
-          this.config.PopulationSize = 40;
-          this.config.UseDllImport = false;
           this.loadedRawDetail = DxfParser.LoadDxfStream(DxfTestFilename);
           this.loadedRawDetail.Should().NotBeNull();
-          var progressCapture = new ProgressTestResponse();
-          this.nestingContext = new NestingContext(A.Fake<IMessageService>(), progressCapture, new NestState(config, A.Fake<IDispatcherService>()), this.config);
           this.hasImportedRawDetail = loadedRawDetail.TryConvertToNfp(A.Dummy<int>(), out this.loadedNfp);
           this.nestingContext.Polygons.Add(this.loadedNfp);
           this.nestingContext.Polygons.Add(this.loadedNfp.Clone());
@@ -52,17 +40,9 @@
           this.nestingContext.Sheets.Add(firstSheet);
 
           this.nestingContext.StartNest().Wait();
-          int i = 0;
-          while (i < 50 && this.nestingContext.State.TopNestResults.Count < terminateNestResultCount)
+          while (!HasMetTerminationConditions)
           {
-            i++;
-            this.nestingContext.NestIterate(this.config);
-            Thread.Sleep(100);
-            if (this.nestingContext.State.TopNestResults.Count >= terminateNestResultCount &&
-                this.nestingContext.State.TopNestResults.Top.Fitness <= ExpectedFitness + ExpectedFitnessTolerance)
-            {
-              break;
-            }
+            AwaitIterate();
           }
         }
       }
@@ -83,7 +63,7 @@
     [Fact]
     public void ShouldHaveReturnedNestResults()
     {
-      this.nestingContext.State.TopNestResults.Count.Should().BeGreaterOrEqualTo(terminateNestResultCount);
+      this.nestingContext.State.TopNestResults.Should().NotBeEmpty();
     }
 
     [Fact]

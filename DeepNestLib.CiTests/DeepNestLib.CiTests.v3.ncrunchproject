@@ -1,24 +1,3 @@
 ﻿<ProjectConfiguration>
-  <Settings>
-    <IgnoredTests>
-      <NamedTestSelector>
-        <TestName>DeepNestLib.CiTests.Placement.OverlappingPlacement.OverlapFixture.GivenN16OverlaysWhenProcessPartGoesWrong("False")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DeepNestLib.CiTests.Placement.OverlappingPlacement.OverlapFixture.GivenN16OverlaysWhenProcessPartGoesWrong("True")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DeepNestLib.CiTests.Placement.OverlappingPlacement.OverlapFixture.GivenN20DoesNotOverlayWhenProcessPartHowIsThisDifferentSoItGoesRight("False")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DeepNestLib.CiTests.Placement.OverlappingPlacement.OverlapFixture.GivenN20DoesNotOverlayWhenProcessPartHowIsThisDifferentSoItGoesRight("True")</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DeepNestLib.CiTests.Placement.PartPlacementScenarioFixture.ShouldProcessToEndButNotCallOutToAddPlacement</TestName>
-      </NamedTestSelector>
-      <NamedTestSelector>
-        <TestName>DeepNestLib.CiTests.RunFullOverlapNestGravityFixture.ShouldHaveUnplacedParts</TestName>
-      </NamedTestSelector>
-    </IgnoredTests>
-  </Settings>
+  <Settings />
 </ProjectConfiguration>

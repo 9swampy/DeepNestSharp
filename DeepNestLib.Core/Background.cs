@@ -47,20 +47,19 @@
         backgroundStopwatch.Start();
         var individual = data.Individual;
 
-        var parts = individual.Parts.ToArray();
-        var rotations = individual.Rotation;
+        var gene = individual.Gene;
         var ids = data.Ids;
         var sources = data.Sources;
         var children = data.Children;
 
-        for (var i = 0; i < parts.Length; i++)
+        for (var i = 0; i < gene.Length; i++)
         {
-          parts[i].Rotation = rotations[i];
-          parts[i].Id = ids[i];
-          parts[i].Source = sources[i];
+          gene[i].Part.Rotation = gene[i].Rotation;
+          gene[i].Part.Id = ids[i];
+          gene[i].Part.Source = sources[i];
           if (!config.Simplify)
           {
-            parts[i].Children = children[i];
+            gene[i].Part.Children = children[i];
           }
         }
 
@@ -74,7 +73,7 @@
         }
 
         // preprocess
-        List<NfpPair> pairs = new NfpPairsFactory(window).Generate(config.UseParallel, parts);
+        List<NfpPair> pairs = new NfpPairsFactory(window).Generate(config.UseParallel, gene);
 
         // console.log('pairs: ', pairs.length);
         // console.time('Total');
@@ -82,11 +81,11 @@
         {
           var pmapWorker = new PmapWorker(pairs, progressDisplayer, config.UseParallel, minkowskiSumService, state);
           var pmapResult = pmapWorker.PmapDeepNest();
-          this.ThenDeepNest(pmapResult, parts, data.Sheets, config, data.Index, backgroundStopwatch);
+          this.ThenDeepNest(pmapResult, gene, data.Sheets, config, data.Index, backgroundStopwatch);
         }
         else
         {
-          this.SyncPlaceParts(parts, data.Sheets, config, data.Index, backgroundStopwatch);
+          this.SyncPlaceParts(gene, data.Sheets, config, data.Index, backgroundStopwatch);
         }
       }
       catch (ArgumentNullException)
@@ -107,11 +106,11 @@
       }
     }
 
-    private void SyncPlaceParts(INfp[] parts, ISheet[] sheets, ISvgNestConfig config, int index, Stopwatch backgroundStopwatch)
+    private void SyncPlaceParts(Chromosome[] gene, ISheet[] sheets, ISvgNestConfig config, int index, Stopwatch backgroundStopwatch)
     {
       try
       {
-        var nestResult = new PlacementWorker(this.nfpHelper, sheets, parts, config, backgroundStopwatch, state).PlaceParts();
+        var nestResult = new PlacementWorker(this.nfpHelper, sheets, gene, config, backgroundStopwatch, state).PlaceParts();
         if (nestResult != null)
         {
           nestResult.Index = index;
@@ -124,23 +123,23 @@
       }
     }
 
-    private void ThenIterate(NfpPair processed, INfp[] parts, double clipperScale)
+    private void ThenIterate(NfpPair processed, Chromosome[] gene, double clipperScale)
     {
       // returned data only contains outer nfp, we have to account for any holes separately in the synchronous portion
       // this is because the c++ addon which can process interior nfps cannot run in the worker thread
-      var holeProvider = parts.FirstOrDefault(p => p.Source == processed.Asource);
-      var partToFit = parts.FirstOrDefault(p => p.Source == processed.Bsource);
+      var holeProvider = gene.FirstOrDefault(p => p.Part.Source == processed.Asource);
+      var partToFit = gene.FirstOrDefault(p => p.Part.Source == processed.Bsource);
 
       var holes = new List<INfp>();
 
-      if (holeProvider.Children != null && holeProvider.Children.Count > 0)
+      if (holeProvider.Part.Children != null && holeProvider.Part.Children.Count > 0)
       {
-        for (int j = 0; j < holeProvider.Children.Count; j++)
+        for (int j = 0; j < holeProvider.Part.Children.Count; j++)
         {
-          holes.Add(holeProvider.Children[j].Rotate(processed.ARotation));
+          holes.Add(holeProvider.Part.Children[j].Rotate(processed.ARotation));
         }
 
-        var partRotated = partToFit.Rotate(processed.BRotation);
+        var partRotated = partToFit.Part.Rotate(processed.BRotation);
         var partBounds = GeometryUtil.GetPolygonBounds(partRotated);
         var cnfp = new List<INfp>();
 
@@ -173,7 +172,7 @@
       window.Insert(keyItem);
     }
 
-    private void ThenDeepNest(NfpPair[] nfpPairs, INfp[] parts, ISheet[] sheets, ISvgNestConfig config, int index, Stopwatch backgroundStopwatch)
+    private void ThenDeepNest(NfpPair[] nfpPairs, Chromosome[] gene, ISheet[] sheets, ISvgNestConfig config, int index, Stopwatch backgroundStopwatch)
     {
       bool hideSecondaryProgress = false;
       if (state.NestCount == 0 || state.AverageNestTime > 2000)
@@ -186,20 +185,20 @@
       {
         Parallel.For(0, nfpPairs.Count(), (i) =>
         {
-          this.ThenIterate(nfpPairs[i], parts, config.ClipperScale);
+          this.ThenIterate(nfpPairs[i], gene, config.ClipperScale);
         });
       }
       else
       {
         for (var i = 0; i < nfpPairs.Count(); i++)
         {
-          this.ThenIterate(nfpPairs[i], parts, config.ClipperScale);
+          this.ThenIterate(nfpPairs[i], gene, config.ClipperScale);
         }
       }
 
       // console.timeEnd('Total');
       // console.log('before sync');
-      this.SyncPlaceParts(parts, sheets, config, index, backgroundStopwatch);
+      this.SyncPlaceParts(gene, sheets, config, index, backgroundStopwatch);
       if (hideSecondaryProgress)
       {
         progressDisplayer.IsVisibleSecondaryProgressBar = false;

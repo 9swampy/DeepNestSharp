@@ -1,6 +1,8 @@
 ﻿namespace DeepNestLib.Placement
 {
   using System.Collections.Generic;
+  using System.IO;
+  using System.Threading.Tasks;
   using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Geometry;
 
@@ -13,6 +15,8 @@
     double MaterialUtilization { get; }
 
     IReadOnlyList<IPartPlacement> PartPlacements { get; }
+
+    IEnumerable<NoFitPolygon> PolygonsForExport { get; }
 
     PlacementTypeEnum PlacementType { get; }
 
@@ -29,6 +33,8 @@
     double TotalPartsArea { get; }
 
     double MergedLength { get; }
+
+    Task ExportDxf(Stream stream, bool mergeLines);
 
     string ToJson(bool writeIndented = false);
 

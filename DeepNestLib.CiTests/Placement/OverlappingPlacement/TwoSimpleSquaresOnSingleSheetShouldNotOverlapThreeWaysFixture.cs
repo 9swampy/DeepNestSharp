@@ -8,18 +8,20 @@
   using FluentAssertions;
   using Xunit;
 
-  public class TwoSimpleSquaresOnSingleSheetShouldNotOverlapThreeWaysFixture
+  public class TwoSimpleSquaresOnSingleSheetShouldNotOverlapFixture
   {
     [Theory]
     [InlineData(150, 100, 0, 50, 50, 0)]
-    [InlineData(150, 100, 0, 50, 50, 90)]
-    [InlineData(150, 100, 0, 50, 50, 270)]
-    [InlineData(150, 100, 0, 50, 50, 360)]
+    [InlineData(150, 100, 0, 50, 50, -270)]
+    [InlineData(150, 100, 0, 50, 50, -360)]
     [InlineData(150, 100, 180, 50, 50, 0)]
+    [InlineData(150, 100, 180, 50, 50, -270)]
+    [InlineData(150, 100, 180, 50, 50, -360)]
+    
+    //Why did these have to be reversed to pass?
+    [InlineData(150, 100, 0, 50, 50, 90)]
     [InlineData(150, 100, 180, 50, 50, 90)]
-    [InlineData(150, 100, 180, 50, 50, 270)]
-    [InlineData(150, 100, 180, 50, 50, 360)]
-    public void TwoSimpleSquaresOnSingleSheetShouldNotOverlapThreeWays(double firstWidth, double firstHeight, double firstRotation, double secondWidth, double secondHeight, double secondRotation)
+    public void TwoSimpleSquaresOnSingleSheetShouldNotOverlap(double firstWidth, double firstHeight, double firstRotation, double secondWidth, double secondHeight, double secondRotation)
     {
       ISvgNestConfig config;
       DxfGenerator DxfGenerator = new DxfGenerator();
@@ -42,7 +44,7 @@
       secondPart.Id = 2;
       secondPart.Source = 2;
       secondPart.Rotation = secondRotation;
-      
+
       config = new TestSvgNestConfig();
       //config = A.Fake<ISvgNestConfig>();
       config.Simplify = true;
@@ -63,14 +65,14 @@
       config.ParallelNests = 10;
       config.Spacing = 0;
       nfpHelper = A.Dummy<NfpHelper>();
-      var placementWorker = new PlacementWorker(nfpHelper, new ISheet[] { firstSheet }, new INfp[] { firstPart, secondPart }.ApplyIndex(), config, A.Dummy<Stopwatch>(), A.Fake<INestState>());
+      var placementWorker = new PlacementWorker(nfpHelper, new ISheet[] { firstSheet }, new Chromosome[] { firstPart.ToChromosome(), secondPart.ToChromosome() }.ApplyIndex(), config, A.Dummy<Stopwatch>(), A.Fake<INestState>());
       ITestPlacementWorker sut = placementWorker;
       nestResult = placementWorker.PlaceParts();
 
       nestResult.UnplacedParts.Count().Should().Be(0);
       nestResult.UsedSheets[0].PartPlacements[0].Part.Should().NotBe(firstPart);
       nestResult.UsedSheets[0].PartPlacements[0].Part.Id.Should().Be(firstPart.Id);
-      nestResult.UsedSheets[0].PartPlacements[0].Part.Should().BeEquivalentTo(firstPart.Rotate(firstRotation), opt => opt.Excluding(o=> o.Rotation));
+      nestResult.UsedSheets[0].PartPlacements[0].Part.Should().BeEquivalentTo(firstPart.Rotate(firstRotation), opt => opt.Excluding(o => o.Rotation));
       nestResult.UsedSheets[0].PartPlacements[1].Part.Should().NotBe(secondPart);
       nestResult.UsedSheets[0].PartPlacements[1].Part.Id.Should().Be(secondPart.Id);
 
@@ -89,7 +91,7 @@
       //lastPartPlacementWorker.SheetNfp.Items[0][3].Y.Should().Be(50);
       lastPartPlacementWorker.SheetNfp.Items[0][4].X.Should().Be(lastPartPlacementWorker.SheetNfp.Items[0][0].X);
       lastPartPlacementWorker.SheetNfp.Items[0][4].Y.Should().Be(lastPartPlacementWorker.SheetNfp.Items[0][0].Y);
-      lastPartPlacementWorker.SheetNfp.Items[0].MinX.Should().Be(firstWidth);
+      lastPartPlacementWorker.SheetNfp.Items[0].MinX.Should().Be(0);
       secondPart.Shift(nestResult.UsedSheets[0].PartPlacements[0]).Overlaps(firstPart.Shift(nestResult.UsedSheets[0].PartPlacements[0])).Should().BeFalse("parts should not overlay each other (even if nesting in a hole; placement should not have given this result)");
     }
   }

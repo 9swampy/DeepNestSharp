@@ -7,37 +7,27 @@
   using IxMilia.Dxf.Entities;
   using Xunit;
 
-  public class RunFullNestSqueezeFixture
+  public class RunFullNestSqueezeFixture : TerminatingRunFullFixture
   {
     private const string DxfTestFilename = "Dxfs._5.dxf";
-    private const double ExpectedFitness = (494516 + 541746) / 2;
-    private const double ExpectedFitnessTolerance = 10000 * 3;
 
     private static volatile object testSyncLock = new object();
-    private TestSvgNestConfig config;
     private RawDetail loadedRawDetail;
-    private NestingContext nestingContext;
     private INfp loadedNfp;
     private bool hasImportedRawDetail;
-    private int terminateNestResultCount = 2;
     private int firstSheetIdSrc = new Random().Next();
 
     /// <summary>
     /// MinkowskiWrapper.CalculateNfp occasionally sticks; not sure why; seems fine at runtime only nCrunch has the problem.
     /// </summary>
     public RunFullNestSqueezeFixture()
+      : base(PlacementTypeEnum.Squeeze, (494516 + 541746) / 2, 10000 * 3, 2, 100)
     {
       lock (testSyncLock)
       {
         if (!this.hasImportedRawDetail)
         {
-          this.config = new TestSvgNestConfig();
-          this.config.PlacementType = PlacementTypeEnum.Squeeze;
-          this.config.PopulationSize = 40;
-          this.config.UseDllImport = false;
           this.loadedRawDetail = DxfParser.LoadDxfStream(DxfTestFilename);
-          var progressCapture = new ProgressTestResponse();
-          this.nestingContext = new NestingContext(A.Fake<IMessageService>(), progressCapture, A.Dummy<NestState>(), this.config);
           this.hasImportedRawDetail = this.loadedRawDetail.TryConvertToNfp(A.Dummy<int>(), out this.loadedNfp);
           this.nestingContext.Polygons.Add(this.loadedNfp);
           this.nestingContext.Polygons.Add(this.loadedNfp.Clone());
@@ -47,17 +37,9 @@
           this.nestingContext.Sheets.Add(firstSheet);
 
           this.nestingContext.StartNest().Wait();
-          int i = 0;
-          while (i < 100 && this.nestingContext.State.TopNestResults.Count < terminateNestResultCount)
+          while (!HasMetTerminationConditions)
           {
-            i++;
-            this.nestingContext.NestIterate(this.config);
-            progressCapture.Are.WaitOne(1000);
-            if (this.nestingContext.State.TopNestResults.Count >= terminateNestResultCount &&
-                this.nestingContext.State.TopNestResults.Top.Fitness <= ExpectedFitness + ExpectedFitnessTolerance)
-            {
-              break;
-            }
+            AwaitIterate();
           }
         }
       }

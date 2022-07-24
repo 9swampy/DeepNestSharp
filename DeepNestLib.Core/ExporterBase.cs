@@ -13,15 +13,7 @@
     {
       await this.Export(
         path,
-        sheetPlacement.PartPlacements.Select(
-        o =>
-        {
-          var result = new NoFitPolygon(o.Part, WithChildren.Included);
-          result.Sheet = sheetPlacement.Sheet;
-          result.X = o.X;
-          result.Y = o.Y;
-          return result;
-        }),
+        sheetPlacement.PolygonsForExport,
         new ISheet[] { sheetPlacement.Sheet, },
         doMergeLines).ConfigureAwait(false);
     }
