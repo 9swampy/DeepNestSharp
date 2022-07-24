@@ -5,6 +5,8 @@
 
   public class TestSvgNestConfig : ISvgNestConfig
   {
+    internal static ISvgNestConfig Default => new TestSvgNestConfig();
+
     public double ClipperScale { get; set; } = 10000000;
 
     public double CurveTolerance { get; set; } = 0.72D;
@@ -52,6 +54,8 @@
     public double Tolerance { get; set; } = 2;
 
     public double ToleranceSvg { get; set; } = 0.005;
+
+    public double TopDiversity { get; set; } = 0.0001;
 
     public AnglesEnum StrictAngles { get; set; } = AnglesEnum.None;
 

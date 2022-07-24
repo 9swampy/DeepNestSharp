@@ -83,5 +83,8 @@
     <Setting Name="MergeLines" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="TopDiversity" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">0.001</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -266,7 +266,6 @@
 
             this.PrepExport(inputPartIndex, "finalNfp.scad", () => finalNfp.ToOpenScadPolygon());
             PartPlacement position = GetBestPosition(
-                                              this.Sheet,
                                               processedPart,
                                               finalNfp,
                                               this.VerboseLog,
@@ -305,15 +304,11 @@
       }
     }
 
-    private PartPlacement GetBestPosition(ISheet sheet, INfp processedPart, List<INfp> finalNfp, Action<string> verboseLog, PlacementTypeEnum placementType, NoFitPolygon allPlacementsFlattened)
+    private PartPlacement GetBestPosition(INfp processedPart, List<INfp> finalNfp, Action<string> verboseLog, PlacementTypeEnum placementType, NoFitPolygon allPlacementsFlattened)
     {
       // choose placement that results in the smallest bounding box/hull etc
       // todo: generalize gravity direction
-      /*var minwidth = null;
-      var minarea = null;
-      var minx = null;
-      var miny = null;
-      var nf, area, shiftvector;*/
+      /* var nf, area, shiftvector;*/
       double? minwidth = null;
       double? minarea = null;
       double? minx = null;
@@ -327,14 +322,7 @@
       if (placementType == PlacementTypeEnum.Gravity || placementType == PlacementTypeEnum.BoundingBox)
       {
         allbounds = GeometryUtil.GetPolygonBounds(allpoints);
-
-        NoFitPolygon partpoints = new NoFitPolygon();
-        for (int m = 0; m < processedPart.Length; m++)
-        {
-          partpoints.AddPoint(new SvgPoint(processedPart[m].X, processedPart[m].Y));
-        }
-
-        partbounds = GeometryUtil.GetPolygonBounds(partpoints);
+        partbounds = GeometryUtil.GetPolygonBounds(processedPart.Points);
       }
       else
       {
@@ -362,11 +350,10 @@
             Rotation = processedPart.Rotation,
           };
 
-          var shiftedPart = processedPart.Shift(shiftvector);
-          if (!IsPositionValid(allpoints, shiftedPart, shiftvector))
+          if (!IsPositionValid(shiftvector))
           {
             isRejected = true;
-            verboseLog("Would overlap with allPoints so skip");
+            verboseLog("Would overlap so skip.");
           }
           else
           {
@@ -453,7 +440,7 @@
       return position;
     }
 
-    private bool IsPositionValid(NoFitPolygon allpoints, INfp shiftedPart, PartPlacement position)
+    private bool IsPositionValid(PartPlacement position)
     {
       var proposed = position.Part.Shift(position);
       foreach (var prior in this.Placements)

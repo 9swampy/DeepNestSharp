@@ -533,6 +533,22 @@ namespace DeepNestLib
       }
     }
 
+    /// <inheritdoc />
+    public double TopDiversity
+    {
+      get
+      {
+        return (double)Settings.Default["TopDiversity"];
+      }
+
+      set
+      {
+        Settings.Default["TopDiversity"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
+      }
+    }
+
     public string ToJson()
     {
       return SvgNestConfigJsonConverter.ToJson(this);

@@ -153,6 +153,7 @@
     }
 
     /// <inheritdoc />
+    [Description("Gets or sets the maximum total population per Genetic algorithm generation.")]
     [Category("Genetic Algorithm")]
     public int PopulationSize
     {
@@ -344,7 +345,18 @@
       set => SetProperty(nameof(UseDllImport), () => svgNestConfig.UseDllImport, v => svgNestConfig.UseDllImport = v, value);
     }
 
-    ISvgNestConfig IExportableConfig.ExportableInstance => svgNestConfig;
+    /// <inheritdoc />
+    [Description("Gets or sets the percentage difference between an existing TopNest and a new candidate needed for insertion in to Top collection." +
+    "Diversity of the Tops will help keep the Genetic Algorithm innovating at the expense of potentially excluding a novel Top performer." +
+    "1=100% which would kill the nest; anecdotally we've found the best is around 0.0001 but YMMV.")]
+    [Category("Genetic Algorithm")]
+    public double TopDiversity
+    {
+      get => svgNestConfig.TopDiversity;
+      set => SetProperty(nameof(TopDiversity), () => svgNestConfig.TopDiversity, v => svgNestConfig.TopDiversity = v, value);
+    }
+
+      ISvgNestConfig IExportableConfig.ExportableInstance => svgNestConfig;
 
     public string ToJson()
     {

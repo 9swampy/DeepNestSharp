@@ -86,25 +86,25 @@
     [Fact]
     public void GivenMarginallyDifferentTopWhenComparedThenIsANovelNest()
     {
-      TopNestResultsCollection.IsANovelNest(1.000, 1.01, 0).Should().BeTrue();
+      TopNestResultsCollection.IsANovelNest(1.000, 1.01, 0, TestSvgNestConfig.Default.TopDiversity).Should().BeTrue();
     }
 
     [Fact]
     public void GivenMarginallySameTopWhenComparedThenNotIsANovelNest()
     {
-      TopNestResultsCollection.IsANovelNest(1.000, 1.001, 0).Should().BeFalse();
+      TopNestResultsCollection.IsANovelNest(1.000, 1.001, 0, TestSvgNestConfig.Default.TopDiversity).Should().BeFalse();
     }
 
     [Fact]
     public void GivenMarginallyDifferentMidWhenComparedThenIsANovelNest()
     {
-      TopNestResultsCollection.IsANovelNest(10000.000, 10000 * (1 + TopNestResultsCollection.NovelTolerance) + 1, 10).Should().BeTrue();
+      TopNestResultsCollection.IsANovelNest(10000.000, 10000 * (1 + TestSvgNestConfig.Default.TopDiversity) + 1, 10, TestSvgNestConfig.Default.TopDiversity).Should().BeTrue();
     }
 
     [Fact]
     public void GivenMarginallySameMidWhenComparedThenNotIsANovelNest()
     {
-      TopNestResultsCollection.IsANovelNest(10000.000, 10000 * (1 + TopNestResultsCollection.NovelTolerance), 10).Should().BeFalse();
+      TopNestResultsCollection.IsANovelNest(10000.000, 10000 * (1 + TestSvgNestConfig.Default.TopDiversity), 10, TestSvgNestConfig.Default.TopDiversity).Should().BeFalse();
     }
 
     [Fact]
@@ -141,7 +141,7 @@
       for (int i = 0; i < sut.MaxCapacity; i++)
       {
         var item = A.Fake<INestResult>();
-        A.CallTo(() => item.Fitness).Returns(sut.IsEmpty ? 10000 : sut.Top.Fitness * (1 - TopNestResultsCollection.NovelTolerance) - 1);
+        A.CallTo(() => item.Fitness).Returns(sut.IsEmpty ? 10000 : sut.Top.Fitness * (1 - TestSvgNestConfig.Default.TopDiversity) - 1);
         sut.TryAdd(item);
         sut.Should().Contain(item);
       }

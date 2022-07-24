@@ -465,7 +465,7 @@
       return Clipper.PointInPolygon(pt, p) > 0;
     }
 
-    internal static bool PolygonInsidePolygon(INfp inner, INfp outer)
+    internal static bool IsInnerContainedByOuter(INfp inner, INfp outer)
     {
       // scaling is deliberately coarse to filter out points that lie *on* the polygon
       var innerClipper = ToOutPt(SvgToClipper2(inner));

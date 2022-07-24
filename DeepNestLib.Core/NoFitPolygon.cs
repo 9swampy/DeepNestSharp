@@ -353,7 +353,7 @@
           {
             if (hole.Children.Count == 0)
             {
-              if (NfpSimplifier.PolygonInsidePolygon(this, hole))
+              if (NfpSimplifier.IsInnerContainedByOuter(this, hole))
               {
                 return false;
               }

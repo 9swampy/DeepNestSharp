@@ -10,8 +10,6 @@
 
   public class TopNestResultsCollection : IEnumerable<INestResult>, INotifyCollectionChanged
   {
-    internal const double NovelTolerance = 0.0001;
-
     private const int UiSurvivorsMin = 20;
     private static volatile object lockItemsObject = new object();
     private readonly ITopNestResultsConfig config;
@@ -84,14 +82,14 @@
       return this.items.IndexOf(nestResult);
     }
 
-    internal static bool IsANovelNest(double payload, double incumbent, int index)
+    internal static bool IsANovelNest(double payload, double incumbent, int index, double topDiversity)
     {
       if (index == 0)
       {
         return Math.Round(incumbent, 2) != Math.Round(payload, 2);
       }
 
-      return Math.Abs(incumbent - payload) > (incumbent * NovelTolerance);
+      return Math.Abs(incumbent - payload) > (incumbent * topDiversity);
     }
 
     internal void Clear()
@@ -141,7 +139,7 @@
                 result = TryAddResult.Added;
               }
             }
-            else if (!IsANovelNest(payload.Fitness, items[i].Fitness, i))
+            else if (!IsANovelNest(payload.Fitness, items[i].Fitness, i, config.TopDiversity))
             {
               // Duplicate - respond true so the TryAdd consumer can report duplicate as
               // it won't find the result in the list

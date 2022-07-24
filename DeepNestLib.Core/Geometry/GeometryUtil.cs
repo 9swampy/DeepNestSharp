@@ -154,8 +154,6 @@
 
       var w = xmax - xmin;
       var h = ymax - ymin;
-
-      // return new rectanglef(xmin, ymin, xmax - xmin, ymax - ymin);
       return new PolygonBounds(xmin, ymin, w, h);
     }
 

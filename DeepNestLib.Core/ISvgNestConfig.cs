@@ -53,7 +53,7 @@
     bool Simplify { get; set; }
 
     /// <summary>
-    /// Gets or sets the spacing to apply to sheet edges during the nest. 
+    /// Gets or sets the spacing to apply to sheet edges during the nest.
     /// Rounding errors result in approx 1mm margin necessary even with 0 Spacing set.
     /// If spacing set then tbc the full amount is taken off sheet width available area.
     /// If spacing set then tbc half the amount is taken off sheet height available area.

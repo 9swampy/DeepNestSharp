@@ -346,5 +346,17 @@ namespace DeepNestLib {
                 this["MergeLines"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.001")]
+        public double TopDiversity {
+            get {
+                return ((double)(this["TopDiversity"]));
+            }
+            set {
+                this["TopDiversity"] = value;
+            }
+        }
     }
 }
