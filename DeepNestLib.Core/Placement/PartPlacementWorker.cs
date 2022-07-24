@@ -37,12 +37,12 @@
       this.clipCache = clipCache;
     }
 
-    public PartPlacementWorker(IPlacementWorker placementWorker, IPlacementConfig config, INfp[] parts, List<IPartPlacement> placements, ISheet sheet, NfpHelper nfpHelper, INestState state)
-      : this(placementWorker, config, parts, placements, sheet, nfpHelper, new Dictionary<string, ClipCacheItem>(), state)
+    public PartPlacementWorker(IPlacementWorker placementWorker, IPlacementConfig config, Chromosome[] gene, List<IPartPlacement> placements, ISheet sheet, NfpHelper nfpHelper, INestState state)
+      : this(placementWorker, config, gene, placements, sheet, nfpHelper, new Dictionary<string, ClipCacheItem>(), state)
     {
     }
 
-    public PartPlacementWorker(IPlacementWorker placementWorker, IPlacementConfig config, INfp[] parts, List<IPartPlacement> placements, ISheet sheet, NfpHelper nfpHelper, Dictionary<string, ClipCacheItem> clipCache, INestState state)
+    public PartPlacementWorker(IPlacementWorker placementWorker, IPlacementConfig config, Chromosome[] gene, List<IPartPlacement> placements, ISheet sheet, NfpHelper nfpHelper, Dictionary<string, ClipCacheItem> clipCache, INestState state)
     {
       this.clipCache = clipCache;
       this.state = state;
@@ -50,7 +50,7 @@
       this.Config = config;
       this.Sheet = sheet;
       this.NfpHelper = nfpHelper;
-      this.Parts = parts.ToList();
+      this.Parts = gene.ToList();
       this.Placements = placements.ToList();
     }
 
@@ -80,7 +80,7 @@
     public IPlacementConfig Config { get; private set; }
 
     [JsonInclude]
-    public IList<INfp> Parts { get; private set; }
+    public IList<Chromosome> Parts { get; private set; }
 
     [JsonInclude]
     public ISheet Sheet { get; private set; }

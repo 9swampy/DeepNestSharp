@@ -1,5 +1,6 @@
 ﻿namespace DeepNestLib
 {
+  using System;
   using System.Collections.Generic;
   using System.Drawing;
   using System.Drawing.Drawing2D;
@@ -50,6 +51,28 @@
 
       loadedNfp.Source = src;
       return true;
+    }
+
+    public bool TryConvertToNfp(int src, out Chromosome loadedChromosome)
+    {
+      INfp loadedNfp;
+      var result = TryConvertToNfp(src, out loadedNfp);
+      loadedChromosome = new Chromosome(loadedNfp, loadedNfp?.Rotation ?? 0);
+      return result;
+    }
+
+    internal bool TryConvertToNfp(int src, int rotation, out Chromosome loadedChromosome)
+    {
+      var result = TryConvertToNfp(src, out loadedChromosome);
+      loadedChromosome.Rotation = rotation;
+      loadedChromosome.Part.Rotation = rotation;
+      return result;
+    }
+
+    public (INfp, double) ToChromosome()
+    {
+      INfp nfp = ToNfp();
+      return (nfp, nfp.Rotation);
     }
 
     public INfp ToNfp()

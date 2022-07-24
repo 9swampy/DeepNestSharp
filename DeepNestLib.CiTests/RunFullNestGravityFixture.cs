@@ -7,19 +7,14 @@
   using IxMilia.Dxf.Entities;
   using Xunit;
 
-  public class RunFullNestGravityFixture
+  public class RunFullNestGravityFixture : TerminatingRunFullFixture
   {
     private const string DxfTestFilename = "Dxfs._5.dxf";
-    private const double ExpectedFitness = 504731;
-    private const double ExpectedFitnessTolerance = 10000 * 2;
 
     private static volatile object testSyncLock = new object();
-    private TestSvgNestConfig config;
     private RawDetail loadedRawDetail;
-    private NestingContext nestingContext;
     private INfp loadedNfp;
     private bool hasImportedRawDetail;
-    private int terminateNestResultCount = 4;
     private int firstSheetIdSrc = new Random().Next();
 
     /// <summary>
@@ -28,19 +23,13 @@
     /// logs it doesn't seem to be deadlocking because the loop keeps running. Not sure what's going on...
     /// </summary>
     public RunFullNestGravityFixture()
+      : base(PlacementTypeEnum.Gravity, 504731, 10000 * 2, 4, 50)
     {
       lock (testSyncLock)
       {
         if (!this.hasImportedRawDetail)
         {
-          this.config = new TestSvgNestConfig();
-          this.config.PlacementType = PlacementTypeEnum.Gravity;
-          this.config.PopulationSize = 40;
-          this.config.UseDllImport = false;
-          this.config.ExportExecutions = false;
           this.loadedRawDetail = DxfParser.LoadDxfStream(DxfTestFilename);
-          var progressCapture = new ProgressTestResponse();
-          this.nestingContext = new NestingContext(A.Fake<IMessageService>(), progressCapture, new NestState(config, A.Fake<IDispatcherService>()), this.config);
           this.hasImportedRawDetail = this.loadedRawDetail.TryConvertToNfp(A.Dummy<int>(), out this.loadedNfp);
           this.nestingContext.Polygons.Add(this.loadedNfp);
           this.nestingContext.Polygons.Add(this.loadedNfp.Clone());
@@ -50,17 +39,9 @@
           this.nestingContext.Sheets.Add(firstSheet);
 
           this.nestingContext.StartNest().Wait();
-          int i = 0;
-          while (i < 50 && this.nestingContext.State.TopNestResults.Count < terminateNestResultCount)
+          while (!HasMetTerminationConditions)
           {
-            i++;
-            this.nestingContext.NestIterate(this.config);
-            progressCapture.Are.WaitOne(100);
-            if (this.nestingContext.State.TopNestResults.Count >= terminateNestResultCount &&
-                this.nestingContext.State.TopNestResults.Top.Fitness <= ExpectedFitness + ExpectedFitnessTolerance)
-            {
-              break;
-            }
+            AwaitIterate();
           }
         }
       }
@@ -75,7 +56,7 @@
     [Fact]
     public void ShouldHaveReturnedNestResults()
     {
-      this.nestingContext.State.TopNestResults.Count.Should().BeGreaterOrEqualTo(terminateNestResultCount);
+      this.nestingContext.State.TopNestResults.Should().NotBeEmpty();
     }
 
     [Fact]

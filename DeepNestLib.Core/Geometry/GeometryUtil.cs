@@ -9,6 +9,16 @@
   {
     private static readonly double Tolerance = Math.Pow(10, -9); // floating point error is likely to be above 1 epsilon
 
+    /// <summary>
+    /// Converts from degrees to radians. Note that angles are measured counter-clockwise by convention. I didn't know that...
+    /// </summary>
+    /// <param name="rotationAngle">Degrees to convert.</param>
+    /// <returns>Equivalent angle in radians.</returns>
+    public static double ToRadians(double rotationAngle)
+    {
+      return (double)(rotationAngle * Math.PI / 180.0f);
+    }
+
     // returns true if points are within the given distance
     public static bool WithinDistance(SvgPoint p1, SvgPoint p2, double distance)
     {
@@ -171,29 +181,6 @@
       }
 
       return true;
-    }
-
-    public static PolygonWithBounds RotatePolygon(NoFitPolygon polygon, double angle)
-    {
-      List<SvgPoint> rotated = new List<SvgPoint>();
-      angle = (double)(angle * Math.PI / 180.0);
-      for (var i = 0; i < polygon.Points.Length; i++)
-      {
-        var x = polygon.Points[i].X;
-        var y = polygon.Points[i].Y;
-        var x1 = (double)((x * Math.Cos(angle)) - (y * Math.Sin(angle)));
-        var y1 = (double)((x * Math.Sin(angle)) + (y * Math.Cos(angle)));
-
-        rotated.Add(new SvgPoint(x1, y1));
-      }
-
-      var ret = new PolygonWithBounds(rotated);
-      var bounds = GetPolygonBounds(ret);
-      ret.X = bounds.X;
-      ret.Y = bounds.Y;
-      ret.Width = bounds.Width;
-      ret.Height = bounds.Height;
-      return ret;
     }
 
     public static bool AlmostEqual(double a, double b, double? tolerance = null)

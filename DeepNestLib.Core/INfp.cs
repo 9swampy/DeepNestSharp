@@ -107,6 +107,12 @@
     /// <returns>A clone of the original, rotated. The original <see cref="NoFitPolygon"/> is unaltered.</returns>
     INfp Rotate(double degrees, WithChildren withChildren = WithChildren.Included);
 
+    /// <summary>
+    /// Generates a chromosome which to separate Rotation from the Nfp. Rotation served a confused dual purpose of tracking state as well as instruction; store instruction the gene instead).
+    /// </summary>
+    /// <returns>A chromosome representing the part.</returns>
+    Chromosome ToChromosome();
+
     bool Overlaps(INfp other);
 
     INfp Slice(int v);

@@ -276,6 +276,11 @@
       return this.item.Stringify();
     }
 
+    public Chromosome ToChromosome()
+    {
+      return this.item.ToChromosome();
+    }
+
     /// <inheritdoc/>
     public string ToJson()
     {

@@ -1,7 +1,7 @@
 {
   "DetailLoadInfos": [
     {
-      "Path": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_1.dxf",
+      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_1.dxf",
       "Quantity": 6,
       "IsIncluded": true,
       "IsPriority": false,
@@ -9,7 +9,7 @@
       "StrictAngle": 0
     },
     {
-      "Path": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_9.dxf",
+      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_9.dxf",
       "Quantity": 1,
       "IsIncluded": true,
       "IsPriority": false,
@@ -38,10 +38,8 @@
     "ClipByHull": true,
     "CurveTolerance": 0.2,
     "DrawSimplification": true,
-    "ExportExecutions": false,
     "ExportExecutionPath": "",
     "LastDebugFilePath": "",
-    "LastNestFilePath": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs",
     "SaveAsFileTypeIndex": 1,
     "SheetWidth": 1200,
     "SheetHeight": 800,

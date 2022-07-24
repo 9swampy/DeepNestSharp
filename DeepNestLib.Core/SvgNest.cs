@@ -499,16 +499,16 @@
           individual.Processing = true;
 
           // hash values on arrays don't make it across ipc, store them in an array and reassemble on the other side....
-          var ids = new int[individual.Parts.Count];
-          var sources = new int[individual.Parts.Count];
+          var ids = new int[individual.Gene.Length];
+          var sources = new int[individual.Gene.Length];
           var children = new List<List<INfp>>();
 
-          for (int j = 0; j < individual.Parts.Count; j++)
+          for (int j = 0; j < individual.Gene.Length; j++)
           {
-            var placement = individual.Parts[j];
-            ids[j] = placement.Id;
-            sources[j] = placement.Source;
-            children.Add(placement.Children.ToList());
+            var placement = individual.Gene[j];
+            ids[j] = placement.Part.Id;
+            sources[j] = placement.Part.Source;
+            children.Add(placement.Part.Children.ToList());
           }
 
           var data = new DataInfo()

@@ -56,9 +56,9 @@
       actualPartPlacement.Part.Y.Should().Be(0);
       actualPartPlacement.Part.Source.Should().Be(0);
       sut.Config.ClipperScale.Should().Be(10000000);
-      sut.CombinedNfp[0].Count.Should().Be(19, "while it's wrong this is the behaviour we expected to replicate");
-      actualPartPlacement.X.Should().Be(188.529, "while it's wrong this is the behaviour we expected to replicate");
-      actualPartPlacement.Y.Should().Be(174.0114, "while it's wrong this is the behaviour we expected to replicate");
+      sut.CombinedNfp[0].Count.Should().Be(147);
+      actualPartPlacement.X.Should().BeApproximately(282.45, 0.01);
+      actualPartPlacement.Y.Should().BeApproximately(217.93, 0.01);
       actualPartPlacement.Part.Points[0].X.Should().Be(-99.335);
       actualPartPlacement.Part.Points[0].Y.Should().Be(-118.8241);
       actualPartPlacement.Rotation.Should().Be(180);
@@ -67,7 +67,7 @@
       actualSheetPlacement.Should().NotBeNull();
       sut.Placements[0].Rotation.Should().Be(270);
       sut.Placements[1].Rotation.Should().Be(180);
-      actualSheetPlacement.Fitness.Total.Should().BeLessThan(130000, "while it's wrong this is the behaviour we expected to replicate");
+      actualSheetPlacement.Fitness.Total.Should().BeApproximately(140019, 1, "while it's wrong this is the behaviour we expected to replicate");
     }
 
     private static (PartPlacementWorker sut, IPlacementWorker placementWorker) GetSut(string jsonSource, bool useCache, Action<PartPlacement> setPartPlacement, Action<SheetPlacement> setSheetPlacement)
@@ -131,9 +131,9 @@
         actualPartPlacement.Part.Y.Should().Be(0);
         actualPartPlacement.Part.Source.Should().Be(0);
         sut.Config.ClipperScale.Should().Be(10000000);
-        sut.CombinedNfp[0].Count.Should().BeGreaterThan(19, "this was the output of the scenario that should be replicated");
-        actualPartPlacement.X.Should().Be(282.4467, "this was the output of the scenario that should be replicated, the result we're seeing is the overlap which is wrong - given captured inputs we're not seeing the same result so we must be missing something...");
-        actualPartPlacement.Y.Should().Be(217.9382, "this was the output of the scenario that should be replicated, the result we're seeing is the overlap which is wrong");
+        sut.CombinedNfp[0].Count.Should().Be(147);
+        actualPartPlacement.X.Should().BeApproximately(282.4467, 0.0001);
+        actualPartPlacement.Y.Should().Be(217.9382);
         actualPartPlacement.Part.Points[0].X.Should().Be(-99.335);
         actualPartPlacement.Part.Points[0].Y.Should().Be(-118.8241);
         actualPartPlacement.Rotation.Should().Be(180);

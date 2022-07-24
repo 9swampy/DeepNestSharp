@@ -6,6 +6,7 @@
   using System.Linq;
   using System.Text.Json;
   using System.Text.Json.Serialization;
+  using System.Threading.Tasks;
   using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Geometry;
   using DeepNestLib.IO;
@@ -116,6 +117,28 @@
     public double MinY => PartPlacements.Min(pp => pp.MinY);
 
     public double MergedLength { get; }
+
+    [JsonIgnore]
+    public IEnumerable<NoFitPolygon> PolygonsForExport
+    {
+      get
+      {
+        return this.PartPlacements.Select(
+                o =>
+                {
+                  var result = new NoFitPolygon(o.Part, WithChildren.Included);
+                  result.Sheet = this.Sheet;
+                  result.X = o.X;
+                  result.Y = o.Y;
+                  return result;
+                });
+      }
+    }
+
+    public async Task ExportDxf(Stream stream, bool mergeLines)
+    {
+      await new DxfExporter().Export(stream, this, mergeLines);
+    }
 
     public static SheetPlacement LoadFromFile(string fileName)
     {

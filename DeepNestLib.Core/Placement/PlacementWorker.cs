@@ -17,7 +17,7 @@
     private readonly SheetPlacementCollection allPlacements = new SheetPlacementCollection();
     private readonly NfpHelper nfpHelper;
     private readonly IEnumerable<ISheet> sheets;
-    private readonly INfp[] parts;
+    private readonly Chromosome[] gene;
     private readonly IPlacementConfig config;
     private readonly Stopwatch backgroundStopwatch;
     private readonly INestState state;
@@ -31,15 +31,15 @@
     /// </summary>
     /// <param name="nfpHelper">NfpHelper provides access to the Nfp cache generated in the PMap stage and this will add to it, potentially.</param>
     /// <param name="sheets">The list of sheets upon which to place parts.</param>
-    /// <param name="parts">The list of parts to be placed.</param>
+    /// <param name="gene">The list of parts to be placed.</param>
     /// <param name="config">Config for the Nest.</param>
     /// <param name="backgroundStopwatch">Stopwatch started at Background.Start (included the PMap stage prior to the PlacementWorker).</param>
-    public PlacementWorker(NfpHelper nfpHelper, IEnumerable<ISheet> sheets, INfp[] parts, IPlacementConfig config, Stopwatch backgroundStopwatch, INestState state)
+    public PlacementWorker(NfpHelper nfpHelper, IEnumerable<ISheet> sheets, Chromosome[] gene, IPlacementConfig config, Stopwatch backgroundStopwatch, INestState state)
     {
       this.nfpHelper = nfpHelper;
       this.sheets = sheets;
-      this.parts = parts;
-      parts.Select(o => o.Id).Distinct().Count().MustBe(parts.Length, message: "Parts must have unique Ids.");
+      this.gene = gene;
+      gene.Select(o => o.Part.Id).Distinct().Count().MustBe(gene.Length, message: "Parts must have unique Ids.");
       this.config = config;
       this.backgroundStopwatch = backgroundStopwatch;
       this.state = state;
@@ -87,12 +87,12 @@
           VerboseLog("Priority Placement.");
         }
 
-        lastPartPlacementWorker = new PartPlacementWorker(this, config, parts, placements, sheet, nfpHelper, state);
+        lastPartPlacementWorker = new PartPlacementWorker(this, config, gene, placements, sheet, nfpHelper, state);
         var processingParts = (isPriorityPlacement ? unplacedParts.Where(o => o.IsPriority).Union(unplacedParts.Where(o => !o.IsPriority)) : unplacedParts).ToArray();
         for (int processingPartIndex = 0; processingPartIndex < processingParts.Length; processingPartIndex++)
         {
           var processingPart = processingParts[processingPartIndex];
-          var partIndex = parts.IndexOf(parts.Single(o => o.Id == processingPart.Id));
+          var partIndex = gene.IndexOf(gene.Single(o => o.Part.Id == processingPart.Id));
           var processPartResult = lastPartPlacementWorker.ProcessPart(processingParts[processingPartIndex], partIndex);
           if (processPartResult == InnerFlowResult.Break)
           {
@@ -134,7 +134,7 @@
       }
 
       VerboseLog($"Nest complete in {sw.ElapsedMilliseconds}");
-      var result = new NestResult(parts.Length, allPlacements, unplacedParts, config.PlacementType, sw.ElapsedMilliseconds, backgroundStopwatch.ElapsedMilliseconds);
+      var result = new NestResult(gene.Length, allPlacements, unplacedParts, config.PlacementType, sw.ElapsedMilliseconds, backgroundStopwatch.ElapsedMilliseconds);
 #if NCRUNCH || DEBUG
       if (!result.IsValid)
       {
@@ -156,7 +156,7 @@
         }
 #if NCRUNCH || DEBUG
         position.Part.MustBe(processedPart);
-        (this.allPlacements.TotalPartsPlaced + placements.Count).MustBeLessThanOrEqualTo(parts.Length);
+        (this.allPlacements.TotalPartsPlaced + placements.Count).MustBeLessThanOrEqualTo(gene.Length);
 #endif
         this.VerboseLog($"Placed part {processedPart}");
         placements.Add(position);
@@ -225,12 +225,12 @@
 
       // rotate paths by given rotation
       unplacedParts = new List<INfp>();
-      for (int i = 0; i < parts.Length; i++)
+      for (int i = 0; i < gene.Length; i++)
       {
-        var r = parts[i].Rotate(parts[i].Rotation);
-        r.Rotation = parts[i].Rotation;
-        r.Source = parts[i].Source;
-        r.Id = parts[i].Id;
+        var r = gene[i].Part.Rotate(gene[i].Rotation);
+        r.Rotation = gene[i].Rotation;
+        r.Source = gene[i].Part.Source;
+        r.Id = gene[i].Part.Id;
         unplacedParts.Add(r);
       }
     }
