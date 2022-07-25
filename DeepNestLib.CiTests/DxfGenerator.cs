@@ -8,12 +8,12 @@
 
   public class DxfGenerator
   {
-    public RawDetail GenerateSquare(string name, double size, RectangleType type, bool isClosed = false)
+    public IRawDetail GenerateSquare(string name, double size, RectangleType type, bool isClosed = false)
     {
       return GenerateRectangle(name, size, size, type, isClosed);
     }
 
-    public RawDetail GenerateRectangle(string name, double width, double height, RectangleType type, bool isClosed = false)
+    public IRawDetail GenerateRectangle(string name, double width, double height, RectangleType type, bool isClosed = false)
     {
       return DxfParser.ConvertDxfToRawDetail(name, new List<DxfEntity>() { Rectangle(width, height, type, isClosed) });
     }

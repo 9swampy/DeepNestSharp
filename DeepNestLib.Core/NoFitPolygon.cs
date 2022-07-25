@@ -9,6 +9,7 @@
   using System.Text.Json.Serialization;
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
+  using IxMilia.Dxf;
   using IxMilia.Dxf.Entities;
 
   public class NoFitPolygon : PolygonBase, INfp, IHiddenNfp, IStringify
@@ -206,23 +207,7 @@
     {
       get
       {
-        var ret = 0d;
-        if (this.points.Length < 3)
-        {
-          return 0;
-        }
-
-        List<SvgPoint> pp = new List<SvgPoint>();
-        pp.AddRange(this.points);
-        pp.Add(this.points[0]);
-        for (int i = 1; i < pp.Count; i++)
-        {
-          var s0 = pp[i - 1];
-          var s1 = pp[i];
-          ret += (s0.X * s1.Y) - (s0.Y * s1.X);
-        }
-
-        return (double)Math.Abs(ret / 2);
+        return (double)Math.Abs(Geometry.GeometryUtil.PolygonArea(this));
       }
     }
 
@@ -721,11 +706,29 @@
 
     public static INfp FromDxf(List<DxfEntity> dxfEntities)
     {
-      RawDetail raw;
+      IRawDetail raw;
       raw = DxfParser.ConvertDxfToRawDetail(string.Empty, dxfEntities);
       INfp result;
       raw.TryConvertToNfp(0, out result);
       return result;
+    }
+
+    public DxfFile ToDxfFile()
+    {
+      var result = new DxfFile();
+      result.Entities.Add(ToDxfPolyLine());
+      return result;
+    }
+
+    public DxfPolyline ToDxfPolyLine()
+    {
+      var resultSource = new List<DxfVertex>();
+      foreach (var point in points)
+      {
+        resultSource.Add(new DxfVertex(new IxMilia.Dxf.DxfPoint(point.X, point.Y, 0)));
+      }
+
+      return new DxfPolyline(resultSource);
     }
   }
 }

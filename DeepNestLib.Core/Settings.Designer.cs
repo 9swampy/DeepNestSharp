@@ -358,5 +358,17 @@ namespace DeepNestLib {
                 this["TopDiversity"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool DifferentiateChildren {
+            get {
+                return ((bool)(this["DifferentiateChildren"]));
+            }
+            set {
+                this["DifferentiateChildren"] = value;
+            }
+        }
     }
 }

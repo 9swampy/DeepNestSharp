@@ -12,7 +12,7 @@
 
     private static volatile object testSyncLock = new object();
 
-    private RawDetail loadedRawDetail;
+    private IRawDetail loadedRawDetail;
     private NestingContext nestingContext;
     private INfp loadedNfp;
     private INfp simplifiedNfp;
@@ -25,7 +25,7 @@
       {
         if (!this.hasImportedRawDetail)
         {
-          this.loadedRawDetail = DxfParser.LoadDxfStream(DxfTestFilename);
+          this.loadedRawDetail = DxfParser.LoadDxfFileStreamAsRawDetail(DxfTestFilename);
           this.nestingContext = A.Dummy<NestingContext>();
           this.hasImportedRawDetail = this.loadedRawDetail.TryConvertToNfp(A.Dummy<int>(), out this.loadedNfp);
           var sw = new Stopwatch();
@@ -47,7 +47,7 @@
     [Fact]
     public void ShouldLoadDxfToRawDetail()
     {
-      var rawDetail = DxfParser.LoadDxfStream(DxfTestFilename);
+      var rawDetail = DxfParser.LoadDxfFileStreamAsRawDetail(DxfTestFilename);
 
       rawDetail.Should().NotBeNull();
     }
@@ -110,6 +110,12 @@
     public void SimplificationShouldHaveExpectedPointCount()
     {
       this.simplifiedNfp.Points.Length.Should().Be(46);
+    }
+
+    [Fact]
+    public void ShouldHaveNoChildren()
+    {
+      this.loadedNfp.Children.Count.Should().Be(0);
     }
   }
 }

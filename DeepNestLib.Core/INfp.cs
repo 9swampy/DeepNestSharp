@@ -2,6 +2,7 @@
 {
   using System.Collections.Generic;
   using DeepNestLib.Placement;
+  using IxMilia.Dxf;
 
   public interface INfp : IMinMaxXY, IPolygon, IPlacement
   {
@@ -116,6 +117,8 @@
     bool Overlaps(INfp other);
 
     INfp Slice(int v);
+
+    DxfFile ToDxfFile();
 
     string Stringify();
 

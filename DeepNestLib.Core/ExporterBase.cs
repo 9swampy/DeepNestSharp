@@ -9,15 +9,16 @@
   {
     public abstract string SaveFileDialogFilter { get; }
 
-    public async Task Export(string path, ISheetPlacement sheetPlacement, bool doMergeLines)
+    public async Task Export(string path, ISheetPlacement sheetPlacement, bool doMergeLines, bool differentiateChildren)
     {
       await this.Export(
         path,
         sheetPlacement.PolygonsForExport,
         new ISheet[] { sheetPlacement.Sheet, },
-        doMergeLines).ConfigureAwait(false);
+        doMergeLines,
+        differentiateChildren).ConfigureAwait(false);
     }
 
-    protected abstract Task Export(string path, IEnumerable<INfp> polygons, IEnumerable<ISheet> sheets, bool doMergeLines);
+    protected abstract Task Export(string path, IEnumerable<INfp> polygons, IEnumerable<ISheet> sheets, bool doMergeLines, bool differentiateChildren);
   }
 }

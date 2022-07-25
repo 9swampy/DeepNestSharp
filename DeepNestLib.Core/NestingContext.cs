@@ -269,7 +269,7 @@
       {
         var cnt = int.Parse(item.Attribute("count").Value);
         var path = item.Attribute("path").Value;
-        RawDetail r = null;
+        IRawDetail r = null;
         if (path.ToLower().EndsWith("svg"))
         {
           r = SvgParser.LoadSvg(path);

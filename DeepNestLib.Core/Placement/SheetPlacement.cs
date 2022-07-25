@@ -135,9 +135,9 @@
       }
     }
 
-    public async Task ExportDxf(Stream stream, bool mergeLines)
+    public async Task ExportDxf(Stream stream, bool mergeLines, bool differentiateChildren)
     {
-      await new DxfExporter().Export(stream, this, mergeLines);
+      await new DxfExporter().Export(stream, this, mergeLines, differentiateChildren);
     }
 
     public static SheetPlacement LoadFromFile(string fileName)

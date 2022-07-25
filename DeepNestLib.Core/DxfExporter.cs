@@ -2,6 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
+  using System.Collections.ObjectModel;
   using System.IO;
   using System.Linq;
   using System.Threading.Tasks;
@@ -14,14 +15,14 @@
   {
     public override string SaveFileDialogFilter => "Dxf files (*.dxf)|*.dxf";
 
-    public async Task Export(Stream stream, ISheetPlacement sheetPlacement, bool doMergeLines)
+    public async Task Export(Stream stream, ISheetPlacement sheetPlacement, bool doMergeLines, bool differentiateChildren)
     {
-      await Export(stream, sheetPlacement.PolygonsForExport, sheetPlacement.Sheet, doMergeLines);
+      await Export(stream, sheetPlacement.PolygonsForExport, sheetPlacement.Sheet, doMergeLines, differentiateChildren);
     }
 
-    public async Task Export(Stream stream, IEnumerable<INfp> polygons, ISheet sheet, bool doMergeLines)
+    public async Task Export(Stream stream, IEnumerable<INfp> polygons, ISheet sheet, bool doMergeLines, bool differentiateChildren)
     {
-      DxfFile sheetdxf = GenerateDxfFile(polygons, sheet, sheet.Id, doMergeLines);
+      DxfFile sheetdxf = GenerateDxfFile(polygons, sheet, sheet.Id, doMergeLines, differentiateChildren);
       var dxf = sheetdxf;
       var id = sheet.Id;
 
@@ -35,7 +36,7 @@
       }
     }
 
-    protected async override Task Export(string path, IEnumerable<INfp> polygons, IEnumerable<ISheet> sheets, bool doMergeLines)
+    protected async override Task Export(string path, IEnumerable<INfp> polygons, IEnumerable<ISheet> sheets, bool doMergeLines, bool differentiateChildren)
     {
       try
       {
@@ -44,7 +45,7 @@
         for (int i = 0; i < sheets.Count(); i++)
         {
           var sheet = sheetList[i];
-          DxfFile sheetdxf = GenerateDxfFile(polygons, sheet, i, doMergeLines);
+          DxfFile sheetdxf = GenerateDxfFile(polygons, sheet, i, doMergeLines, differentiateChildren);
           dxfexports.Add(sheetdxf, sheet.Id);
         }
 
@@ -107,11 +108,11 @@
       return sheetdxf;
     }
 
-    private static IEnumerable<DxfEntity> GetOffsetDxfEntities(IEnumerable<INfp> polygons, ISheet sheet, int i)
+    private static IEnumerable<DxfEntity> GetOffsetDxfEntities(IEnumerable<INfp> polygons, ISheet sheet, int i, bool differentiateChildren)
     {
       foreach (var polygon in polygons)
       {
-        DxfFile fl;
+        RawDetail<DxfEntity> fl;
         if (polygon.Fitted == false || !polygon.Name.ToLower().Contains(".dxf") || polygon.Sheet.Id != sheet.Id)
         {
           continue;
@@ -120,7 +121,16 @@
         {
           try
           {
-            fl = DxfFile.Load(polygon.Name);
+#if NCRUNCH
+            if (polygon.IsExact && !(new FileInfo(polygon.Name).Exists))
+            {
+              fl = DxfParser.ConvertDxfToRawDetail("generated.dxf", polygon.ToDxfFile().Entities.ToArray());
+            }
+            else
+#endif
+            {
+              fl = DxfParser.ConvertDxfToRawDetail(polygon.Name, DxfFile.Load(polygon.Name).Entities.ToArray());
+            }
           }
           catch
           {
@@ -129,10 +139,9 @@
         }
 
         double sheetXoffset = -sheet.WidthCalculated * i;
-        //double sheetyoffset = -sheetheight * i;
+        //double sheetYoffset = -sheet.Height * i;
         DxfPoint offsetdistance = new DxfPoint(polygon.X + sheetXoffset, polygon.Y, 0D);
-        List<DxfEntity> newlist = OffsetToNest(fl.Entities, offsetdistance, polygon.Rotation);
-
+        List<DxfEntity> newlist = OffsetToNest(fl.Outers, offsetdistance, polygon.Rotation, differentiateChildren);
         foreach (DxfEntity ent in newlist)
         {
           yield return ent;
@@ -140,9 +149,31 @@
       }
     }
 
+    private static List<DxfEntity> OffsetToNest(IEnumerable<ILocalContour> contours, DxfPoint offsetdistance, double rotation, bool differentiateChildren)
+    {
+      var allEntities = new List<DxfEntity>();
+      foreach (var contour in contours)
+      {
+        if (contour is LocalContour<DxfEntity> castContour)
+        {
+          if (differentiateChildren && castContour.IsChild)
+          {
+            foreach (var child in castContour.Entities)
+            {
+              child.Color = DxfColorHelpers.GetClosestDefaultIndexColor(255, 0, 0);
+            }
+          }
+
+          allEntities.AddRange(castContour.Entities);
+        }
+      }
+
+      return OffsetToNest(allEntities, offsetdistance, rotation);
+    }
+
     private static List<DxfEntity> OffsetToNest(IList<DxfEntity> dxfEntities, DxfPoint offset, double rotationAngle)
     {
-      List<DxfEntity> dxfreturn = new List<DxfEntity>();
+      var result = new List<DxfEntity>();
       List<DxfPoint> tmpPts;
       foreach (DxfEntity entity in dxfEntities)
       {
@@ -154,7 +185,7 @@
             dxfArc.Center += offset;
             dxfArc.StartAngle += rotationAngle;
             dxfArc.EndAngle += rotationAngle;
-            dxfreturn.Add(dxfArc);
+            result.Add(dxfArc);
             break;
 
           case DxfEntityType.ArcAlignedText:
@@ -163,35 +194,35 @@
             dxfArcAligned.CenterPoint += offset;
             dxfArcAligned.StartAngle += rotationAngle;
             dxfArcAligned.EndAngle += rotationAngle;
-            dxfreturn.Add(dxfArcAligned);
+            result.Add(dxfArcAligned);
             break;
 
           case DxfEntityType.Attribute:
             DxfAttribute dxfAttribute = (DxfAttribute)entity;
             dxfAttribute.Location = RotateLocation(rotationAngle, dxfAttribute.Location);
             dxfAttribute.Location += offset;
-            dxfreturn.Add(dxfAttribute);
+            result.Add(dxfAttribute);
             break;
 
           case DxfEntityType.AttributeDefinition:
             DxfAttributeDefinition dxfAttributecommon = (DxfAttributeDefinition)entity;
             dxfAttributecommon.Location = RotateLocation(rotationAngle, dxfAttributecommon.Location);
             dxfAttributecommon.Location += offset;
-            dxfreturn.Add(dxfAttributecommon);
+            result.Add(dxfAttributecommon);
             break;
 
           case DxfEntityType.Circle:
             DxfCircle dxfCircle = (DxfCircle)entity;
             dxfCircle.Center = RotateLocation(rotationAngle, dxfCircle.Center);
             dxfCircle.Center += offset;
-            dxfreturn.Add(dxfCircle);
+            result.Add(dxfCircle);
             break;
 
           case DxfEntityType.Ellipse:
             DxfEllipse dxfEllipse = (DxfEllipse)entity;
             dxfEllipse.Center = RotateLocation(rotationAngle, dxfEllipse.Center);
             dxfEllipse.Center += offset;
-            dxfreturn.Add(dxfEllipse);
+            result.Add(dxfEllipse);
             break;
 
           case DxfEntityType.Image:
@@ -199,7 +230,7 @@
             dxfImage.Location = RotateLocation(rotationAngle, dxfImage.Location);
             dxfImage.Location += offset;
 
-            dxfreturn.Add(dxfImage);
+            result.Add(dxfImage);
             break;
 
           case DxfEntityType.Leader:
@@ -215,7 +246,7 @@
 
             dxfLeader.Vertices.Clear();
             dxfLeader.Vertices.Concat(tmpPts);
-            dxfreturn.Add(dxfLeader);
+            result.Add(dxfLeader);
             break;
 
           case DxfEntityType.Line:
@@ -224,7 +255,7 @@
             dxfLine.P2 = RotateLocation(rotationAngle, dxfLine.P2);
             dxfLine.P1 += offset;
             dxfLine.P2 += offset;
-            dxfreturn.Add(dxfLine);
+            result.Add(dxfLine);
             break;
 
           case DxfEntityType.LwPolyline:
@@ -235,7 +266,7 @@
               vrt.Location += offset;
             }
 
-            dxfreturn.Add(dxfPoly);
+            result.Add(dxfPoly);
             break;
 
           case DxfEntityType.MLine:
@@ -254,7 +285,7 @@
 
             mLine.Vertices.Clear();
             mLine.Vertices.Concat(tmpPts);
-            dxfreturn.Add(mLine);
+            result.Add(mLine);
             break;
 
           case DxfEntityType.Polyline:
@@ -273,7 +304,7 @@
             polyout.Location = polyline.Location + offset;
             polyout.IsClosed = polyline.IsClosed;
             polyout.Layer = polyline.Layer;
-            dxfreturn.Add(polyout);
+            result.Add(polyout);
 
             break;
 
@@ -311,7 +342,7 @@
         }
       }
 
-      return dxfreturn;
+      return result;
     }
 
     private static DxfPoint RotateLocation(double rotationAngle, DxfPoint pt)
@@ -324,12 +355,12 @@
       return new DxfPoint(x1, y1, pt.Z);
     }
 
-    private DxfFile GenerateDxfFile(IEnumerable<INfp> polygons, ISheet sheet, int i = 0, bool doMergeLines = false)
+    private DxfFile GenerateDxfFile(IEnumerable<INfp> polygons, ISheet sheet, int i, bool doMergeLines, bool differentiateChildren)
     {
       try
       {
         DxfFile sheetdxf = GenerateDxfFileWithSheetOutline(sheet);
-        var entities = GetOffsetDxfEntities(polygons.Where(o => o.Sheet.Id == sheet.Id), sheet, i);
+        var entities = GetOffsetDxfEntities(polygons.Where(o => o.Sheet.Id == sheet.Id), sheet, i, differentiateChildren);
 
         if (doMergeLines)
         {

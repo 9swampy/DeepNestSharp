@@ -6,11 +6,11 @@
   using System.Drawing.Drawing2D;
   using System.Linq;
 
-  public class RawDetail
+  public class RawDetail<TSourceEntity> : IRawDetail
   {
-    private List<LocalContour> outers = new List<LocalContour>();
+    private List<LocalContour<TSourceEntity>> outers = new List<LocalContour<TSourceEntity>>();
 
-    public IReadOnlyCollection<LocalContour> Outers => outers;
+    public IReadOnlyCollection<ILocalContour> Outers => outers;
 
     public RectangleF BoundingBox()
     {
@@ -23,12 +23,12 @@
       return gp.GetBounds();
     }
 
-    public void AddContour(LocalContour contour)
+    public void AddContour(LocalContour<TSourceEntity> contour)
     {
       outers.Add(contour);
     }
 
-    public void AddRangeContour(IEnumerable<LocalContour> collection)
+    public void AddRangeContour(IEnumerable<LocalContour<TSourceEntity>> collection)
     {
       outers.AddRange(collection);
     }
@@ -61,7 +61,7 @@
       return result;
     }
 
-    internal bool TryConvertToNfp(int src, int rotation, out Chromosome loadedChromosome)
+    bool IRawDetail.TryConvertToNfp(int src, int rotation, out Chromosome loadedChromosome)
     {
       var result = TryConvertToNfp(src, out loadedChromosome);
       loadedChromosome.Rotation = rotation;
@@ -119,7 +119,7 @@
       return new Sheet(this.ToNfp(), WithChildren.Excluded);
     }
 
-    internal bool TryConvertToSheet(int firstSheetIdSrc, out ISheet firstSheet)
+    bool IRawDetail.TryConvertToSheet(int firstSheetIdSrc, out ISheet firstSheet)
     {
       INfp nfp;
       if (TryConvertToNfp(firstSheetIdSrc, out nfp))

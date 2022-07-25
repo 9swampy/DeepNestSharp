@@ -44,6 +44,15 @@
     }
 
     /// <inheritdoc />
+    [Description("Differentiate children when exporting.")]
+    [Category("File Settings")]
+    public bool DifferentiateChildren
+    {
+      get => svgNestConfig.DifferentiateChildren;
+      set => SetProperty(nameof(DifferentiateChildren), () => svgNestConfig.DifferentiateChildren, v => svgNestConfig.DifferentiateChildren = v, value);
+    }
+
+    /// <inheritdoc />
     [Category("Simplifications")]
     public bool DrawSimplification
     {
@@ -95,9 +104,9 @@
       set => SetProperty(nameof(LastNestFilePath), () => svgNestConfig.LastNestFilePath, v => svgNestConfig.LastNestFilePath = v, value);
     }
 
-    [Description("Experimental feature merging coaligned and coincident lines when exporting to Dxf so they'll only get cut once (no effect if you're exporting Svg).")]
+    [Description("Merge coaligned and coincident lines when exporting to Dxf so they'll only get cut once (no effect if you're exporting Svg, and ofc Spacing setting needs to be 0).")]
     /// <inheritdoc />
-    [Category("Experimental")]
+    [Category("File Settings")]
     public bool MergeLines
     {
       get => svgNestConfig.MergeLines;
@@ -356,7 +365,7 @@
       set => SetProperty(nameof(TopDiversity), () => svgNestConfig.TopDiversity, v => svgNestConfig.TopDiversity = v, value);
     }
 
-      ISvgNestConfig IExportableConfig.ExportableInstance => svgNestConfig;
+    ISvgNestConfig IExportableConfig.ExportableInstance => svgNestConfig;
 
     public string ToJson()
     {

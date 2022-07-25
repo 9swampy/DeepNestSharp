@@ -221,7 +221,7 @@
     /// <returns>The generated InnerFitPolygon if found, otherwise null.</returns>
     internal INfp GetInnerNfp(ISheet sheet, INfp part, MinkowskiCache minkowskiCache, bool useDllImport)
     {
-      return GetInnerNfp((INfp)sheet, part, minkowskiCache, useDllImport, o=> { });
+      return GetInnerNfp((INfp)sheet, part, minkowskiCache, useDllImport, o => { });
     }
 
     /// <summary>

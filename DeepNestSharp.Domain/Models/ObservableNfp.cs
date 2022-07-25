@@ -7,6 +7,7 @@
   using DeepNestLib;
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
+  using IxMilia.Dxf;
 
   public class ObservableNfp : ObservablePropertyObject, INfp
   {
@@ -322,6 +323,11 @@
     public void EnsureIsClosed()
     {
       this.item.EnsureIsClosed();
+    }
+
+    public DxfFile ToDxfFile()
+    {
+      return item.ToDxfFile();
     }
   }
 }

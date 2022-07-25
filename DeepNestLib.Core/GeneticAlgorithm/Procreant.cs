@@ -272,7 +272,7 @@
       chaperone.Restart();
       //this.progressDisplayer.IsVisibleSecondaryProgressBar = false;
       //this.progressDisplayer.InitialiseLoopProgress(ProgressBar.Primary, "Procreate. . .", config.PopulationSize);
-      while (newPopulation.Count() < config.PopulationSize && chaperone.ElapsedMilliseconds <= config.ProcreationTimeout)
+      while (newPopulation.Count() > 1 && newPopulation.Count() < config.PopulationSize && chaperone.ElapsedMilliseconds <= config.ProcreationTimeout)
       {
         var male = RandomWeightedIndividual(newPopulation);
         var female = RandomWeightedIndividual(newPopulation, male);

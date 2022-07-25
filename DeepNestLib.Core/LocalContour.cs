@@ -4,8 +4,14 @@
   using System.Collections.Generic;
   using System.Drawing;
 
-  public class LocalContour
+  public class LocalContour<TSourceEntity> : ILocalContour
   {
+    public LocalContour(List<PointF> points, HashSet<TSourceEntity> entities)
+    {
+      Entities = entities;
+      Points = points;
+    }
+
     public double Len
     {
       get
@@ -22,7 +28,10 @@
       }
     }
 
-    public List<PointF> Points = new List<PointF>();
-    public bool Enable = true;
+    public List<PointF> Points { get; } = new List<PointF>();
+
+    public HashSet<TSourceEntity> Entities { get; } = new HashSet<TSourceEntity>();
+
+    public bool IsChild { get; internal set; } = true;
   }
 }

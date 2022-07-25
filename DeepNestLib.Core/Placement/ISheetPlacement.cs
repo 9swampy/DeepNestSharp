@@ -34,7 +34,7 @@
 
     double MergedLength { get; }
 
-    Task ExportDxf(Stream stream, bool mergeLines);
+    Task ExportDxf(Stream stream, bool mergeLines, bool differentiateChildren);
 
     string ToJson(bool writeIndented = false);
 

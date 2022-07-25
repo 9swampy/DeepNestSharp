@@ -1,8 +1,8 @@
 ﻿namespace DeepNestLib
 {
+  using System;
   using IxMilia.Dxf;
   using IxMilia.Dxf.Entities;
-  using System;
 
   public class MergeLine
   {

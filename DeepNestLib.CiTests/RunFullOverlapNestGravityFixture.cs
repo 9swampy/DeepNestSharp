@@ -13,8 +13,8 @@
     private const string Dxf4TestFilename = "Dxfs._4.dxf";
 
     private static volatile object testSyncLock = new object();
-    private RawDetail loaded2RawDetail;
-    private RawDetail loaded4RawDetail;
+    private IRawDetail loaded2RawDetail;
+    private IRawDetail loaded4RawDetail;
     private INfp loadedNfp2;
     private INfp loadedNfp4;
     private bool hasImported2RawDetail;
@@ -28,21 +28,21 @@
     /// Two parts that shouldn't be able to fit on a single sheet.
     /// </summary>
     public RunFullOverlapNestGravityFixture()
-      : base(PlacementTypeEnum.Gravity, 68814, 10000 * 2, 10, 50)
+      : base(PlacementTypeEnum.Gravity, 68814, 10000 * 2, 40, 100)
     {
       lock (testSyncLock)
       {
         if (!this.hasImported2RawDetail || !this.hasImported4RawDetail)
         {
-          this.loaded2RawDetail = DxfParser.LoadDxfStream(Dxf2TestFilename);
-          this.loaded4RawDetail = DxfParser.LoadDxfStream(Dxf4TestFilename);
+          this.loaded2RawDetail = DxfParser.LoadDxfFileStreamAsRawDetail(Dxf2TestFilename);
+          this.loaded4RawDetail = DxfParser.LoadDxfFileStreamAsRawDetail(Dxf4TestFilename);
           this.hasImported2RawDetail = this.loaded2RawDetail.TryConvertToNfp(A.Dummy<int>(), out this.loadedNfp2);
           this.hasImported4RawDetail = this.loaded4RawDetail.TryConvertToNfp(A.Dummy<int>(), out this.loadedNfp4);
           this.nestingContext.Polygons.Add(this.loadedNfp2);
           this.nestingContext.Polygons.Add(this.loadedNfp4);
 
           ISheet firstSheet;
-          DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { new DxfGenerator().Rectangle(180D, 100D, RectangleType.FileLoad) }).TryConvertToSheet(firstSheetIdSrc, out firstSheet).Should().BeTrue();
+          ((IRawDetail)DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { new DxfGenerator().Rectangle(180D, 100D, RectangleType.FileLoad) })).TryConvertToSheet(firstSheetIdSrc, out firstSheet).Should().BeTrue();
           this.nestingContext.Sheets.Add(firstSheet);
 
           this.nestingContext.StartNest().Wait();

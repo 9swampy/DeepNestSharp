@@ -13,6 +13,11 @@
     /// </summary>
     bool ClipByHull { get; set; }
 
+    /// <summary>
+    /// Differentiate children when exporting.
+    /// </summary>
+    bool DifferentiateChildren { get; set; }
+
     bool DrawSimplification { get; set; }
 
     bool ExploreConcave { get; set; }

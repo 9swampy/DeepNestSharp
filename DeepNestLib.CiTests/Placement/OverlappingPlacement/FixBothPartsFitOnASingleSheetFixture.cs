@@ -32,7 +32,7 @@
       ISheet secondSheet;
       DxfGenerator.GenerateRectangle("Sheet", 160D, 110D, RectangleType.FileLoad).TryConvertToSheet(secondSheetIdSrc, out secondSheet).Should().BeTrue();
       secondSheet.Id = 1;
-      firstPart = DxfParser.LoadDxfStream("Dxfs._9.dxf").ToNfp();
+      firstPart = DxfParser.LoadDxfFileStreamAsNfp("Dxfs._9.dxf");
       firstPart.Source = firstPartIdSrc;
       //secondPart = DxfParser.LoadDxfStream("Dxfs._1.dxf").ToNfp();
       //var dxfFile = DxfGenerator.GenerateRectangle(150, 100, RectangleType.FileLoad, true);

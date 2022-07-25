@@ -12,7 +12,7 @@
     private const string DxfTestFilename = "Dxfs._5.dxf";
 
     private static volatile object testSyncLock = new object();
-    private RawDetail loadedRawDetail;
+    private IRawDetail loadedRawDetail;
     private INfp loadedNfp;
     private bool hasImportedRawDetail;
     private int firstSheetIdSrc = new Random().Next();
@@ -23,19 +23,19 @@
     /// logs it doesn't seem to be deadlocking because the loop keeps running. Not sure what's going on...
     /// </summary>
     public RunFullNestGravityFixture()
-      : base(PlacementTypeEnum.Gravity, 504731, 10000 * 2, 20, 50)
+      : base(PlacementTypeEnum.Gravity, 504731, 10000 * 3, 20, 50)
     {
       lock (testSyncLock)
       {
         if (!this.hasImportedRawDetail)
         {
-          this.loadedRawDetail = DxfParser.LoadDxfStream(DxfTestFilename);
+          this.loadedRawDetail = DxfParser.LoadDxfFileStreamAsRawDetail(DxfTestFilename);
           this.hasImportedRawDetail = this.loadedRawDetail.TryConvertToNfp(A.Dummy<int>(), out this.loadedNfp);
           this.nestingContext.Polygons.Add(this.loadedNfp);
           this.nestingContext.Polygons.Add(this.loadedNfp.Clone());
 
           ISheet firstSheet;
-          DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { new DxfGenerator().Rectangle(595D, 395D, RectangleType.FileLoad) }).TryConvertToSheet(firstSheetIdSrc, out firstSheet).Should().BeTrue();
+          ((IRawDetail)DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { new DxfGenerator().Rectangle(595D, 395D, RectangleType.FileLoad) })).TryConvertToSheet(firstSheetIdSrc, out firstSheet).Should().BeTrue();
           this.nestingContext.Sheets.Add(firstSheet);
 
           this.nestingContext.StartNest().Wait();

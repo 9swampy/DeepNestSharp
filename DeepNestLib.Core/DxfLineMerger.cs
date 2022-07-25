@@ -139,7 +139,7 @@
       var lines = result
         .OrderBy(o => o.Slope)
         .ThenBy(o => o.Intercept)
-        .ThenBy(o => o.IsVertical ? o.Left.Y: o.Left.X)
+        .ThenBy(o => o.IsVertical ? o.Left.Y : o.Left.X)
         .ThenBy(o => o.Left.Y).ToList();
       MergeLine prior = null;
       MergeLine current = null;

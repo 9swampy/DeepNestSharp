@@ -12,7 +12,7 @@
     private static volatile object testSyncLock = new object();
 
     private readonly DxfGenerator dxfGenerator = new DxfGenerator();
-    private RawDetail loadedRawDetail;
+    private IRawDetail loadedRawDetail;
     private INfp loadedNfp;
     private bool hasImportedRawDetail;
     private int firstSheetIdSrc = new Random().Next();
@@ -28,7 +28,7 @@
       {
         if (!this.hasImportedRawDetail)
         {
-          this.loadedRawDetail = DxfParser.LoadDxfStream(DxfTestFilename);
+          this.loadedRawDetail = DxfParser.LoadDxfFileStreamAsRawDetail(DxfTestFilename);
           this.loadedRawDetail.Should().NotBeNull();
           this.hasImportedRawDetail = loadedRawDetail.TryConvertToNfp(A.Dummy<int>(), out this.loadedNfp);
           this.nestingContext.Polygons.Add(this.loadedNfp);

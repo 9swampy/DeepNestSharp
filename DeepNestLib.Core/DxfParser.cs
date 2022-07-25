@@ -19,7 +19,7 @@
 
     private static volatile object loadLock = new object();
 
-    public static async Task<RawDetail> LoadDxfFile(string path)
+    public static async Task<IRawDetail> LoadDxfFile(string path)
     {
       FileInfo fi = new FileInfo(path);
       DxfFile dxffile;
@@ -44,19 +44,30 @@
         }
       }
 
-      return default(RawDetail);
+      return default;
     }
 
-    public static RawDetail ConvertDxfToRawDetail(string fullFilename, IEnumerable<DxfEntity> entities)
+    public static RawDetail<DxfEntity> ConvertDxfToRawDetail(string fullFilename, IEnumerable<DxfEntity> entities)
     {
-      RawDetail s = new RawDetail();
+      RawDetail<DxfEntity> s = new RawDetail<DxfEntity>();
       s.Name = fullFilename;
+      Dictionary<DxfEntity, IList<LineElement>> approximations = ApproximateEntities(entities);
+      s.AddRangeContour(ConnectElements(approximations));
+      if (s.Outers.Any(z => z.Points.Count < 3))
+      {
+        throw new Exception("Too few points");
+      }
 
-      var points = new LocalContour();
-      var elems = new List<LineElement>();
+      return s;
+    }
+
+    private static Dictionary<DxfEntity, IList<LineElement>> ApproximateEntities(IEnumerable<DxfEntity> entities)
+    {
+      var approximations = new Dictionary<DxfEntity, IList<LineElement>>();
 
       foreach (DxfEntity ent in entities)
       {
+        var elems = new List<LineElement>();
         switch (ent.EntityType)
         {
           case DxfEntityType.LwPolyline:
@@ -67,12 +78,13 @@
                 continue;
               }
 
+              var localContour = new List<PointF>();
               foreach (DxfLwPolylineVertex vert in poly.Vertices)
               {
-                points.Points.Add(new PointF((float)vert.X, (float)vert.Y));
+                localContour.Add(new PointF((float)vert.X, (float)vert.Y));
               }
 
-              elems.AddRange(ConnectTheDots(points.Points));
+              elems.AddRange(ConnectTheDots(localContour).ToList());
             }
 
             break;
@@ -106,17 +118,17 @@
           case DxfEntityType.Circle:
             {
               DxfCircle cr = (DxfCircle)ent;
-              LocalContour cc = new LocalContour();
+              var cc = new List<PointF>();
 
               for (int i = 0; i <= 360; i += 15)
               {
                 var ang = i * Math.PI / 180f;
                 var xx = cr.Center.X + (cr.Radius * Math.Cos(ang));
                 var yy = cr.Center.Y + (cr.Radius * Math.Sin(ang));
-                cc.Points.Add(new PointF((float)xx, (float)yy));
+                cc.Add(new PointF((float)xx, (float)yy));
               }
 
-              elems.AddRange(ConnectTheDots(cc.Points));
+              elems.AddRange(ConnectTheDots(cc));
             }
 
             break;
@@ -135,12 +147,13 @@
                 continue;
               }
 
+              var localContour = new List<PointF>();
               foreach (DxfVertex vert in poly.Vertices)
               {
-                points.Points.Add(new PointF((float)vert.Location.X, (float)vert.Location.Y));
+                localContour.Add(new PointF((float)vert.Location.X, (float)vert.Location.Y));
               }
 
-              elems.AddRange(ConnectTheDots(points.Points));
+              elems.AddRange(ConnectTheDots(localContour));
 
               break;
             }
@@ -148,20 +161,15 @@
           default:
             throw new ArgumentException("unsupported entity type: " + ent);
         }
+
+        elems = elems.Where(z => z.Start.DistTo(z.End) > RemoveThreshold).ToList();
+        approximations.Add(ent, elems);
       }
 
-      elems = elems.Where(z => z.Start.DistTo(z.End) > RemoveThreshold).ToList();
-      var cntrs2 = ConnectElements(elems.ToArray());
-      s.AddRangeContour(cntrs2);
-      if (s.Outers.Any(z => z.Points.Count < 3))
-      {
-        throw new Exception("few points");
-      }
-
-      return s;
+      return approximations;
     }
 
-    internal static RawDetail LoadDxfStream(string path)
+    internal static RawDetail<DxfEntity> LoadDxfFileStreamAsRawDetail(string path)
     {
       using (var inputStream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream(path))
       {
@@ -169,7 +177,23 @@
       }
     }
 
-    internal static RawDetail LoadDxfStream(string name, Stream inputStream)
+    internal static INfp LoadDxfFileStreamAsNfp(string path)
+    {
+      using (var inputStream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream(path))
+      {
+        return LoadDxfStream(path, inputStream).ToNfp();
+      }
+    }
+
+    internal static DxfFile LoadDxfFileStream(string path)
+    {
+      using (var inputStream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream(path))
+      {
+        return DxfFile.Load(inputStream);
+      }
+    }
+
+    internal static RawDetail<DxfEntity> LoadDxfStream(string name, Stream inputStream)
     {
       DxfFile dxffile = DxfFile.Load(inputStream);
       IEnumerable<DxfEntity> entities = dxffile.Entities.ToArray();
@@ -191,53 +215,86 @@
       }
     }
 
-    private static LocalContour[] ConnectElements(LineElement[] elems)
+    private static LocalContour<DxfEntity>[] ConnectElements(Dictionary<DxfEntity, IList<LineElement>> approximations)
     {
-      List<LocalContour> ret = new List<LocalContour>();
+      List<(DxfEntity Entity, LineElement LineElement)> allLineElements = GetAllLineElements(approximations);
 
-      List<PointF> pp = new List<PointF>();
-      List<LineElement> last = new List<LineElement>();
-      last.AddRange(elems);
-
-      while (last.Any())
+      PointF prior = default;
+      List<PointF> newContourPoints = new List<PointF>();
+      var newContourEntities = new HashSet<DxfEntity>();
+      var result = new List<LocalContour<DxfEntity>>();
+      while (allLineElements.Any())
       {
-        if (pp.Count == 0)
+        if (newContourPoints.Count == 0)
         {
-          pp.Add(last.First().Start);
-          pp.Add(last.First().End);
-          last.RemoveAt(0);
+          var toStart = allLineElements.First().LineElement;
+          newContourPoints.Add(toStart.Start);
+          prior = toStart.End;
+          newContourPoints.Add(prior);
+          newContourEntities.Add(allLineElements.First().Entity);
+          allLineElements.RemoveAt(0);
         }
         else
         {
-          var ll = pp.Last();
-          var f1 = last.OrderBy(z => Math.Min(z.Start.DistTo(ll), z.End.DistTo(ll))).First();
-
-          var dist = Math.Min(f1.Start.DistTo(ll), f1.End.DistTo(ll));
-          if (dist > ClosingThreshold)
+          if (!TryGetAnotherPoint(prior, allLineElements, out (DxfEntity Entity, LineElement LineElement) next))
           {
-            ret.Add(new LocalContour() { Points = pp.ToList() });
-            pp.Clear();
-            continue;
-          }
-
-          last.Remove(f1);
-          if (f1.Start.DistTo(ll) < f1.End.DistTo(ll))
-          {
-            pp.Add(f1.End);
+            result.Add(new LocalContour<DxfEntity>(newContourPoints.ToList(), newContourEntities));
+            newContourPoints = new List<PointF>();
+            newContourEntities = new HashSet<DxfEntity>();
           }
           else
           {
-            pp.Add(f1.Start);
+            allLineElements.Remove(next);
+            newContourEntities.Add(next.Entity);
+            prior = EndIsClosest(prior, next) ? next.LineElement.End : next.LineElement.Start;
+            newContourPoints.Add(prior);
           }
         }
       }
 
-      if (pp.Any())
+      if (newContourPoints.Any())
       {
-        ret.Add(new LocalContour() { Points = pp.ToList() });
+        result.Add(new LocalContour<DxfEntity>(newContourPoints.ToList(), newContourEntities));
       }
 
-      return ret.ToArray();
+      result.OrderByDescending(o => Math.Abs(Geometry.GeometryUtil.PolygonArea(o.Points))).First().IsChild = false;
+      return result.ToArray();
+    }
+
+    private static List<(DxfEntity Entity, LineElement LineElement)> GetAllLineElements(Dictionary<DxfEntity, IList<LineElement>> approximations)
+    {
+      var allLineElements = new List<(DxfEntity Entity, LineElement LineElement)>();
+      foreach (KeyValuePair<DxfEntity, IList<LineElement>> kvp in approximations)
+      {
+        allLineElements.AddRange(kvp.Value.Select(o => (kvp.Key, o)));
+      }
+
+      return allLineElements;
+    }
+
+    private static bool EndIsClosest(PointF prior, (DxfEntity Entity, LineElement LineElement) next)
+    {
+      return next.LineElement.Start.DistTo(prior) < next.LineElement.End.DistTo(prior);
+    }
+
+    private static bool TryGetAnotherPoint(PointF prior, List<(DxfEntity Entity, LineElement LineElement)> allLineElements, out (DxfEntity Entity, LineElement LineElement) next)
+    {
+      var match = allLineElements.Select(candidate => (candidate, MinDistance(prior, candidate)))
+                       .Where(o => o.Item2 <= ClosingThreshold)
+                       .OrderBy(o => o.Item2).FirstOrDefault();
+      if (match != default)
+      {
+        next = match.candidate;
+        return true;
+      }
+
+      next = default;
+      return false;
+    }
+
+    private static double MinDistance(PointF prior, (DxfEntity Entity, LineElement LineElement) candidate)
+    {
+      return Math.Min(candidate.LineElement.Start.DistTo(prior), candidate.LineElement.End.DistTo(prior));
     }
   }
 }

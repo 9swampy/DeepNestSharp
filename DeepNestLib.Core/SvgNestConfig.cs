@@ -102,6 +102,22 @@ namespace DeepNestLib
     }
 
     /// <inheritdoc />
+    public bool DifferentiateChildren
+    {
+      get
+      {
+        return (bool)Settings.Default["DifferentiateChildren"];
+      }
+
+      set
+      {
+        Settings.Default["DifferentiateChildren"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
+      }
+    }
+
+    /// <inheritdoc />
     public bool DrawSimplification
     {
       get
