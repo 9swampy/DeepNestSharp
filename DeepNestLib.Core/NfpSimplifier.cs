@@ -181,12 +181,7 @@
           var test = offset.CloneTop();
           test.Points[i] = new SvgPoint(target.X, target.Y);
 
-          if (!Exterior(test, polygon, inside, curveTolerance))
-          {
-            o.X = target.X;
-            o.Y = target.Y;
-          }
-          else
+          if (Exterior(test, polygon, inside, curveTolerance))
           {
             // a shell is an intermediate offset between simple and offset
             for (j = 1; j < numshells; j++)
@@ -206,6 +201,11 @@
                 }
               }
             }
+          }
+          else
+          {
+            o.X = target.X;
+            o.Y = target.Y;
           }
         }
       }
@@ -422,7 +422,14 @@
       return index1 + 1 == index2 || index2 + 1 == index1 || (index1 == 0 && index2 == polygon.Length - 1) || (index2 == 0 && index1 == polygon.Length - 1);
     }
 
-    // returns true if any complex vertices fall outside the simple polygon
+    /// <summary>
+    /// Tests complex to find if any of it's vertices fall outside simple.
+    /// </summary>
+    /// <param name="simple"></param>
+    /// <param name="complex"></param>
+    /// <param name="inside"></param>
+    /// <param name="curveTolerance"></param>
+    /// <returns>.t if any complex vertices fall outside the simple polygon.</returns>
     private static bool Exterior(INfp simple, INfp complex, bool inside, double curveTolerance)
     {
       // find all protruding vertices

@@ -51,7 +51,7 @@
     INfp CloneTree();
 
     /// <summary>
-    /// Clones but only the top level points; no children.
+    /// Clones but only the top level points; no children, state or instruction properties.
     /// </summary>
     /// <returns>A clone.</returns>
     INfp CloneTop();

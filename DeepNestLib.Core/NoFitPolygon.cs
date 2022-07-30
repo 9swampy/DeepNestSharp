@@ -411,12 +411,9 @@
     public NoFitPolygon Clone()
     {
       NoFitPolygon result = new NoFitPolygon();
-      result.Id = this.Id;
-      result.Source = this.Source;
-      result.Rotation = this.Rotation;
+      CopyStateProperties(result);
       result.IsPriority = this.IsPriority;
       result.StrictAngle = this.StrictAngle;
-      result.Name = this.Name;
 
       for (var i = 0; i < this.Length; i++)
       {
@@ -452,11 +449,9 @@
     public NoFitPolygon CloneExact()
     {
       NoFitPolygon clone = new NoFitPolygon();
-      clone.Id = this.Id;
-      clone.Source = this.Source;
-      clone.IsPriority = this.IsPriority;
-      clone.StrictAngle = this.StrictAngle;
-      clone.Name = this.Name;
+      CopyStateProperties(clone);
+      CopyInstructionProperties(clone);
+
       clone.ReplacePoints(this.Points.Select(z => new SvgPoint(z.X, z.Y) { Exact = z.Exact }));
       if (this.Children != null)
       {
@@ -471,6 +466,12 @@
       }
 
       return clone;
+    }
+
+    private void CopyInstructionProperties(NoFitPolygon clone)
+    {
+      clone.IsPriority = this.IsPriority;
+      clone.StrictAngle = this.StrictAngle;
     }
 
     /// <inheritdoc/>
@@ -632,12 +633,11 @@
     public INfp Shift(double x, double y)
     {
       NoFitPolygon shifted = new NoFitPolygon();
-      shifted.Id = this.Id;
-      shifted.Name = this.Name;
+      CopyStateProperties(shifted);
+
       shifted.PlacementOrder = this.PlacementOrder;
-      shifted.Rotation = this.Rotation;
-      shifted.Source = this.Source;
       shifted.StrictAngle = this.StrictAngle;
+
       for (var i = 0; i < this.Length; i++)
       {
         shifted.AddPoint(new SvgPoint(this[i].X + x, this[i].Y + y) { Exact = this[i].Exact });
@@ -652,6 +652,14 @@
       }
 
       return shifted;
+    }
+
+    private void CopyStateProperties(NoFitPolygon other)
+    {
+      other.Id = this.Id;
+      other.Name = this.Name;
+      other.Rotation = this.Rotation;
+      other.Source = this.Source;
     }
 
     /// <inheritdoc />
