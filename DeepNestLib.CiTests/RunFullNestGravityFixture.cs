@@ -23,7 +23,7 @@
     /// logs it doesn't seem to be deadlocking because the loop keeps running. Not sure what's going on...
     /// </summary>
     public RunFullNestGravityFixture()
-      : base(PlacementTypeEnum.Gravity, 504731, 10000 * 3, 20, 50)
+      : base(PlacementTypeEnum.Gravity, 504731, 50000, 150)
     {
       lock (testSyncLock)
       {

@@ -22,7 +22,7 @@
     /// MinkowskiWrapper.CalculateNfp occasionally sticks; not sure why; seems fine at runtime only nCrunch has the problem.
     /// </summary>
     public RunFullNestSqueezeFixture()
-      : base(PlacementTypeEnum.Squeeze, (494516 + 541746) / 2, 10000 * 3, 2, 50)
+      : base(PlacementTypeEnum.Squeeze, (494516 + 541746) / 2, 10000 * 3, 50)
     {
       lock (testSyncLock)
       {

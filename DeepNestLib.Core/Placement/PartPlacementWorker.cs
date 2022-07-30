@@ -50,8 +50,8 @@
       this.Config = config;
       this.Sheet = sheet;
       this.NfpHelper = nfpHelper;
-      this.Parts = gene.ToList();
-      this.Placements = placements.ToList();
+      this.Gene = gene;
+      this.Placements = placements;
     }
 
     [JsonIgnore]
@@ -79,8 +79,9 @@
     [JsonInclude]
     public IPlacementConfig Config { get; private set; }
 
+    [JsonPropertyName("Parts")]
     [JsonInclude]
-    public IList<Chromosome> Parts { get; private set; }
+    public IList<Chromosome> Gene { get; private set; }
 
     [JsonInclude]
     public ISheet Sheet { get; private set; }

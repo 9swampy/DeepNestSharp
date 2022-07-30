@@ -5,7 +5,6 @@
   public class TerminatingRunFullFixture
   {
     protected readonly NestingContext nestingContext;
-    protected readonly int terminateNestResultCount;
     private readonly int maxIterations;
 
     protected double ExpectedFitness { get; }
@@ -17,7 +16,7 @@
     private readonly ProgressTestResponse progressCapture = new ProgressTestResponse();
     private int iterations = 0;
 
-    protected TerminatingRunFullFixture(PlacementTypeEnum placementType, double expectedFitness, double expectedFitnessTolerance, int terminateNestResultCount, int maxIterations)
+    protected TerminatingRunFullFixture(PlacementTypeEnum placementType, double expectedFitness, double expectedFitnessTolerance, int maxIterations)
     {
       this.config = new TestSvgNestConfig();
       this.config.PlacementType = placementType;
@@ -27,10 +26,10 @@
       this.config.PopulationSize = 40;
       this.config.UseParallel = false;
       this.config.ExportExecutions = false;
-      this.nestingContext = new NestingContext(A.Fake<IMessageService>(), progressCapture, new NestState(config, A.Fake<IDispatcherService>()), this.config);
+
+      this.nestingContext = new NestingContext(new SystemDiagnosticMessageService(), progressCapture, new NestState(config, A.Fake<IDispatcherService>()), this.config);
       this.ExpectedFitness = expectedFitness;
       this.ExpectedFitnessTolerance = expectedFitnessTolerance;
-      this.terminateNestResultCount = terminateNestResultCount;
       this.maxIterations = maxIterations;
     }
 
@@ -38,8 +37,9 @@
     {
       get
       {
-        return iterations >= maxIterations || (!(!HasAchievedExpectedFitness() &&
-               this.nestingContext.State.TopNestResults.Count < terminateNestResultCount));
+        //return iterations >= maxIterations || (!(!HasAchievedExpectedFitness() &&
+        //       this.nestingContext.State.TopNestResults.Count < terminateNestResultCount));
+        return iterations >= maxIterations || HasAchievedExpectedFitness();
       }
     }
 

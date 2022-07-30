@@ -28,7 +28,7 @@
     /// Two parts that shouldn't be able to fit on a single sheet.
     /// </summary>
     public RunFullOverlapNestGravityFixture()
-      : base(PlacementTypeEnum.Gravity, 68814, 10000 * 2, 40, 100)
+      : base(PlacementTypeEnum.Gravity, 68814, 25000, 250)
     {
       lock (testSyncLock)
       {
@@ -46,12 +46,8 @@
           this.nestingContext.Sheets.Add(firstSheet);
 
           this.nestingContext.StartNest().Wait();
-          bool first = true;
-          while ((first ||
-                  this.nestingContext.State.TopNestResults.Top.UnplacedParts.Count > 0) &&
-                 !HasMetTerminationConditions)
+          while (!HasMetTerminationConditions)
           {
-            first = false;
             AwaitIterate();
           }
         }

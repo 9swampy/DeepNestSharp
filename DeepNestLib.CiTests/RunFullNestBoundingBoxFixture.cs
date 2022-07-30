@@ -22,7 +22,7 @@
     /// MinkowskiWrapper.CalculateNfp occasionally sticks; not sure why; seems fine at runtime only nCrunch has the problem.
     /// </summary>
     public RunFullNestBoundingBoxFixture()
-      : base(PlacementTypeEnum.BoundingBox, 494512, 10000, 10, 50)
+      : base(PlacementTypeEnum.BoundingBox, 494512, 10000, 500)
     {
       lock (testSyncLock)
       {

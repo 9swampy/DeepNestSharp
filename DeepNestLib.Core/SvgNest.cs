@@ -455,11 +455,13 @@
     private void InitialiseAnotherGeneration()
     {
       this.procreant.Generate();
+#if !NCRUNCH
       if (this.procreant.Population.Length == 0)
       {
         this.Stop();
         this.messageService.DisplayMessageBox("Terminating the nest because we're just recalculating the same nests over and over again.", "Terminating Nest", MessageBoxIcon.Information);
       }
+#endif
 
       State.IncrementGenerations();
       State.ResetPopulation();
