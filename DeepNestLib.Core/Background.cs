@@ -6,6 +6,7 @@
   using System.Linq;
   using System.Runtime.InteropServices;
   using System.Threading.Tasks;
+  using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Geometry;
   using DeepNestLib.PairMap;
 
@@ -39,37 +40,21 @@
       this.nfpHelper = new NfpHelper(minkowskiSumService, window);
     }
 
-    internal void BackgroundStart(IDataInfo data, ISvgNestConfig config)
+    internal void BackgroundStart(PopulationItem individual, ISheet[] sheets, ISvgNestConfig config)
     {
       try
       {
         var backgroundStopwatch = new Stopwatch();
         backgroundStopwatch.Start();
-        var individual = data.Individual;
-
         var gene = individual.Gene;
-        var ids = data.Ids;
-        var sources = data.Sources;
-        var children = data.Children;
-
         for (var i = 0; i < gene.Length; i++)
         {
           gene[i].Part.Rotation = gene[i].Rotation;
-          gene[i].Part.Id = ids[i];
-          gene[i].Part.Source = sources[i];
-          if (!config.Simplify)
-          {
-            gene[i].Part.Children = children[i];
-          }
         }
 
-        var sheets = data.Sheets;
         for (int i = 0; i < sheets.Length; i++)
         {
           var sheet = sheets[i];
-          sheet.Id = data.SheetIds[i];
-          sheet.Source = data.SheetSources[i];
-          sheet.Children = data.SheetChildren[i];
         }
 
         // preprocess
@@ -81,11 +66,11 @@
         {
           var pmapWorker = new PmapWorker(pairs, progressDisplayer, config.UseParallel, minkowskiSumService, state);
           var pmapResult = pmapWorker.PmapDeepNest();
-          this.ThenDeepNest(pmapResult, gene, data.Sheets, config, data.Index, backgroundStopwatch);
+          this.ThenDeepNest(pmapResult, gene, sheets, config, individual.Index, backgroundStopwatch);
         }
         else
         {
-          this.SyncPlaceParts(gene, data.Sheets, config, data.Index, backgroundStopwatch);
+          this.SyncPlaceParts(gene, sheets, config, individual.Index, backgroundStopwatch);
         }
       }
       catch (ArgumentNullException)

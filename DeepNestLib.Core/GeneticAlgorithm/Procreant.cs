@@ -14,19 +14,21 @@
     private readonly ISvgNestConfig config;
     private readonly IProgressDisplayer progressDisplayer;
     private readonly Stopwatch chaperone = new Stopwatch();
-    private int terminations = 0;
 
-    private double[] strictAsPreviewedAngles = new double[]
+    private readonly double[] strictAsPreviewedAngles = new double[]
     {
       0,
       180,
     };
 
-    private double[] strictRotate90Angles = new double[]
+    private readonly double[] strictRotate90Angles = new double[]
     {
       90,
       270,
     };
+
+    private PopulationItem[] population;
+    private int terminations = 0;
 
     public Procreant(NestItem<INfp>[] parts, ISvgNestConfig config, IProgressDisplayer progressDisplayer)
       : this(CreateAdam(parts), config, progressDisplayer)
@@ -84,7 +86,19 @@
       return false;
     }
 
-    public PopulationItem[] Population { get; private set; }
+    public PopulationItem[] Population
+    {
+      get => population;
+
+      private set
+      {
+        population = value;
+        for (int idx = 0; idx < population.Length; idx++)
+        {
+          population[idx].Index = idx;
+        }
+      }
+    }
 
     private static INfp[] CreateAdam(NestItem<INfp>[] parts)
     {

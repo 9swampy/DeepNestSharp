@@ -367,9 +367,6 @@
           }
 
           var sheets = new List<ISheet>();
-          var sheetids = new List<int>();
-          var sheetsources = new List<int>();
-          var sheetchildren = new List<List<INfp>>();
           var sid = 0;
           for (int i = 0; i < this.NestItems.SheetsLocal.Count(); i++)
           {
@@ -391,11 +388,9 @@
 
               clone.Id = sid; // id is the unique id of all parts that will be nested, including cloned duplicates
               clone.Source = poly.Source; // source is the id of each unique part from the main part list
+              clone.Children = poly.Children.ToList();
 
-              sheets.Add(new Sheet(clone, WithChildren.Excluded));
-              sheetids.Add(sid);
-              sheetsources.Add(poly.Source);
-              sheetchildren.Add(poly.Children.ToList());
+              sheets.Add(new Sheet(clone, WithChildren.Included));
               sid++;
             }
           }
@@ -407,13 +402,13 @@
             var end2 = this.procreant.Population.Length * 2 / 3;
             var end3 = this.procreant.Population.Length;
             Parallel.Invoke(
-              () => ProcessPopulation(0, end1, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren, nestStateBackground),
-              () => ProcessPopulation(end1, end2, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren, nestStateBackground),
-              () => ProcessPopulation(end2, this.procreant.Population.Length, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren, nestStateBackground));
+              () => ProcessPopulation(0, end1, config, sheets.ToArray(), nestStateBackground),
+              () => ProcessPopulation(end1, end2, config, sheets.ToArray(), nestStateBackground),
+              () => ProcessPopulation(end2, this.procreant.Population.Length, config, sheets.ToArray(), nestStateBackground));
           }
           else
           {
-            ProcessPopulation(0, this.procreant.Population.Length, config, sheets.ToArray(), sheetids.ToArray(), sheetsources.ToArray(), sheetchildren, nestStateBackground);
+            ProcessPopulation(0, this.procreant.Population.Length, config, sheets.ToArray(), nestStateBackground);
           }
         }
       }
@@ -483,7 +478,7 @@
                   MessageBoxIcon.Error);
     }
 
-    private void ProcessPopulation(int start, int end, ISvgNestConfig config, ISheet[] sheets, int[] sheetids, int[] sheetsources, List<List<INfp>> sheetchildren, INestStateBackground nestStateBackground)
+    private void ProcessPopulation(int start, int end, ISvgNestConfig config, ISheet[] sheets, INestStateBackground nestStateBackground)
     {
       State.IncrementThreads();
       for (int i = start; i < end; i++)
@@ -499,33 +494,6 @@
         if (!this.IsStopped && individual.IsPending)
         {
           individual.Processing = true;
-
-          // hash values on arrays don't make it across ipc, store them in an array and reassemble on the other side....
-          var ids = new int[individual.Gene.Length];
-          var sources = new int[individual.Gene.Length];
-          var children = new List<List<INfp>>();
-
-          for (int j = 0; j < individual.Gene.Length; j++)
-          {
-            var placement = individual.Gene[j];
-            ids[j] = placement.Part.Id;
-            sources[j] = placement.Part.Source;
-            children.Add(placement.Part.Children.ToList());
-          }
-
-          var data = new DataInfo()
-          {
-            Index = i,
-            Sheets = sheets,
-            SheetIds = sheetids,
-            SheetSources = sheetsources,
-            SheetChildren = sheetchildren,
-            Individual = individual,
-            Ids = ids,
-            Sources = sources,
-            Children = children,
-          };
-
           if (this.IsStopped)
           {
             this.ResponseProcessor(null);
@@ -533,7 +501,7 @@
           else
           {
             var background = new Background(this.progressDisplayer, this, minkowskiSumService, nestStateBackground, config.UseDllImport);
-            background.BackgroundStart(data, config);
+            background.BackgroundStart(individual, sheets, config);
           }
         }
       }

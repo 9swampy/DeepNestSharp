@@ -1,6 +1,5 @@
 ﻿namespace DeepNestLib.GeneticAlgorithm
 {
-  using System;
   using System.Collections.Generic;
   using System.Linq;
 
@@ -31,5 +30,7 @@
     public Chromosome[] Gene { get; }
 
     public bool IsPending => !Processing && Fitness == -1;
+
+    public int Index { get; internal set; }
   }
 }
