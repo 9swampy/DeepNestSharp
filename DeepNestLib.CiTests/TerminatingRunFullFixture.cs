@@ -37,22 +37,23 @@
     {
       get
       {
-        //return iterations >= maxIterations || (!(!HasAchievedExpectedFitness() &&
-        //       this.nestingContext.State.TopNestResults.Count < terminateNestResultCount));
-        return iterations >= maxIterations || HasAchievedExpectedFitness();
+        return iterations >= maxIterations || HasAchievedExpectedFitness;
       }
     }
 
-    protected bool HasAchievedExpectedFitness()
+    protected bool HasAchievedExpectedFitness
     {
-      return !(this.nestingContext.State.TopNestResults.Top == default ||
-               this.nestingContext.State.TopNestResults.Top.Fitness > ExpectedFitness + ExpectedFitnessTolerance);
+      get
+      {
+        return !(this.nestingContext.State.TopNestResults.Top == default ||
+                 this.nestingContext.State.TopNestResults.Top.Fitness > ExpectedFitness + ExpectedFitnessTolerance);
+      }
     }
 
     protected void AwaitIterate()
     {
       iterations++;
-      this.nestingContext.NestIterate(this.config);
+      _ = this.nestingContext.NestIterate(this.config);
       progressCapture.Are.WaitOne(100);
     }
   }
