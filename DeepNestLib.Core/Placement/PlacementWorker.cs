@@ -17,7 +17,7 @@
     private readonly SheetPlacementCollection allPlacements = new SheetPlacementCollection();
     private readonly NfpHelper nfpHelper;
     private readonly IEnumerable<ISheet> sheets;
-    private readonly Chromosome[] gene;
+    private readonly Gene gene;
     private readonly IPlacementConfig config;
     private readonly Stopwatch backgroundStopwatch;
     private readonly INestState state;
@@ -34,7 +34,7 @@
     /// <param name="gene">The list of parts to be placed.</param>
     /// <param name="config">Config for the Nest.</param>
     /// <param name="backgroundStopwatch">Stopwatch started at Background.Start (included the PMap stage prior to the PlacementWorker).</param>
-    public PlacementWorker(NfpHelper nfpHelper, IEnumerable<ISheet> sheets, Chromosome[] gene, IPlacementConfig config, Stopwatch backgroundStopwatch, INestState state)
+    public PlacementWorker(NfpHelper nfpHelper, IEnumerable<ISheet> sheets, Gene gene, IPlacementConfig config, Stopwatch backgroundStopwatch, INestState state)
     {
       this.nfpHelper = nfpHelper;
       this.sheets = sheets;

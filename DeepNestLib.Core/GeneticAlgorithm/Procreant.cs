@@ -46,7 +46,7 @@
       }
 
       var population = new PopulationItem[config.PopulationSize];
-      population[0] = new PopulationItem(adam.ToList(), angles.ToArray());
+      population[0] = new PopulationItem(BuildAdamGene(adam.ToList(), angles.ToArray()));
       for (int i = 1; i < config.PopulationSize; i++)
       {
         var mutant = this.Mutate(population[0]);
@@ -54,6 +54,19 @@
       }
 
       Population = TerminateClones(population).ToArray();
+    }
+
+    private static Gene BuildAdamGene(List<INfp> parts, double[] rotations)
+    {
+      var resultSource = new List<Chromosome>();
+      for (int i = 0; i < parts.Count; i++)
+      {
+        var chromosome = new Chromosome(parts[i], rotations[i]);
+        chromosome.SetIndex(i);
+        resultSource.Add(chromosome);
+      }
+
+      return new Gene(resultSource);
     }
 
     private IEnumerable<PopulationItem> TerminateClones(IEnumerable<PopulationItem> source)
@@ -158,29 +171,29 @@
 
     private PopulationItem Mutate(PopulationItem p)
     {
-      var clone = new PopulationItem(p.Gene.Clone() as Chromosome[]);
-      for (var i = 0; i < clone.Gene.Length; i++)
+      var clone = p.Gene.ToArray();
+      for (var i = 0; i < clone.Length; i++)
       {
         var rand = r.NextDouble();
         if (rand < 0.01 * config.MutationRate)
         {
           var j = i + 1;
-          if (j < clone.Gene.Length)
+          if (j < clone.Length)
           {
-            var temp = clone.Gene[i];
-            clone.Gene[i] = clone.Gene[j];
-            clone.Gene[j] = temp;
+            var temp = clone[i];
+            clone[i] = clone[j];
+            clone[j] = temp;
           }
         }
 
         rand = r.NextDouble();
         if (rand < 0.01 * config.MutationRate)
         {
-          clone.Gene[i].Rotation = GetRandomRotation(clone.Gene[i].Part);
+          clone[i].Rotation = GetRandomRotation(clone[i].Part);
         }
       }
 
-      return clone;
+      return new PopulationItem(new Gene(clone));
     }
 
     private double GetRandomRotation(INfp part)
@@ -245,8 +258,8 @@
 
       return new[]
       {
-        new PopulationItem(son.ToArray()),
-        new PopulationItem(daughter.ToArray()),
+        new PopulationItem(new Gene(son)),
+        new PopulationItem(new Gene(daughter)),
       };
     }
 
@@ -254,9 +267,9 @@
     /// Given partial gene add any missing chromosomes from the population gene.
     /// </summary>
     /// <param name="initiantPartialGene">Partial gene from initiant parent.</param>
-    /// <param name="populationItem">Full gene from supplicant parent.</param>
+    /// <param name="supplicantParentGene">Full gene from supplicant parent.</param>
     /// <returns>Completed child gene.</returns>
-    private static Chromosome[] CompleteGene(IEnumerable<Chromosome> initiantPartialGene, Chromosome[] supplicantParentGene)
+    private static Chromosome[] CompleteGene(IEnumerable<Chromosome> initiantPartialGene, Gene supplicantParentGene)
     {
       var result = initiantPartialGene.ToArray();
       var idx = result.Length;

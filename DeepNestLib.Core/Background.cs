@@ -91,7 +91,7 @@
       }
     }
 
-    private void SyncPlaceParts(Chromosome[] gene, ISheet[] sheets, ISvgNestConfig config, int index, Stopwatch backgroundStopwatch)
+    private void SyncPlaceParts(Gene gene, ISheet[] sheets, ISvgNestConfig config, int index, Stopwatch backgroundStopwatch)
     {
       try
       {
@@ -108,7 +108,7 @@
       }
     }
 
-    private void ThenIterate(NfpPair processed, Chromosome[] gene, double clipperScale)
+    private void ThenIterate(NfpPair processed, Gene gene, double clipperScale)
     {
       // returned data only contains outer nfp, we have to account for any holes separately in the synchronous portion
       // this is because the c++ addon which can process interior nfps cannot run in the worker thread
@@ -157,7 +157,7 @@
       window.Insert(keyItem);
     }
 
-    private void ThenDeepNest(NfpPair[] nfpPairs, Chromosome[] gene, ISheet[] sheets, ISvgNestConfig config, int index, Stopwatch backgroundStopwatch)
+    private void ThenDeepNest(NfpPair[] nfpPairs, Gene gene, ISheet[] sheets, ISvgNestConfig config, int index, Stopwatch backgroundStopwatch)
     {
       bool hideSecondaryProgress = false;
       if (state.NestCount == 0 || state.AverageNestTime > 2000)

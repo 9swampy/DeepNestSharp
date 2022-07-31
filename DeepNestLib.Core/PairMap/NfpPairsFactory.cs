@@ -14,7 +14,7 @@
       this.window = window;
     }
 
-    public List<NfpPair> Generate(bool useParallel, Chromosome[] gene)
+    public List<NfpPair> Generate(bool useParallel, Gene gene)
     {
       List<NfpPair> pairs = new List<NfpPair>();
       if (useParallel)
@@ -45,7 +45,7 @@
       return pairs;
     }
 
-    private IEnumerable<NfpPair> CreatePairs(int i, Chromosome[] gene)
+    private IEnumerable<NfpPair> CreatePairs(int i, Gene gene)
     {
       var b = gene[i];
       for (var j = 0; j < i; j++)
