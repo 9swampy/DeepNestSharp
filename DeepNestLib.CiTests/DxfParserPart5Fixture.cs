@@ -13,7 +13,6 @@
     private static volatile object testSyncLock = new object();
 
     private IRawDetail loadedRawDetail;
-    private NestingContext nestingContext;
     private INfp loadedNfp;
     private INfp simplifiedNfp;
     private long simplifiedNfpTime;
@@ -26,7 +25,6 @@
         if (!this.hasImportedRawDetail)
         {
           this.loadedRawDetail = DxfParser.LoadDxfFileStreamAsRawDetail(DxfTestFilename);
-          this.nestingContext = A.Dummy<NestingContext>();
           this.hasImportedRawDetail = this.loadedRawDetail.TryConvertToNfp(A.Dummy<int>(), out this.loadedNfp);
           var sw = new Stopwatch();
           sw.Start();

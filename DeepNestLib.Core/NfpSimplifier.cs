@@ -181,7 +181,7 @@
           var test = offset.CloneTop();
           test.Points[i] = new SvgPoint(target.X, target.Y);
 
-          if (Exterior(test, polygon, inside, curveTolerance))
+          if (inside ? Interior(test, polygon) : Exterior(test, polygon))
           {
             // a shell is an intermediate offset between simple and offset
             for (j = 1; j < numshells; j++)
@@ -193,7 +193,7 @@
                 target = GetTarget(o, shell, 2 * delta);
                 test = offset.CloneTop();
                 test.Points[i] = new SvgPoint(target.X, target.Y);
-                if (!Exterior(test, polygon, inside, curveTolerance))
+                if (inside ? !Interior(test, polygon) : !Exterior(test, polygon))
                 {
                   o.X = target.X;
                   o.Y = target.Y;
@@ -423,25 +423,42 @@
     }
 
     /// <summary>
-    /// Tests complex to find if any of it's vertices fall outside simple.
+    /// Tests <see cref="complex"/> to find if all of it's vertices fall inside <see cref="simple"/>.
     /// </summary>
     /// <param name="simple"></param>
     /// <param name="complex"></param>
-    /// <param name="inside"></param>
-    /// <param name="curveTolerance"></param>
     /// <returns>.t if any complex vertices fall outside the simple polygon.</returns>
-    private static bool Exterior(INfp simple, INfp complex, bool inside, double curveTolerance)
+    internal static bool Interior(INfp simple, INfp complex)
     {
-      // find all protruding vertices
-      for (var i = 0; i < complex.Length; i++)
-      {
-        var v = complex[i];
-        if (!inside && !PointInPolygon(v, simple) && Find(v, simple, curveTolerance) == null)
-        {
-          return true;
-        }
+      return TestBRelativeToA(simple, complex, p => p == Found.Inside || p == Found.OnPolygon);
+    }
 
-        if (inside && PointInPolygon(v, simple) && Find(v, simple, curveTolerance) != null)
+    /// <summary>
+    /// Tests <see cref="complex"/> to find if any of it's vertices fall outside <see cref="simple"/>.
+    /// </summary>
+    /// <param name="simple"></param>
+    /// <param name="complex"></param>
+    /// <param name="inside">Bool that flips the logic to test Interior.</param>
+    /// <returns>.t if any complex vertices fall outside the simple polygon.</returns>
+    internal static bool Exterior(INfp simple, INfp complex)
+    {
+      return TestBRelativeToA(simple, complex, p => p == Found.Outside);
+    }
+
+    /// <summary>
+    /// Tests points in B to find if any of it's vertices Test positive relative to A/>.
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <param name="test">Function to apply as test</param>
+    /// <returns>.t if any complex vertices meet the test condition.</returns>
+    private static bool TestBRelativeToA(INfp a, INfp b, Func<Found, bool> test)
+    {
+      for (var i = 0; i < b.Length; i++)
+      {
+        var vertex = b[i];
+        var pointInPolygon = PointInPolygon(vertex, a);
+        if (test(pointInPolygon))
         {
           return true;
         }
@@ -450,11 +467,18 @@
       return false;
     }
 
-    private static int? Find(SvgPoint v, INfp p, double curveTolerance)
+    /// <summary>
+    /// Search <see cref="p"/> for a matching point within curveTolerance/1000.
+    /// </summary>
+    /// <param name="vertex">Vertex to search for a match.</param>
+    /// <param name="polygon">Polygon to search for a matching (within tolerance) vertex.</param>
+    /// <param name="curveTolerance">Tolerance within distance to find a matching point (/1000).</param>
+    /// <returns>Index of matching point if found, otherwise null.</returns>
+    private static int? Find(SvgPoint vertex, INfp polygon, double curveTolerance)
     {
-      for (var i = 0; i < p.Length; i++)
+      for (var i = 0; i < polygon.Length; i++)
       {
-        if (GeometryUtil.WithinDistance(v, p[i], curveTolerance / 1000))
+        if (GeometryUtil.WithinDistance(vertex, polygon[i], curveTolerance / 1000))
         {
           return i;
         }
@@ -463,13 +487,19 @@
       return null;
     }
 
-    private static bool PointInPolygon(SvgPoint point, INfp polygon)
+    /// <summary>
+    /// Tests to determine if Point falls within (or on) the Polygon.
+    /// </summary>
+    /// <param name="point">Point to test.</param>
+    /// <param name="polygon">Polygon within which to determine the lie of the points.</param>
+    /// <returns>Whether the point falls within, without or on the polygon.</returns>
+    internal static Found PointInPolygon(SvgPoint point, INfp polygon)
     {
-      // scaling is deliberately coarse to filter out points that lie *on* the polygon
+      // scaling is deliberately coarse to distinguish points that lie *on* the polygon
       var p = SvgToClipper2(polygon, 1000);
       var pt = new IntPoint(1000 * point.X, 1000 * point.Y);
 
-      return Clipper.PointInPolygon(pt, p) > 0;
+      return (Found)Clipper.PointInPolygon(pt, p);
     }
 
     internal static bool IsInnerContainedByOuter(INfp inner, INfp outer)
