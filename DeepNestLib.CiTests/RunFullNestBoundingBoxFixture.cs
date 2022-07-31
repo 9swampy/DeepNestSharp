@@ -29,17 +29,19 @@
         int numRuns = 0; //this test flakes regularly, but always passes after a few runs.
                          //If the Ga doesn't start off in the right place then it settles on an
                          //insufficiently good TopNestResult... so force it to retry...
-        while (!HasAchievedExpectedFitness && numRuns <= 20)
+        while (!HasAchievedExpectedFitness && numRuns < 3)
         {
           if (!this.hasImportedRawDetail)
           {
             this.loadedRawDetail = DxfParser.LoadDxfFileStreamAsRawDetail(DxfTestFilename);
             this.loadedRawDetail.Should().NotBeNull();
             this.hasImportedRawDetail = loadedRawDetail.TryConvertToNfp(A.Dummy<int>(), out this.loadedNfp);
-            this.nestingContext.Polygons.Add(this.loadedNfp);
-            this.nestingContext.Polygons.Add(this.loadedNfp.Clone());
-            this.nestingContext.Polygons.Count.Should().Be(2);
           }
+
+          ResetIteration();
+          this.nestingContext.Polygons.Add(this.loadedNfp);
+          this.nestingContext.Polygons.Add(this.loadedNfp.Clone());
+          this.nestingContext.Polygons.Count.Should().Be(2);
 
           ISheet firstSheet;
           dxfGenerator.GenerateRectangle("Sheet", 595D, 395D, RectangleType.FileLoad).TryConvertToSheet(firstSheetIdSrc, out firstSheet).Should().BeTrue();
@@ -84,6 +86,24 @@
     public void FitnessShouldBeExpected()
     {
       this.nestingContext.State.TopNestResults.Top.Fitness.Should().BeLessThan(ExpectedFitness + ExpectedFitnessTolerance);
+    }
+
+    [Fact]
+    public void FitnessBoundsShouldBeExpected()
+    {
+      this.nestingContext.State.TopNestResults.Top.FitnessBounds.Should().BeApproximately(4000, 1000);
+    }
+
+    [Fact]
+    public void FitnessSheetsShouldBeExpected()
+    {
+      this.nestingContext.State.TopNestResults.Top.FitnessSheets.Should().BeApproximately(235025, 10000);
+    }
+
+    [Fact]
+    public void FitnessUnplacedShouldBeExpected()
+    {
+      this.nestingContext.State.TopNestResults.Top.FitnessUnplaced.Should().Be(0);
     }
 
     [Fact]

@@ -109,11 +109,6 @@
       return result;
     }
 
-    public ISheet ToSheet(double width, double height)
-    {
-      return new Sheet(this.ToNfp(), width, height, WithChildren.Excluded);
-    }
-
     public ISheet ToSheet()
     {
       return new Sheet(this.ToNfp(), WithChildren.Excluded);

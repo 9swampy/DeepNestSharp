@@ -80,8 +80,7 @@
 
       var actual = NoFitPolygon.FromJson(json);
 
-      actual.Should().BeEquivalentTo(expected, options => options.Excluding(o => o.Width)
-                                                                 .Excluding(o => o.Height));
+      actual.Should().BeEquivalentTo(expected);
       ((IEquatable<IPolygon>)actual).Equals(expected).Should().BeTrue();
       actual.Rotation.Should().Be(12);
     }

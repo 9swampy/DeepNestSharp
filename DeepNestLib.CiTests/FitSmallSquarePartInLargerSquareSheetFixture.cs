@@ -17,13 +17,13 @@
       DxfGenerator.GenerateSquare("Sheet", 22D, RectangleType.FileLoad).TryConvertToSheet(0, out sheet).Should().BeTrue();
       Chromosome part;
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryConvertToNfp(0, out part).Should().BeTrue();
-      this.nestResult = new PlacementWorker(A.Dummy<NfpHelper>(), new ISheet[] { sheet }, new Chromosome[] { part }, new TestSvgNestConfig(), A.Dummy<Stopwatch>(), A.Fake<INestState>()).PlaceParts();
+      this.nestResult = new PlacementWorker(A.Dummy<NfpHelper>(), new ISheet[] { sheet }, new Gene(new Chromosome[] { part }), new TestSvgNestConfig(), A.Dummy<Stopwatch>(), A.Fake<INestState>()).PlaceParts();
     }
 
     [Fact]
     public void GivenNullSheetsPassedInThenNullReturned()
     {
-      new PlacementWorker(A.Dummy<NfpHelper>(), null, new Chromosome[] { new Chromosome(new NoFitPolygon(), 0) }, new TestSvgNestConfig(), A.Dummy<Stopwatch>(), A.Fake<INestState>()).PlaceParts().Should().BeNull();
+      new PlacementWorker(A.Dummy<NfpHelper>(), null, new Gene(new Chromosome[] { new Chromosome(new NoFitPolygon(), 0) }), new TestSvgNestConfig(), A.Dummy<Stopwatch>(), A.Fake<INestState>()).PlaceParts().Should().BeNull();
     }
 
     [Fact]

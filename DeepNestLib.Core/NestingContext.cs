@@ -170,7 +170,7 @@
         Sheets[i].Y = y;
         if (Sheets[i] is Sheet sheet)
         {
-          x += sheet.Width + gap;
+          x += sheet.WidthCalculated + gap;
         }
         else
         {
@@ -189,9 +189,9 @@
       Sheets.Add(tt);
 
       tt.Source = src;
-      tt.Height = h;
-      tt.Width = w;
-      tt.Rebuild();
+      //tt.Height = h;
+      //tt.Width = w;
+      tt.Build(w, h);
       ReorderSheets();
     }
 

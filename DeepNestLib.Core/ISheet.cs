@@ -2,8 +2,8 @@
 {
   public interface ISheet : INfp
   {
-    double Width { get; set; }
+    //double Width { get; set; }
 
-    double Height { get; set; }
+    //double Height { get; set; }
   }
 }

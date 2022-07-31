@@ -71,7 +71,7 @@
       config.ParallelNests = 10;
       config.Spacing = 0;
       nfpHelper = A.Dummy<NfpHelper>();
-      var placementWorker = new PlacementWorker(nfpHelper, new ISheet[] { firstSheet }, new Chromosome[] { firstPart.ToChromosome(), secondPart.ToChromosome() }.ApplyIndex(), config, A.Dummy<Stopwatch>(), A.Fake<INestState>());
+      var placementWorker = new PlacementWorker(nfpHelper, new ISheet[] { firstSheet }, new Gene(new Chromosome[] { firstPart.ToChromosome(), secondPart.ToChromosome() }.ApplyIndex()), config, A.Dummy<Stopwatch>(), A.Fake<INestState>());
       ITestPlacementWorker sut = placementWorker;
       nestResult = placementWorker.PlaceParts();
 

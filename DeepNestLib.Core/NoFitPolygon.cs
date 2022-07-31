@@ -514,11 +514,11 @@
       INfp result;
       if (this is Sheet sheet)
       {
-        result = new Sheet()
-        {
-          Width = sheet.Width,
-          Height = sheet.Height,
-        };
+        result = new Sheet();
+        //{
+        //  Width = sheet.WidthCalculated,
+        //  Height = sheet.HeightCalculated,
+        //};
       }
       else
       {

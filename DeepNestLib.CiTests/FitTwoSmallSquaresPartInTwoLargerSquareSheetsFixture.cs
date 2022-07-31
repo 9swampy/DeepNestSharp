@@ -32,7 +32,7 @@
       A.CallTo(() => config.UseDllImport).Returns(false);
       A.CallTo(() => config.Rotations).Returns(2);
       A.CallTo(() => config.ExportExecutions).Returns(false);
-      this.nestResult = new PlacementWorker(A.Dummy<NfpHelper>(), new ISheet[] { firstSheet, secondSheet }, new Chromosome[] { firstPart, secondPart }.ApplyIndex(), config, A.Dummy<Stopwatch>(), A.Fake<INestState>()).PlaceParts();
+      this.nestResult = new PlacementWorker(A.Dummy<NfpHelper>(), new ISheet[] { firstSheet, secondSheet }, new Gene(new Chromosome[] { firstPart, secondPart }.ApplyIndex()), config, A.Dummy<Stopwatch>(), A.Fake<INestState>()).PlaceParts();
     }
 
     [Fact]

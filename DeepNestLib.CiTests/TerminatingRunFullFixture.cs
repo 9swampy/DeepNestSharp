@@ -4,8 +4,9 @@
 
   public class TerminatingRunFullFixture
   {
-    protected readonly NestingContext nestingContext;
     private readonly int maxIterations;
+
+    protected NestingContext nestingContext;
 
     protected double ExpectedFitness { get; }
 
@@ -27,7 +28,7 @@
       this.config.UseParallel = false;
       this.config.ExportExecutions = false;
 
-      this.nestingContext = new NestingContext(new SystemDiagnosticMessageService(), progressCapture, new NestState(config, A.Fake<IDispatcherService>()), this.config);
+      ResetIteration();
       this.ExpectedFitness = expectedFitness;
       this.ExpectedFitnessTolerance = expectedFitnessTolerance;
       this.maxIterations = maxIterations;
@@ -48,6 +49,12 @@
         return !(this.nestingContext.State.TopNestResults.Top == default ||
                  this.nestingContext.State.TopNestResults.Top.Fitness > ExpectedFitness + ExpectedFitnessTolerance);
       }
+    }
+
+    protected void ResetIteration()
+    {
+      iterations = 0;
+      this.nestingContext = new NestingContext(new SystemDiagnosticMessageService(), progressCapture, new NestState(config, A.Fake<IDispatcherService>()), this.config);
     }
 
     protected void AwaitIterate()

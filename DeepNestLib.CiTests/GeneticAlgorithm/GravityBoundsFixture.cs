@@ -21,7 +21,7 @@
       A.CallTo(() => sheetPlacementVertical.PlacementType).Returns(PlacementTypeEnum.Gravity);
       var sheetSquare = A.Fake<ISheet>();
       A.CallTo(() => sheetSquare.Area).Returns(Math.Pow(Math.Max(small, large), 2));
-      A.CallTo(() => sheetSquare.Width).Returns(Math.Max(small, large));
+      A.CallTo(() => sheetSquare.WidthCalculated).Returns(Math.Max(small, large));
       A.CallTo(() => sheetPlacementVertical.Sheet).Returns(sheetSquare);
       var hull = A.Fake<INfp>();
       A.CallTo(() => hull.Area).Returns(small * large);

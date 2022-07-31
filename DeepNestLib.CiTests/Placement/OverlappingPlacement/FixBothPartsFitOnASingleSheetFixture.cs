@@ -59,7 +59,7 @@
       config.ToleranceSvg = 0.005;
       config.ParallelNests = 10;
       nfpHelper = A.Dummy<NfpHelper>();
-      var placementWorker = new PlacementWorker(nfpHelper, new ISheet[] { firstSheet, secondSheet }, new Chromosome[] { firstPart.ToChromosome(), secondPart.ToChromosome() }.ApplyIndex(), config, A.Dummy<Stopwatch>(), A.Fake<INestState>());
+      var placementWorker = new PlacementWorker(nfpHelper, new ISheet[] { firstSheet, secondSheet }, new Gene(new Chromosome[] { firstPart.ToChromosome(), secondPart.ToChromosome() }.ApplyIndex()), config, A.Dummy<Stopwatch>(), A.Fake<INestState>());
       sut = placementWorker;
       nestResult = placementWorker.PlaceParts();
       //config.Should().BeEquivalentTo(new TestSvgNestConfig());
