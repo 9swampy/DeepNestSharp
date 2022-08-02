@@ -115,29 +115,38 @@
     {
       get
       {
-        lock (syncLock)
+        try
         {
-          if (!this.bounds.HasValue)
+          lock (syncLock)
           {
-            double area;
-            var rectBounds = sheetPlacement.RectBounds;
-            double bound;
-            if (sheetPlacement.PlacementType == PlacementTypeEnum.Gravity)
+            if (!this.bounds.HasValue)
             {
-              area = Math.Pow(((rectBounds.Width * 3) + rectBounds.Height) / 4, 2);
+              double area;
+              var rectBounds = sheetPlacement.RectBounds;
+              double bound;
+              if (sheetPlacement.PlacementType == PlacementTypeEnum.Gravity)
+              {
+                area = Math.Pow(((rectBounds.Width * 3) + rectBounds.Height) / 4, 2);
               var sheetWidth = sheetPlacement.Sheet.WidthCalculated; // == 0 ? sheetPlacement.Sheet.WidthCalculated : sheetPlacement.Sheet.Width;
-              bound = rectBounds.Width / sheetWidth * sheetPlacement.Sheet.Area;
-            }
-            else
-            {
-              area = rectBounds.Width * rectBounds.Height;
-              bound = area;
+                bound = rectBounds.Width / sheetWidth * sheetPlacement.Sheet.Area;
+              }
+              else
+              {
+                area = rectBounds.Width * rectBounds.Height;
+                bound = area;
+              }
+
+              bounds = ((bound * 4) + area + sheetPlacement.Hull.Area) / 7;
             }
 
-            bounds = ((bound * 4) + area + sheetPlacement.Hull.Area) / 7;
+            return this.bounds.Value;
           }
-
-          return this.bounds.Value;
+        }
+        catch (Exception ex)
+        {
+          System.Diagnostics.Debug.Print(ex.Message);
+          System.Diagnostics.Debug.Print(ex.StackTrace);
+          throw;
         }
       }
     }

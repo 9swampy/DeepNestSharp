@@ -370,5 +370,17 @@ namespace DeepNestLib {
                 this["DifferentiateChildren"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool OverlapDetection {
+            get {
+                return ((bool)(this["OverlapDetection"]));
+            }
+            set {
+                this["OverlapDetection"] = value;
+            }
+        }
     }
 }

@@ -295,6 +295,12 @@
           return InnerFlowResult.Success;
         }
       }
+      catch (Exception ex)
+      {
+        VerboseLog(ex.Message);
+        VerboseLog(ex.StackTrace);
+        throw;
+      }
       finally
       {
         if (this.ExportExecutions && this.Placements.Count == 2)
@@ -351,7 +357,7 @@
             Rotation = processedPart.Rotation,
           };
 
-          if (!IsPositionValid(shiftvector))
+          if (Config.OverlapDetection && !IsPositionValid(shiftvector))
           {
             isRejected = true;
             verboseLog("Would overlap so skip.");

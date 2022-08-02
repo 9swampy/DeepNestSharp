@@ -28,7 +28,6 @@
       var options = new JsonSerializerOptions();
       options.Converters.Add(new NfpJsonConverter());
       var result = JsonSerializer.Deserialize<Sheet>(json, options);
-
       return result;
     }
 

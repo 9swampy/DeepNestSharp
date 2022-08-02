@@ -310,6 +310,22 @@ namespace DeepNestLib
     }
 
     /// <inheritdoc />
+    public bool OverlapDetection
+    {
+      get
+      {
+        return (bool)Settings.Default["OverlapDetection"];
+      }
+
+      set
+      {
+        Settings.Default["OverlapDetection"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
+      }
+    }
+
+    /// <inheritdoc />
     public double Spacing
     {
       get

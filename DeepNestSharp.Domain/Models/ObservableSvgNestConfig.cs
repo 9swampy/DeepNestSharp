@@ -155,6 +155,14 @@
 
     /// <inheritdoc />
     [Category("Nest Settings")]
+    public bool OverlapDetection
+    {
+      get => svgNestConfig.OverlapDetection;
+      set => SetProperty(nameof(OverlapDetection), () => svgNestConfig.OverlapDetection, v => svgNestConfig.OverlapDetection = v, value);
+    }
+
+    /// <inheritdoc />
+    [Category("Nest Settings")]
     public PlacementTypeEnum PlacementType
     {
       get => svgNestConfig.PlacementType;

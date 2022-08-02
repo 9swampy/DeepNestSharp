@@ -99,7 +99,23 @@
     public double TotalPartsArea => this.PartPlacements.Sum(p => p.Part.NetArea);
 
     [JsonIgnore]
-    public double MaterialUtilization => Math.Abs(TotalPartsArea / this.Sheet.Area);
+    public double MaterialUtilization
+    {
+      get
+      {
+        try
+        {
+
+          return Math.Abs(TotalPartsArea / this.Sheet.Area);
+        }
+        catch (Exception ex)
+        {
+          System.Diagnostics.Debug.Print(ex.Message);
+          System.Diagnostics.Debug.Print(ex.StackTrace);
+          throw;
+        }
+      }
+    }
 
     [JsonIgnore]
     public OriginalFitnessSheet Fitness { get; }

@@ -19,6 +19,8 @@
 
     public bool OffsetTreePhase { get; set; } = true;
 
+    public bool OverlapDetection { get; set; } = true;
+
     public PlacementTypeEnum PlacementType { get; set; } = PlacementTypeEnum.Gravity;
 
     public int PopulationSize { get; set; } = 10;

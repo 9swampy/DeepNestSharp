@@ -189,8 +189,6 @@
       Sheets.Add(tt);
 
       tt.Source = src;
-      //tt.Height = h;
-      //tt.Width = w;
       tt.Build(w, h);
       ReorderSheets();
     }

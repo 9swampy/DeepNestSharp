@@ -26,8 +26,13 @@
     bool UseDllImport { get; set; }
 
     /// <summary>
-    /// Gets a value that indicates whether Priority settings should be applied.
+    /// Gets or sets a flag that indicates whether Priority settings should be applied.
     /// </summary>
     bool UsePriority { get; set; }
+
+    /// <summary>
+    /// Gets or sets a flag that indicates whether Overlap Dection should be applied. Slows the nest quite a lot so only use if you're getting overlapping parts.
+    /// </summary>
+    bool OverlapDetection { get; set; }
   }
 }
