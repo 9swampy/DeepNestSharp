@@ -65,7 +65,7 @@
   {
     public bool Equals(SvgPoint x, SvgPoint y)
     {
-      double precision = 0.000001;
+      double precision = 0.0000001;
       if (CloseEqual(x.X, y.X, precision) &&
           CloseEqual(x.Y, y.Y, precision) &&
           x.Exact == y.Exact &&

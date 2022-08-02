@@ -16,7 +16,7 @@
       var partPlacement = new PartPlacement(nfp) { X = 11, Y = 22 };
       var partPlacementList = new List<IPartPlacement>();
       partPlacementList.Add(partPlacement);
-      var sheet = Sheet.NewSheet(0, 100, 200); //new Sheet() { Width = 100, Height = 200 };
+      var sheet = Sheet.NewSheet(0, 100, 200);
       var sheetPlacement = new SheetPlacement(PlacementTypeEnum.Gravity, sheet, partPlacementList, 0, A.Dummy<double>());
       var sheetPlacementsCollection = new SheetPlacementCollection();
       sheetPlacementsCollection.Add(sheetPlacement);

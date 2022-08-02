@@ -50,7 +50,7 @@
     [Fact]
     public void PlacementTypeMustBeGravity()
     {
-      this.config.PlacementType.Should().Be(PlacementTypeEnum.Gravity);
+      this.Config.PlacementType.Should().Be(PlacementTypeEnum.Gravity);
     }
 
     [Fact]
@@ -74,7 +74,7 @@
     [Fact]
     public void PlacementTypeShouldBeExpected()
     {
-      this.nestingContext.State.TopNestResults.Top.PlacementType.Should().Be(config.PlacementType);
+      this.nestingContext.State.TopNestResults.Top.PlacementType.Should().Be(Config.PlacementType);
     }
   }
 }

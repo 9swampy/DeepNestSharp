@@ -14,7 +14,7 @@
 
     public NewSheetFixture()
     {  
-      ((IRawDetail)DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { new DxfGenerator().Rectangle(100D, 200D, RectangleType.FileLoad) })).TryConvertToSheet(firstSheetIdSrc, out sutDxfEntity).Should().BeTrue();
+      ((IRawDetail)DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { new DxfGenerator().Rectangle(100D, 200D, RectangleType.BottomLeftClockwise, true) })).TryConvertToSheet(firstSheetIdSrc, out sutDxfEntity).Should().BeTrue();
     }
 
     [Fact]
@@ -50,23 +50,14 @@
     {
       var expected = new SvgPoint[] {
           new SvgPoint(0, 0),
-          new SvgPoint(100, 0),
-          new SvgPoint(100, 200),
           new SvgPoint(0, 200),
-          new SvgPoint(0, 200)
+          new SvgPoint(100, 200),
+          new SvgPoint(100, 0),
+          new SvgPoint(0, 0)
         };
 
-      sutDxfEntity.Points.Should().BeEquivalentTo(expected);
-
-      expected = new SvgPoint[] {
-          new SvgPoint(0, 0),
-          new SvgPoint(100, 0),
-          new SvgPoint(100, 200),
-          new SvgPoint(0, 200),
-          //new SvgPoint(0, 0)
-        };
-
-      sut.Points.Should().BeEquivalentTo(expected);
+      sutDxfEntity.Points.Should().BeEquivalentTo(expected, opt => opt.WithStrictOrdering());
+      sut.Points.Should().BeEquivalentTo(expected, opt => opt.WithStrictOrdering());
     }
 
     [Fact]

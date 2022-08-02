@@ -49,7 +49,7 @@
     [Fact]
     public void PlacementTypeMustBeSqueeze()
     {
-      this.config.PlacementType.Should().Be(PlacementTypeEnum.Squeeze);
+      this.Config.PlacementType.Should().Be(PlacementTypeEnum.Squeeze);
     }
 
     [Fact]
@@ -73,7 +73,7 @@
     [Fact]
     public void PlacementTypeShouldBeExpected()
     {
-      this.nestingContext.State.TopNestResults.Top.PlacementType.Should().Be(config.PlacementType);
+      this.nestingContext.State.TopNestResults.Top.PlacementType.Should().Be(Config.PlacementType);
     }
   }
 }

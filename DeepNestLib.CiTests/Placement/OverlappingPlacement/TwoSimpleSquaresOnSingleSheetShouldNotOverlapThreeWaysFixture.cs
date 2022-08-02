@@ -81,10 +81,18 @@
       nestResult.UsedSheets[0].PartPlacements[0].Part.Should().BeEquivalentTo(firstPart.Rotate(firstRotation), opt => opt.Excluding(o => o.Rotation));
       nestResult.UsedSheets[0].PartPlacements[1].Part.Should().NotBe(secondPart);
       nestResult.UsedSheets[0].PartPlacements[1].Part.Id.Should().Be(secondPart.Id);
-      firstPart = firstPart.Shift(nestResult.UsedSheets[0].PartPlacements[0]);
+      //firstPart = firstPart.Shift(nestResult.UsedSheets[0].PartPlacements[0]);
       firstPart.MinX.Should().Be(0);
       firstPart.MinY.Should().Be(0);
-      secondPart = secondPart.Shift(nestResult.UsedSheets[0].PartPlacements[1]);
+      nestResult.UsedSheets[0].PartPlacements[0].MinX.Should().Be(0);
+      nestResult.UsedSheets[0].PartPlacements[0].MinY.Should().Be(0);
+      firstPart.MaxX.Should().Be(150);
+      firstPart.MaxY.Should().Be(100);
+      nestResult.UsedSheets[0].PartPlacements[0].MaxX.Should().Be(150);
+      nestResult.UsedSheets[0].PartPlacements[0].MaxY.Should().BeApproximately(100, 0.0001);
+      firstPart.Rotation.Should().Be(firstRotation);
+      nestResult.UsedSheets[0].PartPlacements[0].Rotation.Should().Be(firstRotation);
+      //secondPart = secondPart.Shift(nestResult.UsedSheets[0].PartPlacements[1]);
 
       var lastPartPlacementWorker = ((ITestPlacementWorker)placementWorker).LastPartPlacementWorker;
       lastPartPlacementWorker.SheetNfp.Should().NotBeNull();
@@ -103,9 +111,9 @@
       lastPartPlacementWorker.SheetNfp.Items[0][4].Y.Should().Be(lastPartPlacementWorker.SheetNfp.Items[0][0].Y);
       lastPartPlacementWorker.SheetNfp.Items[0].MinX.Should().Be(0);
 
-      secondPart.MinX.Should().Be(0);
+      //secondPart.MinX.Should().Be(150);
       secondPart.MinY.Should().Be(0);
-      if (false)
+      if (true)
       {
         secondPart.Overlaps(firstPart)
                   .Should()

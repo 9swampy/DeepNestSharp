@@ -22,14 +22,11 @@
     /// MinkowskiWrapper.CalculateNfp occasionally sticks; not sure why; seems fine at runtime only nCrunch has the problem.
     /// </summary>
     public RunFullNestBoundingBoxFixture()
-      : base(PlacementTypeEnum.BoundingBox, 494512, 10000, 500)
+      : base(PlacementTypeEnum.BoundingBox, 494512, 10000, 50)
     {
       lock (testSyncLock)
       {
-        int numRuns = 0; //this test flakes regularly, but always passes after a few runs.
-                         //If the Ga doesn't start off in the right place then it settles on an
-                         //insufficiently good TopNestResult... so force it to retry...
-        while (!HasAchievedExpectedFitness && numRuns < 3)
+        while (!HasAchievedExpectedFitness && !HasRetriedMaxRuns)
         {
           if (!this.hasImportedRawDetail)
           {
@@ -45,6 +42,9 @@
 
           ISheet firstSheet;
           dxfGenerator.GenerateRectangle("Sheet", 595D, 395D, RectangleType.FileLoad).TryConvertToSheet(firstSheetIdSrc, out firstSheet).Should().BeTrue();
+          firstSheet.WidthCalculated.Should().Be(595D);
+          firstSheet.HeightCalculated.Should().Be(395D);
+          firstSheet.Area.Should().Be(595D * 395D);
           this.nestingContext.Sheets.Add(firstSheet);
 
           this.nestingContext.StartNest().Wait();
@@ -52,8 +52,6 @@
           {
             AwaitIterate();
           }
-
-          numRuns++;
         }
       }
     }
@@ -67,7 +65,7 @@
     [Fact]
     public void PlacementTypeMustBeBoundingBox()
     {
-      this.config.PlacementType.Should().Be(PlacementTypeEnum.BoundingBox);
+      this.Config.PlacementType.Should().Be(PlacementTypeEnum.BoundingBox);
     }
 
     [Fact]
@@ -109,7 +107,7 @@
     [Fact]
     public void PlacementTypeShouldBeExpected()
     {
-      this.nestingContext.State.TopNestResults.Top.PlacementType.Should().Be(config.PlacementType);
+      this.nestingContext.State.TopNestResults.Top.PlacementType.Should().Be(Config.PlacementType);
     }
   }
 }

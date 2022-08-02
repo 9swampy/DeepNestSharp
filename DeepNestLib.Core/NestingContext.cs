@@ -182,14 +182,13 @@
       }
     }
 
-    private void AddSheet(int w, int h, int src)
+    private void AddSheet(int width, int height, int src)
     {
       var tt = new RectangleSheet();
       tt.Name = "sheet" + (Sheets.Count + 1);
       Sheets.Add(tt);
-
       tt.Source = src;
-      tt.Build(w, h);
+      tt.Build(width, height);
       ReorderSheets();
     }
 

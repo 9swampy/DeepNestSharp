@@ -40,13 +40,13 @@
 
     double WidthCalculated { get; }
 
-    NoFitPolygon Clone();
+    INfp Clone();
 
     /// <summary>
     /// Clone but only copy exact points.
     /// </summary>
     /// <returns>A clone.</returns>
-    NoFitPolygon CloneExact();
+    INfp CloneExact();
 
     INfp CloneTree();
 

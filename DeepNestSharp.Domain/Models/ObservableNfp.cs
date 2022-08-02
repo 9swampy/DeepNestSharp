@@ -212,13 +212,13 @@
     }
 
     /// <inheritdoc/>
-    public NoFitPolygon Clone()
+    public INfp Clone()
     {
       return this.item.Clone();
     }
 
     /// <inheritdoc/>
-    public NoFitPolygon CloneExact()
+    public INfp CloneExact()
     {
       return this.item.CloneExact();
     }

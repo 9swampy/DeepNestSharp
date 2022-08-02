@@ -408,9 +408,18 @@
     }
 
     /// <inheritdoc />
-    public NoFitPolygon Clone()
+    public INfp Clone()
     {
-      NoFitPolygon result = new NoFitPolygon();
+      INfp result;
+      if (this is ISheet)
+      {
+        result = new Sheet();
+      }
+      else
+      {
+        result = new NoFitPolygon();
+      }
+
       CopyStateProperties(result);
       result.IsPriority = this.IsPriority;
       result.StrictAngle = this.StrictAngle;
@@ -446,7 +455,7 @@
     }
 
     /// <inheritdoc />
-    public NoFitPolygon CloneExact()
+    public INfp CloneExact()
     {
       NoFitPolygon clone = new NoFitPolygon();
       CopyStateProperties(clone);
@@ -489,7 +498,7 @@
         pp.Add(new SvgPoint(x1, y1));
       }
 
-      NoFitPolygon rotated = this.Clone();
+      var rotated = this.Clone();
       rotated.Rotation = 0;
       rotated.ReplacePoints(pp);
 
@@ -514,11 +523,7 @@
       INfp result;
       if (this is Sheet sheet)
       {
-        result = new Sheet();
-        //{
-        //  Width = sheet.WidthCalculated,
-        //  Height = sheet.HeightCalculated,
-        //};
+        result = new Sheet(); //sheet, WithChildren.Included); //, WithChildren.Excluded);
       }
       else
       {
@@ -654,7 +659,7 @@
       return shifted;
     }
 
-    private void CopyStateProperties(NoFitPolygon other)
+    private void CopyStateProperties(IPolygon other)
     {
       other.Id = this.Id;
       other.Name = this.Name;

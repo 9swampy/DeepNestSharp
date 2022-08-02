@@ -127,8 +127,7 @@
               if (sheetPlacement.PlacementType == PlacementTypeEnum.Gravity)
               {
                 area = Math.Pow(((rectBounds.Width * 3) + rectBounds.Height) / 4, 2);
-              var sheetWidth = sheetPlacement.Sheet.WidthCalculated; // == 0 ? sheetPlacement.Sheet.WidthCalculated : sheetPlacement.Sheet.Width;
-                bound = rectBounds.Width / sheetWidth * sheetPlacement.Sheet.Area;
+                bound = rectBounds.Width / sheetPlacement.Sheet.WidthCalculated * sheetPlacement.Sheet.Area;
               }
               else
               {
