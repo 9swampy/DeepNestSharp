@@ -83,7 +83,7 @@
     /// <param name="y">Distance to shift on Y axis.</param>
     /// <returns>A partial clone of the polygon.</returns>
     INfp Shift(double x, double y);
-
+    
     /// <summary>
     /// Replace the points of the current part with those passed in.
     /// </summary>
@@ -109,10 +109,16 @@
     INfp Rotate(double degrees, WithChildren withChildren = WithChildren.Included);
 
     /// <summary>
-    /// Generates a chromosome which to separate Rotation from the Nfp. Rotation served a confused dual purpose of tracking state as well as instruction; store instruction the gene instead).
+    /// Generates a chromosome which to separate Rotation from the Nfp. Rotation served a confused dual purpose of tracking state as well as instruction; store instruction the gene instead). The chromosome will actually contain a clone of the part so the original will not get altered.
     /// </summary>
     /// <returns>A chromosome representing the part.</returns>
     Chromosome ToChromosome();
+
+    /// <summary>
+    /// Generates a chromosome specifying Rotation instruction separate from the Nfp. The chromosome will actually contain a clone of the part so the original will not get altered.
+    /// </summary>
+    /// <returns>A chromosome representing the part.</returns>
+    Chromosome ToChromosome(double firstRotation);
 
     bool Overlaps(INfp other);
 

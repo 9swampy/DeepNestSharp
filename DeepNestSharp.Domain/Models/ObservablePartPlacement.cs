@@ -124,6 +124,9 @@
     public INfp Part => partPlacement.Part;
 
     /// <inheritdoc/>
+    public INfp PlacedPart => partPlacement.PlacedPart;
+
+    /// <inheritdoc/>
     public double Rotation
     {
       get => partPlacement.Rotation;

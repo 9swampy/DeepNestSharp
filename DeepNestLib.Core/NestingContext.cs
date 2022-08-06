@@ -146,7 +146,6 @@
           poly.Sheet = sheet;
           poly.X = partPlacement.X + sheet.X;
           poly.Y = partPlacement.Y + sheet.Y;
-          poly.Rotation = partPlacement.Rotation;
           poly.PlacementOrder = sheetPlacement.PartPlacements.IndexOf(partPlacement);
         }
       }

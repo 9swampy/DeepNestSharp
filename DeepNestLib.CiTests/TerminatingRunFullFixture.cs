@@ -73,6 +73,7 @@
     protected void AwaitIterate()
     {
       iterations++;
+      progressCapture.Are.Reset();
       _ = this.nestingContext.NestIterate(this.Config);
       progressCapture.Are.WaitOne(100);
     }

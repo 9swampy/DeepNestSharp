@@ -140,12 +140,11 @@
     SvgPoint[] IPolygon.Points => this.item.Points;
 
     /// <inheritdoc/>
-    [Description("The degrees of rotation from the original imported part (tbc).")]
+    [Description("The degrees of rotation from the original imported part.")]
     [Category("Placement")]
     public double Rotation
     {
       get => this.item.Rotation;
-      set => SetProperty(nameof(Rotation), () => this.item.Rotation, v => this.item.Rotation = v, value);
     }
 
     /// <inheritdoc/>
@@ -280,6 +279,11 @@
     public Chromosome ToChromosome()
     {
       return this.item.ToChromosome();
+    }
+
+    public Chromosome ToChromosome(double rotation)
+    {
+      return this.item.ToChromosome(rotation);
     }
 
     /// <inheritdoc/>

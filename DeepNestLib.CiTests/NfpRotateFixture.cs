@@ -110,5 +110,45 @@
            .Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 0.001))
            .WhenTypeIs<double>());
     }
+
+    [Theory]
+    [InlineData(-450)]
+    [InlineData(-360)]
+    [InlineData(-270)]
+    [InlineData(-180)]
+    [InlineData(-90)]
+    [InlineData(0)]
+    [InlineData(90)]
+    [InlineData(180)]
+    [InlineData(270)]
+    [InlineData(360)]
+    [InlineData(450)]
+    public void GivenFirstPointOriginWhenRotateThenExpectOrigin(double rotation)
+    {
+      var sut = NoFitPolygon.FromDxf(new DxfGenerator().Rectangle(10, 20, RectangleType.BottomLeftClockwise));
+      sut.Rotate(rotation).Points[0].Should().BeEquivalentTo(new SvgPoint(0, 0));
+    }
+
+    [Theory]
+    [InlineData(-450)]
+    [InlineData(-360)]
+    [InlineData(-270)]
+    [InlineData(-180)]
+    [InlineData(-90)]
+    [InlineData(0)]
+    [InlineData(90)]
+    [InlineData(180)]
+    [InlineData(270)]
+    [InlineData(360)]
+    [InlineData(450)]
+    public void GivenEquivalentStartSquareWhenRotateThenExpectSameExtrema(double rotation)
+    {
+      var expected = NoFitPolygon.FromDxf(new DxfGenerator().Rectangle(10, 20, RectangleType.BottomLeftClockwise)).Rotate(rotation);
+      var sut = NoFitPolygon.FromDxf(new DxfGenerator().Rectangle(10, 20, RectangleType.FileLoad));
+      sut.Rotate(rotation).MinX.Should().BeApproximately(expected.MinX, 0.001);
+      sut.Rotate(rotation).MinY.Should().BeApproximately(expected.MinY, 0.001);
+      sut.Rotate(rotation).MaxX.Should().BeApproximately(expected.MaxX, 0.001);
+      sut.Rotate(rotation).MaxY.Should().BeApproximately(expected.MaxY, 0.001);
+    }
   }
 }

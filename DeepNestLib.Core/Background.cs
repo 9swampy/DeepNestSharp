@@ -47,11 +47,6 @@
         var backgroundStopwatch = new Stopwatch();
         backgroundStopwatch.Start();
         var gene = individual.Gene;
-        for (var i = 0; i < gene.Length; i++)
-        {
-          gene[i].Part.Rotation = gene[i].Rotation;
-        }
-
         for (int i = 0; i < sheets.Length; i++)
         {
           var sheet = sheets[i];

@@ -65,7 +65,6 @@
     {
       var result = TryConvertToNfp(src, out loadedChromosome);
       loadedChromosome.Rotation = rotation;
-      loadedChromosome.Part.Rotation = rotation;
       return result;
     }
 

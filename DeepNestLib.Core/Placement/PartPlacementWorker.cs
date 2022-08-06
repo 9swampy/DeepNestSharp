@@ -169,13 +169,7 @@
                 }
               }
 
-              var r = processedPart.Rotate(360D / this.Config.Rotations);
-              r.Rotation = processedPart.Rotation + (360D / this.Config.Rotations);
-              r.Source = processedPart.Source;
-              r.Id = processedPart.Id;
-
-              // rotation is not in-place
-              processedPart = r;
+              processedPart = processedPart.Rotate(360D / this.Config.Rotations);
             }
 
             // part unplaceable, skip
@@ -274,7 +268,7 @@
                                               SheetPlacement.CombinedPoints(this.Placements));
             if (position != null)
             {
-              this.FinalNfp = new NfpCandidateList(finalNfp.ToArray(), this.Sheet, processedPart.Shift(position));
+              this.FinalNfp = new NfpCandidateList(finalNfp.ToArray(), this.Sheet, position.PlacedPart);
               this.SheetPlacement = this.AddPlacement(inputPart, processedPart, position, inputPartIndex);
               if (position.MergedLength.HasValue)
               {
@@ -449,10 +443,10 @@
 
     private bool IsPositionValid(PartPlacement position)
     {
-      var proposed = position.Part.Shift(position);
+      var proposed = position.PlacedPart;
       foreach (var prior in this.Placements)
       {
-        var shiftedPrior = prior.Part.Shift(prior);
+        var shiftedPrior = prior.PlacedPart;
         if (proposed.Overlaps(shiftedPrior))
         {
           return false;

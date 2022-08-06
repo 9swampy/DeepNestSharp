@@ -34,6 +34,11 @@
     INfp Part { get; }
 
     /// <summary>
+    /// Gets a clone of the part that was placed. The clone will have been rotated (potentially by 0') AND shifted relative to it's sheet.
+    /// </summary>
+    INfp PlacedPart { get; }
+
+    /// <summary>
     /// Gets or sets the Rotation of the part (sheets I don't think ever get rotated, so this would be absolute).
     /// </summary>
     double Rotation { get; set; }

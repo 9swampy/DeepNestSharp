@@ -19,13 +19,12 @@
     SvgPoint[] Points { get; }
 
     /// <summary>
-    /// Gets or sets a value indicating the rotation of the part in degrees clockwise.
-    /// If the number is over 360˚ then it will be reduced by 360˚ repeatedly until it is.
-    /// Use the Rotate method to actually alter the part. Use of this property is inconsistent,
-    /// sometimes it's used to store a desired rotation to be applied; sometimes to record the
-    /// amount the part has been rotated? Needs clarification of purpose...
+    /// Gets a value indicating the rotation of the part in degrees anticlockwise from the original.
+    /// If the number is over 360˚ then it will be reduced by 360˚ repeatedly until it is under again.
+    /// Use the Rotate method to actually alter the part. This property is purely intended to stored
+    /// actual state. It also used to pass instruction to the nest; but that use is deprecated.
     /// </summary>
-    double Rotation { get; set; }
+    double Rotation { get; }
 
     int Source { get; set; }
 

@@ -47,31 +47,27 @@
     {
       DxfGenerator.GenerateSquare("firstPart", pair1ASize, RectangleType.FileLoad).TryConvertToNfp(firstPartIdSrc, out firstPart).Should().BeTrue();
       firstPart = SvgNest.CleanPolygon2(firstPart);
-      firstPart.Rotation = 180;
       DxfGenerator.GenerateSquare("secondPart", pair1BSize, RectangleType.FileLoad).TryConvertToNfp(secondPartIdSrc, out secondPart).Should().BeTrue();
       secondPart = SvgNest.CleanPolygon2(secondPart);
-      secondPart.Rotation = 90;
 
       pair1 = new NfpPair();
       pair1.A = firstPart;
       pair1.B = secondPart;
-      pair1.ARotation = firstPart.Rotation;
-      pair1.BRotation = secondPart.Rotation;
+      pair1.ARotation = 180;
+      pair1.BRotation = 90;
 
       INfp thirdPart;
       DxfGenerator.GenerateSquare("thirdPart", 11D, RectangleType.FileLoad).TryConvertToNfp(thirdPartIdSrc, out thirdPart).Should().BeTrue();
       thirdPart = SvgNest.CleanPolygon2(thirdPart);
-      thirdPart.Rotation = 0;
       INfp fourthPart;
       DxfGenerator.GenerateSquare("fourthPart", 11D, RectangleType.FileLoad).TryConvertToNfp(fourthPartIdSrc, out fourthPart).Should().BeTrue();
       fourthPart = SvgNest.CleanPolygon2(fourthPart);
-      fourthPart.Rotation = 180;
 
       pair2 = new NfpPair();
       pair2.A = thirdPart;
       pair2.B = fourthPart;
-      pair2.ARotation = thirdPart.Rotation;
-      pair2.BRotation = fourthPart.Rotation;
+      pair2.ARotation = 0;
+      pair2.BRotation = 180;
     }
   }
 }

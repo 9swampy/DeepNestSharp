@@ -227,11 +227,7 @@
       unplacedParts = new List<INfp>();
       for (int i = 0; i < gene.Length; i++)
       {
-        var r = gene[i].Part.Rotate(gene[i].Rotation);
-        r.Rotation = gene[i].Rotation; //--> 8->33
-        r.Source = gene[i].Part.Source;
-        r.Id = gene[i].Part.Id;
-        unplacedParts.Add(r);
+        unplacedParts.Add(gene[i].Part.Rotate(gene[i].Rotation));
       }
     }
 

@@ -39,7 +39,6 @@
       //dxfFile.Save(@"C:\temp\150x100.dxf");
       secondPart = DxfGenerator.GenerateSquare("50x50gen", 50, RectangleType.FileLoad, true).ToNfp();
       secondPart.Source = secondPartIdSrc;
-      secondPart.Rotation = -90;
       config = new TestSvgNestConfig();
       //config = A.Fake<ISvgNestConfig>();
       config.Simplify = true;
@@ -59,7 +58,7 @@
       config.ToleranceSvg = 0.005;
       config.ParallelNests = 10;
       nfpHelper = A.Dummy<NfpHelper>();
-      var placementWorker = new PlacementWorker(nfpHelper, new ISheet[] { firstSheet, secondSheet }, new Gene(new Chromosome[] { firstPart.ToChromosome(), secondPart.ToChromosome() }.ApplyIndex()), config, A.Dummy<Stopwatch>(), A.Fake<INestState>());
+      var placementWorker = new PlacementWorker(nfpHelper, new ISheet[] { firstSheet, secondSheet }, new Gene(new Chromosome[] { firstPart.ToChromosome(0), secondPart.ToChromosome(-90) }.ApplyIndex()), config, A.Dummy<Stopwatch>(), A.Fake<INestState>());
       sut = placementWorker;
       nestResult = placementWorker.PlaceParts();
       //config.Should().BeEquivalentTo(new TestSvgNestConfig());
