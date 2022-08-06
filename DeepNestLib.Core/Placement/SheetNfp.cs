@@ -2,7 +2,6 @@
 
 namespace DeepNestLib
 {
-  using DeepNestLib.Geometry;
   using System;
   using System.Collections.Generic;
   using System.IO;
@@ -10,6 +9,8 @@ namespace DeepNestLib
   using System.Reflection;
   using System.Text.Json;
   using System.Text.Json.Serialization;
+  using DeepNestLib.Geometry;
+  using DeepNestLib.Placement;
 #if NCRUNCH
   using System.Text;
 #endif

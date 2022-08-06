@@ -1,5 +1,6 @@
 ﻿namespace DeepNestLib.CiTests
 {
+  using DeepNestLib.CiTests.IO;
   using System.Linq;
 
   public class NfpGenerator

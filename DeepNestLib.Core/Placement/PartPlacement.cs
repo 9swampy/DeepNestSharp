@@ -93,5 +93,9 @@
 
     /// <inheritdoc />
     public INfp Part { get; }
+
+    /// <inheritdoc />
+    [JsonIgnore]
+    public INfp PlacedPart => Part.Shift(this);
   }
 }

@@ -1,5 +1,6 @@
 ﻿namespace DeepNestLib
 {
+  using DeepNestLib.Placement;
   using System.Collections.Generic;
   using System.Text.Json;
 

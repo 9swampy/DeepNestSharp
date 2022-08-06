@@ -1,20 +1,12 @@
 ﻿namespace DeepNestLib
 {
-  using System;
   using System.Collections.Generic;
-  using System.IO;
   using System.Linq;
   using System.Text;
-  using System.Text.Json;
-  using System.Text.Json.Serialization;
 #if NCRUNCH
   using System.Text;
 #endif
   using ClipperLib;
-  using DeepNestLib.Geometry;
-  using DeepNestLib.NestProject;
-  using DeepNestLib.Placement;
-  using Light.GuardClauses;
 
   public static class OpenScadExtensions
   {

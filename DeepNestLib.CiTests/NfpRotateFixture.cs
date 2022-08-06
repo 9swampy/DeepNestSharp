@@ -1,7 +1,8 @@
 ﻿namespace DeepNestLib.CiTests
 {
+  using DeepNestLib.CiTests.IO;
+  using DeepNestLib.IO;
   using FluentAssertions;
-  using IxMilia.Dxf.Entities;
   using System.Collections.Generic;
   using Xunit;
 
@@ -10,28 +11,28 @@
     [Fact]
     public void GivenPartWithAsymetricHolesRotatedClockwiseWhenRotatedBackThenShouldBeEquivalent()
     {
-      var sut = DxfParser.LoadDxfStream("Dxfs._10.dxf").ToNfp();
+      var sut = DxfParser.LoadDxfFileStreamAsNfp("Dxfs._10.dxf");
       sut.Rotate(90).Rotate(-90).Should().BeEquivalentTo(sut);
     }
 
     [Fact]
     public void GivenPartWithAsymetricHolesWhenRotatedClockwiseThenShouldHaveSameNumberOfPoints()
     {
-      var sut = DxfParser.LoadDxfStream("Dxfs._10.dxf").ToNfp();
+      var sut = DxfParser.LoadDxfFileStreamAsNfp("Dxfs._10.dxf");
       sut.Rotate(90).Points.Length.Should().Be(sut.Points.Length);
     }
 
     [Fact]
     public void GivenPartWithAsymetricHolesWhenRotatedClockwiseThenShouldHaveSameNumberOfChildren()
     {
-      var sut = DxfParser.LoadDxfStream("Dxfs._10.dxf").ToNfp();
+      var sut = DxfParser.LoadDxfFileStreamAsNfp("Dxfs._10.dxf");
       sut.Rotate(90).Children.Count.Should().Be(sut.Children.Count);
     }
 
     [Fact]
     public void GivenPartWithNoHolesRotatedClockwiseWhenRotatedBackThenShouldBeEquivalent()
     {
-      var sut = DxfParser.LoadDxfStream("Dxfs._5.dxf").ToNfp();
+      var sut = DxfParser.LoadDxfFileStreamAsNfp("Dxfs._5.dxf");
       sut.Rotate(90).Rotate(-90).Should().BeEquivalentTo(sut);
     }
 
@@ -109,6 +110,46 @@
         opt.Excluding(o => o.Name == "Source")
            .Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 0.001))
            .WhenTypeIs<double>());
+    }
+
+    [Theory]
+    [InlineData(-450)]
+    [InlineData(-360)]
+    [InlineData(-270)]
+    [InlineData(-180)]
+    [InlineData(-90)]
+    [InlineData(0)]
+    [InlineData(90)]
+    [InlineData(180)]
+    [InlineData(270)]
+    [InlineData(360)]
+    [InlineData(450)]
+    public void GivenFirstPointOriginWhenRotateThenExpectOrigin(double rotation)
+    {
+      var sut = NoFitPolygon.FromDxf(new DxfGenerator().Rectangle(10, 20, RectangleType.BottomLeftClockwise));
+      sut.Rotate(rotation).Points[0].Should().BeEquivalentTo(new SvgPoint(0, 0));
+    }
+
+    [Theory]
+    [InlineData(-450)]
+    [InlineData(-360)]
+    [InlineData(-270)]
+    [InlineData(-180)]
+    [InlineData(-90)]
+    [InlineData(0)]
+    [InlineData(90)]
+    [InlineData(180)]
+    [InlineData(270)]
+    [InlineData(360)]
+    [InlineData(450)]
+    public void GivenEquivalentStartSquareWhenRotateThenExpectSameExtrema(double rotation)
+    {
+      var expected = NoFitPolygon.FromDxf(new DxfGenerator().Rectangle(10, 20, RectangleType.BottomLeftClockwise)).Rotate(rotation);
+      var sut = NoFitPolygon.FromDxf(new DxfGenerator().Rectangle(10, 20, RectangleType.FileLoad));
+      sut.Rotate(rotation).MinX.Should().BeApproximately(expected.MinX, 0.001);
+      sut.Rotate(rotation).MinY.Should().BeApproximately(expected.MinY, 0.001);
+      sut.Rotate(rotation).MaxX.Should().BeApproximately(expected.MaxX, 0.001);
+      sut.Rotate(rotation).MaxY.Should().BeApproximately(expected.MaxY, 0.001);
     }
   }
 }

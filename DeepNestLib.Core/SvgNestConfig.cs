@@ -2,9 +2,12 @@
 
 namespace DeepNestLib
 {
+#if NCRUNCH
   using System;
+#endif
   using System.Text.Json.Serialization;
   using DeepNestLib.NestProject;
+  using DeepNestLib.Placement;
 
   public class SvgNestConfig : ISvgNestConfig
   {
@@ -96,6 +99,22 @@ namespace DeepNestLib
       set
       {
         Settings.Default["CurveTolerance"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
+      }
+    }
+
+    /// <inheritdoc />
+    public bool DifferentiateChildren
+    {
+      get
+      {
+        return (bool)Settings.Default["DifferentiateChildren"];
+      }
+
+      set
+      {
+        Settings.Default["DifferentiateChildren"] = value;
         Settings.Default.Save();
         Settings.Default.Upgrade();
       }
@@ -288,6 +307,22 @@ namespace DeepNestLib
       set
       {
         Settings.Default["OffsetTreePhase"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
+      }
+    }
+
+    /// <inheritdoc />
+    public bool OverlapDetection
+    {
+      get
+      {
+        return (bool)Settings.Default["OverlapDetection"];
+      }
+
+      set
+      {
+        Settings.Default["OverlapDetection"] = value;
         Settings.Default.Save();
         Settings.Default.Upgrade();
       }
@@ -528,6 +563,22 @@ namespace DeepNestLib
       set
       {
         Settings.Default["UsePriority"] = value;
+        Settings.Default.Save();
+        Settings.Default.Upgrade();
+      }
+    }
+
+    /// <inheritdoc />
+    public double TopDiversity
+    {
+      get
+      {
+        return (double)Settings.Default["TopDiversity"];
+      }
+
+      set
+      {
+        Settings.Default["TopDiversity"] = value;
         Settings.Default.Save();
         Settings.Default.Upgrade();
       }

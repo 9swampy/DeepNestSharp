@@ -4,6 +4,7 @@
   using System.ComponentModel;
   using DeepNestLib;
   using DeepNestLib.NestProject;
+  using DeepNestLib.Placement;
 
   public class ObservableSvgNestConfig : ObservablePropertyObject, ISvgNestConfig, IExportableConfig
   {
@@ -41,6 +42,15 @@
     {
       get => svgNestConfig.CurveTolerance;
       set => SetProperty(nameof(CurveTolerance), () => svgNestConfig.CurveTolerance, v => svgNestConfig.CurveTolerance = v, value);
+    }
+
+    /// <inheritdoc />
+    [Description("Differentiate children when exporting.")]
+    [Category("File Settings")]
+    public bool DifferentiateChildren
+    {
+      get => svgNestConfig.DifferentiateChildren;
+      set => SetProperty(nameof(DifferentiateChildren), () => svgNestConfig.DifferentiateChildren, v => svgNestConfig.DifferentiateChildren = v, value);
     }
 
     /// <inheritdoc />
@@ -95,9 +105,9 @@
       set => SetProperty(nameof(LastNestFilePath), () => svgNestConfig.LastNestFilePath, v => svgNestConfig.LastNestFilePath = v, value);
     }
 
-    [Description("Experimental feature merging coaligned and coincident lines when exporting to Dxf so they'll only get cut once (no effect if you're exporting Svg).")]
+    [Description("Merge coaligned and coincident lines when exporting to Dxf so they'll only get cut once (no effect if you're exporting Svg, and ofc Spacing setting needs to be 0).")]
     /// <inheritdoc />
-    [Category("Experimental")]
+    [Category("File Settings")]
     public bool MergeLines
     {
       get => svgNestConfig.MergeLines;
@@ -146,6 +156,14 @@
 
     /// <inheritdoc />
     [Category("Nest Settings")]
+    public bool OverlapDetection
+    {
+      get => svgNestConfig.OverlapDetection;
+      set => SetProperty(nameof(OverlapDetection), () => svgNestConfig.OverlapDetection, v => svgNestConfig.OverlapDetection = v, value);
+    }
+
+    /// <inheritdoc />
+    [Category("Nest Settings")]
     public PlacementTypeEnum PlacementType
     {
       get => svgNestConfig.PlacementType;
@@ -153,6 +171,7 @@
     }
 
     /// <inheritdoc />
+    [Description("Gets or sets the maximum total population per Genetic algorithm generation.")]
     [Category("Genetic Algorithm")]
     public int PopulationSize
     {
@@ -342,6 +361,17 @@
     {
       get => svgNestConfig.UseDllImport;
       set => SetProperty(nameof(UseDllImport), () => svgNestConfig.UseDllImport, v => svgNestConfig.UseDllImport = v, value);
+    }
+
+    /// <inheritdoc />
+    [Description("Gets or sets the percentage difference between an existing TopNest and a new candidate needed for insertion in to Top collection." +
+    "Diversity of the Tops will help keep the Genetic Algorithm innovating at the expense of potentially excluding a novel Top performer." +
+    "1=100% which would kill the nest; anecdotally we've found the best is around 0.0001 but YMMV.")]
+    [Category("Genetic Algorithm")]
+    public double TopDiversity
+    {
+      get => svgNestConfig.TopDiversity;
+      set => SetProperty(nameof(TopDiversity), () => svgNestConfig.TopDiversity, v => svgNestConfig.TopDiversity = v, value);
     }
 
     ISvgNestConfig IExportableConfig.ExportableInstance => svgNestConfig;

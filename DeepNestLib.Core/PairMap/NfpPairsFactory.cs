@@ -1,5 +1,6 @@
 ﻿namespace DeepNestLib.PairMap
 {
+  using DeepNestLib.GeneticAlgorithm;
   using System.Collections.Generic;
   using System.Threading.Tasks;
 
@@ -14,7 +15,7 @@
       this.window = window;
     }
 
-    public List<NfpPair> Generate(bool useParallel, Chromosome[] gene)
+    public List<NfpPair> Generate(bool useParallel, DeepNestGene gene)
     {
       List<NfpPair> pairs = new List<NfpPair>();
       if (useParallel)
@@ -45,7 +46,7 @@
       return pairs;
     }
 
-    private IEnumerable<NfpPair> CreatePairs(int i, Chromosome[] gene)
+    private IEnumerable<NfpPair> CreatePairs(int i, DeepNestGene gene)
     {
       var b = gene[i];
       for (var j = 0; j < i; j++)

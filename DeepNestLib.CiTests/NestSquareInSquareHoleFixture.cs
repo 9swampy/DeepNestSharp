@@ -4,6 +4,10 @@
   using System.Collections.Generic;
   using System.Diagnostics;
   using System.Linq;
+  using DeepNestLib.CiTests.GeneticAlgorithm;
+  using DeepNestLib.CiTests.IO;
+  using DeepNestLib.CiTests.Placement.OverlappingPlacement;
+  using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
@@ -56,58 +60,26 @@
       firstPart.Children.Add(SvgNest.CleanPolygon2(NoFitPolygon.FromDxf(new List<DxfEntity>() { new DxfGenerator().Square(20) })).Shift(10, 10));
       firstPart.Id = 1;
       firstPart.Source = 1;
-      firstPart.Rotation = firstRotation;
 
       secondPart = SvgNest.CleanPolygon2(NoFitPolygon.FromDxf(new List<DxfEntity>() { new DxfGenerator().Square(10) }));
       secondPart.Id = 2;
       secondPart.Source = 2;
-      secondPart.Rotation = secondRotation;
 
-      config = new TestSvgNestConfig();
-      //config = A.Fake<ISvgNestConfig>();
-      config.Simplify = true;
-      config.UseDllImport = false;
-      //config.UseDllImport = true;
-      config.PlacementType = PlacementTypeEnum.BoundingBox;
-      config.Rotations = 4;
-      config.ExportExecutions = false;
-      config.ClipperScale = 10000000;
-      config.CurveTolerance = 0.72D;
-      config.OffsetTreePhase = true;
-      config.PopulationSize = 10;
-      config.Scale = 25;
-      config.SheetHeight = 395;
-      config.Tolerance = 2;
-      config.ClipByHull = true;
-      config.ToleranceSvg = 0.005;
-      config.ParallelNests = 10;
+      config = SingleSimpleSquareOnSingleSheetFixture.StableButIrrelevantConfig(false); //new Random().NextBool()); //Using DllImport fixes the odd 6es
       nfpHelper = A.Dummy<NfpHelper>();
-      var placementWorker = new PlacementWorker(nfpHelper, new ISheet[] { firstSheet }, new Chromosome[] { firstPart.ToChromosome(), secondPart.ToChromosome() }.ApplyIndex(), config, A.Dummy<Stopwatch>(), A.Fake<INestState>());
+      var placementWorker = new PlacementWorker(nfpHelper, new ISheet[] { firstSheet }, new DeepNestGene(new Chromosome[] { firstPart.ToChromosome(firstRotation), secondPart.ToChromosome(secondRotation) }.ApplyIndex()), config, A.Dummy<Stopwatch>(), A.Fake<INestState>());
       ITestPlacementWorker sut = placementWorker;
       nestResult = placementWorker.PlaceParts();
 
       nestResult.UnplacedParts.Count().Should().Be(0);
       nestResult.UsedSheets[0].PartPlacements.Count().Should().Be(2);
-      nestResult.UsedSheets[0].PartPlacements[0].Part.Should().NotBe(firstPart);
-      nestResult.UsedSheets[0].PartPlacements[0].Part.Id.Should().Be(firstPart.Id);
-      nestResult.UsedSheets[0].PartPlacements[0].Rotation.Should().Be(firstPart.Rotation);
+      SingleSimpleSquareOnSingleSheetFixture.ValidateFirstPlacement(firstRotation, nestResult.UsedSheets[0].PartPlacements[0], firstPart);
       nestResult.UsedSheets[0].PartPlacements[0].X.Should().BeApproximately(firstX, 0.01);
       nestResult.UsedSheets[0].PartPlacements[0].Y.Should().BeApproximately(firstY, 0.01);
-      nestResult.UsedSheets[0].PartPlacements[0].Part.Should().BeEquivalentTo(firstPart.Rotate(nestResult.UsedSheets[0].PartPlacements[0].Rotation)
-                                                                                       //.Shift(nestResult.UsedSheets[0].PartPlacements[0])
-                                                                                       , opt =>
-        opt.Excluding(o => o.Rotation)
-           .Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 0.01))
-           .WhenTypeIs<double>());
-      nestResult.UsedSheets[0].PartPlacements[1].Part.Id.Should().Be(secondPart.Id);
+
+      TwoSimpleSquaresOnSingleSheetShouldNotOverlapFixture.ValidateSecondPlacement(secondRotation, nestResult.UsedSheets[0].PartPlacements[1], firstPart, secondPart);
       nestResult.UsedSheets[0].PartPlacements[1].X.Should().BeApproximately(secondX, 0.01);
       nestResult.UsedSheets[0].PartPlacements[1].Y.Should().BeApproximately(secondY, 0.01);
-      nestResult.UsedSheets[0].PartPlacements[1].Part.Should().BeEquivalentTo(secondPart.Rotate(nestResult.UsedSheets[0].PartPlacements[1].Rotation)
-                                                                                        //.Shift(nestResult.UsedSheets[0].PartPlacements[1])
-                                                                                        , opt =>
-        opt.Excluding(o => o.Rotation)
-           .Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 0.01))
-           .WhenTypeIs<double>());
       nestResult.IsValid.Should().BeTrue();
     }
   }

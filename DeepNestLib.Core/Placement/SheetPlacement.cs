@@ -99,7 +99,23 @@
     public double TotalPartsArea => this.PartPlacements.Sum(p => p.Part.NetArea);
 
     [JsonIgnore]
-    public double MaterialUtilization => Math.Abs(TotalPartsArea / this.Sheet.Area);
+    public double MaterialUtilization
+    {
+      get
+      {
+        try
+        {
+
+          return Math.Abs(TotalPartsArea / this.Sheet.Area);
+        }
+        catch (Exception ex)
+        {
+          System.Diagnostics.Debug.Print(ex.Message);
+          System.Diagnostics.Debug.Print(ex.StackTrace);
+          throw;
+        }
+      }
+    }
 
     [JsonIgnore]
     public OriginalFitnessSheet Fitness { get; }
@@ -135,9 +151,9 @@
       }
     }
 
-    public async Task ExportDxf(Stream stream, bool mergeLines)
+    public async Task ExportDxf(Stream stream, bool mergeLines, bool differentiateChildren)
     {
-      await new DxfExporter().Export(stream, this, mergeLines);
+      await new DxfExporter().Export(stream, this, mergeLines, differentiateChildren);
     }
 
     public static SheetPlacement LoadFromFile(string fileName)

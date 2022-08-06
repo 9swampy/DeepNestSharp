@@ -346,5 +346,41 @@ namespace DeepNestLib {
                 this["MergeLines"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.001")]
+        public double TopDiversity {
+            get {
+                return ((double)(this["TopDiversity"]));
+            }
+            set {
+                this["TopDiversity"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool DifferentiateChildren {
+            get {
+                return ((bool)(this["DifferentiateChildren"]));
+            }
+            set {
+                this["DifferentiateChildren"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool OverlapDetection {
+            get {
+                return ((bool)(this["OverlapDetection"]));
+            }
+            set {
+                this["OverlapDetection"] = value;
+            }
+        }
     }
 }

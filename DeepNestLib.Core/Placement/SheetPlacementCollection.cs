@@ -11,6 +11,7 @@
   public class SheetPlacementCollection : WrappableList<ISheetPlacement, SheetPlacement>, ISheetPlacementFitness
   {
     private double sheets = 0;
+    private volatile object syncLock = new object();
 
     public SheetPlacementCollection()
       : base()
@@ -36,20 +37,23 @@
     {
       get
       {
-        if (sheets == 0)
+        lock (syncLock)
         {
-          for (int i = 0; i < this.Count; i++)
+          if (sheets == 0)
           {
-            var sheet = this[i];
-            sheets += sheet.Fitness.Sheets;
-            if (i < this.Count - 1 && this[i + 1].PartPlacements.Any(o => o.Part.IsPriority))
+            for (int i = 0; i < this.Count; i++)
             {
-              sheets += sheet.Sheet.Area;
+              var sheet = this[i];
+              sheets += sheet.Fitness.Sheets;
+              if (i < this.Count - 1 && this[i + 1].PartPlacements.Any(o => o.Part.IsPriority))
+              {
+                sheets += sheet.Sheet.Area;
+              }
             }
           }
-        }
 
-        return sheets;
+          return sheets;
+        }
       }
     }
 

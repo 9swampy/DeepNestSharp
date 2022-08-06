@@ -1,5 +1,6 @@
 ﻿namespace DeepNestLib
 {
+  using DeepNestLib.Placement;
   using System;
 
   public interface INfpHelper

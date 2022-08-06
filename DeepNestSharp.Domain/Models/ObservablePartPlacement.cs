@@ -3,6 +3,7 @@
   using System.Threading.Tasks;
   using System.Windows.Input;
   using DeepNestLib;
+  using DeepNestLib.IO;
   using DeepNestLib.Placement;
   using Microsoft.Toolkit.Mvvm.Input;
 
@@ -122,6 +123,9 @@
 
     /// <inheritdoc/>
     public INfp Part => partPlacement.Part;
+
+    /// <inheritdoc/>
+    public INfp PlacedPart => partPlacement.PlacedPart;
 
     /// <inheritdoc/>
     public double Rotation

@@ -8,10 +8,10 @@
   using System.Reflection;
   using System.Text.Json;
   using DeepNestLib.CiTests;
+  using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
-  using Microsoft.CodeAnalysis;
   using Xunit;
 
   public class PartPlacementWorkerFixture
@@ -37,8 +37,9 @@
     [Fact]
     public void GivenPropertiesPopulatedWhenSerializedThenShouldNotThrow()
     {
+#if NCRUNCH //Need to work out how to pass preprocessor directive in to SvgNestConfigJsonConverterInner
       var part = new NoFitPolygon(new List<SvgPoint>() { new SvgPoint(1, 2) });
-      var parts = new Chromosome[] { part.ToChromosome() };
+      var parts = new DeepNestGene(new Chromosome[] { part.ToChromosome(0) });
       var placements = new List<IPartPlacement>() { new PartPlacement(part) };
       var sheet = new Sheet();
       var window = new WindowUnk();
@@ -75,6 +76,7 @@
           json.Should().Be(fromFile);
         }
       }
+#endif
     }
 
     [Fact]
@@ -94,8 +96,9 @@
     [Fact]
     public void GivenPropertiesPopulatedShouldRoundTripSerialize()
     {
+#if NCRUNCH //Need to work out how to pass preprocessor directive in to SvgNestConfigJsonConverterInner
       var part = new NoFitPolygon(new List<SvgPoint>() { new SvgPoint(1, 2) });
-      var parts = new Chromosome[] { part.ToChromosome() };
+      var parts = new DeepNestGene(new Chromosome[] { part.ToChromosome(0) });
       var placements = new List<IPartPlacement>() { new PartPlacement(part) };
       var sheet = new Sheet();
       var window = new WindowUnk();
@@ -117,6 +120,7 @@
       var json = sut.ToJson();
 
       PartPlacementWorker.FromJson(json).Should().BeEquivalentTo(sut);
+#endif
     }
 
     [Fact]

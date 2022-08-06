@@ -4,6 +4,7 @@
   using System.IO;
   using System.Reflection;
   using DeepNestLib.CiTests;
+  using DeepNestLib.CiTests.IO;
   using FluentAssertions;
   using Xunit;
 
@@ -74,14 +75,15 @@
     {
       ISheet expected;
       new DxfGenerator().GenerateRectangle("Sheet", 1D, 2D, RectangleType.FileLoad).TryConvertToSheet(3, out expected).Should().BeTrue();
-      expected.Rotation = 12;
+      expected = expected.Rotate(12) as ISheet;
 
       var json = expected.ToJson();
 
       var actual = NoFitPolygon.FromJson(json);
 
-      actual.Should().BeEquivalentTo(expected, options => options.Excluding(o => o.Width)
-                                                                 .Excluding(o => o.Height));
+      actual.Should().BeEquivalentTo(expected, options => 
+                   options.Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 0.0001))
+                          .WhenTypeIs<double>());
       ((IEquatable<IPolygon>)actual).Equals(expected).Should().BeTrue();
       actual.Rotation.Should().Be(12);
     }
@@ -91,13 +93,16 @@
     {
       ISheet expected;
       new DxfGenerator().GenerateRectangle("Sheet", 1D, 2D, RectangleType.FileLoad).TryConvertToSheet(3, out expected).Should().BeTrue();
-      expected.Rotation = 12;
+      expected = expected.Rotate(12) as ISheet;
+      expected.Rotation.Should().Be(12);
 
       var json = expected.ToJson();
 
       var actual = Sheet.FromJson(json);
 
-      actual.Should().BeEquivalentTo(expected, options => options);
+      actual.Should().BeEquivalentTo(expected, options =>
+                   options.Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 0.0001))
+                          .WhenTypeIs<double>());
       actual.Rotation.Should().Be(12);
     }
   }

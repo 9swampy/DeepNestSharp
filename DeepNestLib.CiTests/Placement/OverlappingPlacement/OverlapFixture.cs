@@ -25,9 +25,9 @@
       (PartPlacementWorker sut20, IPlacementWorker placementWorker20) =
         GetSut("Placement.OverlappingPlacement.N20-S0-5-P1-In.json", false, o => actualPartPlacement20 = o, o => actualSheetPlacement20 = o);
 
-      sut16.Should().BeEquivalentTo(sut20, opt => opt.Excluding(o => o.Parts[0].Rotation));
-      sut16.Parts[0].Rotation.Should().Be(180);
-      sut20.Parts[0].Rotation.Should().Be(270);
+      sut16.Should().BeEquivalentTo(sut20, opt => opt.Excluding(o => o.Gene[0].Rotation));
+      sut16.Gene[0].Rotation.Should().Be(180);
+      sut20.Gene[0].Rotation.Should().Be(270);
 
       sut16.ProcessPart(sut16.InputPart, 0).Should().Be(InnerFlowResult.Success);
       sut20.ProcessPart(sut20.InputPart, 0).Should().Be(InnerFlowResult.Success);
@@ -104,7 +104,7 @@
           {
             setPartPlacement(position);
             placements.Add(position);
-            setSheetPlacement(new SheetPlacement(placementType, sheet, placements, mergedLength, 0));
+            setSheetPlacement(new SheetPlacement(placementType, sheet, placements, mergedLength, new TestSvgNestConfig().ClipperScale));
           }
         });
       return (sut, placementWorker);
