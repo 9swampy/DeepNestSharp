@@ -3,7 +3,6 @@
   using System;
   using System.Linq;
   using System.Threading.Tasks;
-  using System.Windows.Input;
   using DeepNestLib;
   using DeepNestLib.NestProject;
   using DeepNestSharp.Domain.Models;

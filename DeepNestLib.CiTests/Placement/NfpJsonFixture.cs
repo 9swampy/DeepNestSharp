@@ -4,6 +4,7 @@
   using System.IO;
   using System.Reflection;
   using DeepNestLib.CiTests;
+  using DeepNestLib.CiTests.IO;
   using FluentAssertions;
   using Xunit;
 

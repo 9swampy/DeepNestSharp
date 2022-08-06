@@ -1,6 +1,9 @@
 ﻿namespace DeepNestLib.CiTests
 {
   using System;
+  using DeepNestLib.CiTests.IO;
+  using DeepNestLib.IO;
+  using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
   using Xunit;

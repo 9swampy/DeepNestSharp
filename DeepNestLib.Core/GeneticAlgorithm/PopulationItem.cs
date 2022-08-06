@@ -1,12 +1,8 @@
 ﻿namespace DeepNestLib.GeneticAlgorithm
 {
-  using System;
-  using System.Collections.Generic;
-  using System.Linq;
-
   public class PopulationItem
   {
-    public PopulationItem(Gene gene)
+    public PopulationItem(DeepNestGene gene)
     {
       this.Gene = gene;
     }
@@ -15,7 +11,7 @@
 
     public double Fitness { get; internal set; } = -1;
 
-    public Gene Gene { get; }
+    public DeepNestGene Gene { get; }
 
     public bool IsPending => !Processing && Fitness == -1;
 

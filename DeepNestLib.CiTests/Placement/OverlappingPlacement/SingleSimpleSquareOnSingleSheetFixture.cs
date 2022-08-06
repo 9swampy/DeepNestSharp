@@ -3,6 +3,9 @@
   using System;
   using System.Diagnostics;
   using System.Linq;
+  using DeepNestLib.CiTests.GeneticAlgorithm;
+  using DeepNestLib.CiTests.IO;
+  using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
@@ -66,7 +69,7 @@
 
       var firstPartOriginal = firstPart.Clone();
       firstPartOriginal.Should().BeEquivalentTo(firstPart, opt => opt.WithStrictOrdering(), "only the placement clone should be altered.");
-      var gene = new Gene(new Chromosome[] { firstPart.ToChromosome(firstRotation) }.ApplyIndex());
+      var gene = new DeepNestGene(new Chromosome[] { firstPart.ToChromosome(firstRotation) }.ApplyIndex());
       VerifyPartIsNotMutated(firstPart, firstPartOriginal, expectationFirstPart);
       nfpHelper = A.Dummy<NfpHelper>();
       var placementWorker = new PlacementWorker(

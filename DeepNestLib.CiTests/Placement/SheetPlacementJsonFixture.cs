@@ -4,6 +4,7 @@
   using System.Collections.Generic;
   using System.IO;
   using System.Reflection;
+  using DeepNestLib.CiTests.IO;
   using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;

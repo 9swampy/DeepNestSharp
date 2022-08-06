@@ -8,6 +8,7 @@
   using System.Threading.Tasks;
   using System.Windows.Input;
   using DeepNestLib;
+  using DeepNestLib.IO;
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain.Docking;

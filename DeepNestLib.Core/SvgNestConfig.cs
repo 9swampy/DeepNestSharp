@@ -2,9 +2,12 @@
 
 namespace DeepNestLib
 {
+#if NCRUNCH
   using System;
+#endif
   using System.Text.Json.Serialization;
   using DeepNestLib.NestProject;
+  using DeepNestLib.Placement;
 
   public class SvgNestConfig : ISvgNestConfig
   {

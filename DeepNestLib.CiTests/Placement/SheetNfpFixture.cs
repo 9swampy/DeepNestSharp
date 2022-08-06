@@ -2,6 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
+  using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
   using Xunit;

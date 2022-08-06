@@ -1,5 +1,6 @@
 ﻿namespace DeepNestLib.CiTests.DummyFactories
 {
+  using DeepNestLib.Placement;
   using FakeItEasy;
 
   internal class DummyMinkowskiSumFactory : DummyFactory<MinkowskiSum>

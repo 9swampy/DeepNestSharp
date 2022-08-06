@@ -1,5 +1,7 @@
 ﻿namespace DeepNestLib.CiTests.Placement
 {
+  using DeepNestLib.CiTests.IO;
+  using DeepNestLib.IO;
   using FluentAssertions;
   using IxMilia.Dxf.Entities;
   using System;

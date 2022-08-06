@@ -4,6 +4,9 @@
   using System.Collections.Generic;
   using System.Diagnostics;
   using System.Linq;
+  using DeepNestLib.CiTests.IO;
+  using DeepNestLib.IO;
+  using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
   using IxMilia.Dxf.Entities;

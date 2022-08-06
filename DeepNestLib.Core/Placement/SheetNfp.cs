@@ -10,6 +10,7 @@ namespace DeepNestLib
   using System.Text.Json;
   using System.Text.Json.Serialization;
   using DeepNestLib.Geometry;
+  using DeepNestLib.Placement;
 #if NCRUNCH
   using System.Text;
 #endif

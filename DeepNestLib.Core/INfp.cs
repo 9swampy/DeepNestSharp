@@ -1,6 +1,7 @@
 ﻿namespace DeepNestLib
 {
   using System.Collections.Generic;
+  using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
   using IxMilia.Dxf;
 
@@ -15,11 +16,6 @@
     /// Gets the gross outer area, discounting for any holes.
     /// </summary>
     double NetArea { get; }
-
-    /// <summary>
-    /// Cleans the points of the parent and all children, maintaining IsClosed state.
-    /// </summary>
-    void Clean();
 
     bool Fitted { get; }
 
@@ -39,6 +35,11 @@
     int Length { get; }
 
     double WidthCalculated { get; }
+
+    /// <summary>
+    /// Cleans the points of the parent and all children, maintaining IsClosed state.
+    /// </summary>
+    void Clean();
 
     INfp Clone();
 
@@ -83,7 +84,7 @@
     /// <param name="y">Distance to shift on Y axis.</param>
     /// <returns>A partial clone of the polygon.</returns>
     INfp Shift(double x, double y);
-    
+
     /// <summary>
     /// Replace the points of the current part with those passed in.
     /// </summary>

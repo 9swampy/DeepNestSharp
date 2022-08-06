@@ -56,7 +56,7 @@
       Population = TerminateClones(population).ToArray();
     }
 
-    private static Gene BuildAdamGene(List<INfp> parts, double[] rotations)
+    private static DeepNestGene BuildAdamGene(List<INfp> parts, double[] rotations)
     {
       var resultSource = new List<Chromosome>();
       for (int i = 0; i < parts.Count; i++)
@@ -66,7 +66,7 @@
         resultSource.Add(chromosome);
       }
 
-      return new Gene(resultSource);
+      return new DeepNestGene(resultSource);
     }
 
     private IEnumerable<PopulationItem> TerminateClones(IEnumerable<PopulationItem> source)
@@ -193,7 +193,7 @@
         }
       }
 
-      return new PopulationItem(new Gene(clone));
+      return new PopulationItem(new DeepNestGene(clone));
     }
 
     private double GetRandomRotation(INfp part)
@@ -258,8 +258,8 @@
 
       return new[]
       {
-        new PopulationItem(new Gene(son)),
-        new PopulationItem(new Gene(daughter)),
+        new PopulationItem(new DeepNestGene(son)),
+        new PopulationItem(new DeepNestGene(daughter)),
       };
     }
 
@@ -269,7 +269,7 @@
     /// <param name="initiantPartialGene">Partial gene from initiant parent.</param>
     /// <param name="supplicantParentGene">Full gene from supplicant parent.</param>
     /// <returns>Completed child gene.</returns>
-    private static Chromosome[] CompleteGene(IEnumerable<Chromosome> initiantPartialGene, Gene supplicantParentGene)
+    private static Chromosome[] CompleteGene(IEnumerable<Chromosome> initiantPartialGene, DeepNestGene supplicantParentGene)
     {
       var result = initiantPartialGene.ToArray();
       var idx = result.Length;

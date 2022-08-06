@@ -1,5 +1,7 @@
 ﻿namespace DeepNestLib
 {
+  using DeepNestLib.Placement;
+
   public interface ITestNfpHelper
   {
     IMinkowskiSumService MinkowskiSumService { get; set; }

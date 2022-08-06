@@ -1,7 +1,5 @@
 ﻿namespace DeepNestLib
 {
-  using System;
-
   public class RectangleSheet : Sheet
   {
     internal void Build(int width, int height)

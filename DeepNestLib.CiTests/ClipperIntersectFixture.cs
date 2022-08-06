@@ -1,6 +1,7 @@
 ﻿namespace DeepNestLib.CiTests
 {
   using System.Collections.Generic;
+  using DeepNestLib.CiTests.IO;
   using DeepNestLib.Geometry;
   using FluentAssertions;
   using IxMilia.Dxf.Entities;

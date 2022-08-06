@@ -1,5 +1,6 @@
 ﻿namespace DeepNestLib.CiTests
 {
+  using DeepNestLib.Placement;
   using FakeItEasy;
 
   public class TerminatingRunFullFixture

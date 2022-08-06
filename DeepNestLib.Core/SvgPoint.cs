@@ -1,7 +1,6 @@
 ﻿namespace DeepNestLib
 {
   using System;
-  using System.Collections.Generic;
   using System.Text.Json.Serialization;
 
   public class SvgPoint : IEquatable<SvgPoint>, IPointXY

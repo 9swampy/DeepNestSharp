@@ -5,6 +5,7 @@
   using System.Linq;
   using System.Threading.Tasks;
   using System.Xml.Linq;
+  using DeepNestLib.IO;
   using DeepNestLib.Placement;
 
   public class NestingContext : INestingContext

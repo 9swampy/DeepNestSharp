@@ -1,7 +1,7 @@
 ﻿namespace DeepNestLib
 {
-  using System;
   using DeepNestLib.NestProject;
+  using DeepNestLib.Placement;
 
   public class TestSvgNestConfig : ISvgNestConfig
   {

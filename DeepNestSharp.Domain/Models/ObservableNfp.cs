@@ -5,6 +5,7 @@
   using System.ComponentModel;
   using System.Linq;
   using DeepNestLib;
+  using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
   using IxMilia.Dxf;

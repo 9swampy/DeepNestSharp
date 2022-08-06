@@ -4,6 +4,7 @@
   using System.ComponentModel;
   using DeepNestLib;
   using DeepNestLib.NestProject;
+  using DeepNestLib.Placement;
 
   public class ObservableSvgNestConfig : ObservablePropertyObject, ISvgNestConfig, IExportableConfig
   {

@@ -7,6 +7,8 @@
   using System.Text;
   using System.Text.Json;
   using System.Text.Json.Serialization;
+  using DeepNestLib.GeneticAlgorithm;
+  using DeepNestLib.IO;
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
   using IxMilia.Dxf;
@@ -648,31 +650,7 @@
           thisPolygon.Source == other.Source &&
           thisPolygon.Children.Count == other.Children.Count)
       {
-        if (thisPolygon.Points.Length == other.Points.Length)
-        {
-          for (int i = 0; i < thisPolygon.Points.Length; i++)
-          {
-            if (!thisPolygon.Points[i].Equals(other.Points[i]))
-            {
-              return false;
-            }
-          }
-        }
-        else
-        {
-          return false;
-        }
-
-        for (int c = 0; c < thisPolygon.Children.Count; c++)
-        {
-          var childPolygon = thisPolygon.Children[c] as IEquatable<IPolygon>;
-          if (!childPolygon.Equals(other.Children[c]))
-          {
-            return false;
-          }
-        }
-
-        return true;
+        return PointsEqual(other, thisPolygon) && ChildrenEqual(other, thisPolygon);
       }
 
       return false;
@@ -712,6 +690,40 @@
       }
 
       return new DxfPolyline(resultSource);
+    }
+
+    private static bool ChildrenEqual(IPolygon other, IPolygon thisPolygon)
+    {
+      for (int c = 0; c < thisPolygon.Children.Count; c++)
+      {
+        var childPolygon = thisPolygon.Children[c] as IEquatable<IPolygon>;
+        if (!childPolygon.Equals(other.Children[c]))
+        {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    private static bool PointsEqual(IPolygon other, IPolygon thisPolygon)
+    {
+      if (thisPolygon.Points.Length == other.Points.Length)
+      {
+        for (int i = 0; i < thisPolygon.Points.Length; i++)
+        {
+          if (!thisPolygon.Points[i].Equals(other.Points[i]))
+          {
+            return false;
+          }
+        }
+      }
+      else
+      {
+        return false;
+      }
+
+      return true;
     }
 
     private NoFitPolygon CloneInstance()

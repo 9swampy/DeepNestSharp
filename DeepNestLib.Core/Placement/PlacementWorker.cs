@@ -4,6 +4,7 @@
   using System.Collections.Generic;
   using System.Diagnostics;
   using System.Linq;
+  using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
   using Light.GuardClauses;
 
@@ -17,7 +18,7 @@
     private readonly SheetPlacementCollection allPlacements = new SheetPlacementCollection();
     private readonly NfpHelper nfpHelper;
     private readonly IEnumerable<ISheet> sheets;
-    private readonly Gene gene;
+    private readonly DeepNestGene gene;
     private readonly IPlacementConfig config;
     private readonly Stopwatch backgroundStopwatch;
     private readonly INestState state;
@@ -34,7 +35,7 @@
     /// <param name="gene">The list of parts to be placed.</param>
     /// <param name="config">Config for the Nest.</param>
     /// <param name="backgroundStopwatch">Stopwatch started at Background.Start (included the PMap stage prior to the PlacementWorker).</param>
-    public PlacementWorker(NfpHelper nfpHelper, IEnumerable<ISheet> sheets, Gene gene, IPlacementConfig config, Stopwatch backgroundStopwatch, INestState state)
+    public PlacementWorker(NfpHelper nfpHelper, IEnumerable<ISheet> sheets, DeepNestGene gene, IPlacementConfig config, Stopwatch backgroundStopwatch, INestState state)
     {
       this.nfpHelper = nfpHelper;
       this.sheets = sheets;
@@ -68,19 +69,11 @@
       }
 
       Initialise();
-      while (unplacedParts.Count > 0 && unusedSheets.Count > 0)
+      ISheet sheet;
+      Queue<ISheet> requeue;
+      List<IPartPlacement> placements;
+      while (unplacedParts.Count > 0 && TryGetSheet(out sheet, out placements, out requeue))
       {
-        // open a new sheet
-        ISheet sheet;
-        Queue<ISheet> requeue;
-        List<IPartPlacement> placements;
-
-        if (!TryGetSheet(out sheet, out placements, out requeue))
-        {
-          VerboseLog("No sheets left to place parts upon; break and end the nest.");
-          break;
-        }
-
         var isPriorityPlacement = config.UsePriority && StartedAsPriorityPlacement;
         if (isPriorityPlacement)
         {
@@ -104,23 +97,7 @@
           }
         }
 
-        VerboseLog("All parts processed for current sheet.");
-        if (isPriorityPlacement && unplacedParts.Count > 0)
-        {
-          VerboseLog($"Requeue {sheet.ToShortString()} for reuse.");
-          unusedSheets.Push(sheet);
-        }
-        else
-        {
-          VerboseLog($"No need to requeue {sheet.ToShortString()}.");
-        }
-
-        while (requeue.Count > 0)
-        {
-          VerboseLog($"Reinstate {sheet.ToShortString()} for reuse.");
-          unusedSheets.Push(requeue.Dequeue());
-        }
-
+        RequeueSheets(sheet, requeue, isPriorityPlacement);
         if (lastPartPlacementWorker.Placements != null && lastPartPlacementWorker.Placements.Count > 0)
         {
           VerboseLog($"Add {config.PlacementType} placement {sheet.ToShortString()}.");
@@ -142,6 +119,32 @@
       }
 #endif
       return result;
+    }
+
+    /// <summary>
+    /// Requeues sheets so the nest can attempt to use them again; for example if this pass was for Priority, requeue for non-priority placement.
+    /// </summary>
+    /// <param name="sheet">Current sheet being populated.</param>
+    /// <param name="requeue">Incumbent requeue pending.</param>
+    /// <param name="isPriorityPlacement">A flag that indicates that the current nest was priority.</param>
+    private void RequeueSheets(ISheet sheet, Queue<ISheet> requeue, bool isPriorityPlacement)
+    {
+      VerboseLog("All parts processed for current sheet.");
+      if (isPriorityPlacement && unplacedParts.Count > 0)
+      {
+        VerboseLog($"Requeue {sheet.ToShortString()} for reuse.");
+        unusedSheets.Push(sheet);
+      }
+      else
+      {
+        VerboseLog($"No need to requeue {sheet.ToShortString()}.");
+      }
+
+      while (requeue.Count > 0)
+      {
+        VerboseLog($"Reinstate {sheet.ToShortString()} for reuse.");
+        unusedSheets.Push(requeue.Dequeue());
+      }
     }
 
     SheetPlacement IPlacementWorker.AddPlacement(INfp inputPart, List<IPartPlacement> placements, INfp processedPart, PartPlacement position, PlacementTypeEnum placementType, ISheet sheet, double mergedLength)
@@ -176,6 +179,13 @@
       }
     }
 
+    /// <summary>
+    /// Gets the next sheet to populate.
+    /// </summary>
+    /// <param name="sheet">The next sheet to populate with parts.</param>
+    /// <param name="partPlacements">Any partPlacements already on the sheet (e.g. priority).</param>
+    /// <param name="requeue">Already used sheets that already cannot accept more parts at this time (e.g. priority).</param>
+    /// <returns>.t if a sheet was available.</returns>
     private bool TryGetSheet(out ISheet sheet, out List<IPartPlacement> partPlacements, out Queue<ISheet> requeue)
     {
       ISheet localSheet = null;
@@ -218,11 +228,24 @@
 
     private void Initialise()
     {
+      StartTimer();
+      PrepUsedSheets();
+      PrepUnplacedParts();
+    }
+
+    private void StartTimer()
+    {
       this.sw = new Stopwatch();
       sw.Start();
+    }
 
+    private void PrepUsedSheets()
+    {
       this.unusedSheets = new Stack<ISheet>(sheets.Reverse());
+    }
 
+    private void PrepUnplacedParts()
+    {
       // rotate paths by given rotation
       unplacedParts = new List<INfp>();
       for (int i = 0; i < gene.Length; i++)

@@ -2,9 +2,11 @@
 {
   using System;
   using System.Diagnostics;
-  using System.IO;
   using System.Linq;
-  using System.Reflection;
+  using DeepNestLib.CiTests.GeneticAlgorithm;
+  using DeepNestLib.CiTests.IO;
+  using DeepNestLib.GeneticAlgorithm;
+  using DeepNestLib.IO;
   using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
@@ -58,7 +60,7 @@
       config.ToleranceSvg = 0.005;
       config.ParallelNests = 10;
       nfpHelper = A.Dummy<NfpHelper>();
-      var placementWorker = new PlacementWorker(nfpHelper, new ISheet[] { firstSheet, secondSheet }, new Gene(new Chromosome[] { firstPart.ToChromosome(0), secondPart.ToChromosome(-90) }.ApplyIndex()), config, A.Dummy<Stopwatch>(), A.Fake<INestState>());
+      var placementWorker = new PlacementWorker(nfpHelper, new ISheet[] { firstSheet, secondSheet }, new DeepNestGene(new Chromosome[] { firstPart.ToChromosome(0), secondPart.ToChromosome(-90) }.ApplyIndex()), config, A.Dummy<Stopwatch>(), A.Fake<INestState>());
       sut = placementWorker;
       nestResult = placementWorker.PlaceParts();
       //config.Should().BeEquivalentTo(new TestSvgNestConfig());

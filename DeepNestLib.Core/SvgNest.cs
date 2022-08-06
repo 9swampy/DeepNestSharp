@@ -50,14 +50,59 @@
 
     private INestStateSvgNest State { get; }
 
-    internal void Stop()
+    internal static INfp CleanPolygon2(INfp polygon)
     {
-      System.Diagnostics.Debug.Print("SvgNest.Stop()");
-      this.IsStopped = true;
+      var p = SvgToClipper(polygon);
+
+      // remove self-intersections and find the biggest polygon that's left
+      var simple = ClipperLib.Clipper.SimplifyPolygon(p, ClipperLib.PolyFillType.pftNonZero);
+
+      if (simple == null || simple.Count == 0)
+      {
+        return null;
+      }
+
+      var biggest = simple[0];
+      var biggestarea = Math.Abs(ClipperLib.Clipper.Area(biggest));
+      for (var i = 1; i < simple.Count; i++)
+      {
+        var area = Math.Abs(ClipperLib.Clipper.Area(simple[i]));
+        if (area > biggestarea)
+        {
+          biggest = simple[i];
+          biggestarea = area;
+        }
+      }
+
+      // clean up singularities, coincident points and edges
+      var clean = ClipperLib.Clipper.CleanPolygon(biggest, 0.01 * Config.CurveTolerance * Config.ClipperScale);
+
+      if (clean == null || clean.Count == 0)
+      {
+        return null;
+      }
+
+      var cleaned = ClipperToSvg(clean);
+
+      // remove duplicate endpoints
+      var start = cleaned[0];
+      var end = cleaned[cleaned.Length - 1];
+      if (start == end || (GeometryUtil.AlmostEqual(start.X, end.X)
+          && GeometryUtil.AlmostEqual(start.Y, end.Y)))
+      {
+        cleaned.ReplacePoints(cleaned.Points.Take(cleaned.Points.Count() - 1));
+      }
+
+      if (polygon.IsClosed)
+      {
+        cleaned.EnsureIsClosed();
+      }
+
+      return cleaned;
     }
 
     // offset tree recursively
-    public static void OffsetTree(ref INfp t, double offset, ISvgNestConfig config, bool? inside = null)
+    internal static void OffsetTree(ref INfp t, double offset, ISvgNestConfig config, bool? inside = null)
     {
       var simple = NfpSimplifier.SimplifyFunction(t, (inside == null) ? false : inside.Value, config);
       var offsetpaths = new INfp[] { simple };
@@ -128,64 +173,6 @@
       return result.ToArray();
     }
 
-    // converts a polygon from normal double coordinates to integer coordinates used by clipper, as well as x/y -> X/Y
-    public static List<ClipperLib.IntPoint> SvgToClipper(INfp polygon)
-    {
-      var d = DeepNestClipper.ScaleUpPath(polygon.Points, Config.ClipperScale);
-      return d;
-    }
-
-    public static INfp CleanPolygon2(INfp polygon)
-    {
-      var p = SvgToClipper(polygon);
-
-      // remove self-intersections and find the biggest polygon that's left
-      var simple = ClipperLib.Clipper.SimplifyPolygon(p, ClipperLib.PolyFillType.pftNonZero);
-
-      if (simple == null || simple.Count == 0)
-      {
-        return null;
-      }
-
-      var biggest = simple[0];
-      var biggestarea = Math.Abs(ClipperLib.Clipper.Area(biggest));
-      for (var i = 1; i < simple.Count; i++)
-      {
-        var area = Math.Abs(ClipperLib.Clipper.Area(simple[i]));
-        if (area > biggestarea)
-        {
-          biggest = simple[i];
-          biggestarea = area;
-        }
-      }
-
-      // clean up singularities, coincident points and edges
-      var clean = ClipperLib.Clipper.CleanPolygon(biggest, 0.01 * Config.CurveTolerance * Config.ClipperScale);
-
-      if (clean == null || clean.Count == 0)
-      {
-        return null;
-      }
-
-      var cleaned = ClipperToSvg(clean);
-
-      // remove duplicate endpoints
-      var start = cleaned[0];
-      var end = cleaned[cleaned.Length - 1];
-      if (start == end || (GeometryUtil.AlmostEqual(start.X, end.X)
-          && GeometryUtil.AlmostEqual(start.Y, end.Y)))
-      {
-        cleaned.ReplacePoints(cleaned.Points.Take(cleaned.Points.Count() - 1));
-      }
-
-      if (polygon.IsClosed)
-      {
-        cleaned.EnsureIsClosed();
-      }
-
-      return cleaned;
-    }
-
     internal static NoFitPolygon ClipperToSvg(IList<IntPoint> polygon)
     {
       List<SvgPoint> ret = new List<SvgPoint>();
@@ -198,71 +185,10 @@
       return new NoFitPolygon(ret);
     }
 
-    private int ToTree(PolygonTreeItem[] list, int idstart = 0)
+    internal void Stop()
     {
-      List<PolygonTreeItem> parents = new List<PolygonTreeItem>();
-      int i, j;
-
-      // assign a unique id to each leaf
-      // var id = idstart || 0;
-      var id = idstart;
-
-      for (i = 0; i < list.Length; i++)
-      {
-        var p = list[i];
-
-        var ischild = false;
-        for (j = 0; j < list.Length; j++)
-        {
-          if (j == i)
-          {
-            continue;
-          }
-
-          if (GeometryUtil.PointInPolygon(p.Polygon.Points[0], list[j].Polygon).Value)
-          {
-            if (list[j].Childs == null)
-            {
-              list[j].Childs = new List<PolygonTreeItem>();
-            }
-
-            list[j].Childs.Add(p);
-            p.Parent = list[j];
-            ischild = true;
-            break;
-          }
-        }
-
-        if (!ischild)
-        {
-          parents.Add(p);
-        }
-      }
-
-      for (i = 0; i < list.Length; i++)
-      {
-        if (parents.IndexOf(list[i]) < 0)
-        {
-          list = list.Skip(i).Take(1).ToArray();
-          i--;
-        }
-      }
-
-      for (i = 0; i < parents.Count; i++)
-      {
-        parents[i].Polygon.Id = id;
-        id++;
-      }
-
-      for (i = 0; i < parents.Count; i++)
-      {
-        if (parents[i].Childs != null)
-        {
-          id = this.ToTree(parents[i].Childs.ToArray(), id);
-        }
-      }
-
-      return id;
+      System.Diagnostics.Debug.Print("SvgNest.Stop()");
+      this.IsStopped = true;
     }
 
     internal void ResponseProcessor(NestResult payload)
@@ -339,16 +265,6 @@
       {
         throw;
       }
-    }
-
-    private void IncrementSecondaryProgressBar()
-    {
-      if (!this.progressDisplayer.IsVisibleSecondaryProgressBar)
-      {
-        this.progressDisplayer.InitialiseLoopProgress(ProgressBar.Secondary, Config.PopulationSize);
-      }
-
-      this.progressDisplayer.IncrementLoopProgress(ProgressBar.Secondary);
     }
 
     /// <summary>
@@ -442,6 +358,90 @@
       {
         this.progressDisplayer.IsVisibleSecondaryProgressBar = false;
       }
+    }
+
+    // converts a polygon from normal double coordinates to integer coordinates used by clipper, as well as x/y -> X/Y
+    private static List<ClipperLib.IntPoint> SvgToClipper(INfp polygon)
+    {
+      var d = DeepNestClipper.ScaleUpPath(polygon.Points, Config.ClipperScale);
+      return d;
+    }
+
+    private void IncrementSecondaryProgressBar()
+    {
+      if (!this.progressDisplayer.IsVisibleSecondaryProgressBar)
+      {
+        this.progressDisplayer.InitialiseLoopProgress(ProgressBar.Secondary, Config.PopulationSize);
+      }
+
+      this.progressDisplayer.IncrementLoopProgress(ProgressBar.Secondary);
+    }
+
+    private int ToTree(PolygonTreeItem[] list, int idstart = 0)
+    {
+      List<PolygonTreeItem> parents = new List<PolygonTreeItem>();
+      int i, j;
+
+      // assign a unique id to each leaf
+      // var id = idstart || 0;
+      var id = idstart;
+
+      for (i = 0; i < list.Length; i++)
+      {
+        var p = list[i];
+
+        var ischild = false;
+        for (j = 0; j < list.Length; j++)
+        {
+          if (j == i)
+          {
+            continue;
+          }
+
+          if (GeometryUtil.PointInPolygon(p.Polygon.Points[0], list[j].Polygon).Value)
+          {
+            if (list[j].Childs == null)
+            {
+              list[j].Childs = new List<PolygonTreeItem>();
+            }
+
+            list[j].Childs.Add(p);
+            p.Parent = list[j];
+            ischild = true;
+            break;
+          }
+        }
+
+        if (!ischild)
+        {
+          parents.Add(p);
+        }
+      }
+
+      for (i = 0; i < list.Length; i++)
+      {
+        if (parents.IndexOf(list[i]) < 0)
+        {
+          list = list.Skip(i).Take(1).ToArray();
+          i--;
+        }
+      }
+
+      for (i = 0; i < parents.Count; i++)
+      {
+        parents[i].Polygon.Id = id;
+        id++;
+      }
+
+      for (i = 0; i < parents.Count; i++)
+      {
+        if (parents[i].Childs != null)
+        {
+          id = this.ToTree(parents[i].Childs.ToArray(), id);
+        }
+      }
+
+      return id;
     }
 
     /// <summary>

@@ -1,6 +1,7 @@
 ﻿namespace DeepNestLib
 {
   using DeepNestLib.NestProject;
+  using DeepNestLib.Placement;
 
   public interface ISvgNestConfig : ITopNestResultsConfig, IPlacementConfig
   {

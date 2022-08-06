@@ -8,10 +8,10 @@
   using System.Reflection;
   using System.Text.Json;
   using DeepNestLib.CiTests;
+  using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
-  using Microsoft.CodeAnalysis;
   using Xunit;
 
   public class PartPlacementWorkerFixture
@@ -38,7 +38,7 @@
     public void GivenPropertiesPopulatedWhenSerializedThenShouldNotThrow()
     {
       var part = new NoFitPolygon(new List<SvgPoint>() { new SvgPoint(1, 2) });
-      var parts = new Gene(new Chromosome[] { part.ToChromosome(0) });
+      var parts = new DeepNestGene(new Chromosome[] { part.ToChromosome(0) });
       var placements = new List<IPartPlacement>() { new PartPlacement(part) };
       var sheet = new Sheet();
       var window = new WindowUnk();
@@ -95,7 +95,7 @@
     public void GivenPropertiesPopulatedShouldRoundTripSerialize()
     {
       var part = new NoFitPolygon(new List<SvgPoint>() { new SvgPoint(1, 2) });
-      var parts = new Gene(new Chromosome[] { part.ToChromosome(0) });
+      var parts = new DeepNestGene(new Chromosome[] { part.ToChromosome(0) });
       var placements = new List<IPartPlacement>() { new PartPlacement(part) };
       var sheet = new Sheet();
       var window = new WindowUnk();

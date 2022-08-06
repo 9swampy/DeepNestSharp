@@ -3,6 +3,7 @@
   using System.Threading.Tasks;
   using System.Windows.Input;
   using DeepNestLib;
+  using DeepNestLib.IO;
   using DeepNestLib.Placement;
   using Microsoft.Toolkit.Mvvm.Input;
 
