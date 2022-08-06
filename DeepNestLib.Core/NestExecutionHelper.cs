@@ -3,6 +3,7 @@
   using System.Collections.Generic;
   using System.IO;
   using System.Linq;
+  using DeepNestLib.IO;
   using DeepNestLib.NestProject;
 
   public class NestExecutionHelper
@@ -38,13 +39,13 @@
       progressDisplayer.DisplayTransientMessage(string.Empty);
     }
 
-    public void AddToPolygons(NestingContext context, int src, RawDetail det, int quantity, IProgressDisplayer progressDisplayer, bool isIncluded = true, bool isPriority = false, bool isMultiplied = false, AnglesEnum strictAngles = AnglesEnum.AsPreviewed)
+    public void AddToPolygons(NestingContext context, int src, IRawDetail det, int quantity, IProgressDisplayer progressDisplayer, bool isIncluded = true, bool isPriority = false, bool isMultiplied = false, AnglesEnum strictAngles = AnglesEnum.AsPreviewed)
     {
       var item = new DetailLoadInfo() { Quantity = quantity, IsIncluded = isIncluded, IsPriority = isPriority, IsMultiplied = isMultiplied, StrictAngle = strictAngles };
       AddToPolygons(context, src, det, item, progressDisplayer);
     }
 
-    public void AddToPolygons(NestingContext context, int src, RawDetail det, DetailLoadInfo item, IProgressDisplayer progressDisplayer)
+    public void AddToPolygons(NestingContext context, int src, IRawDetail det, DetailLoadInfo item, IProgressDisplayer progressDisplayer)
     {
       INfp loadedNfp;
       if (det.TryConvertToNfp(src, out loadedNfp))
@@ -63,9 +64,9 @@
       }
     }
 
-    public RawDetail LoadRawDetail(FileInfo f)
+    public IRawDetail LoadRawDetail(FileInfo f)
     {
-      RawDetail det = null;
+      IRawDetail det = null;
       if (f.Extension == ".svg")
       {
         det = SvgParser.LoadSvg(f.FullName);

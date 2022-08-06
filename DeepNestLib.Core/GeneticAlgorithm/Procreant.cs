@@ -14,19 +14,21 @@
     private readonly ISvgNestConfig config;
     private readonly IProgressDisplayer progressDisplayer;
     private readonly Stopwatch chaperone = new Stopwatch();
-    private int terminations = 0;
 
-    private double[] strictAsPreviewedAngles = new double[]
+    private readonly double[] strictAsPreviewedAngles = new double[]
     {
       0,
       180,
     };
 
-    private double[] strictRotate90Angles = new double[]
+    private readonly double[] strictRotate90Angles = new double[]
     {
       90,
       270,
     };
+
+    private PopulationItem[] population;
+    private int terminations = 0;
 
     public Procreant(NestItem<INfp>[] parts, ISvgNestConfig config, IProgressDisplayer progressDisplayer)
       : this(CreateAdam(parts), config, progressDisplayer)
@@ -44,7 +46,7 @@
       }
 
       var population = new PopulationItem[config.PopulationSize];
-      population[0] = new PopulationItem(adam.ToList(), angles.ToArray());
+      population[0] = new PopulationItem(BuildAdamGene(adam.ToList(), angles.ToArray()));
       for (int i = 1; i < config.PopulationSize; i++)
       {
         var mutant = this.Mutate(population[0]);
@@ -52,6 +54,19 @@
       }
 
       Population = TerminateClones(population).ToArray();
+    }
+
+    private static DeepNestGene BuildAdamGene(List<INfp> parts, double[] rotations)
+    {
+      var resultSource = new List<Chromosome>();
+      for (int i = 0; i < parts.Count; i++)
+      {
+        var chromosome = new Chromosome(parts[i], rotations[i]);
+        chromosome.SetIndex(i);
+        resultSource.Add(chromosome);
+      }
+
+      return new DeepNestGene(resultSource);
     }
 
     private IEnumerable<PopulationItem> TerminateClones(IEnumerable<PopulationItem> source)
@@ -84,7 +99,19 @@
       return false;
     }
 
-    public PopulationItem[] Population { get; private set; }
+    public PopulationItem[] Population
+    {
+      get => population;
+
+      private set
+      {
+        population = value;
+        for (int idx = 0; idx < population.Length; idx++)
+        {
+          population[idx].Index = idx;
+        }
+      }
+    }
 
     private static INfp[] CreateAdam(NestItem<INfp>[] parts)
     {
@@ -144,29 +171,29 @@
 
     private PopulationItem Mutate(PopulationItem p)
     {
-      var clone = new PopulationItem(p.Gene.Clone() as Chromosome[]);
-      for (var i = 0; i < clone.Gene.Length; i++)
+      var clone = p.Gene.ToArray();
+      for (var i = 0; i < clone.Length; i++)
       {
         var rand = r.NextDouble();
         if (rand < 0.01 * config.MutationRate)
         {
           var j = i + 1;
-          if (j < clone.Gene.Length)
+          if (j < clone.Length)
           {
-            var temp = clone.Gene[i];
-            clone.Gene[i] = clone.Gene[j];
-            clone.Gene[j] = temp;
+            var temp = clone[i];
+            clone[i] = clone[j];
+            clone[j] = temp;
           }
         }
 
         rand = r.NextDouble();
         if (rand < 0.01 * config.MutationRate)
         {
-          clone.Gene[i].Rotation = GetRandomRotation(clone.Gene[i].Part);
+          clone[i].Rotation = GetRandomRotation(clone[i].Part);
         }
       }
 
-      return clone;
+      return new PopulationItem(new DeepNestGene(clone));
     }
 
     private double GetRandomRotation(INfp part)
@@ -231,8 +258,8 @@
 
       return new[]
       {
-        new PopulationItem(son.ToArray()),
-        new PopulationItem(daughter.ToArray()),
+        new PopulationItem(new DeepNestGene(son)),
+        new PopulationItem(new DeepNestGene(daughter)),
       };
     }
 
@@ -240,9 +267,9 @@
     /// Given partial gene add any missing chromosomes from the population gene.
     /// </summary>
     /// <param name="initiantPartialGene">Partial gene from initiant parent.</param>
-    /// <param name="populationItem">Full gene from supplicant parent.</param>
+    /// <param name="supplicantParentGene">Full gene from supplicant parent.</param>
     /// <returns>Completed child gene.</returns>
-    private static Chromosome[] CompleteGene(IEnumerable<Chromosome> initiantPartialGene, Chromosome[] supplicantParentGene)
+    private static Chromosome[] CompleteGene(IEnumerable<Chromosome> initiantPartialGene, DeepNestGene supplicantParentGene)
     {
       var result = initiantPartialGene.ToArray();
       var idx = result.Length;
@@ -272,7 +299,7 @@
       chaperone.Restart();
       //this.progressDisplayer.IsVisibleSecondaryProgressBar = false;
       //this.progressDisplayer.InitialiseLoopProgress(ProgressBar.Primary, "Procreate. . .", config.PopulationSize);
-      while (newPopulation.Count() < config.PopulationSize && chaperone.ElapsedMilliseconds <= config.ProcreationTimeout)
+      while (newPopulation.Count() > 1 && newPopulation.Count() < config.PopulationSize && chaperone.ElapsedMilliseconds <= config.ProcreationTimeout)
       {
         var male = RandomWeightedIndividual(newPopulation);
         var female = RandomWeightedIndividual(newPopulation, male);

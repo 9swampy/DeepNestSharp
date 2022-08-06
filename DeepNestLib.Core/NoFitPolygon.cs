@@ -7,8 +7,11 @@
   using System.Text;
   using System.Text.Json;
   using System.Text.Json.Serialization;
+  using DeepNestLib.GeneticAlgorithm;
+  using DeepNestLib.IO;
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
+  using IxMilia.Dxf;
   using IxMilia.Dxf.Entities;
 
   public class NoFitPolygon : PolygonBase, INfp, IHiddenNfp, IStringify
@@ -177,12 +180,7 @@
 
       set
       {
-        if (value > 360D)
-        {
-          value = value % 360D;
-        }
-
-        this.rotation = value;
+        this.rotation = value % 360D;
       }
     }
 
@@ -206,23 +204,7 @@
     {
       get
       {
-        var ret = 0d;
-        if (this.points.Length < 3)
-        {
-          return 0;
-        }
-
-        List<SvgPoint> pp = new List<SvgPoint>();
-        pp.AddRange(this.points);
-        pp.Add(this.points[0]);
-        for (int i = 1; i < pp.Count; i++)
-        {
-          var s0 = pp[i - 1];
-          var s1 = pp[i];
-          ret += (s0.X * s1.Y) - (s0.Y * s1.X);
-        }
-
-        return (double)Math.Abs(ret / 2);
+        return (double)Math.Abs(Geometry.GeometryUtil.PolygonArea(this));
       }
     }
 
@@ -309,6 +291,15 @@
       }
     }
 
+    public static INfp FromDxf(List<DxfEntity> dxfEntities)
+    {
+      IRawDetail raw;
+      raw = DxfParser.ConvertDxfToRawDetail(string.Empty, dxfEntities);
+      INfp result;
+      raw.TryConvertToNfp(0, out result);
+      return result;
+    }
+
     /// <inheritdoc />
     public void AddPoint(SvgPoint point)
     {
@@ -353,7 +344,7 @@
           {
             if (hole.Children.Count == 0)
             {
-              if (NfpSimplifier.PolygonInsidePolygon(this, hole))
+              if (NfpSimplifier.IsInnerContainedByOuter(this, hole))
               {
                 return false;
               }
@@ -423,30 +414,9 @@
     }
 
     /// <inheritdoc />
-    public NoFitPolygon Clone()
+    public INfp Clone()
     {
-      NoFitPolygon result = new NoFitPolygon();
-      result.Id = this.Id;
-      result.Source = this.Source;
-      result.Rotation = this.Rotation;
-      result.IsPriority = this.IsPriority;
-      result.StrictAngle = this.StrictAngle;
-      result.Name = this.Name;
-
-      for (var i = 0; i < this.Length; i++)
-      {
-        result.AddPoint(new SvgPoint(this[i].X, this[i].Y));
-      }
-
-      if (this.Children != null && this.Children.Count > 0)
-      {
-        foreach (var child in this.Children)
-        {
-          result.Children.Add(child.Clone());
-        }
-      }
-
-      return result;
+      return CloneInstance();
     }
 
     /// <inheritdoc />
@@ -464,14 +434,12 @@
     }
 
     /// <inheritdoc />
-    public NoFitPolygon CloneExact()
+    public INfp CloneExact()
     {
       NoFitPolygon clone = new NoFitPolygon();
-      clone.Id = this.Id;
-      clone.Source = this.Source;
-      clone.IsPriority = this.IsPriority;
-      clone.StrictAngle = this.StrictAngle;
-      clone.Name = this.Name;
+      CopyStateProperties(clone);
+      CopyInstructionProperties(clone);
+
       clone.ReplacePoints(this.Points.Select(z => new SvgPoint(z.X, z.Y) { Exact = z.Exact }));
       if (this.Children != null)
       {
@@ -503,13 +471,9 @@
         pp.Add(new SvgPoint(x1, y1));
       }
 
-      NoFitPolygon rotated = this.Clone();
-      rotated.Rotation = 0;
+      var rotated = this.CloneInstance();
       rotated.ReplacePoints(pp);
-
-      // rotated.Rotation += degrees;
-
-      // rotated.Rotation = rotated.Rotation % 360f;
+      rotated.Rotation += degrees;
 
       if (withChildren == WithChildren.Included && this.Children != null && this.Children.Count > 0)
       {
@@ -528,11 +492,7 @@
       INfp result;
       if (this is Sheet sheet)
       {
-        result = new Sheet()
-        {
-          Width = sheet.Width,
-          Height = sheet.Height,
-        };
+        result = new Sheet(); //sheet, WithChildren.Included); //, WithChildren.Excluded);
       }
       else
       {
@@ -600,6 +560,11 @@
       return new Chromosome(this);
     }
 
+    public Chromosome ToChromosome(double firstRotation)
+    {
+      return new Chromosome(this, firstRotation);
+    }
+
     /// <inheritdoc />
     public virtual string ToJson()
     {
@@ -647,12 +612,11 @@
     public INfp Shift(double x, double y)
     {
       NoFitPolygon shifted = new NoFitPolygon();
-      shifted.Id = this.Id;
-      shifted.Name = this.Name;
+      CopyStateProperties(shifted);
+
       shifted.PlacementOrder = this.PlacementOrder;
-      shifted.Rotation = this.Rotation;
-      shifted.Source = this.Source;
       shifted.StrictAngle = this.StrictAngle;
+
       for (var i = 0; i < this.Length; i++)
       {
         shifted.AddPoint(new SvgPoint(this[i].X + x, this[i].Y + y) { Exact = this[i].Exact });
@@ -679,23 +643,14 @@
     {
       var thisPolygon = this as IPolygon;
       if (other != null &&
-          thisPolygon.Points.SequenceEqual(other.Points, new SvgPointCloseEqualityComparer()) &&
+          //thisPolygon.Points.SequenceEqual(other.Points, new SvgPointCloseEqualityComparer()) &&
           thisPolygon.Id == other.Id &&
           thisPolygon.Name == other.Name &&
           thisPolygon.Rotation == other.Rotation &&
           thisPolygon.Source == other.Source &&
           thisPolygon.Children.Count == other.Children.Count)
       {
-        for (int c = 0; c < thisPolygon.Children.Count; c++)
-        {
-          var childPolygon = thisPolygon.Children[c] as IEquatable<IPolygon>;
-          if (!childPolygon.Equals(other.Children[c]))
-          {
-            return false;
-          }
-        }
-
-        return true;
+        return PointsEqual(other, thisPolygon) && ChildrenEqual(other, thisPolygon);
       }
 
       return false;
@@ -711,21 +666,110 @@
       }
     }
 
+    public DxfFile ToDxfFile()
+    {
+      var result = new DxfFile();
+      result.Entities.Add(ToDxfPolyLine());
+      return result;
+    }
+
     internal static INfp FromDxf(DxfPolyline dxfPolyline)
     {
       return FromDxf(new List<DxfEntity>()
       {
-        dxfPolyline
+        dxfPolyline,
       });
     }
 
-    public static INfp FromDxf(List<DxfEntity> dxfEntities)
+    internal DxfPolyline ToDxfPolyLine()
     {
-      RawDetail raw;
-      raw = DxfParser.ConvertDxfToRawDetail(string.Empty, dxfEntities);
-      INfp result;
-      raw.TryConvertToNfp(0, out result);
+      var resultSource = new List<DxfVertex>();
+      foreach (var point in points)
+      {
+        resultSource.Add(new DxfVertex(new DxfPoint(point.X, point.Y, 0)));
+      }
+
+      return new DxfPolyline(resultSource);
+    }
+
+    private static bool ChildrenEqual(IPolygon other, IPolygon thisPolygon)
+    {
+      for (int c = 0; c < thisPolygon.Children.Count; c++)
+      {
+        var childPolygon = thisPolygon.Children[c] as IEquatable<IPolygon>;
+        if (!childPolygon.Equals(other.Children[c]))
+        {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    private static bool PointsEqual(IPolygon other, IPolygon thisPolygon)
+    {
+      if (thisPolygon.Points.Length == other.Points.Length)
+      {
+        for (int i = 0; i < thisPolygon.Points.Length; i++)
+        {
+          if (!thisPolygon.Points[i].Equals(other.Points[i]))
+          {
+            return false;
+          }
+        }
+      }
+      else
+      {
+        return false;
+      }
+
+      return true;
+    }
+
+    private NoFitPolygon CloneInstance()
+    {
+      NoFitPolygon result;
+      if (this is ISheet)
+      {
+        result = new Sheet();
+      }
+      else
+      {
+        result = new NoFitPolygon();
+      }
+
+      CopyStateProperties(result);
+      result.IsPriority = this.IsPriority;
+      result.StrictAngle = this.StrictAngle;
+
+      for (var i = 0; i < this.Length; i++)
+      {
+        result.AddPoint(new SvgPoint(this[i].X, this[i].Y));
+      }
+
+      if (this.Children != null && this.Children.Count > 0)
+      {
+        foreach (var child in this.Children)
+        {
+          result.Children.Add(child.Clone());
+        }
+      }
+
       return result;
+    }
+
+    private void CopyStateProperties(NoFitPolygon other)
+    {
+      other.Id = this.Id;
+      other.Name = this.Name;
+      other.Rotation = this.Rotation;
+      other.Source = this.Source;
+    }
+
+    private void CopyInstructionProperties(NoFitPolygon clone)
+    {
+      clone.IsPriority = this.IsPriority;
+      clone.StrictAngle = this.StrictAngle;
     }
   }
 }

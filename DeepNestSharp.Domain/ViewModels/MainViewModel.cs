@@ -8,6 +8,7 @@
   using System.Threading.Tasks;
   using System.Windows.Input;
   using DeepNestLib;
+  using DeepNestLib.IO;
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain.Docking;
@@ -335,7 +336,7 @@
           var filePath = fileIoService.GetSaveFilePath(exporter.SaveFileDialogFilter);
           if (!string.IsNullOrWhiteSpace(filePath))
           {
-            await exporter.Export(filePath, sheetPlacement, SvgNest.Config.MergeLines);
+            await exporter.Export(filePath, sheetPlacement, SvgNest.Config.MergeLines, SvgNest.Config.DifferentiateChildren);
           }
         }
       }

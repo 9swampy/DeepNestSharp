@@ -3,6 +3,8 @@
   using System;
   using System.Diagnostics;
   using DeepNestLib.CiTests.GeneticAlgorithm;
+  using DeepNestLib.CiTests.IO;
+  using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
@@ -32,7 +34,7 @@
       A.CallTo(() => config.UseDllImport).Returns(false);
       A.CallTo(() => config.Rotations).Returns(2);
       A.CallTo(() => config.ExportExecutions).Returns(false);
-      this.nestResult = new PlacementWorker(A.Dummy<NfpHelper>(), new ISheet[] { firstSheet, secondSheet }, new Chromosome[] { firstPart, secondPart }.ApplyIndex(), config, A.Dummy<Stopwatch>(), A.Fake<INestState>()).PlaceParts();
+      this.nestResult = new PlacementWorker(A.Dummy<NfpHelper>(), new ISheet[] { firstSheet, secondSheet }, new DeepNestGene(new Chromosome[] { firstPart, secondPart }.ApplyIndex()), config, A.Dummy<Stopwatch>(), A.Fake<INestState>()).PlaceParts();
     }
 
     [Fact]

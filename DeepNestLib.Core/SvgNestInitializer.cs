@@ -141,7 +141,7 @@
       var result = new List<INfp>();
       foreach (var item in parts)
       {
-        NoFitPolygon clone = item.CloneExact();
+        var clone = item.CloneExact();
         result.Add(clone);
       }
 

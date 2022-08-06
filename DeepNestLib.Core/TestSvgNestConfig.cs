@@ -1,10 +1,12 @@
 ﻿namespace DeepNestLib
 {
-  using System;
   using DeepNestLib.NestProject;
+  using DeepNestLib.Placement;
 
   public class TestSvgNestConfig : ISvgNestConfig
   {
+    internal static ISvgNestConfig Default => new TestSvgNestConfig();
+
     public double ClipperScale { get; set; } = 10000000;
 
     public double CurveTolerance { get; set; } = 0.72D;
@@ -16,6 +18,8 @@
     public int MutationRate { get; set; } = 10;
 
     public bool OffsetTreePhase { get; set; } = true;
+
+    public bool OverlapDetection { get; set; } = true;
 
     public PlacementTypeEnum PlacementType { get; set; } = PlacementTypeEnum.Gravity;
 
@@ -45,6 +49,8 @@
 
     public bool ClipByHull { get; set; } = true;
 
+    public bool DifferentiateChildren { get; set; } = true;
+
     public bool DrawSimplification { get; set; } = true;
 
     public bool UseParallel { get; set; } = false;
@@ -52,6 +58,8 @@
     public double Tolerance { get; set; } = 2;
 
     public double ToleranceSvg { get; set; } = 0.005;
+
+    public double TopDiversity { get; set; } = 0.0001;
 
     public AnglesEnum StrictAngles { get; set; } = AnglesEnum.None;
 

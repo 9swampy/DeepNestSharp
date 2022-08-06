@@ -1,6 +1,9 @@
 ﻿namespace DeepNestLib.CiTests
 {
   using System;
+  using DeepNestLib.CiTests.IO;
+  using DeepNestLib.IO;
+  using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
   using Xunit;
@@ -34,7 +37,7 @@
       ISheet firstSheet;
       new DxfGenerator().GenerateRectangle("Sheet", 180D, 88D, RectangleType.FileLoad).TryConvertToSheet(1, out firstSheet).Should().BeTrue();
       firstSheet.Id = 0;
-      INfp firstPart = DxfParser.LoadDxfStream("Dxfs._2.dxf").ToNfp();
+      INfp firstPart = DxfParser.LoadDxfFileStreamAsNfp("Dxfs._2.dxf");
       var sheetNfp = new SheetNfp(nfpHelper, firstSheet, firstPart, config.ClipperScale, config.UseDllImport, o => { });
 
       var json = sut.ToJson();

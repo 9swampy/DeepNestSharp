@@ -1,1 +1,147 @@
-{"DetailLoadInfos":[{"Name":"_1.dxf","Path":"C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_1.dxf","Quantity":1,"IsIncluded":true,"IsPriority":false,"IsMultiplied":true,"StrictAngle":0},{"Name":"_2.dxf","Path":"C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_2.dxf","Quantity":1,"IsIncluded":true,"IsPriority":false,"IsMultiplied":true,"StrictAngle":0},{"Name":"_3.dxf","Path":"C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_3.dxf","Quantity":1,"IsIncluded":true,"IsPriority":false,"IsMultiplied":true,"StrictAngle":0},{"Name":"_4.dxf","Path":"C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_4.dxf","Quantity":1,"IsIncluded":true,"IsPriority":false,"IsMultiplied":true,"StrictAngle":0},{"Name":"_5.dxf","Path":"C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_5.dxf","Quantity":1,"IsIncluded":true,"IsPriority":false,"IsMultiplied":true,"StrictAngle":0},{"Name":"_6.dxf","Path":"C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_6.dxf","Quantity":1,"IsIncluded":true,"IsPriority":false,"IsMultiplied":true,"StrictAngle":0},{"Name":"_7.dxf","Path":"C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_7.dxf","Quantity":1,"IsIncluded":true,"IsPriority":false,"IsMultiplied":true,"StrictAngle":0},{"Name":"_8.dxf","Path":"C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_8.dxf","Quantity":1,"IsIncluded":true,"IsPriority":false,"IsMultiplied":true,"StrictAngle":0},{"Name":"_9.dxf","Path":"C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_9.dxf","Quantity":1,"IsIncluded":true,"IsPriority":false,"IsMultiplied":true,"StrictAngle":0},{"Name":"_10.dxf","Path":"C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_10.dxf","Quantity":1,"IsIncluded":true,"IsPriority":false,"IsMultiplied":true,"StrictAngle":0},{"Name":"_11.dxf","Path":"C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_11.dxf","Quantity":1,"IsIncluded":true,"IsPriority":false,"IsMultiplied":true,"StrictAngle":0},{"Name":"_12.dxf","Path":"C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\_12.dxf","Quantity":1,"IsIncluded":true,"IsPriority":false,"IsMultiplied":true,"StrictAngle":0}],"SheetLoadInfos":[{"Width":1200,"Height":800,"Quantity":3}],"Config":{"Scale":25,"ClipperScale":10000000,"ExploreConcave":false,"Rotations":4,"SheetSpacing":0,"UseHoles":false,"Tolerance":2,"ToleranceSvg":0.005,"TimeRatio":0.5,"MergeLines":false,"ClipByHull":true,"CurveTolerance":0.2,"SaveAsFileTypeIndex":1,"SheetWidth":1200,"SheetHeight":800,"SheetQuantity":3,"PlacementType":1,"Simplify":false,"OffsetTreePhase":true,"Spacing":0,"PopulationSize":200,"MutationRate":400,"Multiplier":9,"DrawSimplification":true,"StrictAngles":0,"UseParallel":false,"ParallelNests":10,"ShowPartPositions":true}}
+{
+  "DetailLoadInfos": [
+    {
+      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_1.dxf",
+      "Quantity": 1,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": true,
+      "StrictAngle": 0
+    },
+    {
+      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_2.dxf",
+      "Quantity": 1,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": true,
+      "StrictAngle": 0
+    },
+    {
+      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_3.dxf",
+      "Quantity": 1,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": true,
+      "StrictAngle": 0
+    },
+    {
+      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_4.dxf",
+      "Quantity": 1,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": true,
+      "StrictAngle": 0
+    },
+    {
+      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_5.dxf",
+      "Quantity": 1,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": true,
+      "StrictAngle": 0
+    },
+    {
+      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_6.dxf",
+      "Quantity": 1,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": true,
+      "StrictAngle": 0
+    },
+    {
+      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_7.dxf",
+      "Quantity": 1,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": true,
+      "StrictAngle": 0
+    },
+    {
+      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_8.dxf",
+      "Quantity": 1,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": true,
+      "StrictAngle": 0
+    },
+    {
+      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_9.dxf",
+      "Quantity": 1,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": true,
+      "StrictAngle": 0
+    },
+    {
+      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_10.dxf",
+      "Quantity": 1,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": true,
+      "StrictAngle": 0
+    },
+    {
+      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_11.dxf",
+      "Quantity": 1,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": true,
+      "StrictAngle": 0
+    },
+    {
+      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_12.dxf",
+      "Quantity": 1,
+      "IsIncluded": true,
+      "IsPriority": false,
+      "IsMultiplied": true,
+      "StrictAngle": 0
+    }
+  ],
+  "SheetLoadInfos": [
+    {
+      "Width": 1200,
+      "Height": 800,
+      "Quantity": 3
+    }
+  ],
+  "Config": {
+    "Scale": 25,
+    "ClipperScale": 10000000,
+    "ExploreConcave": false,
+    "Rotations": 4,
+    "SheetSpacing": 0,
+    "UseHoles": false,
+    "Tolerance": 2,
+    "ToleranceSvg": 0.005,
+    "TimeRatio": 0.5,
+    "MergeLines": false,
+    "ClipByHull": true,
+    "CurveTolerance": 0.2,
+    "DifferentiateChildren": true,
+    "DrawSimplification": true,
+    "ExportExecutionPath": "C:\\Temp\\PartPlacementWorker",
+    "LastDebugFilePath": "",
+    "SaveAsFileTypeIndex": 1,
+    "SheetWidth": 1200,
+    "SheetHeight": 800,
+    "SheetQuantity": 3,
+    "PlacementType": 1,
+    "Simplify": false,
+    "OffsetTreePhase": true,
+    "Spacing": 0,
+    "PopulationSize": 200,
+    "ProcreationTimeout": 15000,
+    "MutationRate": 60,
+    "MutationRateMin": 1,
+    "MutationRateMax": 60,
+    "Multiplier": 9,
+    "StrictAngles": 0,
+    "UseParallel": false,
+    "ParallelNests": 10,
+    "ShowPartPositions": true,
+    "UseDllImport": true,
+    "UseMinkowskiCache": true,
+    "UsePriority": false,
+    "TopDiversity": 0.001
+  }
+}

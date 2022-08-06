@@ -5,8 +5,10 @@
   using System.ComponentModel;
   using System.Linq;
   using DeepNestLib;
+  using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
+  using IxMilia.Dxf;
 
   public class ObservableNfp : ObservablePropertyObject, INfp
   {
@@ -139,12 +141,11 @@
     SvgPoint[] IPolygon.Points => this.item.Points;
 
     /// <inheritdoc/>
-    [Description("The degrees of rotation from the original imported part (tbc).")]
+    [Description("The degrees of rotation from the original imported part.")]
     [Category("Placement")]
     public double Rotation
     {
       get => this.item.Rotation;
-      set => SetProperty(nameof(Rotation), () => this.item.Rotation, v => this.item.Rotation = v, value);
     }
 
     /// <inheritdoc/>
@@ -211,13 +212,13 @@
     }
 
     /// <inheritdoc/>
-    public NoFitPolygon Clone()
+    public INfp Clone()
     {
       return this.item.Clone();
     }
 
     /// <inheritdoc/>
-    public NoFitPolygon CloneExact()
+    public INfp CloneExact()
     {
       return this.item.CloneExact();
     }
@@ -281,6 +282,11 @@
       return this.item.ToChromosome();
     }
 
+    public Chromosome ToChromosome(double rotation)
+    {
+      return this.item.ToChromosome(rotation);
+    }
+
     /// <inheritdoc/>
     public string ToJson()
     {
@@ -322,6 +328,11 @@
     public void EnsureIsClosed()
     {
       this.item.EnsureIsClosed();
+    }
+
+    public DxfFile ToDxfFile()
+    {
+      return item.ToDxfFile();
     }
   }
 }

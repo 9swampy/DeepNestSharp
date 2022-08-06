@@ -1,6 +1,7 @@
 ﻿namespace DeepNestLib.CiTests.DummyFactories
 {
   using System.Collections.Generic;
+  using DeepNestLib.Placement;
   using FakeItEasy;
 
   internal class DummyPartPlacementWorkerFactory : DummyFactory<PartPlacementWorker>

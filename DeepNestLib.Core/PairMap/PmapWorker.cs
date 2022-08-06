@@ -1,5 +1,6 @@
 ﻿namespace DeepNestLib.PairMap
 {
+  using DeepNestLib.Placement;
   using System;
   using System.Collections.Generic;
   using System.Linq;

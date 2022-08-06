@@ -1,7 +1,9 @@
 ﻿namespace DeepNestLib
 {
   using System.Collections.Generic;
+  using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
+  using IxMilia.Dxf;
 
   public interface INfp : IMinMaxXY, IPolygon, IPlacement
   {
@@ -14,11 +16,6 @@
     /// Gets the gross outer area, discounting for any holes.
     /// </summary>
     double NetArea { get; }
-
-    /// <summary>
-    /// Cleans the points of the parent and all children, maintaining IsClosed state.
-    /// </summary>
-    void Clean();
 
     bool Fitted { get; }
 
@@ -39,18 +36,23 @@
 
     double WidthCalculated { get; }
 
-    NoFitPolygon Clone();
+    /// <summary>
+    /// Cleans the points of the parent and all children, maintaining IsClosed state.
+    /// </summary>
+    void Clean();
+
+    INfp Clone();
 
     /// <summary>
     /// Clone but only copy exact points.
     /// </summary>
     /// <returns>A clone.</returns>
-    NoFitPolygon CloneExact();
+    INfp CloneExact();
 
     INfp CloneTree();
 
     /// <summary>
-    /// Clones but only the top level points; no children.
+    /// Clones but only the top level points; no children, state or instruction properties.
     /// </summary>
     /// <returns>A clone.</returns>
     INfp CloneTop();
@@ -108,14 +110,22 @@
     INfp Rotate(double degrees, WithChildren withChildren = WithChildren.Included);
 
     /// <summary>
-    /// Generates a chromosome which to separate Rotation from the Nfp. Rotation served a confused dual purpose of tracking state as well as instruction; store instruction the gene instead).
+    /// Generates a chromosome which to separate Rotation from the Nfp. Rotation served a confused dual purpose of tracking state as well as instruction; store instruction the gene instead). The chromosome will actually contain a clone of the part so the original will not get altered.
     /// </summary>
     /// <returns>A chromosome representing the part.</returns>
     Chromosome ToChromosome();
 
+    /// <summary>
+    /// Generates a chromosome specifying Rotation instruction separate from the Nfp. The chromosome will actually contain a clone of the part so the original will not get altered.
+    /// </summary>
+    /// <returns>A chromosome representing the part.</returns>
+    Chromosome ToChromosome(double firstRotation);
+
     bool Overlaps(INfp other);
 
     INfp Slice(int v);
+
+    DxfFile ToDxfFile();
 
     string Stringify();
 

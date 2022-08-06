@@ -6,6 +6,7 @@
   using System.Linq;
   using System.Threading.Tasks;
   using DeepNestLib;
+  using DeepNestLib.IO;
   using DeepNestLib.NestProject;
   using Microsoft.VisualStudio.Threading;
 

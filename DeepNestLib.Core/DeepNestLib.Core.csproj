@@ -46,9 +46,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="IO\" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="..\DeepNestLib.CiTests\OneSquare.dxf" Link="Dxfs\OneSquare.dxf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>

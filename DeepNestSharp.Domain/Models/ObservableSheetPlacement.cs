@@ -115,9 +115,9 @@
       observablePartPlacements[0].SaveState();*/
     }
 
-    public async Task ExportDxf(Stream stream, bool mergeLines)
+    public async Task ExportDxf(Stream stream, bool mergeLines, bool differentiateChildren)
     {
-      await sheetPlacement.ExportDxf(stream, mergeLines);
+      await sheetPlacement.ExportDxf(stream, mergeLines, differentiateChildren);
     }
   }
 }

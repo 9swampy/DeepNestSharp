@@ -5,6 +5,7 @@
   using System.Linq;
   using System.Threading.Tasks;
   using System.Xml.Linq;
+  using DeepNestLib.IO;
   using DeepNestLib.Placement;
 
   public class NestingContext : INestingContext
@@ -146,7 +147,6 @@
           poly.Sheet = sheet;
           poly.X = partPlacement.X + sheet.X;
           poly.Y = partPlacement.Y + sheet.Y;
-          poly.Rotation = partPlacement.Rotation;
           poly.PlacementOrder = sheetPlacement.PartPlacements.IndexOf(partPlacement);
         }
       }
@@ -170,7 +170,7 @@
         Sheets[i].Y = y;
         if (Sheets[i] is Sheet sheet)
         {
-          x += sheet.Width + gap;
+          x += sheet.WidthCalculated + gap;
         }
         else
         {
@@ -182,16 +182,13 @@
       }
     }
 
-    private void AddSheet(int w, int h, int src)
+    private void AddSheet(int width, int height, int src)
     {
       var tt = new RectangleSheet();
       tt.Name = "sheet" + (Sheets.Count + 1);
       Sheets.Add(tt);
-
       tt.Source = src;
-      tt.Height = h;
-      tt.Width = w;
-      tt.Rebuild();
+      tt.Build(width, height);
       ReorderSheets();
     }
 
@@ -269,7 +266,7 @@
       {
         var cnt = int.Parse(item.Attribute("count").Value);
         var path = item.Attribute("path").Value;
-        RawDetail r = null;
+        IRawDetail r = null;
         if (path.ToLower().EndsWith("svg"))
         {
           r = SvgParser.LoadSvg(path);

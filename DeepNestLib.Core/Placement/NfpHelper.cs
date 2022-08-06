@@ -4,11 +4,10 @@
   using System.Collections.Generic;
   using System.Linq;
   using System.Text;
-  using System.Text.Json;
   using System.Text.Json.Serialization;
   using ClipperLib;
   using DeepNestLib.Geometry;
-  using DeepNestLib.NestProject;
+  using DeepNestLib.Placement;
   using Light.GuardClauses;
 
   public class NfpHelper : INfpHelper, ITestNfpHelper
@@ -221,7 +220,7 @@
     /// <returns>The generated InnerFitPolygon if found, otherwise null.</returns>
     internal INfp GetInnerNfp(ISheet sheet, INfp part, MinkowskiCache minkowskiCache, bool useDllImport)
     {
-      return GetInnerNfp((INfp)sheet, part, minkowskiCache, useDllImport, o=> { });
+      return GetInnerNfp((INfp)sheet, part, minkowskiCache, useDllImport, o => { });
     }
 
     /// <summary>

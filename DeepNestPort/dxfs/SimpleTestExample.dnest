@@ -37,6 +37,7 @@
     "MergeLines": false,
     "ClipByHull": true,
     "CurveTolerance": 0.2,
+    "DifferentiateChildren": true,
     "DrawSimplification": true,
     "ExportExecutionPath": "",
     "LastDebugFilePath": "",
@@ -47,10 +48,11 @@
     "PlacementType": 1,
     "Simplify": false,
     "OffsetTreePhase": true,
+    "OverlapDetection": false,
     "Spacing": 0,
-    "PopulationSize": 200,
+    "PopulationSize": 120,
     "ProcreationTimeout": 15000,
-    "MutationRate": 60,
+    "MutationRate": 20,
     "MutationRateMin": 1,
     "MutationRateMax": 60,
     "Multiplier": 4,
@@ -60,6 +62,7 @@
     "ShowPartPositions": true,
     "UseDllImport": true,
     "UseMinkowskiCache": true,
-    "UsePriority": false
+    "UsePriority": false,
+    "TopDiversity": 0.001
   }
 }
