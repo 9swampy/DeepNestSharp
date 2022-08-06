@@ -19,8 +19,6 @@
 
     public NfpCandidateList(INfp[] items, ISheet sheet, INfp part)
     {
-#if NCRUNCH
-      //Need to clean to ensure code is substitutable but don't think it'll make any difference to real executions; just slows things down.
       if (items != null)
       {
         foreach (var nfp in items)
@@ -28,7 +26,6 @@
           nfp.Clean();
         }
       }
-#endif
 
       Items = items;
       Sheet = new Sheet(sheet, WithChildren.Included);

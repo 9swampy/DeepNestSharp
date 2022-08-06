@@ -209,7 +209,7 @@
         State.IncrementNestTime(payload.BackgroundTime);
 
 #if NCRUNCH
-      Trace.WriteLine("payload.Index I don't think is being set right; double check before retrying threaded execution.");
+        Trace.WriteLine("payload.Index I don't think is being set right; double check before retrying threaded execution.");
 #endif
         this.procreant.Population[payload.Index].Processing = false;
         this.procreant.Population[payload.Index].Fitness = payload.Fitness;

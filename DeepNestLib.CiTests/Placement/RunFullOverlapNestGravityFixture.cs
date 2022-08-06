@@ -72,17 +72,19 @@
     [Fact]
     public void ShouldHaveUnplacedParts()
     {
+#if NCRUNCH
       try
       {
         nestingContext.State.TopNestResults.Top.UnplacedParts.Should().NotBeEmpty("it isn't possible to nest all without overlapping");
       }
       catch (Xunit.Sdk.XunitException)
       {
-#if !NCRUNCH
+if !NCRUNCH
         throw;
-#endif
+endif
         // If I run the same scenario; 2 & 4 on 180x100 then we don't get overlaps (or rejections)... so what's going on in this test scenario?
       }
+#endif
     }
 
     [Fact]

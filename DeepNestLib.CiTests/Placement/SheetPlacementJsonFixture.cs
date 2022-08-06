@@ -59,7 +59,7 @@
       new DxfGenerator().GenerateRectangle("firstSheet", 5D, 5D, RectangleType.FileLoad).TryConvertToSheet(3, out firstSheet).Should().BeTrue();
       INfp firstPart;
       new DxfGenerator().GenerateRectangle("firstPart", 1D, 2D, RectangleType.FileLoad).TryConvertToNfp(4, out firstPart).Should().BeTrue();
-      var expected = new SheetPlacement(A.Dummy<PlacementTypeEnum>(), firstSheet, new List<IPartPlacement>() { new PartPlacement(firstPart) }, 0, A.Dummy<double>());
+      var expected = new SheetPlacement(A.Dummy<PlacementTypeEnum>(), firstSheet, new List<IPartPlacement>() { new PartPlacement(firstPart) }, 0, new TestSvgNestConfig().ClipperScale);
 
       var json = expected.ToJson();
       var actual = SheetPlacement.FromJson(json);

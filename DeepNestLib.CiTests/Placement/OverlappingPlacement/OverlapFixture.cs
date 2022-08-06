@@ -104,7 +104,7 @@
           {
             setPartPlacement(position);
             placements.Add(position);
-            setSheetPlacement(new SheetPlacement(placementType, sheet, placements, mergedLength, 0));
+            setSheetPlacement(new SheetPlacement(placementType, sheet, placements, mergedLength, new TestSvgNestConfig().ClipperScale));
           }
         });
       return (sut, placementWorker);
