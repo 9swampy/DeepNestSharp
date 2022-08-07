@@ -79,24 +79,23 @@
       sut.ProcessPart(sut.InputPart, 1);
       //File.WriteAllText($"C:\\Temp\\FinalNfp{useDllImport}.dnnfps", sut.FinalNfp.ToJson());
 
-      sut.FinalNfp.Items.Sum(o => o.Area).Should().BeApproximately(255.54, 0.3);
+      sut.FinalNfp.Items.Sum(o => o.Area).Should().BeApproximately(255.6, 0.5);
 
       sut.FinalNfp.Items[0].IsClosed.Should().BeFalse();
       sut.FinalNfp.Items[1].IsClosed.Should().BeFalse();
+      sut.FinalNfp.NumberOfNfps.Should().Be(2, "we get one circle and one right hand contigious NFP");
       if (useDllImport)
       {
-        sut.FinalNfp.NumberOfNfps.Should().Be(2, "we get one circle and one right hand contigious NFP");
-        sut.FinalNfp.Items[0].Length.Should().Be(19);
         sut.FinalNfp.Items[1].Length.Should().Be(16);
       }
       else
       {
-        sut.FinalNfp.NumberOfNfps.Should().Be(3, "we get one circle but the right hand NFP is equivalent but split.");
-        sut.FinalNfp.Items[0].Length.Should().Be(16);
         sut.FinalNfp.Items[1].Length.Should().Be(15);
-        sut.FinalNfp.Items[2].Length.Should().Be(7);
-        sut.FinalNfp.Items[2].IsClosed.Should().BeFalse();
       }
+
+      sut.FinalNfp.Items[0].Length.Should().Be(19);
+      sut.FinalNfp.Items[0].Area.Should().BeApproximately(197.5, 1);
+      sut.FinalNfp.Items[1].Area.Should().BeApproximately(57, 1);
     }
 
     [Theory]
@@ -189,7 +188,7 @@
       sut.Config.UseDllImport.Should().Be(useDllImport);
 
       ((ITestPartPlacementWorker)sut).State = new NestState(config, dispatcherService);
-      
+
       placementWorker = A.Fake<IPlacementWorker>();
       ((ITestPartPlacementWorker)sut).PlacementWorker = placementWorker;
 

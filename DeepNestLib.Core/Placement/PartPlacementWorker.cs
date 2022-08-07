@@ -673,25 +673,7 @@
         }
 
         this.VerboseLog($"TryGetCombinedNfp(j={j})=>shift to placed location");
-        for (int m = 0; m < outerNfp.Length; m++)
-        {
-          outerNfp[m].X += placements[j].X;
-          outerNfp[m].Y += placements[j].Y;
-        }
-
-        if (outerNfp.Children != null && outerNfp.Children.Count > 0)
-        {
-          this.VerboseLog($"TryGetCombinedNfp(j={j})=>has children.");
-          for (int n = 0; n < outerNfp.Children.Count; n++)
-          {
-            for (var o = 0; o < outerNfp.Children[n].Length; o++)
-            {
-              outerNfp.Children[n][o].X += placements[j].X;
-              outerNfp.Children[n][o].Y += placements[j].Y;
-            }
-          }
-        }
-
+        outerNfp = outerNfp.Shift(placements[j]);
         var clipperNfp = NfpHelper.NfpToClipperCoordinates(outerNfp, this.Config.ClipperScale);
         this.VerboseLog($"Add {placements[j].Part.ToShortString()} paths to {nameof(clipper)} ({placements[j].Part.Name})");
         clipper.AddPaths(clipperNfp, PolyType.ptSubject, true);

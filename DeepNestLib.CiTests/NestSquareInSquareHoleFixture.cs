@@ -38,10 +38,10 @@
     [InlineData(-360, 0, 0, -270, 30, 20)]
 
     //Invalid results; second placements should only ever be 20 or 30?
-    [InlineData(-90, 0, 40, -0, 20, 14)]
-    [InlineData(-90, 0, 40, -90, 20, 24)]
-    [InlineData(-90, 0, 40, -270, 30, 14)]
-    [InlineData(-90, 0, 40, -360, 20, 14)]
+    [InlineData(-90, 0, 40, -0, 20, 20)]
+    [InlineData(-90, 0, 40, -90, 20, 30)]
+    [InlineData(-90, 0, 40, -270, 30, 20)]
+    [InlineData(-90, 0, 40, -360, 20, 20)]
     public void NestSquareInSquareHoleShouldBeObserved(double firstRotation, double firstX, double firstY, double secondRotation, double secondX, double secondY)
     {
       DxfGenerator DxfGenerator = new DxfGenerator();
@@ -86,9 +86,9 @@
       nestResult.UsedSheets[0].PartPlacements[0].Y.Should().BeApproximately(firstY, 0.01);
 
       var combinedNfp = ((ITestPlacementWorker)placementWorker).LastPartPlacementWorker.CombinedNfp;
-      //combinedNfp.Count.Should().Be(2);
-      //combinedNfp[0].Count.Should().Be(4);
-      //combinedNfp[1].Count.Should().Be(4);
+      combinedNfp.Count.Should().Be(2);
+      combinedNfp[0].Count.Should().Be(4);
+      combinedNfp[1].Count.Should().Be(4);
 
       TwoSimpleSquaresOnSingleSheetShouldNotOverlapFixture.ValidateSecondPlacement(secondRotation, nestResult.UsedSheets[0].PartPlacements[1], firstPart, secondPart);
       nestResult.UsedSheets[0].PartPlacements[1].X.Should().BeApproximately(secondX, 0.01);
