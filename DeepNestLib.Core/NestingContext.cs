@@ -95,7 +95,7 @@
         {
           var plcpr = State.TopNestResults.Top;
 
-          if (Current == null || plcpr.Fitness < Current.Fitness)
+          if (Current == null || plcpr.FitnessTotal < Current.FitnessTotal)
           {
             AssignPlacement(plcpr);
           }

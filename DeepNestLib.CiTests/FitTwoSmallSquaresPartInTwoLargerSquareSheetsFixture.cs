@@ -55,7 +55,7 @@
       // Churns consistently on 2619, but occasionally comes back with 2506. Why? Hmm, moving the Bounds return
       // inside the lock and now it's stable on 2506 which is the correct answer. . . don't follow. . .
       this.nestResult.FitnessSheets.Should().BeApproximately(800, 1);
-      this.nestResult.MaterialWasted.Should().BeApproximately(961, 1);
+      this.nestResult.FitnessWastage.Should().BeApproximately(627, 1);
       this.nestResult.MaterialUtilization.Should().BeApproximately(1, 1);
       this.nestResult.UsedSheets.Count.Should().Be(2);
       this.nestResult.UsedSheets[0].PlacementType.Should().Be(PlacementTypeEnum.BoundingBox);
@@ -65,7 +65,7 @@
       this.nestResult.UsedSheets[0].RectBounds.Width.Should().Be(11);
       this.nestResult.UsedSheets[0].RectBounds.Height.Should().Be(11);
       this.nestResult.UsedSheets[0].Fitness.Bounds.Should().BeApproximately(103, 1);
-      this.nestResult.Fitness.Should().BeApproximately(2506, 1);
+      this.nestResult.FitnessTotal.Should().BeApproximately(2154, 1);
     }
 
     [Fact]

@@ -60,7 +60,7 @@
       get
       {
         return !(this.nestingContext.State.TopNestResults.Top == default ||
-                 this.nestingContext.State.TopNestResults.Top.Fitness > ExpectedFitness + ExpectedFitnessTolerance);
+                 this.nestingContext.State.TopNestResults.Top.FitnessTotal > ExpectedFitness + ExpectedFitnessTolerance);
       }
     }
 

@@ -88,7 +88,7 @@
     [Fact]
     public void FitnessShouldBeExpected()
     {
-      nestingContext.State.TopNestResults.Top.Fitness.Should().BeLessThan(ExpectedFitness + ExpectedFitnessTolerance);
+      nestingContext.State.TopNestResults.Top.FitnessTotal.Should().BeLessThan(ExpectedFitness + ExpectedFitnessTolerance);
     }
 
     [Fact]

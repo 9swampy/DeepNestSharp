@@ -29,7 +29,7 @@
     [Fact]
     public void OneSheetFitnessShouldBeBetterThanTwo()
     {
-      scenario1.Fitness.Should().BeLessThan(scenario2.Fitness);
+      scenario1.FitnessTotal.Should().BeLessThan(scenario2.FitnessTotal);
     }
 
     [Fact]

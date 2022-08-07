@@ -65,7 +65,7 @@
             options// .Including(o => o.MergedLength)
                    // .Including(o => o.UnplacedParts)
                    .Including(o => o.UsedSheets)
-                   .Excluding(o => o.Fitness)
+                   .Excluding(o => o.FitnessTotal)
                    .Excluding(o => o.CreatedAt));
       //.ExcludingProperties());
     }

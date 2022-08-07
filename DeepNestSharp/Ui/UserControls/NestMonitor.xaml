@@ -76,7 +76,7 @@
       </behaviors:Interaction.Triggers>
       <ListView.View>
         <GridView>
-          <GridViewColumn Header="Fitness" Width="80" DisplayMemberBinding="{Binding Path=Fitness, StringFormat=0.0000, Mode=OneWay}" />
+          <GridViewColumn Header="Fitness" Width="80" DisplayMemberBinding="{Binding Path=FitnessTotal, StringFormat=0.0000, Mode=OneWay}" />
           <GridViewColumn Header="Placed" Width="60" DisplayMemberBinding="{Binding Path=TotalPlacedCount, Mode=OneWay}">
             <GridViewColumn.CellTemplate>
               <DataTemplate>

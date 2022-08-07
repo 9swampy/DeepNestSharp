@@ -31,7 +31,9 @@
     [Fact]
     public void GivenTwoSheetPlacementsWhenSamePartsPlacedOnEachButS2IsBetterByGravityIsGuessS2MaterialWastedShouldBeLessTbc()
     {
-      scenario2.Fitness.MaterialWasted.Should().BeLessThan(scenario1.Fitness.MaterialWasted);
+      var materialWasted1 = scenario1.Fitness.MaterialWasted;
+      var materialWasted2 = scenario2.Fitness.MaterialWasted;
+      materialWasted2.Should().BeLessThan(materialWasted1);
     }
 
     [Fact]

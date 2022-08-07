@@ -51,7 +51,7 @@
             sheets = sheetPlacement.Sheet.Area;
           }
 
-          return sheets.Value;
+          return ScaleBySimpleUtilization(sheets.Value);
         }
       }
     }
@@ -68,19 +68,25 @@
           if (!materialWasted.HasValue)
           {
             var rectBounds = sheetPlacement.RectBounds;
-            materialWasted = sheetPlacement.MaterialUtilization < 0.6 ? rectBounds.Width * rectBounds.Height * 2 : sheetPlacement.Sheet.Area;
-            materialWasted += sheetPlacement.Hull.Area + (rectBounds.Width * rectBounds.Height);
-            materialWasted *= 2;
-            materialWasted -= sheetPlacement.MaterialUtilization < 0.6 ? 7 : 6 * sheetPlacement.TotalPartsArea;
-            if (sheetPlacement.MaterialUtilization < 0.3)
+            var utilization = sheetPlacement.TotalPartsArea / rectBounds.Area;
+            var wastage = 1 - utilization;
+            if (wastage == 0)
             {
-              materialWasted *= 1.25;
+              wastage = Math.Pow(1 - (sheetPlacement.TotalPartsArea / sheetPlacement.Sheet.Area), 2);
             }
 
-            materialWasted = Math.Max(0, materialWasted.Value / 2);
+            materialWasted = Math.Min(rectBounds.Area * 2, sheetPlacement.Sheet.Area);
+            materialWasted += sheetPlacement.Hull.Area + rectBounds.Area;
+            materialWasted /= 3;
+
+            materialWasted = Math.Max(0, materialWasted.Value * wastage * 4);
+            if (materialWasted > Sheets)
+            {
+              materialWasted = Sheets;
+            }
           }
 
-          return materialWasted.Value;
+          return ScaleBySimpleUtilization(materialWasted.Value);
         }
       }
     }
@@ -96,14 +102,14 @@
         {
           if (!materialUtilization.HasValue)
           {
-            materialUtilization = (double)Math.Pow(1 - this.sheetPlacement.MaterialUtilization, 1.1) * sheetPlacement.Sheet.Area;
+            materialUtilization = (double)Math.Pow(1 - this.sheetPlacement.MaterialUtilization, 1.2) * sheetPlacement.Sheet.Area;
             if (!materialUtilization.HasValue || double.IsNaN(materialUtilization.Value))
             {
               materialUtilization = sheetPlacement.Sheet.Area;
             }
           }
 
-          return materialUtilization.Value;
+          return ScaleBySimpleUtilization(materialUtilization.Value);
         }
       }
     }
@@ -138,7 +144,7 @@
               bounds = ((bound * 4) + area + sheetPlacement.Hull.Area) / 7;
             }
 
-            return this.bounds.Value;
+            return ScaleBySimpleUtilization(this.bounds.Value);
           }
         }
         catch (Exception ex)
@@ -148,6 +154,11 @@
           throw;
         }
       }
+    }
+
+    private double ScaleBySimpleUtilization(double value)
+    {
+      return value * Math.Pow(1 - sheetPlacement.MaterialUtilization, 0.9);
     }
 
     public override string ToString()

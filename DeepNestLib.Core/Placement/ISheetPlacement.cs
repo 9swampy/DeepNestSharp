@@ -12,6 +12,9 @@
 
     INfp Hull { get; }
 
+    /// <summary>
+    /// Gets the simple area percentage used.
+    /// </summary>
     double MaterialUtilization { get; }
 
     IReadOnlyList<IPartPlacement> PartPlacements { get; }

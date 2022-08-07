@@ -149,7 +149,7 @@
     public void ShouldHaveExpectedFitness()
     {
       nestResult.FitnessSheets.Should().BeApproximately(35200, 1);
-      nestResult.MaterialWasted.Should().BeApproximately(14500, 750);
+      nestResult.FitnessWastage.Should().BeApproximately(9250, 750);
       nestResult.MaterialUtilization.Should().BeApproximately(1, 1);
       nestResult.UsedSheets.Count.Should().Be(2);
       nestResult.UsedSheets[0].PlacementType.Should().Be(PlacementTypeEnum.BoundingBox);
@@ -159,7 +159,7 @@
       nestResult.UsedSheets[0].RectBounds.Width.Should().BeApproximately(firstPart.WidthCalculated, 10);
       nestResult.UsedSheets[0].RectBounds.Height.Should().BeApproximately(firstPart.HeightCalculated, 10);
       nestResult.UsedSheets[0].Fitness.Bounds.Should().BeApproximately(12800, 100);
-      nestResult.Fitness.Should().BeGreaterThan(80000);
+      nestResult.FitnessTotal.Should().BeGreaterThan(75000);
     }
 
     [Fact]

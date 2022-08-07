@@ -33,13 +33,13 @@
     [Fact]
     public void GivenTwoSheetPlacementsWhenSamePartsPlacedOnEachThenMaterialUtilizationShouldBeSame()
     {
-      scenarioWorst.Fitness.MaterialUtilization.Should().Be(scenarioBest.Fitness.MaterialUtilization);
+      scenarioWorst.Fitness.MaterialUtilization.Should().BeApproximately(scenarioBest.Fitness.MaterialUtilization, 1);
     }
 
     [Fact]
     public void GivenTwoSheetPlacementsWhenSameSheetsUsedOnEachThenSheetsFitnessShouldBeSame()
     {
-      scenarioWorst.Fitness.Sheets.Should().Be(scenarioBest.Fitness.Sheets);
+      scenarioWorst.Fitness.Sheets.Should().BeApproximately(scenarioBest.Fitness.Sheets, 1);
     }
 
     [Fact]

@@ -67,7 +67,7 @@
       actualSheetPlacement.Should().NotBeNull();
       sut.Placements[0].Rotation.Should().Be(270);
       sut.Placements[1].Rotation.Should().Be(180);
-      actualSheetPlacement.Fitness.Total.Should().BeApproximately(140019, 1, "while it's wrong this is the behaviour we expected to replicate");
+      actualSheetPlacement.Fitness.Total.Should().BeApproximately(90274, 1, "while it's wrong this is the behaviour we expected to replicate");
     }
 
     private static (PartPlacementWorker sut, IPlacementWorker placementWorker) GetSut(string jsonSource, bool useCache, Action<PartPlacement> setPartPlacement, Action<SheetPlacement> setSheetPlacement)
@@ -142,7 +142,7 @@
         actualSheetPlacement.Should().NotBeNull();
         sut.Placements[0].Rotation.Should().Be(270);
         sut.Placements[1].Rotation.Should().Be(180);
-        actualSheetPlacement.Fitness.Total.Should().BeGreaterThan(130000);
+        actualSheetPlacement.Fitness.Total.Should().BeGreaterThan(90000);
       }
       catch
       {

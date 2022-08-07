@@ -8,13 +8,17 @@
   {
     DateTime CreatedAt { get; }
 
-    double Fitness { get; }
+    double FitnessTotal { get; }
 
     double FitnessBounds { get; }
 
     double FitnessSheets { get; }
 
     double FitnessUnplaced { get; }
+
+    double FitnessUtilization { get; }
+
+    double FitnessWastage { get; }
 
     bool IsValid { get; }
 

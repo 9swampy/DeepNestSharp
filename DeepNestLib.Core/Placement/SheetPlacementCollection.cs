@@ -1,5 +1,6 @@
 ﻿namespace DeepNestLib.Placement
 {
+  using System;
   using System.Linq;
   using System.Text.Json.Serialization;
   using DeepNestLib.GeneticAlgorithm;
@@ -27,10 +28,10 @@
     public double Bounds => this.Sum(o => o.Fitness.Bounds);
 
     [JsonIgnore]
-    public double MaterialUtilization => this.Sum(o => o.Fitness.MaterialUtilization);
+    public double Utilization => this.Sum(o => o.Fitness.MaterialUtilization);
 
     [JsonIgnore]
-    public double MaterialWasted => this.Sum(o => o.Fitness.MaterialWasted);
+    public double Wasted => this.Sum(o => o.Fitness.MaterialWasted);
 
     [JsonIgnore]
     public double Sheets
@@ -56,6 +57,8 @@
         }
       }
     }
+
+    public double Total => this.Sum(o => o.Fitness.Total);
 
     public int TotalPartsPlaced => this.Sum(o => o.PartPlacements.Count);
   }

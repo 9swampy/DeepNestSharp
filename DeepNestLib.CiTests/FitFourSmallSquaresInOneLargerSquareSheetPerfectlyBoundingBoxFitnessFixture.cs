@@ -58,7 +58,7 @@
     [Fact]
     public void ShouldHaveSameFitnessAsOriginal()
     {
-      this.nestResult.Fitness.Should().BeApproximately(1024, 100);
+      this.nestResult.FitnessTotal.Should().BeApproximately(1024, 100);
     }
 
     [Fact]
@@ -88,13 +88,13 @@
     [Fact]
     public void GivenMaterialWastedPenaltyShouldBeInLineWithSheetsPenaltyThenScenarioBestShouldBeComingCloseToSheets()
     {
-      this.nestResult.MaterialWasted.Should().BeApproximately(this.nestResult.FitnessSheets - (this.nestResult.FitnessSheets / 4), 3 * this.nestResult.FitnessSheets / 4);
+      this.nestResult.FitnessWastage.Should().BeApproximately(this.nestResult.FitnessSheets - (this.nestResult.FitnessSheets / 4), 3 * this.nestResult.FitnessSheets / 4);
     }
 
     [Fact]
     public void GivenMaterialWastedLowThenPenaltyShouldBeASmallFractionOfSheets()
     {
-      this.nestResult.MaterialWasted.Should().BeLessThan(this.nestResult.FitnessSheets / 10);
+      this.nestResult.FitnessWastage.Should().BeLessThan(this.nestResult.FitnessSheets / 10);
     }
   }
 }

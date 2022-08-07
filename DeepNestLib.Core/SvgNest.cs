@@ -212,7 +212,7 @@
         Trace.WriteLine("payload.Index I don't think is being set right; double check before retrying threaded execution.");
 #endif
         this.procreant.Population[payload.Index].Processing = false;
-        this.procreant.Population[payload.Index].Fitness = payload.Fitness;
+        this.procreant.Population[payload.Index].Fitness = payload.FitnessTotal;
 
         //int currentPlacements = 0;
         string suffix = string.Empty;
@@ -243,6 +243,10 @@
             if (result == TryAddResult.Duplicate)
             {
               suffix = "Duplicate";
+            }
+            else if (result == TryAddResult.Substitute)
+            {
+              suffix = "Substitute";
             }
             else
             {

@@ -53,7 +53,7 @@
     [Obsolete]
     public void ShouldHaveExpectedFitness()
     {
-      this.nestResult.Fitness.Should().BeApproximately(1036, 10);
+      this.nestResult.FitnessTotal.Should().BeApproximately(994, 10);
     }
 
     [Fact]
@@ -77,7 +77,7 @@
     [Fact]
     public void ShouldHaveExpectedFitnessMaterialWasted()
     {
-      this.nestResult.MaterialWasted.Should().BeApproximately(45, 10D);
+      this.nestResult.FitnessWastage.Should().BeApproximately(14, 3D);
     }
 
     [Fact]

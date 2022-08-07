@@ -46,7 +46,7 @@
     public DateTime CreatedAt { get; } = DateTime.Now;
 
     [JsonIgnore]
-    public double Fitness
+    public double FitnessTotal
     {
       get
       {
@@ -96,11 +96,11 @@
     public int TotalParts { get; }
 
     [JsonIgnore]
-    public double MaterialWasted
+    public double FitnessWastage
     {
       get
       {
-        return this.SheetPlacementFitness.MaterialWasted;
+        return this.SheetPlacementFitness.Wasted;
       }
     }
 
@@ -119,6 +119,15 @@
       get
       {
         return this.fitness.Unplaced;
+      }
+    }
+
+    [JsonIgnore]
+    public double FitnessUtilization
+    {
+      get
+      {
+        return this.SheetPlacementFitness.Utilization;
       }
     }
 
@@ -152,7 +161,7 @@
     [JsonIgnore]
     public double MaterialUtilization => Math.Abs(TotalPartsArea / TotalSheetsArea);
 
-    public bool IsValid => !(double.IsNaN(this.Fitness) || this.TotalPartsCount > this.TotalParts);
+    public bool IsValid => !(double.IsNaN(this.FitnessTotal) || this.TotalPartsCount > this.TotalParts);
 
     public static NestResult FromJson(string json)
     {
@@ -177,7 +186,7 @@
 
     public override string ToString()
     {
-      return $"{fitness.Evaluate()}=ƩB{this.SheetPlacementFitness.Bounds:N0}+ƩS{this.SheetPlacementFitness.Sheets:N0}+ƩW{this.SheetPlacementFitness.MaterialWasted:N0}+ƩU{this.SheetPlacementFitness.MaterialUtilization:N0}+U{this.fitness.Unplaced:N0}";
+      return $"{fitness.Evaluate()}=ƩB{this.SheetPlacementFitness.Bounds:N0}+ƩS{this.SheetPlacementFitness.Sheets:N0}+ƩW{this.SheetPlacementFitness.Wasted:N0}+ƩU{this.SheetPlacementFitness.Utilization:N0}+U{this.fitness.Unplaced:N0}";
     }
 
     public override string ToJson(bool writeIndented = true)

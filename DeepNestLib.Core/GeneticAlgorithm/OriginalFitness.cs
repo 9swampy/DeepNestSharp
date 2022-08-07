@@ -16,15 +16,8 @@
 
     public double Evaluate()
     {
-      var result = 0D;
-      result += Unplaced;
       var sheetPlacementFitness = (ISheetPlacementFitness)this;
-      result += sheetPlacementFitness.Bounds;
-      result += sheetPlacementFitness.Sheets;
-      result += sheetPlacementFitness.MaterialWasted;
-      result += sheetPlacementFitness.MaterialUtilization;
-
-      return result;
+      return sheetPlacementFitness.Total;
     }
 
     private double TotalSheetArea
@@ -32,6 +25,17 @@
       get
       {
         return nestResult.UsedSheets.Sum(o => o.Sheet.Area);
+      }
+    }
+
+    /// <summary>
+    /// Gets total fitness.
+    /// </summary>
+    double ISheetPlacementFitness.Total
+    {
+      get
+      {
+        return ((SheetPlacementCollection)nestResult.UsedSheets).Total + Unplaced;
       }
     }
 
@@ -49,22 +53,22 @@
     /// <summary>
     /// Gets penalty for low material utilization.
     /// </summary>
-    double ISheetPlacementFitness.MaterialUtilization
+    double ISheetPlacementFitness.Utilization
     {
       get
       {
-        return ((SheetPlacementCollection)nestResult.UsedSheets).MaterialUtilization;
+        return ((SheetPlacementCollection)nestResult.UsedSheets).Utilization;
       }
     }
 
     /// <summary>
     /// Gets penalty for high material wastage; weighted to reward compression within the part of the sheet used.
     /// </summary>
-    double ISheetPlacementFitness.MaterialWasted
+    double ISheetPlacementFitness.Wasted
     {
       get
       {
-        return ((SheetPlacementCollection)nestResult.UsedSheets).MaterialWasted;
+        return ((SheetPlacementCollection)nestResult.UsedSheets).Wasted;
       }
     }
 

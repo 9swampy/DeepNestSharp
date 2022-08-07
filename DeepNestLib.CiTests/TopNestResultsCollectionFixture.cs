@@ -57,11 +57,11 @@
       var sut = new TopNestResultsCollection(new TestSvgNestConfig(), A.Fake<IDispatcherService>());
       var first = A.Fake<INestResult>();
       sut.TryAdd(first);
-      A.CallTo(() => first.Fitness).Returns(1);
+      A.CallTo(() => first.FitnessTotal).Returns(1);
       sut.First().Should().Be(first);
 
       var second = A.Fake<INestResult>();
-      A.CallTo(() => second.Fitness).Returns(2);
+      A.CallTo(() => second.FitnessTotal).Returns(2);
       sut.TryAdd(second);
 
       sut.Skip(1).First().Should().Be(second);
@@ -73,11 +73,11 @@
       var sut = new TopNestResultsCollection(new TestSvgNestConfig(), A.Fake<IDispatcherService>());
       var first = A.Fake<INestResult>();
       sut.TryAdd(first);
-      A.CallTo(() => first.Fitness).Returns(2);
+      A.CallTo(() => first.FitnessTotal).Returns(2);
       sut.First().Should().Be(first);
 
       var second = A.Fake<INestResult>();
-      A.CallTo(() => second.Fitness).Returns(1);
+      A.CallTo(() => second.FitnessTotal).Returns(1);
       sut.TryAdd(second);
 
       sut.First().Should().Be(second);
@@ -110,14 +110,40 @@
     [Fact]
     public void GivenMarginallySameFitnessWhenAddResultThenReportAddedButDont()
     {
+      var config = new TestSvgNestConfig();
+      var sut = new TopNestResultsCollection(config, A.Fake<IDispatcherService>());
+      FillToMaxCapacity(sut);
+
+      var second = A.Fake<INestResult>();
+      A.CallTo(() => second.FitnessTotal).Returns(sut.Skip(sut.MaxCapacity / 2).First().FitnessTotal);
+      sut.TryAdd(second).Should().Be(TryAddResult.Duplicate);
+
+      sut.Should().NotContain(second, "it was considered a duplicate.");
+    }
+
+    [Fact]
+    public void GivenFilledToMaxCapacityThenTopFitnessShouldBeLessThanLast()
+    {
+      var config = new TestSvgNestConfig();
+      var sut = new TopNestResultsCollection(config, A.Fake<IDispatcherService>());
+      FillToMaxCapacity(sut);
+
+      sut.Top.FitnessTotal.Should().BeLessThan(sut.Last().FitnessTotal);
+    }
+
+    [Fact]
+    public void GivenMarginallySameFitnessWhenAddResultThenReportAddedAsSubstituteForOldest()
+    {
       var sut = new TopNestResultsCollection(new TestSvgNestConfig(), A.Fake<IDispatcherService>());
       FillToMaxCapacity(sut);
 
       var second = A.Fake<INestResult>();
-      A.CallTo(() => second.Fitness).Returns(sut.Skip(1).First().Fitness);
-      sut.TryAdd(second).Should().Be(TryAddResult.Duplicate);
+      var oldest = sut.Skip(1).First();
+      A.CallTo(() => second.FitnessTotal).Returns(oldest.FitnessTotal);
+      sut.TryAdd(second).Should().Be(TryAddResult.Substitute);
 
-      sut.Should().NotContain(second, "it was considered a duplicate.");
+      sut.Should().Contain(second, "it substituted the oldest");
+      sut.Should().NotContain(oldest, "it was substituted");
     }
 
     [Fact]
@@ -129,19 +155,37 @@
       FillToMaxCapacity(sut);
 
       var second = A.Fake<INestResult>();
-      A.CallTo(() => second.Fitness).Returns(0);
+      A.CallTo(() => second.FitnessTotal).Returns(0);
       sut.TryAdd(second).Should().Be(TryAddResult.Added, "gets added and the least fit is eliminated.");
 
       sut.First().Should().Be(second);
       sut.Count.Should().Be(sut.MaxCapacity);
     }
 
+    [Fact]
+    public void GivenPopulationFullWhenAddSubOptimalResultThenNotAdded()
+    {
+      var random = new Random();
+      var config = new TestSvgNestConfig();
+      var sut = new TopNestResultsCollection(config, A.Fake<IDispatcherService>());
+      FillToMaxCapacity(sut);
+
+      var second = A.Fake<INestResult>();
+      A.CallTo(() => second.FitnessTotal).Returns(sut.Last().FitnessTotal*2);
+      sut.TryAdd(second).Should().Be(TryAddResult.NotAdded);
+
+      sut.Should().NotContain(second);
+      sut.Count.Should().Be(sut.MaxCapacity);
+    }
+
     private static void FillToMaxCapacity(TopNestResultsCollection sut)
     {
+      const double top = 10000;
+      var step = top * (TestSvgNestConfig.Default.TopDiversity) + 1D;
       for (int i = 0; i < sut.MaxCapacity; i++)
       {
         var item = A.Fake<INestResult>();
-        A.CallTo(() => item.Fitness).Returns(sut.IsEmpty ? 10000 : sut.Top.Fitness * (1 - TestSvgNestConfig.Default.TopDiversity) - 1);
+        A.CallTo(() => item.FitnessTotal).Returns(sut.IsEmpty ? top : top - (step * i));
         sut.TryAdd(item);
         sut.Should().Contain(item);
       }

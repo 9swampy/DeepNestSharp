@@ -25,7 +25,7 @@
     /// MinkowskiWrapper.CalculateNfp occasionally sticks; not sure why; seems fine at runtime only nCrunch has the problem.
     /// </summary>
     public RunFullNestSqueezeFixture()
-      : base(PlacementTypeEnum.Squeeze, (494516 + 541746) / 2, 10000 * 3, 50)
+      : base(PlacementTypeEnum.Squeeze, 468000, 10000 * 3, 50, 10)
     {
       lock (testSyncLock)
       {
@@ -70,7 +70,7 @@
     [Fact]
     public void FitnessShouldBeExpected()
     {
-      nestingContext.State.TopNestResults.Top.Fitness.Should().BeApproximately(ExpectedFitness, ExpectedFitnessTolerance);
+      nestingContext.State.TopNestResults.Top.FitnessTotal.Should().BeApproximately(ExpectedFitness, ExpectedFitnessTolerance);
     }
 
     [Fact]
