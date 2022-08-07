@@ -44,7 +44,6 @@
     [InlineData(-90, 0, 40, -360, 20, 14)]
     public void NestSquareInSquareHoleShouldBeObserved(double firstRotation, double firstX, double firstY, double secondRotation, double secondX, double secondY)
     {
-      ISvgNestConfig config;
       DxfGenerator DxfGenerator = new DxfGenerator();
       NestResult nestResult;
       INfp firstPart;
@@ -65,10 +64,19 @@
       secondPart.Id = 2;
       secondPart.Source = 2;
 
-      config = SingleSimpleSquareOnSingleSheetFixture.StableButIrrelevantConfig(false); //new Random().NextBool()); //Using DllImport fixes the odd 6es
+      var config = SingleSimpleSquareOnSingleSheetFixture.StableButIrrelevantConfig(false); //new Random().NextBool()); //Using DllImport fixes the odd 6es
+      //var config = SingleSimpleSquareOnSingleSheetFixture.StableButIrrelevantConfig(true);
+      //var config = SingleSimpleSquareOnSingleSheetFixture.StableButIrrelevantConfig(new Random().NextBool()); //Using DllImport fixes the odd 6es
+      config.ExportExecutions = true;
+      config.ExportExecutionPath = @"C:\Temp\DeepNestSharp";
       nfpHelper = A.Dummy<NfpHelper>();
-      var placementWorker = new PlacementWorker(nfpHelper, new ISheet[] { firstSheet }, new DeepNestGene(new Chromosome[] { firstPart.ToChromosome(firstRotation), secondPart.ToChromosome(secondRotation) }.ApplyIndex()), config, A.Dummy<Stopwatch>(), A.Fake<INestState>());
-      ITestPlacementWorker sut = placementWorker;
+      var placementWorker = new PlacementWorker(
+        nfpHelper, 
+        new ISheet[] { firstSheet }, 
+        new DeepNestGene(new Chromosome[] { firstPart.ToChromosome(firstRotation), secondPart.ToChromosome(secondRotation) }.ApplyIndex()), 
+        config, 
+        A.Dummy<Stopwatch>(), 
+        A.Fake<INestState>());
       nestResult = placementWorker.PlaceParts();
 
       nestResult.UnplacedParts.Count().Should().Be(0);
@@ -76,6 +84,11 @@
       SingleSimpleSquareOnSingleSheetFixture.ValidateFirstPlacement(firstRotation, nestResult.UsedSheets[0].PartPlacements[0], firstPart);
       nestResult.UsedSheets[0].PartPlacements[0].X.Should().BeApproximately(firstX, 0.01);
       nestResult.UsedSheets[0].PartPlacements[0].Y.Should().BeApproximately(firstY, 0.01);
+
+      var combinedNfp = ((ITestPlacementWorker)placementWorker).LastPartPlacementWorker.CombinedNfp;
+      //combinedNfp.Count.Should().Be(2);
+      //combinedNfp[0].Count.Should().Be(4);
+      //combinedNfp[1].Count.Should().Be(4);
 
       TwoSimpleSquaresOnSingleSheetShouldNotOverlapFixture.ValidateSecondPlacement(secondRotation, nestResult.UsedSheets[0].PartPlacements[1], firstPart, secondPart);
       nestResult.UsedSheets[0].PartPlacements[1].X.Should().BeApproximately(secondX, 0.01);

@@ -195,6 +195,7 @@
       }
 
       this.PrepExport(inputPartIndex, "SheetNfpItems.scad", () => this.SheetNfp.Items.ToOpenScadPolygon());
+      this.PrepExport(inputPartIndex, "SheetNfpItemsFaux.dnsp", () => this.SheetNfp.Items.ToFauxSheetPlacement(this.Config.PlacementType, this.Sheet, this.Config.ClipperScale));
 
       if (this.SheetNfp.CanAcceptPart)
       {
@@ -211,6 +212,7 @@
         {
           this.CombinedNfp = combinedNfp;
           this.PrepExport(inputPartIndex, "combinedNfp.scad", () => combinedNfp.ToOpenScadPolygon());
+          this.PrepExport(inputPartIndex, "combinedNfpFaux.dnsp", () => combinedNfp.ToFauxSheetPlacement(this.Config.PlacementType, this.Sheet, this.Config.ClipperScale));
         }
 
         if (this.EnableCaches)
@@ -243,6 +245,7 @@
         }
 
         this.PrepExport(inputPartIndex, "finalNfp.scad", () => finalNfp.ToOpenScadPolygon());
+        this.PrepExport(inputPartIndex, "finalNfpFaux.dnsp", () => finalNfp.ToFauxSheetPlacement(this.Config.PlacementType, this.Sheet, this.Config.ClipperScale));
         PartPlacement position = GetBestPosition(
                                           processedPart,
                                           finalNfp,
@@ -582,9 +585,10 @@
           this.PrepExport(inputPartIndex, fileNameSuffix, contentFunc());
         }
       }
-      catch (Exception)
+      catch (Exception ex)
       {
-        // NOP
+        VerboseLog(ex.Message);
+        VerboseLog(ex.StackTrace);
       }
     }
 
