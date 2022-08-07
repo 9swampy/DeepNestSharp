@@ -84,15 +84,7 @@
       sut.FinalNfp.Items[0].IsClosed.Should().BeFalse();
       sut.FinalNfp.Items[1].IsClosed.Should().BeFalse();
       sut.FinalNfp.NumberOfNfps.Should().Be(2, "we get one circle and one right hand contigious NFP");
-      if (useDllImport)
-      {
-        sut.FinalNfp.Items[1].Length.Should().Be(16);
-      }
-      else
-      {
-        sut.FinalNfp.Items[1].Length.Should().Be(15);
-      }
-
+      sut.FinalNfp.Items[1].Length.Should().Be(16);
       sut.FinalNfp.Items[0].Length.Should().Be(19);
       sut.FinalNfp.Items[0].Area.Should().BeApproximately(197.5, 1);
       sut.FinalNfp.Items[1].Area.Should().BeApproximately(57, 1);
@@ -118,7 +110,7 @@
 #if NCRUNCH //Need to work out how to pass preprocessor directive in to SvgNestConfigJsonConverterInner
       var partPlacement = GetPartPlacementForFit12InDonutHole(useDllImport, out _, out _);
 
-      partPlacement.X.Should().BeApproximately(56, 0.11);
+      partPlacement.X.Should().BeApproximately(55.92, 0.14);
 #endif
     }
 
@@ -129,7 +121,7 @@
     {
       var partPlacement = GetPartPlacementForFit12InDonutHole(useDllImport, out _, out _);
 
-      partPlacement.Y.Should().BeApproximately(62, 1);
+      partPlacement.Y.Should().BeApproximately(61, 1.5);
     }
 
     [Theory]

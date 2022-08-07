@@ -130,6 +130,8 @@
                     <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
                   </Grid.RowDefinitions>
                   <TextBlock Grid.Column="0" Grid.Row="0" Text="Total" Margin="0,0,0,5" />
                   <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding Fitness.Total, StringFormat={}{0:#,#.000}}" Margin="0,0,0,5" HorizontalAlignment="Right"/>
@@ -141,6 +143,10 @@
                   <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding Fitness.MaterialWasted, StringFormat={}{0:#,#.000}}" HorizontalAlignment="Right"/>
                   <TextBlock Grid.Column="0" Grid.Row="4" Text="Utilization" />
                   <TextBlock Grid.Column="1" Grid.Row="4" Text="{Binding Fitness.MaterialUtilization, StringFormat={}{0:#,#.000}}" HorizontalAlignment="Right"/>
+                  <TextBlock Grid.Column="0" Grid.Row="5" Text="% Area Utilization" />
+                  <TextBlock Grid.Column="1" Grid.Row="5" Text="{Binding MaterialUtilization, StringFormat={}{0:#,#.0%}}" HorizontalAlignment="Right"/>
+                  <TextBlock Grid.Column="0" Grid.Row="6" Text="Parts" />
+                  <TextBlock Grid.Column="1" Grid.Row="6" Text="{Binding PartPlacements.Count, StringFormat={}{0:#,#}}" HorizontalAlignment="Right"/>
                 </Grid>
                 <userControls:ZoomPreview />
               </Grid>

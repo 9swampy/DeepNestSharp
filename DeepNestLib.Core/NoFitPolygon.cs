@@ -664,6 +664,11 @@
         closedPoints.Add(closedPoints.First());
         ReplacePoints(closedPoints);
       }
+
+      foreach (var child in Children)
+      {
+        child.EnsureIsClosed();
+      }
     }
 
     public DxfFile ToDxfFile()

@@ -67,8 +67,8 @@
       var config = SingleSimpleSquareOnSingleSheetFixture.StableButIrrelevantConfig(false); //new Random().NextBool()); //Using DllImport fixes the odd 6es
       //var config = SingleSimpleSquareOnSingleSheetFixture.StableButIrrelevantConfig(true);
       //var config = SingleSimpleSquareOnSingleSheetFixture.StableButIrrelevantConfig(new Random().NextBool()); //Using DllImport fixes the odd 6es
-      config.ExportExecutions = true;
-      config.ExportExecutionPath = @"C:\Temp\DeepNestSharp";
+      //config.ExportExecutions = true;
+      //config.ExportExecutionPath = @"C:\Temp\DeepNestSharp";
       nfpHelper = A.Dummy<NfpHelper>();
       var placementWorker = new PlacementWorker(
         nfpHelper, 

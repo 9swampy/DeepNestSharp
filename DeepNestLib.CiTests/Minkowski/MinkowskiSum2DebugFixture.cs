@@ -134,14 +134,7 @@
       result[0].MinX.Should().BeApproximately(-109.7595, 0.01);
       result[0].MinY.Should().BeApproximately(-12.91, 0.01);
       result[0].Children[0].HeightCalculated.Should().BeApproximately(39.77, 0.001);
-      if (useDllImport)
-      {
-        result[0].Children[0].WidthCalculated.Should().BeApproximately(0.662, 0.001);
-      }
-      else
-      {
-        result[0].Children[0].WidthCalculated.Should().BeApproximately(8.662, 0.001, "should really be same as DllImport but for gravity nest it's the left point that'll get used so revisit another time");
-      }
+      result[0].Children[0].WidthCalculated.Should().BeApproximately(0.662, 0.001);
     }
   }
 }
