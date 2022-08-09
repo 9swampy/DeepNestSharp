@@ -36,6 +36,7 @@
     public void LoadedSheetIsActuallyAFramedSheet()
     {
       var frame = InitSheet();
+      frame.EnsureIsClosed();
       var sheet = new Sheet(frame.Children[0], WithChildren.Excluded);
 
       new Sheet(NfpHelper.GetExpandedFrame(sheet), WithChildren.Included).Should().BeEquivalentTo(

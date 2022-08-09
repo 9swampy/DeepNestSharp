@@ -22,6 +22,7 @@
       }
 
       sut = PartPlacementWorker.FromJson(json);
+      sut.Sheet.EnsureIsClosed();
       var config = sut.Config as ISvgNestConfig;
       config.Rotations = 1;
       var dispatcherService = A.Fake<IDispatcherService>();
@@ -66,7 +67,7 @@
     [Fact]
     public void GivenSamePartPlacementWorkerSetupWhenProcessPartProcessThenSheetNfpPartShouldBeEquivalent()
     {
-#if NCRUNCH //Need to work out how to pass preprocessor directive in to SvgNestConfigJsonConverterInner
+//#if NCRUNCH //Need to work out how to pass preprocessor directive in to SvgNestConfigJsonConverterInner
       string json;
       using (Stream stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream("Minkowski.MinkowskiSum2B.dnpoly"))
       using (StreamReader reader = new StreamReader(stream))
@@ -110,7 +111,7 @@
         options => options.Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 1))
                           .WhenTypeIs<double>());
       sutNewClipper.SheetNfp.CanAcceptPart.Should().Be(sutDll.SheetNfp.CanAcceptPart);
-#endif
+//#endif
     }
 
     [Fact]

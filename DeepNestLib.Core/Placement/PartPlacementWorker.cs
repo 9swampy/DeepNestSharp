@@ -195,6 +195,7 @@
       }
 
       this.PrepExport(inputPartIndex, "SheetNfpItems.scad", () => this.SheetNfp.Items.ToOpenScadPolygon());
+      this.PrepExport(inputPartIndex, "SheetNfpItemsFaux.dnsp", () => this.SheetNfp.Items.ToFauxSheetPlacement(this.Config.PlacementType, this.Sheet, this.Config.ClipperScale));
 
       if (this.SheetNfp.CanAcceptPart)
       {
@@ -211,6 +212,7 @@
         {
           this.CombinedNfp = combinedNfp;
           this.PrepExport(inputPartIndex, "combinedNfp.scad", () => combinedNfp.ToOpenScadPolygon());
+          this.PrepExport(inputPartIndex, "combinedNfpFaux.dnsp", () => combinedNfp.ToFauxSheetPlacement(this.Config.PlacementType, this.Sheet, this.Config.ClipperScale));
         }
 
         if (this.EnableCaches)
@@ -243,6 +245,7 @@
         }
 
         this.PrepExport(inputPartIndex, "finalNfp.scad", () => finalNfp.ToOpenScadPolygon());
+        this.PrepExport(inputPartIndex, "finalNfpFaux.dnsp", () => finalNfp.ToFauxSheetPlacement(this.Config.PlacementType, this.Sheet, this.Config.ClipperScale));
         PartPlacement position = GetBestPosition(
                                           processedPart,
                                           finalNfp,
@@ -582,9 +585,10 @@
           this.PrepExport(inputPartIndex, fileNameSuffix, contentFunc());
         }
       }
-      catch (Exception)
+      catch (Exception ex)
       {
-        // NOP
+        VerboseLog(ex.Message);
+        VerboseLog(ex.StackTrace);
       }
     }
 
@@ -669,25 +673,7 @@
         }
 
         this.VerboseLog($"TryGetCombinedNfp(j={j})=>shift to placed location");
-        for (int m = 0; m < outerNfp.Length; m++)
-        {
-          outerNfp[m].X += placements[j].X;
-          outerNfp[m].Y += placements[j].Y;
-        }
-
-        if (outerNfp.Children != null && outerNfp.Children.Count > 0)
-        {
-          this.VerboseLog($"TryGetCombinedNfp(j={j})=>has children.");
-          for (int n = 0; n < outerNfp.Children.Count; n++)
-          {
-            for (var o = 0; o < outerNfp.Children[n].Length; o++)
-            {
-              outerNfp.Children[n][o].X += placements[j].X;
-              outerNfp.Children[n][o].Y += placements[j].Y;
-            }
-          }
-        }
-
+        outerNfp = outerNfp.Shift(placements[j]);
         var clipperNfp = NfpHelper.NfpToClipperCoordinates(outerNfp, this.Config.ClipperScale);
         this.VerboseLog($"Add {placements[j].Part.ToShortString()} paths to {nameof(clipper)} ({placements[j].Part.Name})");
         clipper.AddPaths(clipperNfp, PolyType.ptSubject, true);

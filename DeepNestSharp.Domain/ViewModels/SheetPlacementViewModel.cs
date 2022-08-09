@@ -67,7 +67,15 @@
 
     public ICommand LoadAllExactCommand => loadAllExactCommand ?? (loadAllExactCommand = new AsyncRelayCommand(OnLoadAllExactAsync, () => true)); // this.SheetPlacement.PartPlacements.Any(p => !p.Part.IsExact)));
 
-    public ICommand LoadPartFileCommand => loadPartFileCommand ?? (loadPartFileCommand = new RelayCommand(OnLoadPartFile, () => new FileInfo(this.SelectedItem.Part.Name).Exists));
+    public ICommand LoadPartFileCommand => loadPartFileCommand ?? (loadPartFileCommand = new RelayCommand(OnLoadPartFile, () => FileExists));
+
+    private bool FileExists
+    {
+      get
+      {
+        return !string.IsNullOrEmpty(this.SelectedItem.Part.Name) && new FileInfo(this.SelectedItem.Part.Name).Exists;
+      }
+    }
 
     public ISheetPlacement SheetPlacement => observableSheetPlacement;
 

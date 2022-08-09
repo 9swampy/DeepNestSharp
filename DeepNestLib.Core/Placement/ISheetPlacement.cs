@@ -30,6 +30,9 @@
 
     INfp Simplify { get; }
 
+    /// <summary>
+    /// Gets the total gross outer area, discounting for any holes.
+    /// </summary>
     double TotalPartsArea { get; }
 
     double MergedLength { get; }

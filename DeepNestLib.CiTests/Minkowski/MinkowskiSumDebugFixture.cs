@@ -159,12 +159,17 @@
       result.Length.Should().Be(1, "part can be fit");
       if (useDllImport)
       {
+        result[0].Area.Should().BeApproximately(488, 1);
         result[0].Children.Count.Should().Be(1);
+        result[0].Children[0].Area.Should().BeApproximately(1, 0.0001);
+        result[0].Children[0].Length.Should().Be(5);
       }
       else
       {
+        result[0].Area.Should().BeApproximately(488, 1);
         result[0].Children.Count.Should().Be(1);
-        result[0].Children[0].Length.Should().Be(4, "this is looking better than DllImport tbh but don't recall the scenario... investigate");
+        result[0].Children[0].Area.Should().BeApproximately(1, 0.0001);
+        result[0].Children[0].Length.Should().Be(5);
       }
 
       result[0].WidthCalculated.Should().BeApproximately(sheet.WidthCalculated + part.WidthCalculated, 0.001, "it's the outerNfp that we're not interested in");
@@ -181,9 +186,13 @@
       {
         result[0].Children.Count.Should().Be(ret.Children.Count);
         result[0].Children.Count.Should().Be(1, "part fits");
+        result[0].Children[0].WidthCalculated.Should().BeApproximately(deframedSheet.WidthCalculated - part.WidthCalculated, 0.001);
+        result[0].Children[0].HeightCalculated.Should().BeApproximately(deframedSheet.HeightCalculated - part.HeightCalculated, 0.001);
       }
       else
       {
+        result[0].Children.Count.Should().Be(ret.Children.Count);
+        result[0].Children.Count.Should().Be(1, "part fits");
         result[0].Children[0].WidthCalculated.Should().BeApproximately(deframedSheet.WidthCalculated - part.WidthCalculated, 0.001);
         result[0].Children[0].HeightCalculated.Should().BeApproximately(deframedSheet.HeightCalculated - part.HeightCalculated, 0.001);
       }

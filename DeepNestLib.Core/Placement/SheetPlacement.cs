@@ -48,18 +48,23 @@
     public int SheetSource => Sheet.Source;
 
     [JsonInclude]
+    /// <inheritdoc />
     public PlacementTypeEnum PlacementType { get; private set; }
 
     [JsonInclude]
+    /// <inheritdoc />
     public ISheet Sheet { get; private set; }
 
     [JsonInclude]
+    /// <inheritdoc />
     public IReadOnlyList<IPartPlacement> PartPlacements { get; private set; } = new List<IPartPlacement>();
 
     [JsonIgnore]
+    /// <inheritdoc />
     public PolygonBounds RectBounds => CombinedRectBounds(this.PartPlacements);
 
     [JsonIgnore]
+    /// <inheritdoc />
     public INfp Hull
     {
       get
@@ -74,6 +79,7 @@
     }
 
     [JsonIgnore]
+    /// <inheritdoc />
     public INfp Simplify
     {
       get
@@ -96,9 +102,11 @@
     }
 
     [JsonIgnore]
+    /// <inheritdoc />
     public double TotalPartsArea => this.PartPlacements.Sum(p => p.Part.NetArea);
 
     [JsonIgnore]
+    /// <inheritdoc />
     public double MaterialUtilization
     {
       get
@@ -118,23 +126,30 @@
     }
 
     [JsonIgnore]
+    /// <inheritdoc />
     public OriginalFitnessSheet Fitness { get; }
 
     [JsonIgnore]
+    /// <inheritdoc />
     public double MaxX => PartPlacements.Max(pp => pp.MaxX);
 
     [JsonIgnore]
+    /// <inheritdoc />
     public double MaxY => PartPlacements.Max(pp => pp.MaxY);
 
     [JsonIgnore]
+    /// <inheritdoc />
     public double MinX => PartPlacements.Min(pp => pp.MinX);
 
     [JsonIgnore]
+    /// <inheritdoc />
     public double MinY => PartPlacements.Min(pp => pp.MinY);
 
+    /// <inheritdoc />
     public double MergedLength { get; }
 
     [JsonIgnore]
+    /// <inheritdoc />
     public IEnumerable<NoFitPolygon> PolygonsForExport
     {
       get
