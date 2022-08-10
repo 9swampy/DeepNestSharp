@@ -60,8 +60,8 @@
         <GridView>
           <GridViewColumn Header="Total" Width="60" DisplayMemberBinding="{Binding Path=Fitness.Total, StringFormat=0.0, Mode=OneWay}" />
           <GridViewColumn Header="Fit.Sheets" Width="60" DisplayMemberBinding="{Binding Path=Fitness.Sheets, StringFormat=0.0, Mode=OneWay}" />
-          <GridViewColumn Header="Fit.Wasted" Width="60" DisplayMemberBinding="{Binding Path=Fitness.MaterialWasted, StringFormat=0.0, Mode=OneWay}" />
-          <GridViewColumn Header="Fit.Util" Width="60" DisplayMemberBinding="{Binding Path=Fitness.MaterialUtilization, StringFormat=0.0, Mode=OneWay}" />
+          <GridViewColumn Header="Fit.Wasted" Width="60" DisplayMemberBinding="{Binding Path=Fitness.Wasted, StringFormat=0.0, Mode=OneWay}" />
+          <GridViewColumn Header="Fit.Util" Width="60" DisplayMemberBinding="{Binding Path=Fitness.Utilization, StringFormat=0.0, Mode=OneWay}" />
           <GridViewColumn Header="Fit.Bounds" Width="60" DisplayMemberBinding="{Binding Path=Fitness.Bounds, StringFormat=0.0, Mode=OneWay}" />
           <GridViewColumn Header="Utilization" Width="60" DisplayMemberBinding="{Binding Path=MaterialUtilization, StringFormat={}{0:P2}, Mode=OneWay}" />
           <GridViewColumn Header="Placed" Width="60" DisplayMemberBinding="{Binding Path=PartPlacements.Count, Mode=OneWay}" />

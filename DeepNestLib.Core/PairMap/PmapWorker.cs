@@ -36,15 +36,16 @@
         showSecondaryProgress = true;
       }
       NfpPair[] ret = new NfpPair[pairs.Count];
-      if (this.useParallel)
-      {
-        Parallel.For(0, this.pairs.Count, (i) =>
-        {
-          var item = pairs[i];
-          ProcessAndCaptureResult(item, result => ret[i] = result);
-        });
-      }
-      else
+      //Extremely slow if parallelised
+      //if (this.useParallel)
+      //{
+      //  Parallel.For(0, this.pairs.Count, (i) =>
+      //  {
+      //    var item = pairs[i];
+      //    ProcessAndCaptureResult(item, result => ret[i] = result);
+      //  });
+      //}
+      //else
       {
         for (var i = 0; i < pairs.Count; i++)
         {

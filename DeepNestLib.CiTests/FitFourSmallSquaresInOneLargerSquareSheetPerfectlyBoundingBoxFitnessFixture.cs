@@ -40,7 +40,7 @@
     [Fact]
     public void ShouldHaveSameFitnessBoundsAsOriginal()
     {
-      this.nestResult.FitnessBounds.Should().BeApproximately(414, 10);
+      this.nestResult.FitnessBounds.Should().BeApproximately(120, 10);
     }
 
     [Fact]
@@ -58,7 +58,7 @@
     [Fact]
     public void ShouldHaveSameFitnessAsOriginal()
     {
-      this.nestResult.FitnessTotal.Should().BeApproximately(1024, 100);
+      this.nestResult.FitnessTotal.Should().BeApproximately(662, 100);
     }
 
     [Fact]
@@ -68,9 +68,9 @@
     }
 
     [Fact]
-    public void GivenBoundsPenaltyShouldBeInLineWithSheetsPenaltyThenScenario1BoundsShouldBeComingCloseToSheets()
+    public void GivenBoundsPenaltyShouldBeInLineWithSheetsPenaltyThenScenario1BoundsShouldBeLowerRangeOfSheetsPostScaling()
     {
-      FitnessAlignment.BoundsPenaltyShouldBeInLineWithSheetsPenalty(nestResult, FitnessRange.Upper);
+      FitnessAlignment.BoundsPenaltyShouldBeInLineWithSheetsPenalty(nestResult, FitnessRange.Lower);
     }
 
     [Fact]

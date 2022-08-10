@@ -53,13 +53,13 @@
     [Obsolete]
     public void ShouldHaveExpectedFitness()
     {
-      this.nestResult.FitnessTotal.Should().BeApproximately(994, 10);
+      this.nestResult.FitnessTotal.Should().BeApproximately(665, 10);
     }
 
     [Fact]
     public void ShouldHaveSameFitnessBoundsAsOriginal()
     {
-      this.nestResult.FitnessBounds.Should().BeApproximately(427, 10);
+      this.nestResult.FitnessBounds.Should().BeApproximately(124, 10);
     }
 
     [Fact]
@@ -77,7 +77,7 @@
     [Fact]
     public void ShouldHaveExpectedFitnessMaterialWasted()
     {
-      this.nestResult.FitnessWastage.Should().BeApproximately(14, 3D);
+      this.nestResult.FitnessWastage.Should().BeApproximately(4, 3D);
     }
 
     [Fact]

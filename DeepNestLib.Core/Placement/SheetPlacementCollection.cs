@@ -28,10 +28,10 @@
     public double Bounds => this.Sum(o => o.Fitness.Bounds);
 
     [JsonIgnore]
-    public double Utilization => this.Sum(o => o.Fitness.MaterialUtilization);
+    public double Utilization => this.Sum(o => o.Fitness.Utilization);
 
     [JsonIgnore]
-    public double Wasted => this.Sum(o => o.Fitness.MaterialWasted);
+    public double Wasted => this.Sum(o => o.Fitness.Wasted);
 
     [JsonIgnore]
     public double Sheets

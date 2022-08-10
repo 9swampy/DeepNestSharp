@@ -33,9 +33,9 @@
     }
 
     [Fact]
-    public void GivenTwoBoundsTightAroundTwoPartsTwoSheetsFitnessBoundsShouldBeBetterThanOne()
+    public void GivenTwoBoundsTightAroundTwoPartsTwoSheetsFitnessBoundsShouldBeWorseThanOneAfterScaling()
     {
-      scenario2.FitnessBounds.Should().BeLessThan(scenario1.FitnessBounds);
+      scenario2.FitnessBounds.Should().BeGreaterThan(scenario1.FitnessBounds);
     }
 
     [Fact]

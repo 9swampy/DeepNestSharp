@@ -158,8 +158,8 @@
       nestResult.UsedSheets[0].Hull.Area.Should().BeApproximately(firstPart.WidthCalculated * firstPart.HeightCalculated, 100);
       nestResult.UsedSheets[0].RectBounds.Width.Should().BeApproximately(firstPart.WidthCalculated, 10);
       nestResult.UsedSheets[0].RectBounds.Height.Should().BeApproximately(firstPart.HeightCalculated, 10);
-      nestResult.UsedSheets[0].Fitness.Bounds.Should().BeApproximately(12800, 100);
-      nestResult.FitnessTotal.Should().BeGreaterThan(75000);
+      nestResult.UsedSheets[0].Fitness.Bounds.Should().BeApproximately(5000, 100);
+      nestResult.FitnessTotal.Should().BeGreaterThan(65000);
     }
 
     [Fact]

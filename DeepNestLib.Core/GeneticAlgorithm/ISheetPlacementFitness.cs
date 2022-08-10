@@ -11,5 +11,7 @@
     double Sheets { get; }
 
     double Total { get; }
+
+    string ToString();
   }
 }

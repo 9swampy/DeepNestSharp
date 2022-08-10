@@ -50,12 +50,6 @@
     }
 
     [Fact]
-    public void GivenScenario3WhenFitnessUtilizationComparedWith2ThenShouldBeWorse()
-    {
-      scenarios[1].FitnessUtilization.Should().BeLessThan(scenarios[2].FitnessUtilization);
-    }
-
-    [Fact]
     public void GivenNoUnplacedPartsThenAllFitnessUnplacedShouldBe0()
     {
       scenarios.All(o => o.FitnessUnplaced == 0).Should().BeTrue();

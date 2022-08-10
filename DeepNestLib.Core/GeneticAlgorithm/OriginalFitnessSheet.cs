@@ -3,24 +3,19 @@
   using System;
   using DeepNestLib.Placement;
 
-  public class OriginalFitnessSheet : IOriginalFitnessSheet
+  public class OriginalFitnessSheet : ISheetPlacementFitness
   {
     private static volatile object syncLock = new object();
 
     private readonly ISheetPlacement sheetPlacement;
-    private double? materialWasted;
+    private double? wasted;
     private double? sheets;
     private double? bounds;
-    private double? materialUtilization;
+    private double? utilization;
 
     public OriginalFitnessSheet(ISheetPlacement sheetPlacement)
     {
       this.sheetPlacement = sheetPlacement;
-    }
-
-    public double Evaluate()
-    {
-      return Total;
     }
 
     public double Total
@@ -30,8 +25,8 @@
         var result = 0d;
         result += Bounds;
         result += Sheets;
-        result += MaterialWasted;
-        result += MaterialUtilization;
+        result += Wasted;
+        result += Utilization;
 
         return result;
       }
@@ -51,7 +46,7 @@
             sheets = sheetPlacement.Sheet.Area;
           }
 
-          return ScaleBySimpleUtilization(sheets.Value);
+          return sheets.Value;
         }
       }
     }
@@ -59,13 +54,13 @@
     /// <summary>
     /// Penalise high material wastage; weighted to reward compression within the part of the sheet used.
     /// </summary>
-    public double MaterialWasted
+    public double Wasted
     {
       get
       {
         lock (syncLock)
         {
-          if (!materialWasted.HasValue)
+          if (!wasted.HasValue)
           {
             var rectBounds = sheetPlacement.RectBounds;
             var utilization = sheetPlacement.TotalPartsArea / rectBounds.Area;
@@ -75,18 +70,18 @@
               wastage = Math.Pow(1 - (sheetPlacement.TotalPartsArea / sheetPlacement.Sheet.Area), 2);
             }
 
-            materialWasted = Math.Min(rectBounds.Area * 2, sheetPlacement.Sheet.Area);
-            materialWasted += sheetPlacement.Hull.Area + rectBounds.Area;
-            materialWasted /= 3;
+            wasted = Math.Min(rectBounds.Area * 2, sheetPlacement.Sheet.Area);
+            wasted += sheetPlacement.Hull.Area + rectBounds.Area;
+            wasted /= 3;
 
-            materialWasted = Math.Max(0, materialWasted.Value * wastage * 4);
-            if (materialWasted > Sheets)
+            wasted = Math.Max(0, wasted.Value * wastage * 4);
+            if (wasted > Sheets)
             {
-              materialWasted = Sheets;
+              wasted = Sheets;
             }
           }
 
-          return ScaleBySimpleUtilization(materialWasted.Value);
+          return ScaleBySimpleUtilization(wasted.Value);
         }
       }
     }
@@ -94,22 +89,29 @@
     /// <summary>
     /// Penalise low material utilization.
     /// </summary>
-    public double MaterialUtilization
+    public double Utilization
     {
       get
       {
         lock (syncLock)
         {
-          if (!materialUtilization.HasValue)
+          if (!utilization.HasValue)
           {
-            materialUtilization = (double)Math.Pow(1 - this.sheetPlacement.MaterialUtilization, 1.2) * sheetPlacement.Sheet.Area;
-            if (!materialUtilization.HasValue || double.IsNaN(materialUtilization.Value))
+            utilization = (double)Math.Pow(1 - this.sheetPlacement.MaterialUtilization, 1.2) * sheetPlacement.Sheet.Area;
+            if (!utilization.HasValue || double.IsNaN(utilization.Value))
             {
-              materialUtilization = sheetPlacement.Sheet.Area;
+              utilization = sheetPlacement.Sheet.Area;
+            }
+
+            if (this.sheetPlacement.MaterialUtilization <= 0.1)
+            {
+              var altUtilization = Math.Pow(this.Wasted / 10, 2);
+              altUtilization += Bounds * 10;
+              utilization = Math.Min(altUtilization, utilization.Value * .9);
             }
           }
 
-          return ScaleBySimpleUtilization(materialUtilization.Value);
+          return ScaleBySimpleUtilization(utilization.Value);
         }
       }
     }
@@ -156,14 +158,19 @@
       }
     }
 
-    private double ScaleBySimpleUtilization(double value)
+    public double Evaluate()
     {
-      return value * Math.Pow(1 - sheetPlacement.MaterialUtilization, 0.9);
+      return Total;
     }
 
     public override string ToString()
     {
-      return $"{Evaluate():N0}=B{Bounds:N0}+S{Sheets:N0}+W{MaterialWasted:N0}+U{MaterialUtilization:N0}";
+      return $"{Total:N0}=B{Bounds:N0}+S{Sheets:N0}+W{Wasted:N0}+U{Utilization:N0}";
+    }
+
+    private double ScaleBySimpleUtilization(double value)
+    {
+      return value * Math.Pow(1 - sheetPlacement.MaterialUtilization, 0.5);
     }
   }
 }

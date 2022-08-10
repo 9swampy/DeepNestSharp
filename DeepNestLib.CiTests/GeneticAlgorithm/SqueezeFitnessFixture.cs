@@ -21,19 +21,19 @@
     [Fact]
     public void GivenABetterNestThenFitnessShouldBeLower()
     {
-      scenarioBest.Fitness.Evaluate().Should().BeLessThan(scenarioWorst.Fitness.Evaluate());
+      scenarioBest.Fitness.Total.Should().BeLessThan(scenarioWorst.Fitness.Total);
     }
 
     [Fact]
     public void GivenAMidNestThenBestNestFitnessShouldBeLower()
     {
-      scenarioBest.Fitness.Evaluate().Should().BeLessThan(scenarioMid.Fitness.Evaluate());
+      scenarioBest.Fitness.Total.Should().BeLessThan(scenarioMid.Fitness.Total);
     }
 
     [Fact]
     public void GivenTwoSheetPlacementsWhenSamePartsPlacedOnEachThenMaterialUtilizationShouldBeSame()
     {
-      scenarioWorst.Fitness.MaterialUtilization.Should().BeApproximately(scenarioBest.Fitness.MaterialUtilization, 1);
+      scenarioWorst.Fitness.Utilization.Should().BeApproximately(scenarioBest.Fitness.Utilization, 1);
     }
 
     [Fact]
@@ -67,42 +67,42 @@
     public void GivenMaterialUtilizationPenaltyShouldBeInLineWithSheetsPenaltyThenScenarioBestShouldBeComingCloseToSheets()
     {
       var sut = new OriginalFitnessSheet(scenarioBest);
-      sut.MaterialUtilization.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
+      sut.Utilization.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
     }
 
     [Fact]
     public void GivenMaterialUtilizationPenaltyShouldBeInLineWithSheetsPenaltyThenScenarioMidShouldBeComingCloseToSheets()
     {
       var sut = new OriginalFitnessSheet(scenarioMid);
-      sut.MaterialUtilization.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
+      sut.Utilization.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
     }
 
     [Fact]
     public void GivenMaterialUtilizationPenaltyShouldBeInLineWithSheetsPenaltyThenScenarioWorstShouldBeComingCloseToSheets()
     {
       var sut = new OriginalFitnessSheet(scenarioWorst);
-      sut.MaterialUtilization.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
+      sut.Utilization.Should().BeApproximately(sut.Sheets, sut.Sheets / 2);
     }
 
     [Fact]
     public void GivenMaterialWastedPenaltyShouldBeInLineWithSheetsPenaltyThenScenarioBestShouldBeComingCloseToSheets()
     {
       var sut = new OriginalFitnessSheet(scenarioBest);
-      sut.MaterialWasted.Should().BeApproximately(sut.Sheets * 1.5, sut.Sheets);
+      sut.Wasted.Should().BeApproximately(sut.Sheets * 1.5, sut.Sheets);
     }
 
     [Fact]
     public void GivenMaterialWastedPenaltyShouldBeInLineWithSheetsPenaltyThenScenarioMidShouldBeComingCloseToSheets()
     {
       var sut = new OriginalFitnessSheet(scenarioMid);
-      sut.MaterialWasted.Should().BeApproximately(sut.Sheets * 1.5, sut.Sheets);
+      sut.Wasted.Should().BeApproximately(sut.Sheets * 1.5, sut.Sheets);
     }
 
     [Fact]
     public void GivenMaterialWastedPenaltyShouldBeInLineWithSheetsPenaltyThenScenarioWorstShouldBeComingCloseToSheets()
     {
       var sut = new OriginalFitnessSheet(scenarioMid);
-      sut.MaterialWasted.Should().BeApproximately(sut.Sheets * 1.5, sut.Sheets);
+      sut.Wasted.Should().BeApproximately(sut.Sheets * 1.5, sut.Sheets);
     }
   }
 }
