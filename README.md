@@ -36,6 +36,43 @@ additional parts etc.
 Individual Parts, whole Nest Result sets and single Sheet Placements can be saved, edited and reloaded. You 
 can also persist and view the interim calculation objects; SheetNfp and FinalNfp - for debugging purposes.
 
+# Outline of algorithm
+
+While [good heuristics](http://cgi.csc.liv.ac.uk/~epa/surveyhtml.html) exist 
+for the rectangular bin packing problem, in the real world we are concerned 
+with irregular shapes.
+
+The strategy is made of two parts:
+
+- the placement strategy (ie. how do I insert each part into a bin?)
+- and the optimization strategy (ie. what's the best order of insertions?)
+
+### Placing the part
+
+The key concept here is the "No Fit Polygon".
+
+Given polygons A and B, we want to "orbit" B around A such that they always 
+touch but do not intersect.
+
+<img src="imgs/nfp.png"/>
+
+The resulting orbit is the NFP. The NFP contains all possible placements of B 
+that touches the previously placed parts. We can then choose a point on the NFP 
+as the placement position using some heuristics.
+
+Similarly we can construct an "Inner Fit Polygon" for the part and the bin. 
+This is the same as the NFP, except the orbiting polygon is inside the 
+stationary one.
+
+When two or more parts have already been placed, we can take the union of the 
+NFPs of the previously placed parts.
+
+<img src="imgs/nfp2.png"/>
+
+This means that we need to compute O(nlogn) NFPs to complete the first packing. 
+While there are ways to mitigate this, we take the brute-force approach which 
+has good properties for the optimization algo.
+
 ## Compiling minkowski.dll
 Included are a set of minkowski.dlls that work on various Windows setups I 
 have; AnyCpu, x86 & x64; but you'll likely need to build the dlls for your
