@@ -3,6 +3,7 @@
   using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
+  using System;
 
   public abstract class TerminatingRunFullFixture
   {
@@ -98,6 +99,7 @@
           ResetIteration();
           PrepIteration();
           nestingContext.StartNest().Wait();
+          nestingContext.State.StartedAt.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(2));
           while (!HasMetTerminationConditions)
           {
             AwaitIterate();

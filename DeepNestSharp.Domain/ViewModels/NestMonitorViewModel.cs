@@ -305,11 +305,11 @@
             sw.Stop();
             if (SvgNest.Config.UseParallel)
             {
-              await DisplayToolStripMessage($"Iteration time:{sw.ElapsedMilliseconds}ms Average:{nestMonitorViewModel.Context.State.AveragePlacementTime}ms");
+              await DisplayToolStripMessage($"Iteration time:{sw.ElapsedMilliseconds}ms Average:{nestMonitorViewModel.Context.State.AverageThreadPlacementTime}ms");
             }
             else
             {
-              await DisplayToolStripMessage($"Nesting time:{sw.ElapsedMilliseconds}ms Average:{nestMonitorViewModel.Context.State.AveragePlacementTime}ms");
+              await DisplayToolStripMessage($"Nesting time:{sw.ElapsedMilliseconds}ms Average:{nestMonitorViewModel.Context.State.AverageThreadPlacementTime}ms");
             }
 
             if (nestMonitorViewModel.Context.State.IsErrored)

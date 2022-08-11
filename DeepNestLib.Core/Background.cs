@@ -156,7 +156,7 @@
     private void ThenDeepNest(NfpPair[] nfpPairs, DeepNestGene gene, ISheet[] sheets, ISvgNestConfig config, int index, Stopwatch backgroundStopwatch)
     {
       bool hideSecondaryProgress = false;
-      if (state.NestCount == 0 || state.AverageNestTime > 2000)
+      if (state.NestCount == 0 || state.AverageThreadNestTime > 2000)
       {
         hideSecondaryProgress = true;
         progressDisplayer.InitialiseLoopProgress(ProgressBar.Secondary, "Placement. . .", nfpPairs.Length);

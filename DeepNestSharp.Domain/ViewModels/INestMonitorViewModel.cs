@@ -45,7 +45,7 @@
     TopNestResultsCollection TopNestResults { get; }
 
     IZoomPreviewDrawingContext ZoomDrawingContext { get; }
-    
+
     void Stop();
 
     Task<bool> TryStartAsync(INestProjectViewModel nestProjectViewModel);

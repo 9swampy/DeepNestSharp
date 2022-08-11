@@ -29,16 +29,14 @@
     /// </summary>
     internal static INfp SimplifyFunction(INfp polygon, bool inside, double curveTolerance, bool useHull)
     {
-      var markExact = true;
-      var straighten = true;
-      var doSimplify = true;
-      var selectiveReversalOfOffset = true;
-
+      const bool markExact = true;
+      const bool straighten = true;
+      const bool doSimplify = true;
+      const bool selectiveReversalOfOffset = true;
       var tolerance = 4 * curveTolerance;
 
       // give special treatment to line segments above this length (squared)
       var fixedTolerance = 40 * curveTolerance * 40 * curveTolerance;
-      int j;
 
       var hull = polygon.GetHull();
       if (useHull)
@@ -55,10 +53,6 @@
         if (hull != null)
         {
           return hull;
-        }
-        else
-        {
-          return polygon;
         }
       }
 
@@ -144,7 +138,7 @@
       var numshells = 4;
       INfp[] shells = new INfp[numshells];
 
-      for (j = 1; j < numshells; j++)
+      for (int j = 1; j < numshells; j++)
       {
         var delta = j * (tolerance / numshells);
         delta = inside ? -delta : delta;
@@ -184,7 +178,7 @@
           if (inside ? Interior(test, polygon) : Exterior(test, polygon))
           {
             // a shell is an intermediate offset between simple and offset
-            for (j = 1; j < numshells; j++)
+            for (int j = 1; j < numshells; j++)
             {
               if (shells[j] != null)
               {
@@ -228,7 +222,7 @@
             continue;
           }
 
-          for (j = 0; j < simple.Length; j++)
+          for (int j = 0; j < simple.Length; j++)
           {
             var s1 = simple[j];
             var s2 = simple[j + 1 == simple.Length ? 0 : j + 1];

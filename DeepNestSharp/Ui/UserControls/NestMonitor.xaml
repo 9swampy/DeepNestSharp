@@ -140,9 +140,9 @@
                   <TextBlock Grid.Column="0" Grid.Row="2" Text="Bounds" />
                   <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding Fitness.Bounds, StringFormat={}{0:#,#.000}}" HorizontalAlignment="Right"/>
                   <TextBlock Grid.Column="0" Grid.Row="3" Text="Wasted" />
-                  <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding Fitness.MaterialWasted, StringFormat={}{0:#,#.000}}" HorizontalAlignment="Right"/>
+                  <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding Fitness.Wasted, StringFormat={}{0:#,#.000}}" HorizontalAlignment="Right"/>
                   <TextBlock Grid.Column="0" Grid.Row="4" Text="Utilization" />
-                  <TextBlock Grid.Column="1" Grid.Row="4" Text="{Binding Fitness.MaterialUtilization, StringFormat={}{0:#,#.000}}" HorizontalAlignment="Right"/>
+                  <TextBlock Grid.Column="1" Grid.Row="4" Text="{Binding Fitness.Utilization, StringFormat={}{0:#,#.000}}" HorizontalAlignment="Right"/>
                   <TextBlock Grid.Column="0" Grid.Row="5" Text="% Area Utilization" />
                   <TextBlock Grid.Column="1" Grid.Row="5" Text="{Binding MaterialUtilization, StringFormat={}{0:#,#.0%}}" HorizontalAlignment="Right"/>
                   <TextBlock Grid.Column="0" Grid.Row="6" Text="Parts" />

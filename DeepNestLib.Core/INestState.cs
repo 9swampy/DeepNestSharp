@@ -7,12 +7,12 @@
     /// <summary>
     /// Gets the average time per Nest Result since start of the run.
     /// </summary>
-    long AveragePlacementTime { get; }
+    long AverageThreadPlacementTime { get; }
 
     /// <summary>
     /// Gets the average time per Nest Result since start of the run.
     /// </summary>
-    long AverageNestTime { get; }
+    long AverageThreadNestTime { get; }
 
     int DllCallCounter { get; }
 
@@ -41,11 +41,11 @@
 
     int Threads { get; }
 
+    DateTime StartedAt { get; }
+
     TopNestResultsCollection TopNestResults { get; }
 
     void SetIsErrored();
-
-    DateTime StartedAt { get; }
   }
 
   public interface INestStateBackground : INestState

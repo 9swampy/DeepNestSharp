@@ -108,6 +108,10 @@
               var altUtilization = Math.Pow(this.Wasted / 10, 2);
               altUtilization += Bounds * 10;
               utilization = Math.Min(altUtilization, utilization.Value * .9);
+              if (this.sheetPlacement.MaterialUtilization <= 0.04)
+              {
+                utilization /= Math.Min(3, sheetPlacement.PartPlacements.Count);
+              }
             }
           }
 

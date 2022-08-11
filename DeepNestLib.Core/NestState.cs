@@ -23,6 +23,7 @@
     private double nfpPairCachePercentCached;
     private long lastNestTime;
     private long totalPlacementTime;
+    private int topNestCount;
 
     public NestState(ITopNestResultsConfig config, IDispatcherService dispatcherService)
     {
@@ -34,21 +35,23 @@
     {
       if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
       {
+        this.topNestCount++;
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LastTopFoundTimestamp)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AverageTopNest)));
       }
     }
 
     public event PropertyChangedEventHandler PropertyChanged;
 
-    [Description("Average time per Nest Result since start of the run.")]
-    [Category("Performance")]
-    [DisplayName("Average Nest Time")]
-    public long AverageNestTime => nestCount == 0 ? 0 : totalNestTime / nestCount;
+    [Description("Average thread time per Nest Result since start of the run.")]
+    [Category("Thread Performance")]
+    [DisplayName("Average Thread Nest")]
+    public long AverageThreadNestTime => nestCount == 0 ? 0 : totalNestTime / nestCount;
 
     [Description("Average time per Nest Result since start of the run.")]
-    [Category("Performance")]
-    [DisplayName("Average Placement Time")]
-    public long AveragePlacementTime => nestCount == 0 ? 0 : totalPlacementTime / nestCount;
+    [Category("Thread Performance")]
+    [DisplayName("Average Thread Placement Time")]
+    public long AverageThreadPlacementTime => nestCount == 0 ? 0 : totalPlacementTime / nestCount;
 
     [Description("The number of times the external C++ Minkowski library has been called. " +
       "This should stabilise at the number of distinct parts in the nest times the number " +
@@ -75,17 +78,17 @@
     public int Iterations => iterations;
 
     [Description("Last Nest Time (milliseconds). The total time for the nest including Pmap, DeepNest and Placement.")]
-    [Category("Performance")]
+    [Category("Thread Performance")]
     [DisplayName("Last Nest Time")]
     public long LastNestTime => lastNestTime;
 
     [Description("Last Placement Time (milliseconds).")]
-    [Category("Performance")]
+    [Category("Thread Performance")]
     [DisplayName("Last Placement Time")]
     public long LastPlacementTime => lastPlacementTime;
 
     [Description("Time last top placement found.")]
-    [Category("Performance")]
+    [Category("Overall Performance")]
     [DisplayName("Last Top Found")]
     public DateTime? LastTopFoundTimestamp
     {
@@ -106,7 +109,7 @@
     [DisplayName("Nest Count")]
     public int NestCount => nestCount;
 
-    [Category("Performance")]
+    [Category("Progress")]
     [DisplayName("NfpPair % Cached")]
     public double NfpPairCachePercentCached => nfpPairCachePercentCached;
 
@@ -116,18 +119,43 @@
     public int Population => population;
 
     [Description("Number of rejected Nests.")]
-    [Category("Performance")]
+    [Category("Thread Performance")]
     public int Rejected => rejected;
 
     [Description("Number of active Nest threads.")]
-    [Category("Performance")]
+    [Category("Thread Performance")]
     public int Threads => threads;
 
     [Browsable(false)]
     public TopNestResultsCollection TopNestResults { get; }
 
+    [Description("Time Nest was started.")]
+    [Category("Overall Performance")]
     public DateTime StartedAt { get; private set; }
 
+    [Description("Average Overall Nest (ms).")]
+    [Category("Overall Performance")]
+    public int AverageOverallNest
+    {
+      get
+      {
+        var elapsed = (DateTime.Now - StartedAt).TotalMilliseconds;
+        return (int)(elapsed / Math.Max(1D, (double)nestCount));
+      }
+    }
+
+    [Description("Average Top Nest (s).")]
+    [Category("Overall Performance")]
+    public int AverageTopNest
+    {
+      get
+      {
+        var elapsed = (DateTime.Now - StartedAt).TotalSeconds;
+        return (int)(elapsed / Math.Max(1D, (double)topNestCount));
+      }
+    }
+
+    [Browsable(false)]
     public IDateService DateService { get; internal set; } = new DateService();
 
     public static NestState CreateInstance(ISvgNestConfig config, IDispatcherService dispatcherService) => new NestState(config, dispatcherService);
@@ -153,14 +181,15 @@
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LastPlacementTime)));
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LastNestTime)));
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NestCount)));
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AveragePlacementTime)));
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AverageNestTime)));
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AverageThreadPlacementTime)));
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AverageThreadNestTime)));
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Generations)));
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Threads)));
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Iterations)));
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DllCallCounter)));
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ClipperCallCounter)));
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TopNestResults)));
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TopNestResults))); 
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AverageTopNest)));
     }
 
     void INestStateSvgNest.IncrementPopulation()
@@ -185,18 +214,19 @@
     {
       Interlocked.Increment(ref nestCount);
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NestCount)));
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AverageOverallNest)));
     }
 
     void INestStateSvgNest.IncrementNestTime(long backgroundTime)
     {
       totalPlacementTime += backgroundTime;
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AverageNestTime)));
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AverageThreadNestTime)));
     }
 
     void INestStateSvgNest.IncrementPlacementTime(long placePartTime)
     {
       totalNestTime += placePartTime;
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AveragePlacementTime)));
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AverageThreadPlacementTime)));
     }
 
     void INestStateSvgNest.IncrementGenerations()
@@ -227,6 +257,7 @@
     {
       Interlocked.Increment(ref iterations);
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Iterations)));
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AverageTopNest)));
     }
 
     void INestStateMinkowski.IncrementDllCallCounter()
@@ -261,6 +292,7 @@
     void INestStateNestingContext.StartNest()
     {
       this.StartedAt = DateService.Now;
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(StartedAt)));
     }
   }
 }
