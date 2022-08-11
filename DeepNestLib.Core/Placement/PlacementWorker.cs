@@ -111,7 +111,7 @@
       }
 
       VerboseLog($"Nest complete in {sw.ElapsedMilliseconds}");
-      var result = new NestResult(gene.Length, allPlacements, unplacedParts, config.PlacementType, sw.ElapsedMilliseconds, backgroundStopwatch.ElapsedMilliseconds);
+      var result = new NestResult(gene, allPlacements, unplacedParts, config.PlacementType, sw.ElapsedMilliseconds, backgroundStopwatch.ElapsedMilliseconds);
 #if NCRUNCH || DEBUG
       if (!result.IsValid)
       {

@@ -2,6 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
+  using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Placement;
   using FakeItEasy;
   using FluentAssertions;
@@ -21,7 +22,7 @@
       var sheetPlacementsCollection = new SheetPlacementCollection();
       sheetPlacementsCollection.Add(sheetPlacement);
 
-      Action act = () => _ = new NestResult(1, sheetPlacementsCollection, new List<INfp>(), sheetPlacement.PlacementType, 1234, 4321);
+      Action act = () => _ = new NestResult(A.Dummy<DeepNestGene>(), sheetPlacementsCollection, new List<INfp>(), sheetPlacement.PlacementType, 1234, 4321);
 
       act.Should().NotThrow();
     }
@@ -38,7 +39,7 @@
       var sheetPlacementsCollection = new SheetPlacementCollection();
       sheetPlacementsCollection.Add(sheetPlacement);
 
-      var nestResult = new NestResult(1, sheetPlacementsCollection, new List<INfp>(), sheetPlacement.PlacementType, 1234, 4321);
+      var nestResult = new NestResult(A.Dummy<DeepNestGene>(), sheetPlacementsCollection, new List<INfp>(), sheetPlacement.PlacementType, 1234, 4321);
       Action act = () => _ = nestResult.ToJson();
 
       act.Should().NotThrow();
@@ -57,17 +58,16 @@
       var sheetPlacementsCollection = new SheetPlacementCollection();
       sheetPlacementsCollection.Add(sheetPlacement);
 
-      var nestResult = new NestResult(1, sheetPlacementsCollection, new List<INfp>() { unplacedNfp }, sheetPlacement.PlacementType, 1234, 4321);
+      var gene = new DeepNestGene(new List<Chromosome>() { new Chromosome(nfp, 0), new Chromosome(unplacedNfp, 0) });
+
+      var nestResult = new NestResult(gene, sheetPlacementsCollection, new List<INfp>() { unplacedNfp }, sheetPlacement.PlacementType, 1234, 4321);
       var json = nestResult.ToJson();
       var actual = NestResult.FromJson(json);
-
-      actual.Should().BeEquivalentTo(nestResult, options =>
-            options// .Including(o => o.MergedLength)
-                   // .Including(o => o.UnplacedParts)
-                   .Including(o => o.UsedSheets)
-                   .Excluding(o => o.FitnessTotal)
-                   .Excluding(o => o.CreatedAt));
-      //.ExcludingProperties());
+      actual.Should().BeEquivalentTo(nestResult,
+                                     options => options
+                                                .Excluding(o => o.IsDirty)
+                                                .Excluding(o => o.IsValid)
+                                                );
     }
   }
 }

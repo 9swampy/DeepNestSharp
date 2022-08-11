@@ -25,7 +25,7 @@
     }
 
     public NestResult(
-      int totalParts,
+      DeepNestGene gene,
       SheetPlacementCollection allPlacements,
       IList<INfp> unplacedParts,
       PlacementTypeEnum placementType,
@@ -35,7 +35,7 @@
       : this()
 #pragma warning restore CS0618 // Type or member is obsolete
     {
-      this.TotalParts = totalParts;
+      this.Gene = gene;
       this.UsedSheets = allPlacements;
       this.UnplacedParts = unplacedParts;
       this.PlacementType = placementType;
@@ -43,7 +43,8 @@
       this.BackgroundTime = backgroundTime;
     }
 
-    public DateTime CreatedAt { get; } = DateTime.Now;
+    [JsonInclude]
+    public DateTime CreatedAt { get; private set; } = DateTime.Now;
 
     [JsonIgnore]
     public double FitnessTotal
@@ -93,7 +94,11 @@
       }
     }
 
-    public int TotalParts { get; }
+    [JsonIgnore]
+    public int TotalParts => Gene.Length;
+
+    [JsonInclude]
+    public DeepNestGene Gene { get; private set; }
 
     [JsonIgnore]
     public double FitnessWastage
@@ -135,11 +140,14 @@
 
     private ISheetPlacementFitness SheetPlacementFitness => this.fitness;
 
-    public PlacementTypeEnum PlacementType { get; }
+    [JsonInclude]
+    public PlacementTypeEnum PlacementType { get; private set; }
 
-    public long PlacePartTime { get; }
+    [JsonInclude]
+    public long PlacePartTime { get; private set; }
 
-    public long BackgroundTime { get; }
+    [JsonInclude]
+    public long BackgroundTime { get; private set; }
 
     [JsonIgnore]
     public int TotalPlacedCount => this.UsedSheets.Sum(o => o.PartPlacements.Count);
@@ -161,6 +169,7 @@
     [JsonIgnore]
     public double MaterialUtilization => Math.Abs(TotalPartsArea / TotalSheetsArea);
 
+    [JsonIgnore]
     public bool IsValid => !(double.IsNaN(this.FitnessTotal) || this.TotalPartsCount > this.TotalParts);
 
     public static NestResult FromJson(string json)
@@ -173,6 +182,8 @@
       options.Converters.Add(new SheetJsonConverter());
       options.Converters.Add(new NfpJsonConverter());
       options.Converters.Add(new PartPlacementJsonConverter());
+      options.Converters.Add(new DeepNestGeneJsonConverter());
+
       return JsonSerializer.Deserialize<NestResult>(json, options);
     }
 

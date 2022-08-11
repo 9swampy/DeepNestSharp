@@ -27,6 +27,11 @@
     [JsonInclude]
     public double Rotation { get; internal set; }
 
+    public override string ToString()
+    {
+      return $"Id:{Part.Id}:{Part.Name}:{Part.Rotation} I:{Rotation}";
+    }
+
     internal void SetIndex(int idx)
     {
       Part.Id = idx;
