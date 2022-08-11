@@ -33,7 +33,7 @@
     }
 
     /// <summary>
-    /// Penalise for each additional sheet needed.
+    /// Penalise for each additional sheet needed. Sheets is not scaled by MaterialUtilization because we really wnat to avoid using an extra sheet if possible.
     /// </summary>
     public double Sheets
     {
@@ -108,15 +108,29 @@
               var altUtilization = Math.Pow(this.Wasted / 10, 2);
               altUtilization += Bounds * 10;
               utilization = Math.Min(altUtilization, utilization.Value * .9);
-              if (this.sheetPlacement.MaterialUtilization <= 0.04)
-              {
-                utilization /= Math.Min(3, sheetPlacement.PartPlacements.Count);
-              }
+              PreferMultipleSmallParts();
             }
           }
 
           return ScaleBySimpleUtilization(utilization.Value);
         }
+      }
+    }
+
+    /// <summary>
+    /// Given the MaterialUtilization is so low it's safe to presume this is the last sheet. If there are multiple small parts on the last sheet prefer this
+    /// to having fewer larger parts spilling over to the last sheet. The smalls are more likely to get squeezed in to spaces left on the preceeding sheets
+    /// than the larger parts. . .
+    /// </summary>
+    private void PreferMultipleSmallParts()
+    {
+      if (this.sheetPlacement.MaterialUtilization <= 0.02)
+      {
+        utilization /= Math.Min(6, sheetPlacement.PartPlacements.Count);
+      }
+      else if (this.sheetPlacement.MaterialUtilization <= 0.04)
+      {
+        utilization /= Math.Min(4, sheetPlacement.PartPlacements.Count);
       }
     }
 
@@ -172,6 +186,9 @@
       return $"{Total:N0}=B{Bounds:N0}+S{Sheets:N0}+W{Wasted:N0}+U{Utilization:N0}";
     }
 
+    /// <summary>
+    /// Prefer sheets with high utilization.
+    /// </summary>
     private double ScaleBySimpleUtilization(double value)
     {
       return value * Math.Pow(1 - sheetPlacement.MaterialUtilization, 0.5);
