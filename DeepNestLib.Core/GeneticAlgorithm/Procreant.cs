@@ -189,7 +189,7 @@
         rand = r.NextDouble();
         if (rand < 0.01 * config.MutationRate)
         {
-          clone[i].Rotation = GetRandomRotation(clone[i].Part);
+          clone[i].SetRotation(GetRandomRotation(clone[i].Part));
         }
       }
 
@@ -269,7 +269,7 @@
     /// <param name="initiantPartialGene">Partial gene from initiant parent.</param>
     /// <param name="supplicantParentGene">Full gene from supplicant parent.</param>
     /// <returns>Completed child gene.</returns>
-    private static Chromosome[] CompleteGene(IEnumerable<Chromosome> initiantPartialGene, DeepNestGene supplicantParentGene)
+    private static IDeepNestChromosome[] CompleteGene(IEnumerable<IDeepNestChromosome> initiantPartialGene, DeepNestGene supplicantParentGene)
     {
       var result = initiantPartialGene.ToArray();
       var idx = result.Length;

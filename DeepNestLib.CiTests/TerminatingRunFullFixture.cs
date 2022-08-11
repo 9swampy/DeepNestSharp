@@ -2,9 +2,12 @@
 {
   using DeepNestLib.Placement;
   using FakeItEasy;
+  using FluentAssertions;
 
-  public class TerminatingRunFullFixture
+  public abstract class TerminatingRunFullFixture
   {
+    private static volatile object testSyncLock = new object();
+
     private readonly int maxIterations;
     private readonly int maxRuns;
 
@@ -59,12 +62,55 @@
     {
       get
       {
-        return !(this.nestingContext.State.TopNestResults.Top == default ||
-                 this.nestingContext.State.TopNestResults.Top.FitnessTotal > ExpectedFitness + ExpectedFitnessTolerance);
+        if (!HasRun()) return false;
+        if (IsTopFitnessGoodEnough) return true;
+        return false;
       }
     }
 
-    protected void ResetIteration()
+    private bool IsTopFitnessGoodEnough
+    {
+      get
+      {
+        return this.nestingContext.State.TopNestResults.Top.FitnessTotal <= ExpectedFitness + ExpectedFitnessTolerance;
+      }
+    }
+
+    private bool HasRun()
+    {
+      return this.nestingContext.State.TopNestResults.Top != default;
+    }
+
+    protected bool HasImportedRawDetail { get; set; }
+
+    protected void ExecuteTest()
+    {
+      lock (testSyncLock)
+      {
+        while (!HasAchievedExpectedFitness && !HasRetriedMaxRuns)
+        {
+          if (!HasImportedRawDetail)
+          {
+            HasImportedRawDetail = LoadRawDetail();
+          }
+          
+          HasImportedRawDetail.Should().BeTrue();
+          ResetIteration();
+          PrepIteration();
+          nestingContext.StartNest().Wait();
+          while (!HasMetTerminationConditions)
+          {
+            AwaitIterate();
+          }
+        }
+      }
+    }
+
+    protected abstract void PrepIteration();
+
+    protected abstract bool LoadRawDetail();
+
+    private void ResetIteration()
     {
       iterations = 0;
       numRuns++;

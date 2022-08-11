@@ -6,22 +6,27 @@
   using System.Text.Json;
   using DeepNestLib.Placement;
 
-  public class DeepNestGene : IEnumerable<Chromosome>
+  public class DeepNestGene : IEnumerable<IDeepNestChromosome>
   {
-    private IList<Chromosome> chromosomes;
+    private IList<IDeepNestChromosome> chromosomes;
 
-    public DeepNestGene(IList<Chromosome> chromosomes)
+    public DeepNestGene(IList<IDeepNestChromosome> chromosomes)
     {
       this.chromosomes = chromosomes;
     }
 
+    internal DeepNestGene(IList<Chromosome> chromosomes)
+        : this(chromosomes.ToList<IDeepNestChromosome>())
+    {
+    }
+
     public int Length => this.chromosomes.Count;
 
-    public Chromosome this[int index] { get => this.chromosomes[index]; }
+    public IDeepNestChromosome this[int index] { get => this.chromosomes[index]; }
 
-    public int IndexOf(Chromosome item) => this.chromosomes.IndexOf(item);
+    public int IndexOf(IDeepNestChromosome item) => this.chromosomes.IndexOf(item);
 
-    public IEnumerator<Chromosome> GetEnumerator() => this.chromosomes.ToList().GetEnumerator();
+    public IEnumerator<IDeepNestChromosome> GetEnumerator() => this.chromosomes.ToList().GetEnumerator();
 
     public override string ToString()
     {

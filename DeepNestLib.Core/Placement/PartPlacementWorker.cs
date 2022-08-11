@@ -83,7 +83,7 @@
 
     [JsonPropertyName("Parts")]
     [JsonInclude]
-    public IList<Chromosome> Gene { get; private set; }
+    public IList<IDeepNestChromosome> Gene { get; private set; }
 
     [JsonInclude]
     public ISheet Sheet { get; private set; }
@@ -620,6 +620,7 @@
       options.Converters.Add(new IListInterfaceConverterFactory(typeof(NoFitPolygon)));
       options.Converters.Add(new WindowUnkJsonConverter());
       options.Converters.Add(new SvgNestConfigJsonConverter());
+      options.Converters.Add(new InterfaceConverter<Chromosome, IDeepNestChromosome>());
       options.Converters.Add(new SheetPlacementJsonConverter());
       options.Converters.Add(new SheetJsonConverter());
       options.Converters.Add(new NfpJsonConverter());

@@ -39,7 +39,7 @@
     {
 #if NCRUNCH //Need to work out how to pass preprocessor directive in to SvgNestConfigJsonConverterInner
       var part = new NoFitPolygon(new List<SvgPoint>() { new SvgPoint(1, 2) });
-      var parts = new DeepNestGene(new Chromosome[] { part.ToChromosome(0) });
+      var parts = new DeepNestGene(new IDeepNestChromosome[] { part.ToChromosome(0) });
       var placements = new List<IPartPlacement>() { new PartPlacement(part) };
       var sheet = new Sheet();
       var window = new WindowUnk();
@@ -98,7 +98,7 @@
     {
 #if NCRUNCH //Need to work out how to pass preprocessor directive in to SvgNestConfigJsonConverterInner
       var part = new NoFitPolygon(new List<SvgPoint>() { new SvgPoint(1, 2) });
-      var parts = new DeepNestGene(new Chromosome[] { part.ToChromosome(0) });
+      var parts = new DeepNestGene(new IDeepNestChromosome[] { part.ToChromosome(0) });
       var placements = new List<IPartPlacement>() { new PartPlacement(part) };
       var sheet = new Sheet();
       var window = new WindowUnk();

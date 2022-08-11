@@ -54,6 +54,7 @@
       this.ReorderSheets();
       this.InternalReset();
       this.Current = null;
+      ((INestStateNestingContext)this.State).StartNest();
 
       (NestItem<INfp>[] PartsLocal, List<NestItem<ISheet>> SheetsLocal) nestItems = await Task.Run(
         () =>

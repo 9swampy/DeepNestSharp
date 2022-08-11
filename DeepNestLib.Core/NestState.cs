@@ -126,6 +126,10 @@
     [Browsable(false)]
     public TopNestResultsCollection TopNestResults { get; }
 
+    public DateTime StartedAt { get; private set; }
+
+    public IDateService DateService { get; internal set; } = new DateService();
+
     public static NestState CreateInstance(ISvgNestConfig config, IDispatcherService dispatcherService) => new NestState(config, dispatcherService);
 
     void INestStateNestingContext.Reset()
@@ -252,6 +256,11 @@
     {
       nfpPairCachePercentCached = percentCached;
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NfpPairCachePercentCached)));
+    }
+
+    void INestStateNestingContext.StartNest()
+    {
+      this.StartedAt = DateService.Now;
     }
   }
 }

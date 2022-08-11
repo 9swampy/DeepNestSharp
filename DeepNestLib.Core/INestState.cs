@@ -1,5 +1,7 @@
 ﻿namespace DeepNestLib
 {
+  using System;
+
   public interface INestState
   {
     /// <summary>
@@ -42,6 +44,8 @@
     TopNestResultsCollection TopNestResults { get; }
 
     void SetIsErrored();
+
+    DateTime StartedAt { get; }
   }
 
   public interface INestStateBackground : INestState
@@ -84,6 +88,8 @@
   public interface INestStateNestingContext : INestState
   {
     void IncrementIterations();
+
+    void StartNest();
 
     void Reset();
   }

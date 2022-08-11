@@ -14,7 +14,7 @@
       return nfps;
     }
 
-    public static Chromosome[] ApplyIndex(this Chromosome[] gene)
+    public static IDeepNestChromosome[] ApplyIndex(this IDeepNestChromosome[] gene)
     {
       for (var idx = 0; idx < gene.Length; idx++)
       {
