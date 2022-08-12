@@ -77,6 +77,23 @@
       }
     }
 
+    internal void FitnessShouldBeExpectedVerification()
+    {
+      try
+      {
+        nestingContext.State.TopNestResults.Top.FitnessTotal.Should().BeApproximately(ExpectedFitness, ExpectedFitnessTolerance);
+      }
+      catch (Exception)
+      {
+        if (nestingContext.State.TopNestResults.Top.FitnessTotal < ExpectedFitness - ExpectedFitnessTolerance)
+        {
+          throw new InvalidOperationException("Fitness better than expected; have you changed the Fitness function?");
+        }
+
+        throw;
+      }
+    }
+
     private bool HasRun()
     {
       return this.nestingContext.State.TopNestResults.Top != default;
