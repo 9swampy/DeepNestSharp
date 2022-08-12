@@ -5,6 +5,7 @@
   using System.ComponentModel;
   using DeepNestLib;
   using DeepNestLib.Converters;
+  using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
 
@@ -66,6 +67,8 @@
     public double TotalPartsArea => this.item.TotalPartsArea;
 
     public int TotalParts => this.item.TotalParts;
+
+    public DeepNestGene Gene => item.Gene;
 
     public string ToJson(bool writeIndented = true)
     {

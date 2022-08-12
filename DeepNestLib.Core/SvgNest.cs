@@ -14,6 +14,8 @@
 
   public partial class SvgNest
   {
+    public static bool IsVerboseLogging { get; } = false;
+
     private readonly IMessageService messageService;
     private readonly IMinkowskiSumService minkowskiSumService;
 
@@ -253,7 +255,10 @@
               suffix = "Sub-optimal";
             }
 
-            this.progressDisplayer.DisplayTransientMessage($"Nesting time = {payload.PlacePartTime}ms ({suffix})");
+            if (SvgNest.IsVerboseLogging)
+            {
+              this.progressDisplayer.DisplayTransientMessage($"Nesting time = {payload.PlacePartTime}ms ({suffix})");
+            }
           }
 
           IncrementSecondaryProgressBar();
@@ -460,11 +465,11 @@
     }
 
     /// <summary>
-    /// All individuals have been evaluated, start next generation
+    /// All individuals have been evaluated, start next generation.
     /// </summary>
     private void InitialiseAnotherGeneration()
     {
-      this.procreant.Generate();
+      this.procreant.Generate(this.State.TopNestResults);
 #if !NCRUNCH
       if (this.procreant.Population.Length == 0)
       {

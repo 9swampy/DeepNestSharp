@@ -2,6 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
+  using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.NestProject;
 
   public interface INestResult
@@ -19,6 +20,8 @@
     double FitnessUtilization { get; }
 
     double FitnessWastage { get; }
+
+    DeepNestGene Gene { get; }
 
     bool IsValid { get; }
 

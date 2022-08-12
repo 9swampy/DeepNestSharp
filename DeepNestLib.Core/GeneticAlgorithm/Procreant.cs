@@ -9,8 +9,9 @@
 
   public class Procreant
   {
+    private static readonly Random Random = new Random();
+
     private readonly HashSet<string> ancestors = new HashSet<string>();
-    private readonly Random r = new Random();
     private readonly ISvgNestConfig config;
     private readonly IProgressDisplayer progressDisplayer;
     private readonly Stopwatch chaperone = new Stopwatch();
@@ -151,8 +152,6 @@
       return adam.ToArray();
     }
 
-    private readonly Random random = new Random();
-
     public bool IsCurrentGenerationFinished
     {
       get
@@ -169,46 +168,50 @@
       }
     }
 
+    /// <summary>
+    /// Slightly mutate children.
+    /// </summary>
     private PopulationItem Mutate(PopulationItem p)
     {
-      var clone = p.Gene.ToArray();
-      for (var i = 0; i < clone.Length; i++)
+      var mutationRate = 0.01 * config.MutationRate;
+      var clonedChromosomes = p.Gene.ToList();
+      for (var i = 0; i < clonedChromosomes.Count; i++)
       {
-        var rand = r.NextDouble();
-        if (rand < 0.01 * config.MutationRate)
+        var rand = Random.NextDouble();
+        if (rand < mutationRate)
         {
           var j = i + 1;
-          if (j < clone.Length)
+          if (j < clonedChromosomes.Count)
           {
-            var temp = clone[i];
-            clone[i] = clone[j];
-            clone[j] = temp;
+            var temp = clonedChromosomes[i];
+            clonedChromosomes[i] = clonedChromosomes[j];
+            clonedChromosomes[j] = temp;
           }
         }
 
-        rand = r.NextDouble();
-        if (rand < 0.01 * config.MutationRate)
+        rand = Random.NextDouble();
+        if (rand < mutationRate)
         {
-          clone[i].SetRotation(GetRandomRotation(clone[i].Part));
+          clonedChromosomes[i] = new Chromosome(clonedChromosomes[i].Part, GetRandomRotation(clonedChromosomes[i].Part));
         }
       }
 
-      return new PopulationItem(new DeepNestGene(clone));
+      return new PopulationItem(new DeepNestGene(clonedChromosomes));
     }
 
     private double GetRandomRotation(INfp part)
     {
       if (IsPartRotationRestricted(part, AnglesEnum.AsPreviewed))
       {
-        return strictAsPreviewedAngles[random.Next() % strictAsPreviewedAngles.Length];
+        return strictAsPreviewedAngles[Random.Next() % strictAsPreviewedAngles.Length];
       }
       else if (IsPartRotationRestricted(part, AnglesEnum.Rotate90))
       {
-        return strictRotate90Angles[random.Next() % strictRotate90Angles.Length];
+        return strictRotate90Angles[Random.Next() % strictRotate90Angles.Length];
       }
       else
       {
-        return Math.Floor(r.NextDouble() * config.Rotations) * (360f / config.Rotations);
+        return Math.Floor(Random.NextDouble() * config.Rotations) * (360f / config.Rotations);
       }
     }
 
@@ -217,7 +220,9 @@
       return part.StrictAngle == restriction || (part.StrictAngle == AnglesEnum.None && this.config.StrictAngles == restriction);
     }
 
-    // returns a random individual from the population, weighted to the front of the list (lower fitness value is more likely to be selected)
+    /// <summary>
+    /// Returns a random individual from the population, weighted to the front of the list (lower fitness value is more likely to be selected).
+    /// </summary>
     private PopulationItem RandomWeightedIndividual(IEnumerable<PopulationItem> population, PopulationItem exclude = null)
     {
       var pop = population.ToList();
@@ -227,7 +232,7 @@
         pop.Remove(exclude);
       }
 
-      var rand = r.NextDouble();
+      var rand = Random.NextDouble();
 
       double lower = 0;
       var weight = 1 / (double)pop.Count;
@@ -248,10 +253,12 @@
       return pop[0];
     }
 
-    // single point crossover
-    private PopulationItem[] Mate(PopulationItem male, PopulationItem female)
+    /// <summary>
+    /// Single point crossover, each mating produces two children.
+    /// </summary>
+    private static PopulationItem[] Mate(PopulationItem male, PopulationItem female)
     {
-      var cutpoint = (int)Math.Round(Math.Min(Math.Max(r.NextDouble(), 0.1), 0.9) * (male.Gene.Length - 1));
+      var cutpoint = (int)Math.Round(Math.Min(Math.Max(Random.NextDouble(), 0.1), 0.9) * (male.Gene.Length - 1));
 
       var son = CompleteGene(male.Gene.Take(cutpoint), female.Gene);
       var daughter = CompleteGene(female.Gene.Take(cutpoint), male.Gene);
@@ -287,50 +294,61 @@
       return result;
     }
 
-    public void Generate()
+    internal void Generate(TopNestResultsCollection topNestResults)
     {
+      Generate(topNestResults.Select(o => (o.Gene, o.FitnessTotal)).ToList(), topNestResults.EliteSurvivors);
+    }
+
+    internal void Generate(IList<(DeepNestGene Gene, double FitnessTotal)> progenitors, int eliteSurvivors)
+    {
+      this.progressDisplayer.DisplayTransientMessage("Procreating. . .");
       // Individuals with higher fitness are more likely to be selected for mating
-      Array.Sort(Population, (x, y) => x.Fitness.CompareTo(y.Fitness)); // = Population.OrderBy(z => z.Fitness).ToList();
+      var ancestors = progenitors.Take(eliteSurvivors).Select(o => new PopulationItem(o.Gene) { Fitness = o.FitnessTotal })
+                                         .Union(Population)
+                                         .OrderBy(o => o.Fitness)
+                                         .ToArray();
 
       // fittest individuals are preserved in the new generation (elitism)
       var newPopulation = new List<PopulationItem>();
-      var fittestSurvivors = config.PopulationSize / 10;
-      newPopulation.AddRange(this.Population.Take(this.Population.Count() < fittestSurvivors ? this.Population.Count() : fittestSurvivors));
+      var survivors = (int)Math.Min(eliteSurvivors * 2, ancestors.Count());
+      ancestors = ancestors.Take(survivors).ToArray();
       chaperone.Restart();
       //this.progressDisplayer.IsVisibleSecondaryProgressBar = false;
       //this.progressDisplayer.InitialiseLoopProgress(ProgressBar.Primary, "Procreate. . .", config.PopulationSize);
-      while (newPopulation.Count() > 1 && newPopulation.Count() < config.PopulationSize && chaperone.ElapsedMilliseconds <= config.ProcreationTimeout)
+
+      bool first = true;
+      while (first ||
+             (newPopulation.Count() < config.PopulationSize &&
+              chaperone.ElapsedMilliseconds <= config.ProcreationTimeout))
       {
-        var male = RandomWeightedIndividual(newPopulation);
-        var female = RandomWeightedIndividual(newPopulation, male);
+        first = false;
+        var parents = ancestors.Union(newPopulation);
+        var male = RandomWeightedIndividual(parents);
+        var female = RandomWeightedIndividual(parents, male);
 
-        // each mating produces two children
-        var children = Mate(male, female);
-
-        // slightly mutate children
-        var child = this.Mutate(children[0]);
-        if (IsUnique(child))
+        var foetuses = Mate(male, female);
+        foreach (var foetus in foetuses)
         {
-          chaperone.Restart();
-          newPopulation.Add(child);
           if (newPopulation.Count < config.PopulationSize)
           {
-            child = this.Mutate(children[1]);
+            var child = this.Mutate(foetus);
             if (IsUnique(child))
             {
+              chaperone.Restart();
               newPopulation.Add(child);
+              this.progressDisplayer.IncrementLoopProgress(ProgressBar.Primary);
+            }
+            else if (SvgNest.IsVerboseLogging)
+            {
+              this.progressDisplayer.DisplayTransientMessage($"Cumulative Terminations={terminations} ({chaperone.ElapsedMilliseconds / 1000:N0}s)");
             }
           }
         }
-        else
-        {
-          this.progressDisplayer.DisplayTransientMessage($"Cumulative Terminations={terminations} ({chaperone.ElapsedMilliseconds / 1000:N0}s)");
-        }
-      }
 
-      if (newPopulation.Count <= fittestSurvivors)
-      {
-        newPopulation = TerminateClones(newPopulation).ToList();
+        if (newPopulation.Count(o => o.IsPending == false) > 0)
+        {
+          System.Diagnostics.Debugger.Break();
+        }
       }
 
       this.Population = newPopulation.ToArray();
