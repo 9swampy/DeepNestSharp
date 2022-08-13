@@ -18,7 +18,7 @@
     }
 
     public Chromosome(INfp part, double rotation)
-      :this(rotation)
+      : this(rotation)
     {
       Part = part.Clone();
     }

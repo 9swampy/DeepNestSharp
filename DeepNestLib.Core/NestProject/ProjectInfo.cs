@@ -4,15 +4,27 @@ namespace DeepNestLib.NestProject
   using System.IO;
   using System.Text.Json;
   using System.Text.Json.Serialization;
+  using DeepNestLib.IO;
   using Light.GuardClauses;
 
   public class ProjectInfo : IProjectInfo
   {
     public const string FileDialogFilter = "DeepNest Projects (*.dnest)|*.dnest|Json (*.json)|*.json|All files (*.*)|*.*";
+    private IRelativePathHelper relativePathHelper;
     private ISvgNestConfig config;
     private WrappableList<ISheetLoadInfo, SheetLoadInfo> wrappableSheetLoadInfos;
 
-    public ProjectInfo(ISvgNestConfig config) => this.config = config;
+    [JsonConstructor]
+    public ProjectInfo()
+    {
+    }
+
+    public ProjectInfo(ISvgNestConfig config, IRelativePathHelper relativePathHelper)
+    {
+      relativePathHelper.MustNotBeNull();
+      this.config = config;
+      this.relativePathHelper = relativePathHelper;
+    }
 
     [JsonInclude]
     public IList<IDetailLoadInfo, DetailLoadInfo> DetailLoadInfos { get; private set; } = new WrappableList<IDetailLoadInfo, DetailLoadInfo>();
@@ -66,19 +78,21 @@ namespace DeepNestLib.NestProject
     /// <param name="config">An instance of SvgNestConfig to populate from the json.</param>
     /// <param name="json">Json representation of the ProjectInfo.</param>
     /// <returns>Populated ProjectInfo.</returns>
-    public static ProjectInfo FromJson(ISvgNestConfig config, string json)
+    public static ProjectInfo FromJson(ISvgNestConfig config, string json, IRelativePathHelper relativePathHelper)
     {
       try
       {
+        relativePathHelper.MustNotBeNull();
         if (!string.IsNullOrWhiteSpace(json))
         {
           var options = new JsonSerializerOptions();
-          options.Converters.Add(new DetailLoadInfoJsonConverter());
+          options.Converters.Add(new DetailLoadInfoJsonConverter(relativePathHelper));
           options.Converters.Add(new WrappableListJsonConverter<IDetailLoadInfo, DetailLoadInfo>());
           options.Converters.Add(new WrappableListJsonConverter<ISheetLoadInfo, SheetLoadInfo>());
           options.Converters.Add(new SheetLoadInfoJsonConverter());
           options.Converters.Add(new SvgNestConfigJsonConverter());
           var result = JsonSerializer.Deserialize<ProjectInfo>(json, options);
+          result.relativePathHelper = relativePathHelper;
           var deserialized = result.config;
           result.config = config;
           if (deserialized != null)
@@ -89,11 +103,12 @@ namespace DeepNestLib.NestProject
           return result;
         }
 
-        return new ProjectInfo(config);
+        return new ProjectInfo(config, relativePathHelper);
       }
       catch (Exception ex)
       {
-        return new ProjectInfo(config);
+        System.Diagnostics.Debug.Print(ex.Message);
+        return new ProjectInfo(config, relativePathHelper);
       }
     }
 
@@ -129,11 +144,12 @@ namespace DeepNestLib.NestProject
 
     public string ToJson()
     {
+      relativePathHelper.MustNotBeNull();
       Config.MustBe(this.config);
       SheetLoadInfos.MustNotBeNull();
 
       var options = new JsonSerializerOptions();
-      options.Converters.Add(new DetailLoadInfoJsonConverter());
+      options.Converters.Add(new DetailLoadInfoJsonConverter(relativePathHelper));
       options.Converters.Add(new WrappableListJsonConverter<IDetailLoadInfo, DetailLoadInfo>());
       options.Converters.Add(new WrappableListJsonConverter<ISheetLoadInfo, SheetLoadInfo>());
       options.Converters.Add(new SheetLoadInfoJsonConverter());
@@ -142,22 +158,29 @@ namespace DeepNestLib.NestProject
       return JsonSerializer.Serialize(this, options);
     }
 
-    public static ProjectInfo LoadFromFile(ISvgNestConfig config, string fileName)
+    public static ProjectInfo LoadFromFile(ISvgNestConfig config, string fileName, IRelativePathHelper relativePathHelper)
     {
       using (StreamReader inputFile = new StreamReader(fileName))
       {
-        return LoadFromStream(config, inputFile);
+        return LoadFromStream(config, inputFile, relativePathHelper);
       }
     }
 
-    public static ProjectInfo LoadFromStream(ISvgNestConfig config, StreamReader stream)
+    public static ProjectInfo LoadFromStream(ISvgNestConfig config, StreamReader stream, IRelativePathHelper relativePathHelper)
     {
-      return FromJson(config, stream.ReadToEnd());
+      relativePathHelper.MustNotBeNull();
+      return FromJson(config, stream.ReadToEnd(), relativePathHelper);
     }
 
-    public void Load(ISvgNestConfig config, string filePath)
+    public void Load(ISvgNestConfig config, IRelativePathHelper relativePathHelperParameter, string filePath)
     {
-      var source = LoadFromFile(config, filePath);
+      relativePathHelperParameter.MustNotBeNull();
+      if (relativePathHelper != null)
+      {
+        relativePathHelper.MustBe(relativePathHelperParameter);
+      }
+
+      var source = LoadFromFile(config, filePath, relativePathHelperParameter);
       Load(source);
     }
 

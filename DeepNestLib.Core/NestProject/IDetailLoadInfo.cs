@@ -25,5 +25,7 @@
     AnglesEnum StrictAngle { get; set; }
 
     bool IsExists { get; }
+
+    IDetailLoadInfo Clone();
   }
 }

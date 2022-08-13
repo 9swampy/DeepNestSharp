@@ -171,7 +171,7 @@
       FillToMaxCapacity(sut);
 
       var second = A.Fake<INestResult>();
-      A.CallTo(() => second.FitnessTotal).Returns(sut.Last().FitnessTotal*2);
+      A.CallTo(() => second.FitnessTotal).Returns(sut.Last().FitnessTotal * 2);
       sut.TryAdd(second).Should().Be(TryAddResult.NotAdded);
 
       sut.Should().NotContain(second);

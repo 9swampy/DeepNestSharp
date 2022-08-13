@@ -1,7 +1,7 @@
 ﻿namespace DeepNestLib.IO
 {
-  using DeepNestLib.GeneticAlgorithm;
   using System.Collections.Generic;
+  using DeepNestLib.GeneticAlgorithm;
 
   public interface IRawDetail
   {

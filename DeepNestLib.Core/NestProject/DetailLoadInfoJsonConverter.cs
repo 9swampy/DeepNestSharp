@@ -3,9 +3,17 @@
   using System;
   using System.Text.Json;
   using System.Text.Json.Serialization;
+  using DeepNestLib.IO;
 
   public class DetailLoadInfoJsonConverter : JsonConverterFactory
   {
+    private readonly IRelativePathHelper relativePathHelper;
+
+    public DetailLoadInfoJsonConverter(IRelativePathHelper relativePathHelper)
+    {
+      this.relativePathHelper = relativePathHelper;
+    }
+
     public override bool CanConvert(Type typeToConvert)
     {
       return typeToConvert.IsAssignableFrom(typeof(IDetailLoadInfo));
@@ -15,7 +23,7 @@
     {
       if (CanConvert(typeToConvert))
       {
-        return new DetailLoadInfoJsonConverterInner();
+        return new DetailLoadInfoJsonConverterInner(relativePathHelper);
       }
 
       throw new ArgumentException($"Cannot convert {nameof(typeToConvert)}.", nameof(typeToConvert));
@@ -23,14 +31,25 @@
 
     public class DetailLoadInfoJsonConverterInner : JsonConverter<IDetailLoadInfo>
     {
+      private readonly IRelativePathHelper relativePathHelper;
+
+      public DetailLoadInfoJsonConverterInner(IRelativePathHelper relativePathHelper)
+      {
+        this.relativePathHelper = relativePathHelper;
+      }
+
       public override IDetailLoadInfo Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
       {
-        return JsonSerializer.Deserialize<DetailLoadInfo>(ref reader, options);
+        var detailLoadInfo = JsonSerializer.Deserialize<DetailLoadInfo>(ref reader, options);
+        detailLoadInfo.Path = relativePathHelper.ConvertToFullPath(detailLoadInfo.Path);
+        return detailLoadInfo;
       }
 
       public override void Write(Utf8JsonWriter writer, IDetailLoadInfo value, JsonSerializerOptions options)
       {
-        JsonSerializer.Serialize<DetailLoadInfo>(writer, (DetailLoadInfo)value, options);
+        var clone = value.Clone();
+        clone.Path = relativePathHelper.ConvertToRelativePath(value.Path);
+        JsonSerializer.Serialize(writer, (DetailLoadInfo)clone, options);
       }
     }
   }

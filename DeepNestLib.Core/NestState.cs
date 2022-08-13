@@ -188,7 +188,7 @@
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Iterations)));
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DllCallCounter)));
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ClipperCallCounter)));
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TopNestResults))); 
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TopNestResults)));
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AverageTopNest)));
     }
 

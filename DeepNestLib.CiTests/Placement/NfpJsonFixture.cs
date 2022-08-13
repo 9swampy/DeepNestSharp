@@ -81,7 +81,7 @@
 
       var actual = NoFitPolygon.FromJson(json);
 
-      actual.Should().BeEquivalentTo(expected, options => 
+      actual.Should().BeEquivalentTo(expected, options =>
                    options.Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 0.0001))
                           .WhenTypeIs<double>());
       ((IEquatable<IPolygon>)actual).Equals(expected).Should().BeTrue();

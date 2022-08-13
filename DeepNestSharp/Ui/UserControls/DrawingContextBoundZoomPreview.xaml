@@ -55,7 +55,7 @@
             </ItemsControl.ItemContainerStyle>
             <ItemsControl.Resources>
               <DataTemplate DataType="{x:Type domainModels:ObservablePartPlacement}">
-                <Polygon Points="{Binding Converter={StaticResource PointsConverter}}" Stroke="Black" StrokeThickness="0.2"
+                <Polygon Points="{Binding Converter={StaticResource PointsConverter}}" Stroke="{Binding Converter={StaticResource StrokeConverter}}" StrokeThickness="0.2"
                                    MouseUp="Polygon_MouseUp">
                   <Polygon.Fill>
                     <MultiBinding Converter="{StaticResource IsSelectedToFillColor}">

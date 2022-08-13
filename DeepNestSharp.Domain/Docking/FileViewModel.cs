@@ -2,8 +2,10 @@
 {
   using System.IO;
   using System.Windows.Input;
+  using DeepNestLib.IO;
   using DeepNestSharp.Domain.Docking;
   using DeepNestSharp.Domain.ViewModels;
+  using Light.GuardClauses;
   //using System.Windows.Media;
   using Microsoft.Toolkit.Mvvm.Input;
 
@@ -16,6 +18,7 @@
     private RelayCommand? saveCommand;
     private RelayCommand? saveAsCommand;
     private RelayCommand? closeCommand;
+    private readonly IRelativePathHelper relativePathHelper;
 
     public FileViewModel()
     {
@@ -25,10 +28,11 @@
     /// Initializes a new instance of the <see cref="FileViewModel"/> class.
     /// Use this to access an existing file.
     /// </summary>
-    public FileViewModel(IMainViewModel mainViewModel, string filePath)
+    public FileViewModel(IMainViewModel mainViewModel, string filePath, IRelativePathHelper relativePathHelper)
     {
       this.MainViewModel = mainViewModel;
       FilePath = filePath;
+      this.relativePathHelper = relativePathHelper;
       Title = FileName;
       LoadFile(filePath);
       IsDirty = false;
@@ -41,9 +45,10 @@
     /// Initializes a new instance of the <see cref="FileViewModel"/> class.
     /// Use this to access an new file.
     /// </summary>
-    public FileViewModel(IMainViewModel mainViewModel)
+    public FileViewModel(IMainViewModel mainViewModel, IRelativePathHelper relativePathHelper)
     {
       this.MainViewModel = mainViewModel;
+      this.relativePathHelper = relativePathHelper;
       IsDirty = true;
       Title = FileName;
     }
@@ -172,7 +177,7 @@
 
     protected abstract void SaveState();
 
-    protected abstract void LoadContent();
+    protected abstract void LoadContent(IRelativePathHelper relativePathHelper);
 
     private bool CanClose()
     {
@@ -183,7 +188,8 @@
     {
       if (File.Exists(filePath))
       {
-        LoadContent();
+        relativePathHelper.MustNotBeNull();
+        LoadContent(relativePathHelper);
         ContentId = filePath;
         NotifyContentUpdated();
         if (this is NestProjectViewModel ||

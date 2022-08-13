@@ -1,9 +1,9 @@
 ﻿namespace DeepNestLib
 {
-  using DeepNestLib.Placement;
   using System;
   using System.Text.Json;
   using System.Text.Json.Serialization;
+  using DeepNestLib.Placement;
 
   public class MinkowskiSumJsonConverter : JsonConverterFactory
   {

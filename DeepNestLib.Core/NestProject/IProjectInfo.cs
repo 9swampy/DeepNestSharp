@@ -1,5 +1,7 @@
 ﻿namespace DeepNestLib.NestProject
 {
+  using DeepNestLib.IO;
+
   public interface IProjectInfo
   {
     ISvgNestConfig Config { get; }
@@ -8,7 +10,7 @@
 
     IList<ISheetLoadInfo, SheetLoadInfo> SheetLoadInfos { get; }
 
-    void Load(ISvgNestConfig config, string filePath);
+    void Load(ISvgNestConfig config, IRelativePathHelper relativePathHelper, string filePath);
 
     void Load(ProjectInfo source);
 

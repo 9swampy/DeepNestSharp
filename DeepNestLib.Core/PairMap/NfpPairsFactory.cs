@@ -1,8 +1,8 @@
 ﻿namespace DeepNestLib.PairMap
 {
-  using DeepNestLib.GeneticAlgorithm;
   using System.Collections.Generic;
   using System.Threading.Tasks;
+  using DeepNestLib.GeneticAlgorithm;
 
   public class NfpPairsFactory
   {

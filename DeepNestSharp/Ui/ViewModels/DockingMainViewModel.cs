@@ -6,6 +6,7 @@
   using System.Windows;
   using AvalonDock.Themes;
   using DeepNestLib;
+  using DeepNestLib.IO;
   using DeepNestSharp.Domain.Services;
   using DeepNestSharp.Domain.ViewModels;
 
@@ -13,8 +14,14 @@
   {
     private Tuple<string, Theme>? selectedTheme;
 
-    public DockingMainViewModel(IMessageService messageService, IDispatcherService dispatcherService, ISvgNestConfig config, IFileIoService fileIoService, IMouseCursorService mouseCursorService)
-      : base(messageService, dispatcherService, config, fileIoService, mouseCursorService)
+    public DockingMainViewModel(
+      IMessageService messageService,
+      IDispatcherService dispatcherService,
+      ISvgNestConfig config,
+      IFileIoService fileIoService,
+      IMouseCursorService mouseCursorService,
+      IRelativePathHelper relativePathHelper)
+      : base(messageService, dispatcherService, config, fileIoService, mouseCursorService, relativePathHelper)
     {
       this.Themes = new List<Tuple<string, Theme>>
       {

@@ -21,7 +21,7 @@
         string fromFile = reader.ReadToEnd().Replace(" ", string.Empty).Replace("\r\n", string.Empty);
         var nestResult = NestResult.FromJson(fromFile);
         var memoryStream = new MemoryStream();
-        
+
         await nestResult.UsedSheets[0].ExportDxf(memoryStream, false, false).ConfigureAwait(false);
         memoryStream.Position = 0;
         actual = new StreamReader(memoryStream).ReadToEnd();
@@ -34,7 +34,7 @@
       {
         string expected = reader.ReadToEnd();
         var preTimestamp = actual.IndexOf("$TDCREATE");
-        actual.Substring(0, preTimestamp).Should().BeEquivalentTo(expected.Substring(0, preTimestamp));        
+        actual.Substring(0, preTimestamp).Should().BeEquivalentTo(expected.Substring(0, preTimestamp));
         actual.Substring(actual.IndexOf("$USRTIMER")).Should().BeEquivalentTo(expected.Substring(expected.IndexOf("$USRTIMER")));
       }
     }

@@ -4,6 +4,7 @@
   using System.Linq;
   using System.Threading.Tasks;
   using DeepNestLib;
+  using DeepNestLib.IO;
   using DeepNestLib.NestProject;
   using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Domain.Services;
@@ -14,6 +15,8 @@
 
   public class NestProjectViewModel : FileViewModel, INestProjectViewModel
   {
+    private readonly IRelativePathHelper relativePathHelper;
+
     private int selectedDetailLoadInfoIndex;
     private IDetailLoadInfo selectedDetailLoadInfo;
     private int selectedSheetLoadInfoIndex;
@@ -32,10 +35,11 @@
     /// Initializes a new instance of the <see cref="NestProjectViewModel"/> class.
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
-    public NestProjectViewModel(IMainViewModel mainViewModel, IFileIoService fileIoService)
-      : base(mainViewModel)
+    public NestProjectViewModel(IMainViewModel mainViewModel, IFileIoService fileIoService, IRelativePathHelper relativePathHelper)
+      : base(mainViewModel, relativePathHelper)
     {
       Initialise(mainViewModel, fileIoService);
+      this.relativePathHelper = relativePathHelper;
     }
 
     /// <summary>
@@ -43,10 +47,11 @@
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
     /// <param name="filePath">Path to the file to open.</param>
-    public NestProjectViewModel(IMainViewModel mainViewModel, string filePath, IFileIoService fileIoService)
-      : base(mainViewModel, filePath)
+    public NestProjectViewModel(IMainViewModel mainViewModel, string filePath, IFileIoService fileIoService, IRelativePathHelper relativePathHelper)
+      : base(mainViewModel, filePath, relativePathHelper)
     {
       Initialise(mainViewModel, fileIoService);
+      this.relativePathHelper = relativePathHelper;
     }
 
     public IAsyncRelayCommand AddPartCommand => addPartCommand ?? (addPartCommand = new AsyncRelayCommand(OnAddPartAsync));
@@ -75,7 +80,7 @@
 
     public IRelayCommand<string> LoadPartCommand => loadPartCommand ?? (loadPartCommand = new RelayCommand<string>(OnLoadPart));
 
-    public IProjectInfo ProjectInfo => observableProjectInfo ?? (observableProjectInfo = new ObservableProjectInfo(MainViewModel));
+    public IProjectInfo ProjectInfo => observableProjectInfo ?? (observableProjectInfo = new ObservableProjectInfo(MainViewModel, relativePathHelper));
 
     public IDetailLoadInfo SelectedDetailLoadInfo
     {
@@ -109,9 +114,16 @@
 
     public bool UsePriority => this.MainViewModel.SvgNestConfigViewModel.SvgNestConfig.UsePriority;
 
-    protected override void LoadContent()
+    protected override void LoadContent(IRelativePathHelper relativePathHelper)
     {
-      this.ProjectInfo.Load(this.MainViewModel.SvgNestConfigViewModel.SvgNestConfig, this.FilePath);
+      relativePathHelper.MustNotBeNull();
+      MainViewModel.MustNotBeNull();
+      if (observableProjectInfo == null)
+      {
+        observableProjectInfo = new ObservableProjectInfo(MainViewModel, relativePathHelper);
+      }
+
+      this.ProjectInfo.Load(this.MainViewModel.SvgNestConfigViewModel.SvgNestConfig, relativePathHelper, this.FilePath);
       this.ExecuteNestCommand.MustNotBeNull();
       this.executeNestCommand.NotifyCanExecuteChanged();
     }

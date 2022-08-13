@@ -4,10 +4,12 @@
   using System.Linq;
   using System.Threading.Tasks;
   using DeepNestLib;
+  using DeepNestLib.IO;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Domain.Services;
   using DeepNestSharp.Ui.Docking;
+  using Light.GuardClauses;
   using Microsoft.Toolkit.Mvvm.Input;
 
   public class NestResultViewModel : FileViewModel
@@ -25,8 +27,12 @@
     /// Initializes a new instance of the <see cref="NestResultViewModel"/> class.
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
-    private NestResultViewModel(IMainViewModel mainViewModel, IMouseCursorService mouseCursorService, IMessageService messageService)
-      : base(mainViewModel)
+    private NestResultViewModel(
+      IMainViewModel mainViewModel,
+      IMouseCursorService mouseCursorService,
+      IMessageService messageService,
+      IRelativePathHelper relativePathHelper)
+      : base(mainViewModel, relativePathHelper)
     {
       this.mouseCursorService = mouseCursorService;
       this.messageService = messageService;
@@ -37,15 +43,25 @@
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
     /// <param name="filePath">Path to the file to open.</param>
-    public NestResultViewModel(IMainViewModel mainViewModel, string filePath, IMouseCursorService mouseCursorService, IMessageService messageService)
-      : base(mainViewModel, filePath)
+    public NestResultViewModel(
+      IMainViewModel mainViewModel,
+      string filePath,
+      IMouseCursorService mouseCursorService,
+      IMessageService messageService,
+      IRelativePathHelper relativePathHelper)
+      : base(mainViewModel, filePath, relativePathHelper)
     {
       this.mouseCursorService = mouseCursorService;
       this.messageService = messageService;
     }
 
-    public NestResultViewModel(IMainViewModel mainViewModel, INestResult nestResult, IMouseCursorService mouseCursorService, IMessageService messageService)
-      : this(mainViewModel, mouseCursorService, messageService)
+    public NestResultViewModel(
+      IMainViewModel mainViewModel,
+      INestResult nestResult,
+      IMouseCursorService mouseCursorService,
+      IMessageService messageService,
+      IRelativePathHelper relativePathHelper)
+      : this(mainViewModel, mouseCursorService, messageService, relativePathHelper)
     {
       if (nestResult is ObservableNestResult obs)
       {
@@ -91,8 +107,9 @@
       }
     }
 
-    protected override void LoadContent()
+    protected override void LoadContent(IRelativePathHelper relativePathHelper)
     {
+      relativePathHelper.MustNotBeNull();
       var nestResult = DeepNestLib.Placement.NestResult.LoadFromFile(this.FilePath);
       this.nestResult = new ObservableNestResult(nestResult);
 

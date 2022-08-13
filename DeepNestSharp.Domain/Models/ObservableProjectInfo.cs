@@ -2,6 +2,7 @@
 {
   using System;
   using DeepNestLib;
+  using DeepNestLib.IO;
   using DeepNestLib.NestProject;
   using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Domain.ViewModels;
@@ -20,10 +21,11 @@
     /// Initializes a new instance of the <see cref="ObservableProjectInfo"/> class.
     /// </summary>
     /// <param name="projectInfo">The ProjectInfo to wrap.</param>
-    public ObservableProjectInfo(IMainViewModel mainViewModel)
+    public ObservableProjectInfo(IMainViewModel mainViewModel, IRelativePathHelper relativePathHelper)
     {
+      relativePathHelper.MustNotBeNull();
       this.mainViewModel = mainViewModel;
-      this.wrappedProjectInfo = new ProjectInfo(mainViewModel.SvgNestConfigViewModel.SvgNestConfig);
+      this.wrappedProjectInfo = new ProjectInfo(mainViewModel.SvgNestConfigViewModel.SvgNestConfig, relativePathHelper);
     }
 
     public event EventHandler? IsDirtyChanged;
@@ -73,13 +75,14 @@
       IsDirtyChanged?.Invoke(this, e);
     }
 
-    public void Load(ISvgNestConfig config, string filePath)
+    public void Load(ISvgNestConfig config, IRelativePathHelper relativePathHelper, string filePath)
     {
       // This is a fudge; need a better way of injecting Config; loathe to go Locator but AvalonDock's pushing that way.
       config.MustBe(mainViewModel.SvgNestConfigViewModel.SvgNestConfig);
+      relativePathHelper.MustBe(mainViewModel.RelativePathHelper);
       this.DetailLoadInfos.Clear();
       this.SheetLoadInfos.Clear();
-      wrappedProjectInfo.Load(config, filePath);
+      wrappedProjectInfo.Load(config, relativePathHelper, filePath);
       OnPropertyChanged(nameof(DetailLoadInfos));
       OnPropertyChanged(nameof(SheetLoadInfos));
       mainViewModel.SvgNestConfigViewModel.RaiseNotifyUpdatePropertyGrid();
