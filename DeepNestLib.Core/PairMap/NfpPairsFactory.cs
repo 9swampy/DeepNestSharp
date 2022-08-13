@@ -9,14 +9,17 @@
     private static volatile object preProcessSyncLock = new object();
 
     private readonly IWindowUnk window;
+    private readonly IProgressDisplayer progressDisplayer;
 
-    public NfpPairsFactory(IWindowUnk window)
+    public NfpPairsFactory(IWindowUnk window, IProgressDisplayer progressDisplayer)
     {
       this.window = window;
+      this.progressDisplayer = progressDisplayer;
     }
 
     public List<NfpPair> Generate(bool useParallel, DeepNestGene gene)
     {
+      this.progressDisplayer.DisplayTransientMessage("Generate Nfp pairs. . .");
       List<NfpPair> pairs = new List<NfpPair>();
       if (useParallel)
       {

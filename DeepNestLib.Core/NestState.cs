@@ -10,6 +10,7 @@
 
   public class NestState : INestState, INestStateBackground, INestStateSvgNest, INestStateMinkowski, INestStateNestingContext, INotifyPropertyChanged
   {
+    private int backgroundStarted;
     private int clipperCallCounter;
     private int dllCallCounter;
     private int generations;
@@ -38,6 +39,7 @@
         this.topNestCount++;
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LastTopFoundTimestamp)));
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AverageTopNest)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ElapsedTop)));
       }
     }
 
@@ -131,7 +133,15 @@
 
     [Description("Time Nest was started.")]
     [Category("Overall Performance")]
-    public DateTime StartedAt { get; private set; }
+    public DateTime? StartedAt { get; private set; }
+
+    [Description("Time elapsed since Nest was started.")]
+    [Category("Overall Performance")]
+    public TimeSpan? Elapsed => DateTime.Now - StartedAt;
+
+    [Description("Time elapsed since last top found.")]
+    [Category("Overall Performance")]
+    public TimeSpan? ElapsedTop => DateTime.Now - LastTopFoundTimestamp;
 
     [Description("Average Overall Nest (ms).")]
     [Category("Overall Performance")]
@@ -139,8 +149,8 @@
     {
       get
       {
-        var elapsed = (DateTime.Now - StartedAt).TotalMilliseconds;
-        return (int)(elapsed / Math.Max(1D, (double)nestCount));
+        var elapsed = Elapsed?.TotalMilliseconds;
+        return (int)((elapsed / Math.Max(1D, (double)nestCount)) ?? 0);
       }
     }
 
@@ -150,13 +160,38 @@
     {
       get
       {
-        var elapsed = (DateTime.Now - StartedAt).TotalSeconds;
-        return (int)(elapsed / Math.Max(1D, (double)topNestCount));
+        var elapsed = Elapsed?.TotalSeconds;
+        return (int)((elapsed / Math.Max(1D, (double)topNestCount)) ?? 0);
       }
     }
 
+    public int BackgroundStarted
+    {
+      get
+      {
+        return backgroundStarted;
+      }
+
+      set
+      {
+        if (backgroundStarted != value)
+        {
+          backgroundStarted = value;
+          PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BackgroundStarted)));
+        }
+      }
+    }
+
+#pragma warning disable SA1500 // Braces for multi-line statements should not share line
+#pragma warning disable SA1513 // Closing brace should be followed by blank line
     [Browsable(false)]
-    public IDateService DateService { get; internal set; } = new DateService();
+    public IDateService DateService
+    {
+      get;
+      internal set;
+    } = new DateService();
+#pragma warning restore SA1513 // Closing brace should be followed by blank line
+#pragma warning restore SA1500 // Braces for multi-line statements should not share line
 
     public static NestState CreateInstance(ISvgNestConfig config, IDispatcherService dispatcherService) => new NestState(config, dispatcherService);
 
@@ -215,6 +250,8 @@
       Interlocked.Increment(ref nestCount);
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NestCount)));
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AverageOverallNest)));
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AverageTopNest)));
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Elapsed)));
     }
 
     void INestStateSvgNest.IncrementNestTime(long backgroundTime)
@@ -257,13 +294,13 @@
     {
       Interlocked.Increment(ref iterations);
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Iterations)));
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AverageTopNest)));
     }
 
     void INestStateMinkowski.IncrementDllCallCounter()
     {
       Interlocked.Increment(ref dllCallCounter);
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DllCallCounter)));
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Elapsed)));
     }
 
     void INestStateMinkowski.IncrementClipperCallCounter()

@@ -24,7 +24,7 @@
 
     public abstract bool IsVisibleSecondaryProgressBar { get; set; }
 
-    public async Task IncrementLoopProgress(ProgressBar progressBar)
+    public void IncrementLoopProgress(ProgressBar progressBar)
     {
       switch (progressBar)
       {

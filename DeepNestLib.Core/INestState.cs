@@ -41,7 +41,9 @@
 
     int Threads { get; }
 
-    DateTime StartedAt { get; }
+    DateTime? StartedAt { get; }
+
+    TimeSpan? Elapsed { get; }
 
     TopNestResultsCollection TopNestResults { get; }
 
@@ -50,6 +52,8 @@
 
   public interface INestStateBackground : INestState
   {
+    int BackgroundStarted { get; set; }
+
     void SetNfpPairCachePercentCached(double percentCached);
   }
 

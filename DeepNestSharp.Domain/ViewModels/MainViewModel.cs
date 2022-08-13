@@ -362,7 +362,14 @@
       {
         if (fileToSave.FilePath == null || saveAsFlag)
         {
-          var filePath = fileIoService.GetSaveFilePath(fileToSave.FileDialogFilter, SvgNestConfigViewModel.SvgNestConfig.LastNestFilePath);
+          var fileInfo = new FileInfo(fileToSave.FilePath);
+          string filePath = fileInfo.Name;
+          if (fileInfo.Exists)
+          {
+            filePath = GetSuffixedFileName(fileInfo);
+          }
+
+          filePath = fileIoService.GetSaveFilePath(fileToSave.FileDialogFilter, filePath, SvgNestConfigViewModel.SvgNestConfig.LastNestFilePath);
           if (!string.IsNullOrWhiteSpace(filePath))
           {
             fileToSave.FilePath = filePath;
@@ -380,6 +387,26 @@
           ActiveDocument.IsDirty = false;
         }
       }
+    }
+
+    private static string GetSuffixedFileName(FileInfo fileInfo)
+    {
+      string filePath;
+      int copy = 0;
+      string FileName()
+      {
+        var name = $"{fileInfo.Name.Replace(fileInfo.Extension, string.Empty)}-Copy";
+        Func<int, string> copyString = i => i == 0 ? string.Empty : $"({i})";
+        return $"{name}{copyString(copy)}{fileInfo.Extension}";
+      }
+
+      while (new FileInfo(FileName()).Exists)
+      {
+        copy++;
+      }
+
+      filePath = FileName();
+      return filePath;
     }
 
     private async Task OnLoadNfpCandidatesAsync()

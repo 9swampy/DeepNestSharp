@@ -9,8 +9,14 @@
 
     string FileDialogFilter { get; }
 
+    /// <summary>
+    /// Gets name of the file (with extension but without path).
+    /// </summary>
     string FileName { get; }
 
+    /// <summary>
+    /// Gets or sets the full path to the file.
+    /// </summary>
     string FilePath { get; set; }
 
     string DirectoryName { get; }

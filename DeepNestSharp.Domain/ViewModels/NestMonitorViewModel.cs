@@ -207,14 +207,8 @@
       else
       {
         this.nestWorker = new NestWorker(this);
-        this.nestWorkerTask = this.nestWorker.ExecuteAsync();
-        this.nestWorkerConfiguredTaskAwaitable = this.nestWorkerTask.ConfigureAwait(false);
-        this.nestWorkerConfiguredTaskAwaitable?.GetAwaiter().OnCompleted(() =>
-        {
-          this.IsRunning = false;
-        });
-
-        this.nestWorkerTask.Start();
+        await this.nestWorker.ExecuteAsync().ConfigureAwait(false);
+        this.IsRunning = false;
       }
 
       return true;
