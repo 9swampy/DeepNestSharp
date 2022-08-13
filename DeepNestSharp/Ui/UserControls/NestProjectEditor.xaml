@@ -70,7 +70,7 @@
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
           <GridViewColumn Header="Area" Width="auto" DisplayMemberBinding="{Binding Path=NetArea, Mode=OneWay}" />
-          <GridViewColumn Header="Included" Width="auto">
+          <GridViewColumn Header="Incl" Width="auto">
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel HorizontalAlignment="Center">
@@ -79,7 +79,7 @@
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          <GridViewColumn Header="Priority" Width="{Binding Path=UsePriority, Converter={StaticResource BooleanToWidthConverter}}" >
+          <GridViewColumn Header="Pri" Width="{Binding Path=UsePriority, Converter={StaticResource BooleanToWidthConverter}}" >
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel HorizontalAlignment="Center">
@@ -88,7 +88,7 @@
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          <GridViewColumn Header="Multiplied" Width="auto">
+          <GridViewColumn Header="Multi" Width="auto">
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel HorizontalAlignment="Center">
@@ -97,7 +97,16 @@
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          <GridViewColumn Header="StrictAngle" Width="auto">
+          <GridViewColumn Header="Diff" Width="auto">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <DockPanel HorizontalAlignment="Center">
+                  <CheckBox IsChecked="{Binding Path=IsDifferentiated, Mode=TwoWay}"/>
+                </DockPanel>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Header="Angle" Width="auto">
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel HorizontalAlignment="Center">

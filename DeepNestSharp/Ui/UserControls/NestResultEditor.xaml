@@ -10,10 +10,12 @@
              d:DesignHeight="450" d:DesignWidth="800">
   <Grid>
     <Grid.RowDefinitions>
+      <RowDefinition Height="auto" />
       <RowDefinition Height="300" />
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
-    <ScrollViewer Grid.Row="0">
+    <Button Grid.Row="0" HorizontalAlignment="Right" Content="Load All Exact" Command="{Binding LoadAllExactCommand}" />
+    <ScrollViewer Grid.Row="1">
       <xctk:PropertyGrid 
             Name="propertyGrid"
             HorizontalAlignment="Stretch" 
@@ -42,7 +44,7 @@
         </xctk:PropertyGrid.PropertyDefinitions>
       </xctk:PropertyGrid>
     </ScrollViewer>
-    <ListView Grid.Row="1"
+    <ListView Grid.Row="2"
               ItemsSource="{Binding NestResult.UsedSheets}" 
               SelectedItem="{Binding SelectedItem}" 
               SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}">

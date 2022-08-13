@@ -29,7 +29,7 @@
     private int iterations = 0;
 
     protected TerminatingRunFullFixture(PlacementTypeEnum placementType, double expectedFitness, double expectedFitnessTolerance, int maxIterations)
-      : this(placementType, expectedFitness, expectedFitnessTolerance, maxIterations, 3)
+      : this(placementType, expectedFitness, expectedFitnessTolerance, maxIterations, 6)
     {
     }
 

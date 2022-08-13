@@ -2,6 +2,8 @@
 {
   public interface IDetailLoadInfo
   {
+    bool IsDifferentiated { get; set; }
+
     bool IsIncluded { get; set; }
 
     bool IsMultiplied { get; set; }

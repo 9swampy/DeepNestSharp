@@ -3644,7 +3644,8 @@
 							}
 						],
 						"IsPriority": false,
-						"StrictAngle": 0
+						"StrictAngle": 0,
+						"IsDifferentiated":  true
 					}
 				},
 				{

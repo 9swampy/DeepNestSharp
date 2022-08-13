@@ -14,6 +14,7 @@
     <converters:IsSelectedToFillColorConverter x:Key="IsSelectedToFillColor" />
     <converters:DrawingContextConverter x:Key="DrawingContextConverter" />
     <converters:PointsConverter x:Key="PointsConverter" />
+    <converters:StrokeConverter x:Key="StrokeConverter" />
   </UserControl.Resources>
   <Grid>
     <Grid.ColumnDefinitions>
@@ -73,10 +74,10 @@
                 <Polygon Points="{Binding Sheet, Converter={StaticResource PointsConverter}}" Fill="White" Stroke="Black" StrokeThickness="0.2" />
               </DataTemplate>
               <DataTemplate DataType="{x:Type domainModels:ObservableNfp}">
-                <Polygon Points="{Binding Converter={StaticResource PointsConverter}}" Fill="Aquamarine" Stroke="Black" StrokeThickness="0.2" />
+                <Polygon Points="{Binding Converter={StaticResource PointsConverter}}" Fill="Aquamarine" Stroke="{Binding Converter={StaticResource StrokeConverter}}" StrokeThickness="0.2" />
               </DataTemplate>
               <DataTemplate DataType="{x:Type domainModels:ObservableHole}">
-                <Polygon Points="{Binding Converter={StaticResource PointsConverter}}" Fill="White" Stroke="DeepPink" StrokeThickness="0.2" />
+                <Polygon Points="{Binding Converter={StaticResource PointsConverter}}" Fill="White" Stroke="{Binding Converter={StaticResource StrokeConverter}}" StrokeThickness="0.2" />
               </DataTemplate>
               <DataTemplate DataType="{x:Type domainModels:ObservableFrame}">
                 <Polygon Points="{Binding Converter={StaticResource PointsConverter}}" Stroke="DarkOrange" StrokeThickness="0.4" />

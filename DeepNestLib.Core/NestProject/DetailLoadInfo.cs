@@ -14,6 +14,8 @@
 
     public int Quantity { get; set; } = 1;
 
+    public bool IsDifferentiated { get; set; } = false;
+
     [JsonIgnore]
     public bool IsExists => new FileInfo(this.Path).Exists;
 

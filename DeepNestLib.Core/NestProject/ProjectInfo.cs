@@ -60,6 +60,12 @@ namespace DeepNestLib.NestProject
       }
     }
 
+    /// <summary>
+    /// Loads json in to a ProjectInfo with config populated. Needs and instance of config?
+    /// </summary>
+    /// <param name="config">An instance of SvgNestConfig to populate from the json.</param>
+    /// <param name="json">Json representation of the ProjectInfo.</param>
+    /// <returns>Populated ProjectInfo.</returns>
     public static ProjectInfo FromJson(ISvgNestConfig config, string json)
     {
       try
@@ -140,8 +146,13 @@ namespace DeepNestLib.NestProject
     {
       using (StreamReader inputFile = new StreamReader(fileName))
       {
-        return FromJson(config, inputFile.ReadToEnd());
+        return LoadFromStream(config, inputFile);
       }
+    }
+
+    public static ProjectInfo LoadFromStream(ISvgNestConfig config, StreamReader stream)
+    {
+      return FromJson(config, stream.ReadToEnd());
     }
 
     public void Load(ISvgNestConfig config, string filePath)

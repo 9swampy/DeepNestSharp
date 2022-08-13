@@ -55,17 +55,17 @@
 
     private static bool PairCoincident(MergeLine prior, MergeLine current)
     {
-      var result = current.Left.Y >= prior.Left.Y &&
-                    current.Left.Y <= prior.Right.Y ||
-                   current.Right.Y >= prior.Left.Y &&
-                    current.Right.Y <= prior.Right.Y;
+      var result = (current.Left.Y >= prior.Left.Y &&
+                    current.Left.Y <= prior.Right.Y) ||
+                   (current.Right.Y >= prior.Left.Y &&
+                    current.Right.Y <= prior.Right.Y);
       return result;
     }
 
     internal static bool Coaligned(MergeLine prior, MergeLine current)
     {
-      return (current.IsVertical && prior.IsVertical || current.Slope - prior.Slope < Tolerance) &&
-             current.Intercept - prior.Intercept < Tolerance;
+      return ((current.IsVertical && prior.IsVertical) || current.Slope - prior.Slope < Tolerance) &&
+              current.Intercept - prior.Intercept < Tolerance;
     }
 
     internal DxfFile MergeLines(DxfFile dxfFile)

@@ -48,7 +48,8 @@
       }
     ],
     "IsPriority": false,
-    "StrictAngle": 0
+    "StrictAngle": 0,
+    "IsDifferentiated": false
   },
   "PartPlacements": [
     {
@@ -103,7 +104,8 @@
           }
         ],
         "IsPriority": false,
-        "StrictAngle": 0
+        "StrictAngle": 0,
+        "IsDifferentiated": false
       }
     }
   ],

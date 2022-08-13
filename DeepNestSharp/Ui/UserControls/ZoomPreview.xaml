@@ -10,6 +10,7 @@
   <UserControl.Resources>
     <converters:DrawingContextConverter x:Key="DrawingContextConverter" />
     <converters:PointsConverter x:Key="PointsConverter" />
+    <converters:StrokeConverter x:Key="StrokeConverter" />
   </UserControl.Resources>
   <Grid>
     <Grid.ColumnDefinitions>
@@ -45,7 +46,7 @@
             </ItemsControl.ItemContainerStyle>
             <ItemsControl.Resources>
               <DataTemplate DataType="{x:Type domainModels:ObservablePartPlacement}">
-                <Polygon Points="{Binding Converter={StaticResource PointsConverter}}" Stroke="Black" StrokeThickness="0.4">
+                <Polygon Points="{Binding Converter={StaticResource PointsConverter}}" Stroke="{Binding Converter={StaticResource StrokeConverter}}" StrokeThickness="0.4">
                   <!--<DataTemplate DataType="{x:Type models:ObservablePartPlacement}">
                     <Polygon Points="{Binding Points}" Stroke="Black" 
                                    MouseDown="Polygon_MouseDown"
@@ -67,10 +68,10 @@
                 <Polygon Points="{Binding Sheet, Converter={StaticResource PointsConverter}}" Fill="White" Stroke="Black" StrokeThickness="0.4" />
               </DataTemplate>
               <DataTemplate DataType="{x:Type domainModels:ObservableNfp}">
-                <Polygon Points="{Binding Converter={StaticResource PointsConverter}}" Fill="Aquamarine" Stroke="Black" StrokeThickness="0.4" />
+                <Polygon Points="{Binding Converter={StaticResource PointsConverter}}" Fill="Aquamarine" Stroke="{Binding Converter={StaticResource StrokeConverter}}" StrokeThickness="0.4" />
               </DataTemplate>
               <DataTemplate DataType="{x:Type domainModels:ObservableHole}">
-                <Polygon Points="{Binding Converter={StaticResource PointsConverter}}" Fill="White" Stroke="DeepPink" StrokeThickness="0.4" />
+                <Polygon Points="{Binding Converter={StaticResource PointsConverter}}" Fill="White" Stroke="{Binding Converter={StaticResource StrokeConverter}}" StrokeThickness="0.4" />
               </DataTemplate>
             </ItemsControl.Resources>
           </ItemsControl>

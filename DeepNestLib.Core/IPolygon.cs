@@ -10,7 +10,7 @@
     int Id { get; set; }
 
     /// <summary>
-    /// Gets whether every point in the polygon is exact, true to the original import.
+    /// Gets a value indicating whether every point in the polygon is exact, true to the original import.
     /// </summary>
     bool IsExact { get; }
 
@@ -27,6 +27,11 @@
     double Rotation { get; }
 
     int Source { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the part should be differentiated on export.
+    /// </summary>
+    bool IsDifferentiated { get; set; }
 
     SvgPoint this[int ind] { get; }
 

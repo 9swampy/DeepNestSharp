@@ -62,6 +62,12 @@
       set => SetProperty(nameof(IsPriority), () => detailLoadInfo.IsPriority, v => detailLoadInfo.IsPriority = v, value);
     }
 
+    public bool IsDifferentiated
+    {
+      get => detailLoadInfo.IsDifferentiated;
+      set => SetProperty(nameof(IsDifferentiated), () => detailLoadInfo.IsDifferentiated, v => detailLoadInfo.IsDifferentiated = v, value);
+    }
+
     public string Name
     {
       get => detailLoadInfo.Name;
