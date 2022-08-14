@@ -18,6 +18,9 @@
 
     /// <inheritdoc />
     [Category("Nest Settings")]
+    [Description("To improve the accuracy of Clipper functionality used by the nest coordinates are massively scaled up, transforms are applied, and then the " +
+      "coordinates are scaled back down again. Too large a number could cause overflow errors. Too small a setting will cause loss of precision of the transforms." +
+      "Values between 100000 and 100000000 are recommended.")]
     public double ClipperScale
     {
       get => svgNestConfig.ClipperScale;
@@ -26,9 +29,10 @@
 
     [Description("Gets or sets whether to clip the simplified polygon used in nesting by the hull. " +
       "This often improves the fit to the original part but may slightly increase the number " +
-      "of points in the simplification and accordingly may marginally slow the nest. " +
+      "of points in the part and accordingly may marginally slow the nest. " +
       "Requires a restart of the application because it's not a part of the cache key so " +
-      "you have to restart to reinitialise the cache."), Category("Simplifications")]
+      "you have to restart to reinitialise the cache.")]
+    [Category("Simplifications")]
     /// <inheritdoc />
     public bool ClipByHull
     {
@@ -38,6 +42,12 @@
 
     /// <inheritdoc />
     [Category("Simplifications")]
+    [Description("The maximum error allowed for linear approximations of Bezier paths and arcs." +
+      "Increasing this setting will reduce the number of points in the approximation of each part in the nest at the cost of precision of the approximations." +
+      "Decreasing the setting will exponentially increase the points as you approach zero, slowing the nest significantly. Has a bigger effect when your parts have corners." +
+      "A good guide is use a value between 0.2 and 0.8; you will see the effect of this setting in the NestResults until you press the LoadExact button. " +
+      "LoadExact will automatically apply to all exports." +
+      "Requires a restart of the application because it's not a part of the cache key so you have to restart to reinitialise the cache.")]
     public double CurveTolerance
     {
       get => svgNestConfig.CurveTolerance;
@@ -54,7 +64,7 @@
     }
 
     /// <inheritdoc />
-    [Category("Simplifications")]
+    [Category("Unimplemented")]
     public bool DrawSimplification
     {
       get => svgNestConfig.DrawSimplification;
@@ -63,6 +73,8 @@
 
     /// <inheritdoc />
     [Category("File Settings")]
+    [Description("Used to export intermediate calculations during the nest to debug problems. If you're not going to jump in to the code to debug you'll probably " +
+      "want to keep this switched off. There's a significant performance hit, and the amount of data generated grows very large, very quickly. . .")]
     public bool ExportExecutions
     {
       get => svgNestConfig.ExportExecutions;
@@ -71,6 +83,8 @@
 
     /// <inheritdoc />
     [Category("File Settings")]
+    [Description("Used to export intermediate calculations during the nest to debug problems. If you're not going to jump in to the code to debug you'll probably " +
+      "want to keep this switched off. There's a significant performance hit, and the amount of data generated grows very large, very quickly. . .")]
     public string ExportExecutionPath
     {
       get => svgNestConfig.ExportExecutionPath;
@@ -105,7 +119,8 @@
       set => SetProperty(nameof(LastNestFilePath), () => svgNestConfig.LastNestFilePath, v => svgNestConfig.LastNestFilePath = v, value);
     }
 
-    [Description("Merge coaligned and coincident lines when exporting to Dxf so they'll only get cut once (no effect if you're exporting Svg, and ofc Spacing setting needs to be 0).")]
+    [Description("Merge coaligned and coincident lines when exporting to Dxf so they'll only get cut once (no effect if you're exporting Svg, and ofc Spacing " +
+      "setting needs to be zero).")]
     /// <inheritdoc />
     [Category("File Settings")]
     public bool MergeLines
@@ -245,6 +260,11 @@
 
     /// <inheritdoc />
     [Category("Simplifications")]
+    [Description("Use a hull simplification of Parts in the nest. " +
+      "This often dramatically improves speed of the nest at the cost of using much simplified representations of the parts so they will not nest as tightly." +
+      "If using this setting then ClipByHull will have no effect as you're already using the hull as the actual approximation. " +
+      "Requires a restart of the application because it's not a part of the cache key so " +
+      "you have to restart to reinitialise the cache.")]
     public bool Simplify
     {
       get => svgNestConfig.Simplify;
@@ -286,7 +306,7 @@
 
     /// <inheritdoc />
     [Description("If set then parts will be restricted. If also set on an individual part, part setting wins.")]
-    [Category("Experimental")]
+    [Category("Nest Settings")]
     public AnglesEnum StrictAngles
     {
       get => svgNestConfig.StrictAngles;
@@ -295,6 +315,7 @@
 
     /// <inheritdoc />
     [Category("Nest Settings")]
+    [Description("Multiplies the number of each Part in the nest.")]
     public int Multiplier
     {
       get => svgNestConfig.Multiplier;
@@ -303,6 +324,7 @@
 
     /// <inheritdoc />
     [Category("Experimental")]
+    [Description("Use in combination with UseParallel to define the maximum number of threads to use in the nest.")]
     public int ParallelNests
     {
       get => svgNestConfig.ParallelNests;
@@ -336,6 +358,10 @@
 
     /// <inheritdoc />
     [Category("Experimental")]
+    [Description("In combination with the ParallelNests setting, run the nest multithreaded; potentially gaining significant performance advantages. The multithreaded" +
+      "implementation is not currently well optimised however and it often actually slows the nest. This is due primarily to resource contention and lock collisions;" +
+      "one thread gets in the way of another and they actually slow each other down. Tends to work best when the nest is already executing quickly; just tweak the" +
+      "settings and watch the Overall Performance Average Nest time...")]
     public bool UseParallel
     {
       get => svgNestConfig.UseParallel;
@@ -344,8 +370,8 @@
 
     /// <inheritdoc />
     [Description("Priority is the notion that some parts should be placed first before any others. " +
-      "This has worked well where all parts can fit on a single sheet but it's bee problematic and " +
-      "can cause parts to overlay on top of each other. Use with caution. .")]
+      "This has worked well where all parts can fit on a single sheet but it's been problematic and " +
+      "can cause parts to overlay on top of each other. Use with caution.")]
     [Category("Experimental")]
     public bool UsePriority
     {

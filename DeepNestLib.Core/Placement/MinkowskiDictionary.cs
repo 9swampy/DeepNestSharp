@@ -1,9 +1,9 @@
 ﻿namespace DeepNestLib.Placement
 {
-  using DeepNestLib;
   using System;
   using System.Collections.Generic;
   using System.Text.Json;
+  using DeepNestLib;
 
   public class MinkowskiDictionary : Dictionary<MinkowskiKey, INfp>
   {

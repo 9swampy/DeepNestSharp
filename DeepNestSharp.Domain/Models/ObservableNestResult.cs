@@ -2,7 +2,10 @@
 {
   using System;
   using System.Collections.Generic;
+  using System.ComponentModel;
   using DeepNestLib;
+  using DeepNestLib.Converters;
+  using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
 
@@ -21,13 +24,19 @@
 
     public DateTime CreatedAt => this.item.CreatedAt;
 
-    public double Fitness => this.item.Fitness;
+    [TypeConverter(typeof(FormattedDoubleConverter))]
+    [FormattedDoubleFormatString("F4")]
+    public double FitnessTotal => this.item.FitnessTotal;
 
     public double FitnessBounds => this.item.FitnessBounds;
 
     public double FitnessSheets => this.item.FitnessSheets;
 
     public double FitnessUnplaced => this.item.FitnessUnplaced;
+
+    public double FitnessUtilization => this.item.FitnessUtilization;
+
+    public double FitnessWastage => this.item.FitnessWastage;
 
     public override bool IsDirty => true;
 
@@ -58,6 +67,8 @@
     public double TotalPartsArea => this.item.TotalPartsArea;
 
     public int TotalParts => this.item.TotalParts;
+
+    public DeepNestGene Gene => item.Gene;
 
     public string ToJson(bool writeIndented = true)
     {

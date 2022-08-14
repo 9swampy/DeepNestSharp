@@ -113,7 +113,6 @@
       {
         try
         {
-
           return Math.Abs(TotalPartsArea / this.Sheet.Area);
         }
         catch (Exception ex)

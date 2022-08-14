@@ -54,6 +54,7 @@
       this.ReorderSheets();
       this.InternalReset();
       this.Current = null;
+      ((INestStateNestingContext)this.State).StartNest();
 
       (NestItem<INfp>[] PartsLocal, List<NestItem<ISheet>> SheetsLocal) nestItems = await Task.Run(
         () =>
@@ -95,7 +96,7 @@
         {
           var plcpr = State.TopNestResults.Top;
 
-          if (Current == null || plcpr.Fitness < Current.Fitness)
+          if (Current == null || plcpr.FitnessTotal < Current.FitnessTotal)
           {
             AssignPlacement(plcpr);
           }

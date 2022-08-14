@@ -111,7 +111,7 @@
       }
 
       VerboseLog($"Nest complete in {sw.ElapsedMilliseconds}");
-      var result = new NestResult(gene.Length, allPlacements, unplacedParts, config.PlacementType, sw.ElapsedMilliseconds, backgroundStopwatch.ElapsedMilliseconds);
+      var result = new NestResult(gene, allPlacements, unplacedParts, config.PlacementType, sw.ElapsedMilliseconds, backgroundStopwatch.ElapsedMilliseconds);
 #if NCRUNCH || DEBUG
       if (!result.IsValid)
       {
@@ -164,7 +164,7 @@
         this.VerboseLog($"Placed part {processedPart}");
         placements.Add(position);
         var sp = new SheetPlacement(placementType, sheet, placements, mergedLength, config.ClipperScale);
-        if (double.IsNaN(sp.Fitness.Evaluate()))
+        if (double.IsNaN(sp.Fitness.Total))
         {
           // Step back to calling method in PartPlacementWorker and you should find a PartPlacementWorker.ToJson() :)
           // Get that in to a Json file so it can be debugged.

@@ -30,7 +30,7 @@
 
       public override void Write(Utf8JsonWriter writer, ISheetPlacement value, JsonSerializerOptions options)
       {
-        JsonSerializer.Serialize<SheetPlacement>(writer, (SheetPlacement)value, options);
+        JsonSerializer.Serialize(writer, (SheetPlacement)value, options);
       }
     }
   }

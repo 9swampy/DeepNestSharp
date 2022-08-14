@@ -14,6 +14,8 @@
 
   public partial class SvgNest
   {
+    public static bool IsVerboseLogging { get; } = false;
+
     private readonly IMessageService messageService;
     private readonly IMinkowskiSumService minkowskiSumService;
 
@@ -212,7 +214,7 @@
         Trace.WriteLine("payload.Index I don't think is being set right; double check before retrying threaded execution.");
 #endif
         this.procreant.Population[payload.Index].Processing = false;
-        this.procreant.Population[payload.Index].Fitness = payload.Fitness;
+        this.procreant.Population[payload.Index].Fitness = payload.FitnessTotal;
 
         //int currentPlacements = 0;
         string suffix = string.Empty;
@@ -244,12 +246,19 @@
             {
               suffix = "Duplicate";
             }
+            else if (result == TryAddResult.Substitute)
+            {
+              suffix = "Substitute";
+            }
             else
             {
               suffix = "Sub-optimal";
             }
 
-            this.progressDisplayer.DisplayTransientMessage($"Nesting time = {payload.PlacePartTime}ms ({suffix})");
+            if (SvgNest.IsVerboseLogging)
+            {
+              this.progressDisplayer.DisplayTransientMessage($"Nesting time = {payload.PlacePartTime}ms ({suffix})");
+            }
           }
 
           IncrementSecondaryProgressBar();
@@ -314,17 +323,28 @@
           this.progressDisplayer.DisplayTransientMessage("Executing Nest. . .");
           if (config.UseParallel)
           {
-            var end1 = this.procreant.Population.Length / 3;
-            var end2 = this.procreant.Population.Length * 2 / 3;
-            var end3 = this.procreant.Population.Length;
-            Parallel.Invoke(
-              () => ProcessPopulation(0, end1, config, sheets.ToArray(), nestStateBackground),
-              () => ProcessPopulation(end1, end2, config, sheets.ToArray(), nestStateBackground),
-              () => ProcessPopulation(end2, this.procreant.Population.Length, config, sheets.ToArray(), nestStateBackground));
+            var threadPop = this.procreant.Population.Length / config.ParallelNests;
+            var ends = new int[config.ParallelNests + 1];
+            var workerList = new List<PopulationProcessWorker>();
+            for (int i = 0; i < ends.Length - 1; i++)
+            {
+              ends[i + 1] = ends[i] + threadPop;
+              if (i < ends.Length - 2)
+              {
+                workerList.Add(new PopulationProcessWorker(this, ends[i], ends[i + 1], config, sheets.ToArray(), nestStateBackground));
+              }
+              else
+              {
+                workerList.Add(new PopulationProcessWorker(this, ends[i], this.procreant.Population.Length, config, sheets.ToArray(), nestStateBackground));
+              }
+            }
+
+            Parallel.Invoke(workerList.Select(o => new Action(o.Execute)).ToArray());
           }
           else
           {
-            ProcessPopulation(0, this.procreant.Population.Length, config, sheets.ToArray(), nestStateBackground);
+            var worker = new PopulationProcessWorker(this, 0, this.procreant.Population.Length, config, sheets.ToArray(), nestStateBackground);
+            worker.Execute();
           }
         }
       }
@@ -445,11 +465,11 @@
     }
 
     /// <summary>
-    /// All individuals have been evaluated, start next generation
+    /// All individuals have been evaluated, start next generation.
     /// </summary>
     private void InitialiseAnotherGeneration()
     {
-      this.procreant.Generate();
+      this.procreant.Generate(this.State.TopNestResults);
 #if !NCRUNCH
       if (this.procreant.Population.Length == 0)
       {
@@ -478,35 +498,61 @@
                   MessageBoxIcon.Error);
     }
 
-    private void ProcessPopulation(int start, int end, ISvgNestConfig config, ISheet[] sheets, INestStateBackground nestStateBackground)
+    private class PopulationProcessWorker
     {
-      State.IncrementThreads();
-      for (int i = start; i < end; i++)
-      {
-        if (this.IsStopped)
-        {
-          break;
-        }
+      private readonly SvgNest svgNest;
+      private readonly int start;
+      private readonly int end;
+      private readonly ISvgNestConfig config;
+      private readonly ISheet[] sheets;
+      private readonly INestStateBackground nestStateBackground;
 
-        // if(running < config.threads && !GA.population[i].processing && !GA.population[i].fitness){
-        // only one background window now...
-        var individual = procreant.Population[i];
-        if (!this.IsStopped && individual.IsPending)
-        {
-          individual.Processing = true;
-          if (this.IsStopped)
-          {
-            this.ResponseProcessor(null);
-          }
-          else
-          {
-            var background = new Background(this.progressDisplayer, this, minkowskiSumService, nestStateBackground, config.UseDllImport);
-            background.BackgroundStart(individual, sheets, config);
-          }
-        }
+      public PopulationProcessWorker(
+        SvgNest svgNest,
+        int start,
+        int end,
+        ISvgNestConfig config,
+        ISheet[] sheets,
+        INestStateBackground nestStateBackground)
+      {
+        this.svgNest = svgNest;
+        this.start = start;
+        this.end = end;
+        this.config = config;
+        this.sheets = sheets;
+        this.nestStateBackground = nestStateBackground;
       }
 
-      State.DecrementThreads();
+      public void Execute()
+      {
+        svgNest.State.IncrementThreads();
+        for (int i = start; i < end; i++)
+        {
+          if (svgNest.IsStopped)
+          {
+            break;
+          }
+
+          // if(running < config.threads && !GA.population[i].processing && !GA.population[i].fitness){
+          // only one background window now...
+          var individual = svgNest.procreant.Population[i];
+          if (!svgNest.IsStopped && individual.IsPending)
+          {
+            individual.Processing = true;
+            if (svgNest.IsStopped)
+            {
+              svgNest.ResponseProcessor(null);
+            }
+            else
+            {
+              var background = new Background(svgNest.progressDisplayer, svgNest, svgNest.minkowskiSumService, nestStateBackground, config.UseDllImport);
+              background.BackgroundStart(individual, sheets, config);
+            }
+          }
+        }
+
+        svgNest.State.DecrementThreads();
+      }
     }
   }
 }

@@ -2,19 +2,26 @@
 {
   using System;
   using System.Collections.Generic;
+  using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.NestProject;
 
   public interface INestResult
   {
     DateTime CreatedAt { get; }
 
-    double Fitness { get; }
+    double FitnessTotal { get; }
 
     double FitnessBounds { get; }
 
     double FitnessSheets { get; }
 
     double FitnessUnplaced { get; }
+
+    double FitnessUtilization { get; }
+
+    double FitnessWastage { get; }
+
+    DeepNestGene Gene { get; }
 
     bool IsValid { get; }
 

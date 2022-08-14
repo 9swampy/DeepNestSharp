@@ -19,6 +19,6 @@
 
     ISheet ToSheet();
 
-    bool TryConvertToNfp(int firstPartIdSrc, int v, out Chromosome firstPart);
+    bool TryConvertToNfp(int firstPartIdSrc, int v, out IDeepNestChromosome firstPart);
   }
 }

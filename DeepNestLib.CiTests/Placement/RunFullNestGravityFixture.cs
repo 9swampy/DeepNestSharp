@@ -26,28 +26,24 @@
     /// logs it doesn't seem to be deadlocking because the loop keeps running. Not sure what's going on...
     /// </summary>
     public RunFullNestGravityFixture()
-      : base(PlacementTypeEnum.Gravity, 504731, 50000, 150)
+      : base(PlacementTypeEnum.Gravity, 301890, 50000, 150)
     {
-      lock (testSyncLock)
-      {
-        if (!hasImportedRawDetail)
-        {
-          loadedRawDetail = DxfParser.LoadDxfFileStreamAsRawDetail(DxfTestFilename);
-          hasImportedRawDetail = loadedRawDetail.TryConvertToNfp(A.Dummy<int>(), out loadedNfp);
-          nestingContext.Polygons.Add(loadedNfp);
-          nestingContext.Polygons.Add(loadedNfp.Clone());
+      ExecuteTest();
+    }
 
-          ISheet firstSheet;
-          ((IRawDetail)DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { new DxfGenerator().Rectangle(595D, 395D, RectangleType.FileLoad) })).TryConvertToSheet(firstSheetIdSrc, out firstSheet).Should().BeTrue();
-          nestingContext.Sheets.Add(firstSheet);
+    protected override void PrepIteration()
+    {
+      nestingContext.Polygons.Add(loadedNfp);
+      nestingContext.Polygons.Add(loadedNfp.Clone());
+      ISheet firstSheet;
+      ((IRawDetail)DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { new DxfGenerator().Rectangle(595D, 395D, RectangleType.FileLoad) })).TryConvertToSheet(firstSheetIdSrc, out firstSheet).Should().BeTrue();
+      nestingContext.Sheets.Add(firstSheet);
+    }
 
-          nestingContext.StartNest().Wait();
-          while (!HasMetTerminationConditions)
-          {
-            AwaitIterate();
-          }
-        }
-      }
+    protected override bool LoadRawDetail()
+    {
+      loadedRawDetail = DxfParser.LoadDxfFileStreamAsRawDetail(DxfTestFilename);
+      return loadedRawDetail.TryConvertToNfp(A.Dummy<int>(), out loadedNfp);
     }
 
     [Fact]
@@ -71,7 +67,7 @@
     [Fact]
     public void FitnessShouldBeExpected()
     {
-      nestingContext.State.TopNestResults.Top.Fitness.Should().BeApproximately(ExpectedFitness, ExpectedFitnessTolerance);
+      FitnessShouldBeExpectedVerification();
     }
 
     [Fact]

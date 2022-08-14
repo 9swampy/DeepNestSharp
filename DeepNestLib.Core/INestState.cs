@@ -1,16 +1,18 @@
 ﻿namespace DeepNestLib
 {
+  using System;
+
   public interface INestState
   {
     /// <summary>
     /// Gets the average time per Nest Result since start of the run.
     /// </summary>
-    long AveragePlacementTime { get; }
+    long AverageThreadPlacementTime { get; }
 
     /// <summary>
     /// Gets the average time per Nest Result since start of the run.
     /// </summary>
-    long AverageNestTime { get; }
+    long AverageThreadNestTime { get; }
 
     int DllCallCounter { get; }
 
@@ -38,6 +40,8 @@
     int Population { get; }
 
     int Threads { get; }
+
+    DateTime StartedAt { get; }
 
     TopNestResultsCollection TopNestResults { get; }
 
@@ -84,6 +88,8 @@
   public interface INestStateNestingContext : INestState
   {
     void IncrementIterations();
+
+    void StartNest();
 
     void Reset();
   }

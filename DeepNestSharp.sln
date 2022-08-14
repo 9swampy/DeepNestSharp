@@ -36,6 +36,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeepNestSharp.CiTests", "De
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeepNestSharp.Domain", "DeepNestSharp.Domain\DeepNestSharp.Domain.csproj", "{00ADC6E6-2ECF-483D-A234-F8D255C83D80}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "imgs", "imgs", "{67AF20BD-7266-4809-8263-B60199742312}"
+	ProjectSection(SolutionItems) = preProject
+		imgs\2.png = imgs\2.png
+		imgs\3.png = imgs\3.png
+		imgs\img1.png = imgs\img1.png
+		imgs\NestResultEditor.png = imgs\NestResultEditor.png
+		imgs\SaveFiles.png = imgs\SaveFiles.png
+		imgs\SheetPlacementEditor.png = imgs\SheetPlacementEditor.png
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,8 +60,8 @@ Global
 		{F83321E2-3935-40FA-8108-9DC47FC9E240}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F83321E2-3935-40FA-8108-9DC47FC9E240}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{F83321E2-3935-40FA-8108-9DC47FC9E240}.Debug|x64.Build.0 = Debug|Any CPU
-		{F83321E2-3935-40FA-8108-9DC47FC9E240}.Debug|x86.ActiveCfg = Debug|x86
-		{F83321E2-3935-40FA-8108-9DC47FC9E240}.Debug|x86.Build.0 = Debug|x86
+		{F83321E2-3935-40FA-8108-9DC47FC9E240}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F83321E2-3935-40FA-8108-9DC47FC9E240}.Debug|x86.Build.0 = Debug|Any CPU
 		{F83321E2-3935-40FA-8108-9DC47FC9E240}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F83321E2-3935-40FA-8108-9DC47FC9E240}.Release|x64.ActiveCfg = Release|Any CPU
 		{F83321E2-3935-40FA-8108-9DC47FC9E240}.Release|x86.ActiveCfg = Release|Any CPU
@@ -59,8 +69,8 @@ Global
 		{CD24C16B-789D-4A99-9136-73178B0236FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD24C16B-789D-4A99-9136-73178B0236FD}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{CD24C16B-789D-4A99-9136-73178B0236FD}.Debug|x64.Build.0 = Debug|Any CPU
-		{CD24C16B-789D-4A99-9136-73178B0236FD}.Debug|x86.ActiveCfg = Debug|x86
-		{CD24C16B-789D-4A99-9136-73178B0236FD}.Debug|x86.Build.0 = Debug|x86
+		{CD24C16B-789D-4A99-9136-73178B0236FD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CD24C16B-789D-4A99-9136-73178B0236FD}.Debug|x86.Build.0 = Debug|Any CPU
 		{CD24C16B-789D-4A99-9136-73178B0236FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD24C16B-789D-4A99-9136-73178B0236FD}.Release|x64.ActiveCfg = Release|Any CPU
 		{CD24C16B-789D-4A99-9136-73178B0236FD}.Release|x86.ActiveCfg = Release|Any CPU

@@ -24,23 +24,23 @@
     {
       ISheet firstSheet;
       DxfGenerator.GenerateSquare("Sheet", 23D, RectangleType.FileLoad).TryConvertToSheet(firstSheetIdSrc, out firstSheet).Should().BeTrue();
-      Chromosome firstPart;
+      IDeepNestChromosome firstPart;
       DxfGenerator.GenerateSquare("firstPart", 11D, RectangleType.FitFour).TryConvertToNfp(firstPartIdSrc, 180, out firstPart).Should().BeTrue();
-      Chromosome secondPart;
+      IDeepNestChromosome secondPart;
       DxfGenerator.GenerateSquare("secondPart", 11D, RectangleType.FitFour).TryConvertToNfp(secondPartIdSrc, 180, out secondPart).Should().BeTrue();
-      Chromosome thirdPart;
+      IDeepNestChromosome thirdPart;
       DxfGenerator.GenerateSquare("thirdPart", 11D, RectangleType.FitFour).TryConvertToNfp(thirdPartIdSrc, 180, out thirdPart).Should().BeTrue();
-      Chromosome fourthPart;
+      IDeepNestChromosome fourthPart;
       DxfGenerator.GenerateSquare("fourthPart", 11D, RectangleType.FitFour).TryConvertToNfp(fourthPartIdSrc, 180, out fourthPart).Should().BeTrue();
       var config = new TestSvgNestConfig();
       config.PlacementType = PlacementTypeEnum.BoundingBox;
-      this.nestResult = new PlacementWorker(A.Dummy<NfpHelper>(), new ISheet[] { firstSheet }, new DeepNestGene(new Chromosome[] { firstPart, secondPart, thirdPart, fourthPart }.ApplyIndex()), config, A.Dummy<Stopwatch>(), A.Fake<INestState>()).PlaceParts();
+      this.nestResult = new PlacementWorker(A.Dummy<NfpHelper>(), new ISheet[] { firstSheet }, new DeepNestGene(new IDeepNestChromosome[] { firstPart, secondPart, thirdPart, fourthPart }.ApplyIndex()), config, A.Dummy<Stopwatch>(), A.Fake<INestState>()).PlaceParts();
     }
 
     [Fact]
     public void ShouldHaveSameFitnessBoundsAsOriginal()
     {
-      this.nestResult.FitnessBounds.Should().BeApproximately(414, 10);
+      this.nestResult.FitnessBounds.Should().BeApproximately(120, 10);
     }
 
     [Fact]
@@ -58,7 +58,7 @@
     [Fact]
     public void ShouldHaveSameFitnessAsOriginal()
     {
-      this.nestResult.Fitness.Should().BeApproximately(1024, 100);
+      this.nestResult.FitnessTotal.Should().BeApproximately(662, 100);
     }
 
     [Fact]
@@ -68,9 +68,9 @@
     }
 
     [Fact]
-    public void GivenBoundsPenaltyShouldBeInLineWithSheetsPenaltyThenScenario1BoundsShouldBeComingCloseToSheets()
+    public void GivenBoundsPenaltyShouldBeInLineWithSheetsPenaltyThenScenario1BoundsShouldBeLowerRangeOfSheetsPostScaling()
     {
-      FitnessAlignment.BoundsPenaltyShouldBeInLineWithSheetsPenalty(nestResult, FitnessRange.Upper);
+      FitnessAlignment.BoundsPenaltyShouldBeInLineWithSheetsPenalty(nestResult, FitnessRange.Lower);
     }
 
     [Fact]
@@ -88,13 +88,13 @@
     [Fact]
     public void GivenMaterialWastedPenaltyShouldBeInLineWithSheetsPenaltyThenScenarioBestShouldBeComingCloseToSheets()
     {
-      this.nestResult.MaterialWasted.Should().BeApproximately(this.nestResult.FitnessSheets - (this.nestResult.FitnessSheets / 4), 3 * this.nestResult.FitnessSheets / 4);
+      this.nestResult.FitnessWastage.Should().BeApproximately(this.nestResult.FitnessSheets - (this.nestResult.FitnessSheets / 4), 3 * this.nestResult.FitnessSheets / 4);
     }
 
     [Fact]
     public void GivenMaterialWastedLowThenPenaltyShouldBeASmallFractionOfSheets()
     {
-      this.nestResult.MaterialWasted.Should().BeLessThan(this.nestResult.FitnessSheets / 10);
+      this.nestResult.FitnessWastage.Should().BeLessThan(this.nestResult.FitnessSheets / 10);
     }
   }
 }

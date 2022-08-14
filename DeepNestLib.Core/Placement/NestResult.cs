@@ -25,7 +25,7 @@
     }
 
     public NestResult(
-      int totalParts,
+      DeepNestGene gene,
       SheetPlacementCollection allPlacements,
       IList<INfp> unplacedParts,
       PlacementTypeEnum placementType,
@@ -35,7 +35,7 @@
       : this()
 #pragma warning restore CS0618 // Type or member is obsolete
     {
-      this.TotalParts = totalParts;
+      this.Gene = gene;
       this.UsedSheets = allPlacements;
       this.UnplacedParts = unplacedParts;
       this.PlacementType = placementType;
@@ -43,10 +43,11 @@
       this.BackgroundTime = backgroundTime;
     }
 
-    public DateTime CreatedAt { get; } = DateTime.Now;
+    [JsonInclude]
+    public DateTime CreatedAt { get; private set; } = DateTime.Now;
 
     [JsonIgnore]
-    public double Fitness
+    public double FitnessTotal
     {
       get
       {
@@ -93,14 +94,18 @@
       }
     }
 
-    public int TotalParts { get; }
+    [JsonIgnore]
+    public int TotalParts => Gene.Length;
+
+    [JsonInclude]
+    public DeepNestGene Gene { get; private set; }
 
     [JsonIgnore]
-    public double MaterialWasted
+    public double FitnessWastage
     {
       get
       {
-        return this.SheetPlacementFitness.MaterialWasted;
+        return this.SheetPlacementFitness.Wasted;
       }
     }
 
@@ -122,15 +127,27 @@
       }
     }
 
+    [JsonIgnore]
+    public double FitnessUtilization
+    {
+      get
+      {
+        return this.SheetPlacementFitness.Utilization;
+      }
+    }
+
     internal int Index { get; set; }
 
     private ISheetPlacementFitness SheetPlacementFitness => this.fitness;
 
-    public PlacementTypeEnum PlacementType { get; }
+    [JsonInclude]
+    public PlacementTypeEnum PlacementType { get; private set; }
 
-    public long PlacePartTime { get; }
+    [JsonInclude]
+    public long PlacePartTime { get; private set; }
 
-    public long BackgroundTime { get; }
+    [JsonInclude]
+    public long BackgroundTime { get; private set; }
 
     [JsonIgnore]
     public int TotalPlacedCount => this.UsedSheets.Sum(o => o.PartPlacements.Count);
@@ -152,7 +169,8 @@
     [JsonIgnore]
     public double MaterialUtilization => Math.Abs(TotalPartsArea / TotalSheetsArea);
 
-    public bool IsValid => !(double.IsNaN(this.Fitness) || this.TotalPartsCount > this.TotalParts);
+    [JsonIgnore]
+    public bool IsValid => !(double.IsNaN(this.FitnessTotal) || this.TotalPartsCount > this.TotalParts);
 
     public static NestResult FromJson(string json)
     {
@@ -164,6 +182,8 @@
       options.Converters.Add(new SheetJsonConverter());
       options.Converters.Add(new NfpJsonConverter());
       options.Converters.Add(new PartPlacementJsonConverter());
+      options.Converters.Add(new DeepNestGeneJsonConverter());
+
       return JsonSerializer.Deserialize<NestResult>(json, options);
     }
 
@@ -177,7 +197,7 @@
 
     public override string ToString()
     {
-      return $"{fitness.Evaluate()}=ƩB{this.SheetPlacementFitness.Bounds:N0}+ƩS{this.SheetPlacementFitness.Sheets:N0}+ƩW{this.SheetPlacementFitness.MaterialWasted:N0}+ƩU{this.SheetPlacementFitness.MaterialUtilization:N0}+U{this.fitness.Unplaced:N0}";
+      return $"{fitness.Evaluate()}=ƩB{this.SheetPlacementFitness.Bounds:N0}+ƩS{this.SheetPlacementFitness.Sheets:N0}+ƩW{this.SheetPlacementFitness.Wasted:N0}+ƩU{this.SheetPlacementFitness.Utilization:N0}+U{this.fitness.Unplaced:N0}";
     }
 
     public override string ToJson(bool writeIndented = true)

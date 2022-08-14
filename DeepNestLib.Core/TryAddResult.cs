@@ -5,5 +5,6 @@
     Added,
     Duplicate,
     NotAdded,
+    Substitute,
   }
 }

@@ -22,6 +22,12 @@
     <None Remove="Dxfs\_5.dxf" />
     <None Remove="GeneticAlgorithm\ReadMeExampleTwoSheetsBetterThanOne1.dnr" />
     <None Remove="GeneticAlgorithm\ReadMeExampleTwoSheetsBetterThanOne2.dnr" />
+    <None Remove="GeneticAlgorithm\Relative\SimpleTestExample-2.dnr" />
+    <None Remove="GeneticAlgorithm\Relative\SimpleTestExample-3.dnr" />
+    <None Remove="GeneticAlgorithm\Relative\SimpleTestExample-4.dnr" />
+    <None Remove="GeneticAlgorithm\Relative\SimpleTestExample-5.dnr" />
+    <None Remove="GeneticAlgorithm\Relative\SimpleTestExample-Best-1.dnr" />
+    <None Remove="GeneticAlgorithm\Relative\SimpleTestExample-Worst-6.dnr" />
     <None Remove="GeneticAlgorithm\SheetPlacementScenario1.json" />
     <None Remove="GeneticAlgorithm\SheetPlacementScenario2.json" />
     <None Remove="GeneticAlgorithm\SheetPlacementScenario3-BestBoundingBoxAllDxfSamples.json" />
@@ -84,6 +90,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Dxfs\Tops_2.dxf" />
     <EmbeddedResource Include="Dxfs\Tops_2vert.dxf" />
+    <EmbeddedResource Include="GeneticAlgorithm\Relative\SimpleTestExample-2.dnr" />
+    <EmbeddedResource Include="GeneticAlgorithm\Relative\SimpleTestExample-3.dnr" />
+    <EmbeddedResource Include="GeneticAlgorithm\Relative\SimpleTestExample-4.dnr" />
+    <EmbeddedResource Include="GeneticAlgorithm\Relative\SimpleTestExample-5.dnr" />
+    <EmbeddedResource Include="GeneticAlgorithm\Relative\SimpleTestExample-Best-1.dnr" />
+    <EmbeddedResource Include="GeneticAlgorithm\Relative\SimpleTestExample-Worst-6.dnr" />
     <EmbeddedResource Include="Placement\OverlappingPlacement\FixBothPartsFitOnASingleSheetFixtureCombinedNfp.scad" />
     <EmbeddedResource Include="Placement\OverlappingPlacement\FixBothPartsFitOnASingleSheetFixtureFinalNfp.scad" />
     <EmbeddedResource Include="Placement\OverlappingPlacement\FixBothPartsFitOnASingleSheetFixtureSheetNfp.dnsnfp" />

@@ -4,10 +4,14 @@
   {
     double Bounds { get; }
 
-    double MaterialUtilization { get; }
+    double Utilization { get; }
 
-    double MaterialWasted { get; }
+    double Wasted { get; }
 
     double Sheets { get; }
+
+    double Total { get; }
+
+    string ToString();
   }
 }

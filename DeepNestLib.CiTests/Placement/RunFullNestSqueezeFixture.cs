@@ -15,38 +15,33 @@
   {
     private const string DxfTestFilename = "Dxfs._5.dxf";
 
-    private static volatile object testSyncLock = new object();
     private IRawDetail loadedRawDetail;
     private INfp loadedNfp;
-    private bool hasImportedRawDetail;
     private int firstSheetIdSrc = new Random().Next();
 
     /// <summary>
     /// MinkowskiWrapper.CalculateNfp occasionally sticks; not sure why; seems fine at runtime only nCrunch has the problem.
     /// </summary>
     public RunFullNestSqueezeFixture()
-      : base(PlacementTypeEnum.Squeeze, (494516 + 541746) / 2, 10000 * 3, 50)
+      : base(PlacementTypeEnum.Squeeze, 278000, 10000 * 3, 50)
     {
-      lock (testSyncLock)
-      {
-        if (!hasImportedRawDetail)
-        {
-          loadedRawDetail = DxfParser.LoadDxfFileStreamAsRawDetail(DxfTestFilename);
-          hasImportedRawDetail = loadedRawDetail.TryConvertToNfp(A.Dummy<int>(), out loadedNfp);
-          nestingContext.Polygons.Add(loadedNfp);
-          nestingContext.Polygons.Add(loadedNfp.Clone());
+      ExecuteTest();
+    }
 
-          ISheet firstSheet;
-          ((IRawDetail)DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { new DxfGenerator().Rectangle(595D, 395D, RectangleType.FileLoad) })).TryConvertToSheet(firstSheetIdSrc, out firstSheet).Should().BeTrue();
-          nestingContext.Sheets.Add(firstSheet);
+    protected override void PrepIteration()
+    {
+      nestingContext.Polygons.Add(loadedNfp);
+      nestingContext.Polygons.Add(loadedNfp.Clone());
 
-          nestingContext.StartNest().Wait();
-          while (!HasMetTerminationConditions)
-          {
-            AwaitIterate();
-          }
-        }
-      }
+      ISheet firstSheet;
+      ((IRawDetail)DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { new DxfGenerator().Rectangle(595D, 395D, RectangleType.FileLoad) })).TryConvertToSheet(firstSheetIdSrc, out firstSheet).Should().BeTrue();
+      nestingContext.Sheets.Add(firstSheet);
+    }
+
+    protected override bool LoadRawDetail()
+    {
+      loadedRawDetail = DxfParser.LoadDxfFileStreamAsRawDetail(DxfTestFilename);
+      return loadedRawDetail.TryConvertToNfp(A.Dummy<int>(), out loadedNfp);
     }
 
     [Fact]
@@ -70,7 +65,7 @@
     [Fact]
     public void FitnessShouldBeExpected()
     {
-      nestingContext.State.TopNestResults.Top.Fitness.Should().BeApproximately(ExpectedFitness, ExpectedFitnessTolerance);
+      FitnessShouldBeExpectedVerification();
     }
 
     [Fact]

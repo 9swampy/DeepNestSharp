@@ -36,14 +36,14 @@
     public void GivenPerfectFitThenFitnessShouldBeApproximatelyExpected()
     {
       var sut = new OriginalFitnessSheet(sp);
-      sut.Evaluate().Should().BeLessThan(area * 3);
+      sut.Total.Should().BeLessThan(area * 3);
     }
 
     [Fact]
     public void GivenPerfectFitThenMaterialUtilizationShouldBeZero()
     {
       var sut = new OriginalFitnessSheet(sp);
-      sut.MaterialUtilization.Should().Be(0);
+      sut.Utilization.Should().Be(0);
     }
 
     [Fact]
@@ -57,14 +57,14 @@
     public void GivenPerfectFitThenMaterialWastedShouldBeZero()
     {
       var sut = new OriginalFitnessSheet(sp);
-      sut.MaterialWasted.Should().BeApproximately(0, 1);
+      sut.Wasted.Should().BeApproximately(0, 1);
     }
 
     [Fact]
-    public void GivenBoundsPenaltyShouldBeInLineWithSheetsPenaltyThenBoundsShouldBeComingCloseToSheets()
+    public void GivenBoundsPenaltyShouldBeInLineWithSheetsPenaltyThenBoundsShouldBeLowerRangeOfSheetsPostScaling()
     {
       var sut = new OriginalFitnessSheet(sp);
-      FitnessAlignment.BoundsPenaltyShouldBeInLineWithSheetsPenalty(sut, FitnessRange.Upper);
+      FitnessAlignment.BoundsPenaltyShouldBeInLineWithSheetsPenalty(sut, FitnessRange.Lower);
     }
   }
 }

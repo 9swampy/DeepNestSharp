@@ -84,12 +84,19 @@
 
     internal static bool IsANovelNest(double payload, double incumbent, int index, double topDiversity)
     {
-      if (index == 0)
+      try
       {
-        return Math.Round(incumbent, 2) != Math.Round(payload, 2);
-      }
+        if (index == 0)
+        {
+          return Math.Round(incumbent, 2) != Math.Round(payload, 2);
+        }
 
-      return Math.Abs(incumbent - payload) > (incumbent * topDiversity);
+        return Math.Abs(incumbent - payload) > (incumbent * topDiversity);
+      }
+      catch (Exception ex)
+      {
+        throw;
+      }
     }
 
     internal void Clear()
@@ -109,57 +116,99 @@
 
     internal TryAddResult TryAdd(INestResult payload)
     {
-      TryAddResult result = TryAddResult.NotAdded;
-      if (dispatcherService.InvokeRequired)
+      try
       {
-        dispatcherService.Invoke(() => result = TryAdd(payload));
-      }
-      else
-      {
-        lock (lockItemsObject)
+        TryAddResult result = TryAddResult.NotAdded;
+        if (dispatcherService.InvokeRequired)
         {
-          if (items.Count == 0)
+          dispatcherService.Invoke(() => result = TryAdd(payload));
+        }
+        else
+        {
+          lock (lockItemsObject)
           {
-            items.Insert(0, payload);
-            result = TryAddResult.Added;
-          }
-          else
-          {
-            int i = 0;
-            while (i < items.Count && items[i].Fitness < payload.Fitness)
+            if (this.Any(o => o.FitnessTotal == payload.FitnessTotal))
             {
-              i++;
+              System.Diagnostics.Debug.Print("Shouldn't normally add...");
             }
 
-            if (i == items.Count)
+            if (items.Count == 0)
             {
-              if (items.Count < MaxCapacity)
-              {
-                items.Add(payload);
-                result = TryAddResult.Added;
-              }
-            }
-            else if (!IsANovelNest(payload.Fitness, items[i].Fitness, i, config.TopDiversity))
-            {
-              // Duplicate - respond true so the TryAdd consumer can report duplicate as
-              // it won't find the result in the list
-              result = TryAddResult.Duplicate;
+              items.Insert(0, payload);
+              result = TryAddResult.Added;
             }
             else
             {
-              items.Insert(i, payload);
-              result = TryAddResult.Added;
+              int i = 0;
+              while (i < items.Count && items[i].FitnessTotal < payload.FitnessTotal)
+              {
+                i++;
+              }
+
+              if (items.Count < MaxCapacity)
+              {
+                if (i == items.Count || IsANovelNest(payload.FitnessTotal, items[i].FitnessTotal, i, config.TopDiversity))
+                {
+                  items.Insert(i, payload);
+                  result = TryAddResult.Added;
+                }
+              }
+              else
+              {
+                if (i < items.Count)
+                {
+                  if (!IsANovelNest(payload.FitnessTotal, items[i].FitnessTotal, i, config.TopDiversity))
+                  {
+                    if (IsSubstituteForOldest(i))
+                    {
+                      items[i] = payload;
+                      result = TryAddResult.Substitute;
+                    }
+                    else
+                    {
+                      // Duplicate - respond true so the TryAdd consumer can report duplicate as
+                      // it won't find the result in the list
+                      result = TryAddResult.Duplicate;
+                    }
+                  }
+                  else
+                  {
+                    items.Insert(i, payload);
+                    result = TryAddResult.Added;
+                  }
+                }
+                else
+                {
+                  result = TryAddResult.NotAdded;
+                }
+              }
+            }
+
+            if (items.Count > MaxCapacity)
+            {
+              items.RemoveAt(items.Count - 1);
             }
           }
-
-          if (items.Count > MaxCapacity)
-          {
-            items.RemoveAt(items.Count - 1);
-          }
         }
-      }
 
-      return result;
+        return result;
+      }
+      catch (Exception ex)
+      {
+        throw;
+      }
+    }
+
+    private bool IsSubstituteForOldest(int i)
+    {
+      try
+      {
+        return this.OrderByDescending(o => o.PlacePartTime).Take(Math.Max(MaxCapacity / 10, 1)).Any(o => o == items[i]);
+      }
+      catch (Exception ex)
+      {
+        throw;
+      }
     }
   }
 }

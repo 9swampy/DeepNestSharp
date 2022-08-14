@@ -20,8 +20,6 @@
     private IRawDetail loaded4RawDetail;
     private INfp loadedNfp2;
     private INfp loadedNfp4;
-    private bool hasImported2RawDetail;
-    private bool hasImported4RawDetail;
     private int firstSheetIdSrc = new Random().Next();
 
     /// <summary>
@@ -31,30 +29,27 @@
     /// Two parts that shouldn't be able to fit on a single sheet.
     /// </summary>
     public RunFullOverlapNestGravityFixture()
-      : base(PlacementTypeEnum.Gravity, 68814, 25000, 250)
+      : base(PlacementTypeEnum.Gravity, 55000, 25000, 250)
     {
-      lock (testSyncLock)
-      {
-        if (!hasImported2RawDetail || !hasImported4RawDetail)
-        {
-          loaded2RawDetail = DxfParser.LoadDxfFileStreamAsRawDetail(Dxf2TestFilename);
-          loaded4RawDetail = DxfParser.LoadDxfFileStreamAsRawDetail(Dxf4TestFilename);
-          hasImported2RawDetail = loaded2RawDetail.TryConvertToNfp(A.Dummy<int>(), out loadedNfp2);
-          hasImported4RawDetail = loaded4RawDetail.TryConvertToNfp(A.Dummy<int>(), out loadedNfp4);
-          nestingContext.Polygons.Add(loadedNfp2);
-          nestingContext.Polygons.Add(loadedNfp4);
+      ExecuteTest();
+    }
 
-          ISheet firstSheet;
-          ((IRawDetail)DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { new DxfGenerator().Rectangle(180D, 100D, RectangleType.FileLoad) })).TryConvertToSheet(firstSheetIdSrc, out firstSheet).Should().BeTrue();
-          nestingContext.Sheets.Add(firstSheet);
+    protected override void PrepIteration()
+    {
+      nestingContext.Polygons.Add(loadedNfp2);
+      nestingContext.Polygons.Add(loadedNfp4);
 
-          nestingContext.StartNest().Wait();
-          while (!HasMetTerminationConditions)
-          {
-            AwaitIterate();
-          }
-        }
-      }
+      ISheet firstSheet;
+      ((IRawDetail)DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { new DxfGenerator().Rectangle(180D, 100D, RectangleType.FileLoad) })).TryConvertToSheet(firstSheetIdSrc, out firstSheet).Should().BeTrue();
+      nestingContext.Sheets.Add(firstSheet);
+    }
+
+    protected override bool LoadRawDetail()
+    {
+      loaded2RawDetail = DxfParser.LoadDxfFileStreamAsRawDetail(Dxf2TestFilename);
+      loaded4RawDetail = DxfParser.LoadDxfFileStreamAsRawDetail(Dxf4TestFilename);
+      return loaded2RawDetail.TryConvertToNfp(A.Dummy<int>(), out loadedNfp2) &&
+             loaded4RawDetail.TryConvertToNfp(A.Dummy<int>(), out loadedNfp4);
     }
 
     [Fact]
@@ -90,7 +85,7 @@
     [Fact]
     public void FitnessShouldBeExpected()
     {
-      nestingContext.State.TopNestResults.Top.Fitness.Should().BeApproximately(ExpectedFitness, ExpectedFitnessTolerance);
+      FitnessShouldBeExpectedVerification();
     }
 
     [Fact]

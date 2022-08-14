@@ -5,10 +5,44 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DeepNestSharp.Ui.UserControls" 
              xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-    <ListView Grid.Row="2"
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="300" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+    <ScrollViewer Grid.Row="0">
+      <xctk:PropertyGrid 
+            Name="propertyGrid"
+            HorizontalAlignment="Stretch" 
+            VerticalAlignment="Stretch"
+            SelectedObject="{Binding NestResult}"
+            ShowAdvancedOptions="False"
+            ShowSearchBox="False"
+            ShowSortOptions="False"
+            ShowTitle="False"
+            AutoGenerateProperties="false">
+        <xctk:PropertyGrid.PropertyDefinitions>
+          <xctk:PropertyDefinition TargetProperties="CreatedAt" DisplayName="Created At" />
+          <xctk:PropertyDefinition TargetProperties="FitnessTotal" DisplayName="Fitness Total" />
+          <xctk:PropertyDefinition TargetProperties="FitnessBounds" DisplayName="Fitness Bounds" />
+          <xctk:PropertyDefinition TargetProperties="FitnessSheets" DisplayName="Fitness Sheets" />
+          <xctk:PropertyDefinition TargetProperties="FitnessWastage" DisplayName="Fitness Wastage" />
+          <xctk:PropertyDefinition TargetProperties="FitnessUnplaced" DisplayName="Fitness Unplaced" />
+          <xctk:PropertyDefinition TargetProperties="FitnessUtilization" DisplayName="Fitness Utilization" />
+          <xctk:PropertyDefinition TargetProperties="MaterialUtilization" DisplayName="Material Utilization" />
+          <xctk:PropertyDefinition TargetProperties="PartsPlacedPercent" DisplayName="Parts Placed %" />
+          <xctk:PropertyDefinition TargetProperties="PlacementType" DisplayName="Placement Type" />
+          <xctk:PropertyDefinition TargetProperties="TotalPartsArea" DisplayName="Total Parts Area" />
+          <xctk:PropertyDefinition TargetProperties="TotalPartsCount" DisplayName="Total Parts" />
+          <xctk:PropertyDefinition TargetProperties="TotalPlacedCount" DisplayName="Total Placed" />
+          <xctk:PropertyDefinition TargetProperties="TotalSheetsArea" DisplayName="Total Sheets Area" />
+        </xctk:PropertyGrid.PropertyDefinitions>
+      </xctk:PropertyGrid>
+    </ScrollViewer>
+    <ListView Grid.Row="1"
               ItemsSource="{Binding NestResult.UsedSheets}" 
               SelectedItem="{Binding SelectedItem}" 
               SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}">
@@ -24,9 +58,10 @@
       </behaviors:Interaction.Triggers>
       <ListView.View>
         <GridView>
+          <GridViewColumn Header="Total" Width="60" DisplayMemberBinding="{Binding Path=Fitness.Total, StringFormat=0.0, Mode=OneWay}" />
           <GridViewColumn Header="Fit.Sheets" Width="60" DisplayMemberBinding="{Binding Path=Fitness.Sheets, StringFormat=0.0, Mode=OneWay}" />
-          <GridViewColumn Header="Fit.Wasted" Width="60" DisplayMemberBinding="{Binding Path=Fitness.MaterialWasted, StringFormat=0.0, Mode=OneWay}" />
-          <GridViewColumn Header="Fit.Util" Width="60" DisplayMemberBinding="{Binding Path=Fitness.MaterialUtilization, StringFormat=0.0, Mode=OneWay}" />
+          <GridViewColumn Header="Fit.Wasted" Width="60" DisplayMemberBinding="{Binding Path=Fitness.Wasted, StringFormat=0.0, Mode=OneWay}" />
+          <GridViewColumn Header="Fit.Util" Width="60" DisplayMemberBinding="{Binding Path=Fitness.Utilization, StringFormat=0.0, Mode=OneWay}" />
           <GridViewColumn Header="Fit.Bounds" Width="60" DisplayMemberBinding="{Binding Path=Fitness.Bounds, StringFormat=0.0, Mode=OneWay}" />
           <GridViewColumn Header="Utilization" Width="60" DisplayMemberBinding="{Binding Path=MaterialUtilization, StringFormat={}{0:P2}, Mode=OneWay}" />
           <GridViewColumn Header="Placed" Width="60" DisplayMemberBinding="{Binding Path=PartPlacements.Count, Mode=OneWay}" />

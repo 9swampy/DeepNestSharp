@@ -53,18 +53,12 @@
       return true;
     }
 
-    public bool TryConvertToNfp(int src, out Chromosome loadedChromosome)
+    bool IRawDetail.TryConvertToNfp(int src, int rotation, out IDeepNestChromosome loadedChromosome)
     {
-      INfp loadedNfp;
-      var result = TryConvertToNfp(src, out loadedNfp);
-      loadedChromosome = new Chromosome(loadedNfp, loadedNfp?.Rotation ?? 0);
-      return result;
-    }
-
-    bool IRawDetail.TryConvertToNfp(int src, int rotation, out Chromosome loadedChromosome)
-    {
-      var result = TryConvertToNfp(src, out loadedChromosome);
-      loadedChromosome.Rotation = rotation;
+      Chromosome chromosome;
+      var result = ((IRawDetail)this).TryConvertToNfp(src, out chromosome);
+      chromosome.SetRotation(rotation);
+      loadedChromosome = chromosome;
       return result;
     }
 
@@ -124,6 +118,14 @@
 
       firstSheet = default;
       return false;
+    }
+
+    bool IRawDetail.TryConvertToNfp(int src, out Chromosome loadedChromosome)
+    {
+      INfp loadedNfp;
+      var result = TryConvertToNfp(src, out loadedNfp);
+      loadedChromosome = new Chromosome(loadedNfp, loadedNfp?.Rotation ?? 0);
+      return result;
     }
   }
 }

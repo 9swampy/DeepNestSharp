@@ -65,7 +65,7 @@
 
     public void InitialiseLoopProgress(ProgressBar progressBar, string transientMessage, int loopMax)
     {
-      if (State.AverageNestTime == 0 || State.AverageNestTime > 2500)
+      if (State.AverageThreadNestTime == 0 || State.AverageThreadNestTime > 2500)
       {
         this.DisplayTransientMessage(transientMessage);
       }

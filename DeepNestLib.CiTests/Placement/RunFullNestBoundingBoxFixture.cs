@@ -14,12 +14,9 @@
   {
     private const string DxfTestFilename = "Dxfs._5.dxf";
 
-    private static volatile object testSyncLock = new object();
-
     private readonly DxfGenerator dxfGenerator = new DxfGenerator();
     private IRawDetail loadedRawDetail;
     private INfp loadedNfp;
-    private bool hasImportedRawDetail;
     private int firstSheetIdSrc = new Random().Next();
 
     /// <summary>
@@ -27,38 +24,30 @@
     /// MinkowskiWrapper.CalculateNfp occasionally sticks; not sure why; seems fine at runtime only nCrunch has the problem.
     /// </summary>
     public RunFullNestBoundingBoxFixture()
-      : base(PlacementTypeEnum.BoundingBox, 494512, 10000, 50, 6)
+      : base(PlacementTypeEnum.BoundingBox, 494512, 10000, 50)
     {
-      lock (testSyncLock)
-      {
-        while (!HasAchievedExpectedFitness && !HasRetriedMaxRuns)
-        {
-          if (!hasImportedRawDetail)
-          {
-            loadedRawDetail = DxfParser.LoadDxfFileStreamAsRawDetail(DxfTestFilename);
-            loadedRawDetail.Should().NotBeNull();
-            hasImportedRawDetail = loadedRawDetail.TryConvertToNfp(A.Dummy<int>(), out loadedNfp);
-          }
+      ExecuteTest();
+    }
 
-          ResetIteration();
-          nestingContext.Polygons.Add(loadedNfp);
-          nestingContext.Polygons.Add(loadedNfp.Clone());
-          nestingContext.Polygons.Count.Should().Be(2);
+    protected override void PrepIteration()
+    {
+      nestingContext.Polygons.Add(loadedNfp);
+      nestingContext.Polygons.Add(loadedNfp.Clone());
+      nestingContext.Polygons.Count.Should().Be(2);
 
-          ISheet firstSheet;
-          dxfGenerator.GenerateRectangle("Sheet", 595D, 395D, RectangleType.FileLoad).TryConvertToSheet(firstSheetIdSrc, out firstSheet).Should().BeTrue();
-          firstSheet.WidthCalculated.Should().Be(595D);
-          firstSheet.HeightCalculated.Should().Be(395D);
-          firstSheet.Area.Should().Be(595D * 395D);
-          nestingContext.Sheets.Add(firstSheet);
+      ISheet firstSheet;
+      dxfGenerator.GenerateRectangle("Sheet", 595D, 395D, RectangleType.FileLoad).TryConvertToSheet(firstSheetIdSrc, out firstSheet).Should().BeTrue();
+      firstSheet.WidthCalculated.Should().Be(595D);
+      firstSheet.HeightCalculated.Should().Be(395D);
+      firstSheet.Area.Should().Be(595D * 395D);
+      nestingContext.Sheets.Add(firstSheet);
+    }
 
-          nestingContext.StartNest().Wait();
-          while (!HasMetTerminationConditions)
-          {
-            AwaitIterate();
-          }
-        }
-      }
+    protected override bool LoadRawDetail()
+    {
+      loadedRawDetail = DxfParser.LoadDxfFileStreamAsRawDetail(DxfTestFilename);
+      loadedRawDetail.Should().NotBeNull();
+      return loadedRawDetail.TryConvertToNfp(A.Dummy<int>(), out loadedNfp);
     }
 
     [Fact]
@@ -88,7 +77,7 @@
     [Fact]
     public void FitnessShouldBeExpected()
     {
-      nestingContext.State.TopNestResults.Top.Fitness.Should().BeLessThan(ExpectedFitness + ExpectedFitnessTolerance);
+      FitnessShouldBeExpectedVerification();
     }
 
     [Fact]
