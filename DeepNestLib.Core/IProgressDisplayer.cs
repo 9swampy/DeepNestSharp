@@ -5,9 +5,12 @@
 
   public interface IProgressDisplayer
   {
+    bool IsVisibleSecondaryProgressBar { get; set; }
+
     /// <summary>
     /// DisplayProgress on a percentage scale.
     /// </summary>
+    /// <param name="progressBar">The progressBar to update.</param>
     /// <param name="percentageComplete">A number bettwen 0 (0%) and 1 (100%).</param>
     void DisplayProgress(ProgressBar progressBar, double percentageComplete);
 
@@ -23,9 +26,7 @@
 
     void InitialiseUiForStartNest();
 
-    Task IncrementLoopProgress(ProgressBar progressBar);
-
-    bool IsVisibleSecondaryProgressBar { get; set; }
+    void IncrementLoopProgress(ProgressBar progressBar);
 
     void InitialiseLoopProgress(ProgressBar progressBar, int loopMax);
 

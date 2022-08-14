@@ -15,7 +15,7 @@
     int firstSheetIdSrc = new Random().Next();
 
     public NewSheetFixture()
-    {  
+    {
       ((IRawDetail)DxfParser.ConvertDxfToRawDetail("Sheet", new List<DxfEntity>() { new DxfGenerator().Rectangle(100D, 200D, RectangleType.BottomLeftClockwise, true) })).TryConvertToSheet(firstSheetIdSrc, out sutDxfEntity).Should().BeTrue();
     }
 

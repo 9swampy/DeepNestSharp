@@ -2,7 +2,9 @@
 {
   using System.IO;
   using DeepNestLib;
+  using DeepNestLib.IO;
   using DeepNestSharp.Ui.Docking;
+  using Light.GuardClauses;
 
   public class NfpCandidateListViewModel : FileViewModel
   {
@@ -15,9 +17,9 @@
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public NfpCandidateListViewModel(IMainViewModel mainViewModel)
+    public NfpCandidateListViewModel(IMainViewModel mainViewModel, IRelativePathHelper relativePathHelper)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-      : base(mainViewModel)
+      : base(mainViewModel, relativePathHelper)
     {
     }
 
@@ -26,8 +28,8 @@
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
     /// <param name="filePath">Path to the file to open.</param>
-    public NfpCandidateListViewModel(IMainViewModel mainViewModel, string filePath)
-      : base(mainViewModel, filePath)
+    public NfpCandidateListViewModel(IMainViewModel mainViewModel, string filePath, IRelativePathHelper relativePathHelper)
+      : base(mainViewModel, filePath, relativePathHelper)
     {
     }
 
@@ -63,8 +65,9 @@
 
     public override string TextContent => this.NfpCandidateList?.ToJson() ?? string.Empty;
 
-    protected override void LoadContent()
+    protected override void LoadContent(IRelativePathHelper relativePathHelper)
     {
+      relativePathHelper.MustNotBeNull();
       var fileInfo = new FileInfo(this.FilePath);
       if (!fileInfo.Exists)
       {

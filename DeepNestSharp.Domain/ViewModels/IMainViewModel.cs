@@ -6,6 +6,7 @@
   using System.Threading.Tasks;
   using System.Windows.Input;
   using DeepNestLib;
+  using DeepNestLib.IO;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain.Docking;
   using DeepNestSharp.Domain.Services;
@@ -61,6 +62,8 @@
     string Title { get; }
 
     IEnumerable<IToolViewModel> Tools { get; }
+
+    IRelativePathHelper RelativePathHelper { get; }
 
     Task ExportSheetPlacementAsync(ISheetPlacement sheetPlacement);
 

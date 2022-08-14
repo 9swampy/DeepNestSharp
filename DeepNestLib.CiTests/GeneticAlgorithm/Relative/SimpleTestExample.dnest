@@ -1,16 +1,18 @@
 {
   "DetailLoadInfos": [
     {
-      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_1.dxf",
+      "Path": "${SolutionDir}\\DeepNestPort\\dxfs\\_1.dxf",
       "Quantity": 6,
+      "IsDifferentiated": false,
       "IsIncluded": true,
       "IsPriority": false,
       "IsMultiplied": true,
       "StrictAngle": 0
     },
     {
-      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_9.dxf",
+      "Path": "${SolutionDir}\\DeepNestPort\\dxfs\\_9.dxf",
       "Quantity": 1,
+      "IsDifferentiated": true,
       "IsIncluded": true,
       "IsPriority": false,
       "IsMultiplied": true,

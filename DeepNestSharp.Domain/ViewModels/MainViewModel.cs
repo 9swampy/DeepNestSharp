@@ -20,6 +20,7 @@
   {
     private readonly IFileIoService fileIoService;
     private readonly IMouseCursorService mouseCursorService;
+    private readonly IRelativePathHelper relativePathHelper;
     private readonly IMessageService messageService;
     private readonly ObservableCollection<IFileViewModel> files;
     private RelayCommand loadLayoutCommand;
@@ -43,7 +44,13 @@
     private IPropertiesViewModel propertiesViewModel;
     private INestMonitorViewModel nestMonitorViewModel;
 
-    public MainViewModel(IMessageService messageService, IDispatcherService dispatcherService, ISvgNestConfig config, IFileIoService fileIoService, IMouseCursorService mouseCursorService)
+    public MainViewModel(
+      IMessageService messageService,
+      IDispatcherService dispatcherService,
+      ISvgNestConfig config,
+      IFileIoService fileIoService,
+      IMouseCursorService mouseCursorService,
+      IRelativePathHelper relativePathHelper)
     {
       SvgNestConfigViewModel = new SvgNestConfigViewModel(config);
 
@@ -54,6 +61,7 @@
       this.DispatcherService = dispatcherService;
       this.fileIoService = fileIoService;
       this.mouseCursorService = mouseCursorService;
+      this.relativePathHelper = relativePathHelper;
       this.ActiveDocumentChanged += this.MainViewModel_ActiveDocumentChanged;
     }
 
@@ -168,6 +176,8 @@
 
     public string Title => $"DeepNest# {this.GetType().Assembly.GetName().Version?.ToString()}";
 
+    public IRelativePathHelper RelativePathHelper => relativePathHelper;
+
     public void SetSelectedToolView(IFileViewModel fileViewModel)
     {
       if (fileViewModel is NestProjectViewModel)
@@ -202,7 +212,7 @@
         string locatedFilePath;
         if (TryLocateFile(filePath, out locatedFilePath))
         {
-          var loaded = new NestProjectViewModel(this, locatedFilePath, fileIoService);
+          var loaded = new NestProjectViewModel(this, locatedFilePath, fileIoService, relativePathHelper);
           loaded.PropertyChanged += this.NestProjectViewModel_PropertyChanged;
           this.files.Add(loaded);
           this.ActiveDocument = loaded;
@@ -218,7 +228,7 @@
 
     public void OnLoadNestResult(INestResult nestResult)
     {
-      var loaded = new NestResultViewModel(this, nestResult, mouseCursorService, messageService);
+      var loaded = new NestResultViewModel(this, nestResult, mouseCursorService, messageService, relativePathHelper);
       this.files.Add(loaded);
       this.ActiveDocument = loaded;
     }
@@ -228,7 +238,7 @@
       string locatedFilePath;
       if (TryLocateFile(filePath, out locatedFilePath))
       {
-        var loaded = new NestResultViewModel(this, locatedFilePath, mouseCursorService, messageService);
+        var loaded = new NestResultViewModel(this, locatedFilePath, mouseCursorService, messageService, relativePathHelper);
         this.files.Add(loaded);
         this.ActiveDocument = loaded;
       }
@@ -245,7 +255,7 @@
       string locatedFilePath;
       if (TryLocateFile(filePath, out locatedFilePath))
       {
-        var loaded = new PartEditorViewModel(this, locatedFilePath);
+        var loaded = new PartEditorViewModel(this, locatedFilePath, relativePathHelper);
         this.files.Add(loaded);
         this.ActiveDocument = loaded;
       }
@@ -256,7 +266,7 @@
       string locatedFilePath;
       if (TryLocateFile(filePath, out locatedFilePath))
       {
-        var loaded = new NfpCandidateListViewModel(this, locatedFilePath);
+        var loaded = new NfpCandidateListViewModel(this, locatedFilePath, relativePathHelper);
         this.files.Add(loaded);
         this.ActiveDocument = loaded;
       }
@@ -267,7 +277,7 @@
       string locatedFilePath;
       if (TryLocateFile(filePath, out locatedFilePath))
       {
-        var loaded = new NfpCandidateListViewModel(this, locatedFilePath);
+        var loaded = new NfpCandidateListViewModel(this, locatedFilePath, relativePathHelper);
         this.files.Add(loaded);
         this.ActiveDocument = loaded;
       }
@@ -284,7 +294,7 @@
       string locatedFilePath;
       if (TryLocateFile(filePath, out locatedFilePath))
       {
-        var loaded = new SheetPlacementViewModel(this, locatedFilePath);
+        var loaded = new SheetPlacementViewModel(this, locatedFilePath, relativePathHelper);
         this.files.Add(loaded);
         this.ActiveDocument = loaded;
       }
@@ -292,7 +302,7 @@
 
     public void LoadSheetPlacement(ISheetPlacement sheetPlacement)
     {
-      var loaded = new SheetPlacementViewModel(this, sheetPlacement, mouseCursorService);
+      var loaded = new SheetPlacementViewModel(this, sheetPlacement, mouseCursorService, relativePathHelper);
       this.files.Add(loaded);
       this.ActiveDocument = loaded;
     }
@@ -352,7 +362,14 @@
       {
         if (fileToSave.FilePath == null || saveAsFlag)
         {
-          var filePath = fileIoService.GetSaveFilePath(fileToSave.FileDialogFilter, SvgNestConfigViewModel.SvgNestConfig.LastNestFilePath);
+          var fileInfo = new FileInfo(fileToSave.FilePath);
+          string filePath = fileInfo.Name;
+          if (fileInfo.Exists)
+          {
+            filePath = GetSuffixedFileName(fileInfo);
+          }
+
+          filePath = fileIoService.GetSaveFilePath(fileToSave.FileDialogFilter, filePath, SvgNestConfigViewModel.SvgNestConfig.LastNestFilePath);
           if (!string.IsNullOrWhiteSpace(filePath))
           {
             fileToSave.FilePath = filePath;
@@ -370,6 +387,26 @@
           ActiveDocument.IsDirty = false;
         }
       }
+    }
+
+    private static string GetSuffixedFileName(FileInfo fileInfo)
+    {
+      string filePath;
+      int copy = 0;
+      string FileName()
+      {
+        var name = $"{fileInfo.Name.Replace(fileInfo.Extension, string.Empty)}-Copy";
+        Func<int, string> copyString = i => i == 0 ? string.Empty : $"({i})";
+        return $"{name}{copyString(copy)}{fileInfo.Extension}";
+      }
+
+      while (new FileInfo(FileName()).Exists)
+      {
+        copy++;
+      }
+
+      filePath = FileName();
+      return filePath;
     }
 
     private async Task OnLoadNfpCandidatesAsync()
@@ -405,7 +442,7 @@
 
     private void OnCreateNestProject()
     {
-      var newFile = new NestProjectViewModel(this, fileIoService);
+      var newFile = new NestProjectViewModel(this, fileIoService, relativePathHelper);
       this.files.Add(newFile);
       this.ActiveDocument = newFile;
     }

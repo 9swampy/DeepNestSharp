@@ -1,10 +1,10 @@
 ﻿namespace DeepNestLib.PairMap
 {
-  using DeepNestLib.Placement;
   using System;
   using System.Collections.Generic;
   using System.Linq;
   using System.Threading.Tasks;
+  using DeepNestLib.Placement;
 
   public class PmapWorker
   {

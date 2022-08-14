@@ -5,6 +5,7 @@
   using DeepNestLib.IO;
   using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Ui.Docking;
+  using Light.GuardClauses;
   using Microsoft.Toolkit.Mvvm.Input;
 
   public class PartEditorViewModel : FileViewModel
@@ -16,8 +17,8 @@
     /// Initializes a new instance of the <see cref="PartEditorViewModel"/> class.
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
-    public PartEditorViewModel(IMainViewModel mainViewModel)
-      : base(mainViewModel)
+    public PartEditorViewModel(IMainViewModel mainViewModel, IRelativePathHelper relativePathHelper)
+      : base(mainViewModel, relativePathHelper)
     {
     }
 
@@ -26,8 +27,8 @@
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
     /// <param name="filePath">Path to the file to open.</param>
-    public PartEditorViewModel(IMainViewModel mainViewModel, string filePath)
-      : base(mainViewModel, filePath)
+    public PartEditorViewModel(IMainViewModel mainViewModel, string filePath, IRelativePathHelper relativePathHelper)
+      : base(mainViewModel, filePath, relativePathHelper)
     {
     }
 
@@ -59,8 +60,9 @@
 
     public override string TextContent => this.Part?.ToJson() ?? string.Empty;
 
-    protected override void LoadContent()
+    protected override void LoadContent(IRelativePathHelper relativePathHelper)
     {
+      relativePathHelper.MustNotBeNull();
       var fileInfo = new FileInfo(this.FilePath);
       if (!fileInfo.Exists)
       {

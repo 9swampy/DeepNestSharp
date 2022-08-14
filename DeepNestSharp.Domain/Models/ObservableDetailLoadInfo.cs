@@ -139,5 +139,10 @@
 
       return this.nfp;
     }
+
+    public IDetailLoadInfo Clone()
+    {
+      return ((IDetailLoadInfo)detailLoadInfo).Clone();
+    }
   }
 }

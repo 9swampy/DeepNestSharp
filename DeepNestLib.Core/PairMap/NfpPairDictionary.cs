@@ -1,8 +1,8 @@
 ﻿namespace DeepNestLib.PairMap
 {
-  using DeepNestLib.Placement;
   using System.Collections.Generic;
   using System.Threading;
+  using DeepNestLib.Placement;
 
   public class NfpPairDictionary : Dictionary<NfpPairEqualityComparerKey, NoFitPolygon>
   {

@@ -2,11 +2,11 @@
   "profiles": {
     "DeepNestSharp.dnr": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Git\\DeepNestSharp\\DeepNestLib.CiTests\\Dxfs\\320&355Gy;rYkCarg.dnr"
+      "commandLineArgs": "${SolutionDir}\\DeepNestLib.CiTests\\Dxfs\\320&355Gy;rYkCarg.dnr"
     },
     "DeepNestSharp.dnest": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Git\\DeepNestSharp\\DeepNestLib.CiTests\\Dxfs\\320&355TopsOnCast.dnest"
+      "commandLineArgs": "C:\\Git\\CanDispenserCnc\\CuttingLists\\MakeSpace\\320&355Bottoms.dnest"
     },
     "DeepNestSharp.dnsp": {
       "commandName": "Project",
@@ -14,19 +14,19 @@
     },
     "DeepNestOverlap.dnest": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Git\\DeepNestSharp\\DeepNestPort\\WideOverlapError.dnest"
+      "commandLineArgs": "${SolutionDir}\\DeepNestPort\\WideOverlapError.dnest"
     },
     "Overlay2ndGen.dnest": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\SecondGenerationOverlay.dnest"
+      "commandLineArgs": "${SolutionDir}\\DeepNestPort\\dxfs\\SecondGenerationOverlay.dnest"
     },
     "DxfNotFound.dnest": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\DxfNotExistExample.dnest"
+      "commandLineArgs": "${SolutionDir}\\DeepNestPort\\dxfs\\DxfNotExistExample.dnest"
     },
     "SimpleTest.dnest": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Git\\DeepNestPort\\DeepNestPort\\dxfs\\SimpleTestExample.dnest"
+      "commandLineArgs": "${SolutionDir}\\DeepNestLib.CiTests\\GeneticAlgorithm\\Relative\\SimpleTestExample.dnest"
     },
     "Debug": {
       "commandName": "Project"

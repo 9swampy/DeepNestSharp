@@ -71,11 +71,11 @@
       //config.ExportExecutionPath = @"C:\Temp\DeepNestSharp";
       nfpHelper = A.Dummy<NfpHelper>();
       var placementWorker = new PlacementWorker(
-        nfpHelper, 
-        new ISheet[] { firstSheet }, 
-        new DeepNestGene(new Chromosome[] { firstPart.ToChromosome(firstRotation), secondPart.ToChromosome(secondRotation) }.ApplyIndex()), 
-        config, 
-        A.Dummy<Stopwatch>(), 
+        nfpHelper,
+        new ISheet[] { firstSheet },
+        new DeepNestGene(new Chromosome[] { firstPart.ToChromosome(firstRotation), secondPart.ToChromosome(secondRotation) }.ApplyIndex()),
+        config,
+        A.Dummy<Stopwatch>(),
         A.Fake<INestState>());
       nestResult = placementWorker.PlaceParts();
 

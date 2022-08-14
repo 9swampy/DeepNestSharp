@@ -17,7 +17,7 @@
 
       if (config.OffsetTreePhase)
       {
-        ExecuteOffsetTreePhase(config, clonedPolygons, clonedSheets, progressDisplayer).Wait();
+        ExecuteOffsetTreePhase(config, clonedPolygons, clonedSheets, progressDisplayer);
       }
 
       partsLocal = GroupToNestItemList(clonedPolygons);
@@ -69,16 +69,16 @@
       return partsLocal;
     }
 
-    private static async Task ExecuteOffsetTreePhase(ISvgNestConfig config, IList<INfp> clonedPolygons, List<ISheet> clonedSheets, IProgressDisplayer progressDisplayer)
+    private static void ExecuteOffsetTreePhase(ISvgNestConfig config, IList<INfp> clonedPolygons, List<ISheet> clonedSheets, IProgressDisplayer progressDisplayer)
     {
       var grps = clonedPolygons.GroupBy(z => z.Source).ToArray();
       progressDisplayer.InitialiseLoopProgress(ProgressBar.Primary, "Pre-processing (Offset Tree Phase). . .", grps.Length);
       if (config.UseParallel)
       {
-        Parallel.ForEach(grps, async (item) =>
+        Parallel.ForEach(grps, (item) =>
         {
           OffsetTreeReplace(config, item);
-          await progressDisplayer.IncrementLoopProgress(ProgressBar.Primary).ConfigureAwait(false);
+          progressDisplayer.IncrementLoopProgress(ProgressBar.Primary);
         });
       }
       else
@@ -87,7 +87,7 @@
         foreach (var item in grps)
         {
           OffsetTreeReplace(config, item);
-          await progressDisplayer.IncrementLoopProgress(ProgressBar.Primary).ConfigureAwait(false);
+          progressDisplayer.IncrementLoopProgress(ProgressBar.Primary);
           progressDisplayer.DisplayTransientMessage($"Pre-processing (Offset Tree Phase-{idx}). . .");
           idx++;
         }

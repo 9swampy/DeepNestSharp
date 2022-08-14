@@ -127,7 +127,7 @@
       partPlacement.Part.Id.Should().Be(1);
       secondPart.Id.Should().Be(2);
       partPlacement.Part.Should().BeEquivalentTo(secondPart.Rotate(secondRotation),
-        opt => opt.Excluding(o=>o.Id)
+        opt => opt.Excluding(o => o.Id)
                   .WithStrictOrdering()
                   .Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, DoublePrecision))
                   .WhenTypeIs<double>(),

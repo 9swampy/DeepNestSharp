@@ -1,9 +1,9 @@
 ﻿namespace DeepNestLib
 {
-  using DeepNestLib.Placement;
   using System.IO;
   using System.Text.Json;
   using System.Text.Json.Serialization;
+  using DeepNestLib.Placement;
 #if NCRUNCH
   using System.Text;
 #endif

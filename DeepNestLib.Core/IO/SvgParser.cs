@@ -151,12 +151,8 @@
           break;
         case "circle":
           throw new NotImplementedException();
-
-          break;
         case "ellipse":
           throw new NotImplementedException();
-
-          break;
         case "path":
           throw new NotImplementedException();
 

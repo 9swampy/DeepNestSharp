@@ -34,7 +34,7 @@
       A.CallTo(() => dispatcherService.InvokeRequired).Returns(false);
 
       ((ITestPartPlacementWorker)sut).State = new NestState(config, dispatcherService);
-      
+
       placementWorker = A.Fake<IPlacementWorker>();
       ((ITestPartPlacementWorker)sut).PlacementWorker = placementWorker;
       ((ITestNfpHelper)((ITestPartPlacementWorker)sut).NfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(config, A.Fake<INestStateMinkowski>());

@@ -1,9 +1,9 @@
 ﻿namespace DeepNestLib.NestProject
 {
-  using DeepNestLib.Placement;
   using System;
   using System.Text.Json;
   using System.Text.Json.Serialization;
+  using DeepNestLib.Placement;
 
   public class SvgNestConfigJsonConverter : JsonConverterFactory
   {
@@ -38,15 +38,15 @@
       public override void Write(Utf8JsonWriter writer, ISvgNestConfig value, JsonSerializerOptions options)
       {
 #if NCRUNCH
-        JsonSerializer.Serialize<TestSvgNestConfig>(writer, (TestSvgNestConfig)value, options);
+        JsonSerializer.Serialize(writer, (TestSvgNestConfig)value, options);
 #else
         if (value is IExportableConfig obs)
         {
-          JsonSerializer.Serialize<SvgNestConfig>(writer, (SvgNestConfig)obs.ExportableInstance, options);
+          JsonSerializer.Serialize(writer, (SvgNestConfig)obs.ExportableInstance, options);
         }
         else
         {
-          JsonSerializer.Serialize<SvgNestConfig>(writer, (SvgNestConfig)value, options);
+          JsonSerializer.Serialize(writer, (SvgNestConfig)value, options);
         }
 #endif
       }
@@ -68,17 +68,15 @@
       var options = new JsonSerializerOptions();
       options.Converters.Add(new SvgNestConfigJsonConverter());
 #if NCRUNCH
-      return JsonSerializer.Serialize<TestSvgNestConfig>((TestSvgNestConfig)config, options);
+      return JsonSerializer.Serialize((TestSvgNestConfig)config, options);
 #else
-      return JsonSerializer.Serialize<SvgNestConfig>((SvgNestConfig)config, options);
+      return JsonSerializer.Serialize((SvgNestConfig)config, options);
 #endif
     }
 
     /// <summary>
     /// Long hand copy of every serializable property from source to target config instances.
     /// </summary>
-    /// <param name="source"></param>
-    /// <param name="target"></param>
     internal static void FullCopy(ISvgNestConfig source, ISvgNestConfig target)
     {
       target.ClipByHull = source.ClipByHull;

@@ -35,7 +35,7 @@
       Are.Set();
     }
 
-    public async Task IncrementLoopProgress(ProgressBar progressBar)
+    public void IncrementLoopProgress(ProgressBar progressBar)
     {
       Are.Set();
     }

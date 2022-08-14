@@ -257,8 +257,8 @@
 
             if (SvgNest.IsVerboseLogging)
             {
-              this.progressDisplayer.DisplayTransientMessage($"Nesting time = {payload.PlacePartTime}ms ({suffix})");
-            }
+            this.progressDisplayer.DisplayTransientMessage($"Nesting time = {payload.PlacePartTime}ms ({suffix})");
+          }
           }
 
           IncrementSecondaryProgressBar();
@@ -331,11 +331,11 @@
               ends[i + 1] = ends[i] + threadPop;
               if (i < ends.Length - 2)
               {
-                workerList.Add(new PopulationProcessWorker(this, ends[i], ends[i + 1], config, sheets.ToArray(), nestStateBackground));
+                workerList.Add(new PopulationProcessWorker(this, ends[i], ends[i + 1], config, sheets.ToArray(), nestStateBackground, progressDisplayer));
               }
               else
               {
-                workerList.Add(new PopulationProcessWorker(this, ends[i], this.procreant.Population.Length, config, sheets.ToArray(), nestStateBackground));
+                workerList.Add(new PopulationProcessWorker(this, ends[i], this.procreant.Population.Length, config, sheets.ToArray(), nestStateBackground, progressDisplayer));
               }
             }
 
@@ -343,7 +343,7 @@
           }
           else
           {
-            var worker = new PopulationProcessWorker(this, 0, this.procreant.Population.Length, config, sheets.ToArray(), nestStateBackground);
+            var worker = new PopulationProcessWorker(this, 0, this.procreant.Population.Length, config, sheets.ToArray(), nestStateBackground, progressDisplayer);
             worker.Execute();
           }
         }
@@ -469,6 +469,7 @@
     /// </summary>
     private void InitialiseAnotherGeneration()
     {
+      this.progressDisplayer.DisplayTransientMessage("Procreating. . .");
       this.procreant.Generate(this.State.TopNestResults);
 #if !NCRUNCH
       if (this.procreant.Population.Length == 0)
@@ -506,6 +507,7 @@
       private readonly ISvgNestConfig config;
       private readonly ISheet[] sheets;
       private readonly INestStateBackground nestStateBackground;
+      private readonly IProgressDisplayer progressDisplayer;
 
       public PopulationProcessWorker(
         SvgNest svgNest,
@@ -513,7 +515,8 @@
         int end,
         ISvgNestConfig config,
         ISheet[] sheets,
-        INestStateBackground nestStateBackground)
+        INestStateBackground nestStateBackground,
+        IProgressDisplayer progressDisplayer)
       {
         this.svgNest = svgNest;
         this.start = start;
@@ -521,6 +524,7 @@
         this.config = config;
         this.sheets = sheets;
         this.nestStateBackground = nestStateBackground;
+        this.progressDisplayer = progressDisplayer;
       }
 
       public void Execute()
@@ -546,6 +550,8 @@
             else
             {
               var background = new Background(svgNest.progressDisplayer, svgNest, svgNest.minkowskiSumService, nestStateBackground, config.UseDllImport);
+              this.progressDisplayer.DisplayTransientMessage($"Start ({i}). . .");
+              this.nestStateBackground.BackgroundStarted = i;
               background.BackgroundStart(individual, sheets, config);
             }
           }

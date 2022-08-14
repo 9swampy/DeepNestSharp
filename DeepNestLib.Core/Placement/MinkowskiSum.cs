@@ -255,8 +255,8 @@
         var n = solution[i].ToArray().ToNestCoordinates(scaler);
         var sarea = -GeometryUtil.PolygonArea(n);
         if (largestArea == null ||
-            minkowskiSumPick == MinkowskiSumPick.Largest && largestArea < sarea ||
-            minkowskiSumPick == MinkowskiSumPick.Smallest && sarea > 0 && largestArea > sarea)
+            (minkowskiSumPick == MinkowskiSumPick.Largest && largestArea < sarea) ||
+            (minkowskiSumPick == MinkowskiSumPick.Smallest && sarea > 0 && largestArea > sarea))
         {
           clipperNfp = n;
           largestArea = sarea;

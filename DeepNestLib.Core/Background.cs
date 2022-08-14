@@ -54,7 +54,7 @@
         }
 
         // preprocess
-        List<NfpPair> pairs = new NfpPairsFactory(window).Generate(config.UseParallel, gene);
+        List<NfpPair> pairs = new NfpPairsFactory(window, progressDisplayer).Generate(config.UseParallel, gene);
 
         // console.log('pairs: ', pairs.length);
         // console.time('Total');

@@ -111,7 +111,7 @@
           {
             HasImportedRawDetail = LoadRawDetail();
           }
-          
+
           HasImportedRawDetail.Should().BeTrue();
           ResetIteration();
           PrepIteration();

@@ -1,7 +1,7 @@
 ﻿namespace DeepNestSharp.Ui.Views
 {
-  using DeepNestSharp.Domain.Services;
   using System;
+  using DeepNestSharp.Domain.Services;
 
   public class AboutDialogService : IAboutDialogService
   {

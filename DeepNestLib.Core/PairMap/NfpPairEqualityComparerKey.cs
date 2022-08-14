@@ -1,7 +1,7 @@
 ﻿namespace DeepNestLib.PairMap
 {
-  using DeepNestLib.Placement;
   using System;
+  using DeepNestLib.Placement;
 
   public class NfpPairEqualityComparerKey : Tuple<SvgPoint[], SvgPoint[], double, double, int, int, MinkowskiSumPick>
   {

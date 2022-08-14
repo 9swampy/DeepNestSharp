@@ -6,10 +6,12 @@
   using System.Linq;
   using System.Threading.Tasks;
   using System.Windows.Input;
+  using DeepNestLib.IO;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Domain.Services;
   using DeepNestSharp.Ui.Docking;
+  using Light.GuardClauses;
   using Microsoft.Toolkit.Mvvm.Input;
 
   public class SheetPlacementViewModel : FileViewModel, ISheetPlacementViewModel
@@ -26,8 +28,8 @@
     /// Initializes a new instance of the <see cref="SheetPlacementViewModel"/> class.
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
-    public SheetPlacementViewModel(IMainViewModel mainViewModel, IMouseCursorService mouseCursorService)
-      : base(mainViewModel)
+    public SheetPlacementViewModel(IMainViewModel mainViewModel, IMouseCursorService mouseCursorService, IRelativePathHelper relativePathHelper)
+      : base(mainViewModel, relativePathHelper)
     {
       this.mouseCursorService = mouseCursorService;
     }
@@ -36,8 +38,8 @@
     /// Initializes a new instance of the <see cref="SheetPlacementViewModel"/> class.
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
-    public SheetPlacementViewModel(IMainViewModel mainViewModel, ISheetPlacement sheetPlacement, IMouseCursorService mouseCursorService)
-      : this(mainViewModel, mouseCursorService)
+    public SheetPlacementViewModel(IMainViewModel mainViewModel, ISheetPlacement sheetPlacement, IMouseCursorService mouseCursorService, IRelativePathHelper relativePathHelper)
+      : this(mainViewModel, mouseCursorService, relativePathHelper)
     {
       if (sheetPlacement is ObservableSheetPlacement observableSheetPlacement)
       {
@@ -56,8 +58,8 @@
     /// </summary>
     /// <param name="mainViewModel">MainViewModel singleton; the primary context; access this via the activeDocument property.</param>
     /// <param name="filePath">Path to the file to open.</param>
-    public SheetPlacementViewModel(IMainViewModel mainViewModel, string filePath)
-      : base(mainViewModel, filePath)
+    public SheetPlacementViewModel(IMainViewModel mainViewModel, string filePath, IRelativePathHelper relativePathHelper)
+      : base(mainViewModel, filePath, relativePathHelper)
     {
     }
 
@@ -109,8 +111,9 @@
       OnPropertyChanged(nameof(SelectedItem));
     }
 
-    protected override void LoadContent()
+    protected override void LoadContent(IRelativePathHelper relativePathHelper)
     {
+      relativePathHelper.MustNotBeNull();
       var sheetPlacement = new ObservableSheetPlacement(DeepNestLib.Placement.SheetPlacement.LoadFromFile(this.FilePath));
       Debug.Print("Force Exact=false on SheetPlacement load.");
       foreach (var pp in sheetPlacement.PartPlacements)

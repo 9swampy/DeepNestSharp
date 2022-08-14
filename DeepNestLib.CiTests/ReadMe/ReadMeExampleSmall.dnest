@@ -1,7 +1,7 @@
 {
   "DetailLoadInfos": [
     {
-      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_1.dxf",
+      "Path": "${SolutionDir}\\DeepNestPort\\dxfs\\_1.dxf",
       "Quantity": 1,
       "IsIncluded": true,
       "IsPriority": false,
@@ -9,7 +9,7 @@
       "StrictAngle": 0
     },
     {
-      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_2.dxf",
+      "Path": "${SolutionDir}\\DeepNestPort\\dxfs\\_2.dxf",
       "Quantity": 1,
       "IsIncluded": true,
       "IsPriority": false,
@@ -17,7 +17,7 @@
       "StrictAngle": 0
     },
     {
-      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_3.dxf",
+      "Path": "${SolutionDir}\\DeepNestPort\\dxfs\\_3.dxf",
       "Quantity": 1,
       "IsIncluded": true,
       "IsPriority": false,
@@ -25,7 +25,7 @@
       "StrictAngle": 0
     },
     {
-      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_4.dxf",
+      "Path": "${SolutionDir}\\DeepNestPort\\dxfs\\_4.dxf",
       "Quantity": 1,
       "IsIncluded": true,
       "IsPriority": false,
@@ -33,7 +33,7 @@
       "StrictAngle": 0
     },
     {
-      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_5.dxf",
+      "Path": "${SolutionDir}\\DeepNestPort\\dxfs\\_5.dxf",
       "Quantity": 1,
       "IsIncluded": true,
       "IsPriority": false,
@@ -41,7 +41,7 @@
       "StrictAngle": 0
     },
     {
-      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_6.dxf",
+      "Path": "${SolutionDir}\\DeepNestPort\\dxfs\\_6.dxf",
       "Quantity": 1,
       "IsIncluded": true,
       "IsPriority": false,
@@ -49,16 +49,16 @@
       "StrictAngle": 0
     },
     {
-      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_7.dxf",
+      "Path": "${SolutionDir}\\DeepNestPort\\dxfs\\_7.dxf",
       "Quantity": 1,
       "IsIncluded": true,
       "IsPriority": false,
       "IsMultiplied": true,
       "StrictAngle": 0,
-      "IsDifferentiated":  true
+      "IsDifferentiated": true
     },
     {
-      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_8.dxf",
+      "Path": "${SolutionDir}\\DeepNestPort\\dxfs\\_8.dxf",
       "Quantity": 1,
       "IsIncluded": true,
       "IsPriority": false,
@@ -66,7 +66,7 @@
       "StrictAngle": 0
     },
     {
-      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_9.dxf",
+      "Path": "${SolutionDir}\\DeepNestPort\\dxfs\\_9.dxf",
       "Quantity": 1,
       "IsIncluded": true,
       "IsPriority": false,
@@ -74,7 +74,7 @@
       "StrictAngle": 0
     },
     {
-      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_10.dxf",
+      "Path": "${SolutionDir}\\DeepNestPort\\dxfs\\_10.dxf",
       "Quantity": 1,
       "IsIncluded": true,
       "IsPriority": false,
@@ -82,7 +82,7 @@
       "StrictAngle": 0
     },
     {
-      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_11.dxf",
+      "Path": "${SolutionDir}\\DeepNestPort\\dxfs\\_11.dxf",
       "Quantity": 1,
       "IsIncluded": true,
       "IsPriority": false,
@@ -90,7 +90,7 @@
       "StrictAngle": 0
     },
     {
-      "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_12.dxf",
+      "Path": "${SolutionDir}\\DeepNestPort\\dxfs\\_12.dxf",
       "Quantity": 1,
       "IsIncluded": true,
       "IsPriority": false,
