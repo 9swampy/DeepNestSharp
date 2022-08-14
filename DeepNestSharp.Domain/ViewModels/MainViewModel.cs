@@ -218,7 +218,7 @@
 
     public void OnLoadNestResult(INestResult nestResult)
     {
-      var loaded = new NestResultViewModel(this, nestResult);
+      var loaded = new NestResultViewModel(this, nestResult, mouseCursorService, messageService);
       this.files.Add(loaded);
       this.ActiveDocument = loaded;
     }
@@ -228,7 +228,7 @@
       string locatedFilePath;
       if (TryLocateFile(filePath, out locatedFilePath))
       {
-        var loaded = new NestResultViewModel(this, locatedFilePath);
+        var loaded = new NestResultViewModel(this, locatedFilePath, mouseCursorService, messageService);
         this.files.Add(loaded);
         this.ActiveDocument = loaded;
       }

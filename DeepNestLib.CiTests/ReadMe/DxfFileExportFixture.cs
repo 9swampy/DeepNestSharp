@@ -3,6 +3,7 @@
   using DeepNestLib.Placement;
   using FluentAssertions;
   using System.IO;
+  using System.Linq;
   using System.Reflection;
   using System.Threading.Tasks;
   using Xunit;
@@ -11,7 +12,6 @@
   {
     [Fact]
     public async Task GivenNestResultWhenDxfExportedThenMatchExpected()
-
     {
       var path = "ReadMe.ReadMeExampleSmall.dnr";
       string actual;
@@ -41,7 +41,6 @@
 
     [Fact]
     public async Task GivenNestResultWhenDxfExportedColouredThenMatchExpected()
-
     {
       var path = "ReadMe.ReadMeExampleSmall.dnr";
       string actual;
@@ -52,7 +51,7 @@
         var nestResult = NestResult.FromJson(fromFile);
         var memoryStream = new MemoryStream();
 
-
+        nestResult.UsedSheets[0].PolygonsForExport.ToList()[7].IsDifferentiated.Should().BeTrue();
         await nestResult.UsedSheets[0].ExportDxf(memoryStream, false, true).ConfigureAwait(false);
         memoryStream.Position = 0;
         actual = new StreamReader(memoryStream).ReadToEnd();

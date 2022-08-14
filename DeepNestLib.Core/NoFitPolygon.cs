@@ -43,6 +43,7 @@
       this.Sheet = source.Sheet;
       this.Source = source.Source;
       this.StrictAngle = source.StrictAngle;
+      this.IsDifferentiated = source.IsDifferentiated;
       this.X = source.X;
       this.Y = source.Y;
 
@@ -262,6 +263,8 @@
     /// <inheritdoc />
     public AnglesEnum StrictAngle { get; set; }
 
+    public bool IsDifferentiated { get; set; }
+
     /// <inheritdoc />
     public SvgPoint this[int ind]
     {
@@ -373,10 +376,30 @@
     /// <inheritdoc />
     public void ReplacePoints(INfp replacementNfp)
     {
-      this.points = replacementNfp.Points.ToArray();
-      for (int i = 0; i < this.Children.Count; i++)
+      try
       {
-        this.Children[i].ReplacePoints(replacementNfp.Children[i]);
+        this.points = replacementNfp.Points.ToArray();
+        for (int i = 0; i < replacementNfp.Children.Count; i++)
+        {
+          if (this.Children.Count < i)
+          {
+            this.Children.Add(replacementNfp.Children[i].Clone());
+          }
+          else
+          {
+            this.Children[i].ReplacePoints(replacementNfp.Children[i]);
+          }
+        }
+
+        while (this.Children.Count > replacementNfp.Children.Count)
+        {
+          this.Children.Remove(this.Children.Last());
+        }
+      }
+      catch (Exception ex)
+      {
+        System.Diagnostics.Debug.Print(ex.Message);
+        throw;
       }
     }
 
@@ -489,8 +512,8 @@
     /// <inheritdoc />
     public INfp CloneTree()
     {
-      INfp result;
-      if (this is Sheet sheet)
+      NoFitPolygon result;
+      if (this is Sheet)
       {
         result = new Sheet(); //sheet, WithChildren.Included); //, WithChildren.Excluded);
       }
@@ -504,12 +527,8 @@
         result.AddPoint(new SvgPoint(t.X, t.Y) { Exact = t.Exact });
       }
 
-      // jwb added the properties
-      // newtree.Id = this.Id; //Id is set unique within the chromosome
-      // newtree.Source = this.Source; //Source is set to the original Id cloned to form Adam.
-      result.IsPriority = this.IsPriority;
-      result.StrictAngle = this.StrictAngle;
-      result.Name = this.Name;
+      CopyStateProperties(result);
+      CopyInstructionProperties(result);
 
       if (this.Children != null && this.Children.Count > 0)
       {
@@ -744,8 +763,7 @@
       }
 
       CopyStateProperties(result);
-      result.IsPriority = this.IsPriority;
-      result.StrictAngle = this.StrictAngle;
+      CopyInstructionProperties(result);
 
       for (var i = 0; i < this.Length; i++)
       {
@@ -769,6 +787,7 @@
       other.Name = this.Name;
       other.Rotation = this.Rotation;
       other.Source = this.Source;
+      other.IsDifferentiated = this.IsDifferentiated;
     }
 
     private void CopyInstructionProperties(NoFitPolygon clone)

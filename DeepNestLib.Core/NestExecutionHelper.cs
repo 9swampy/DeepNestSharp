@@ -31,7 +31,7 @@
         progressDisplayer.DisplayTransientMessage($"Preload {item.Path}. . .");
         var det = LoadRawDetail(new FileInfo(item.Path));
 
-        AddToPolygons(context, src, det, item.Quantity, progressDisplayer, isPriority: item.IsPriority, isMultiplied: item.IsMultiplied, strictAngles: item.StrictAngle);
+        AddToPolygons(context, src, det, item.Quantity, progressDisplayer, isPriority: item.IsPriority, isMultiplied: item.IsMultiplied, strictAngles: item.StrictAngle, isDifferentiated: item.IsDifferentiated);
 
         src++;
       }
@@ -39,9 +39,17 @@
       progressDisplayer.DisplayTransientMessage(string.Empty);
     }
 
-    public void AddToPolygons(NestingContext context, int src, IRawDetail det, int quantity, IProgressDisplayer progressDisplayer, bool isIncluded = true, bool isPriority = false, bool isMultiplied = false, AnglesEnum strictAngles = AnglesEnum.AsPreviewed)
+    public void AddToPolygons(NestingContext context, int src, IRawDetail det, int quantity, IProgressDisplayer progressDisplayer, bool isIncluded = true, bool isPriority = false, bool isMultiplied = false, AnglesEnum strictAngles = AnglesEnum.AsPreviewed, bool isDifferentiated = false)
     {
-      var item = new DetailLoadInfo() { Quantity = quantity, IsIncluded = isIncluded, IsPriority = isPriority, IsMultiplied = isMultiplied, StrictAngle = strictAngles };
+      var item = new DetailLoadInfo()
+      {
+        Quantity = quantity,
+        IsIncluded = isIncluded,
+        IsPriority = isPriority,
+        IsMultiplied = isMultiplied,
+        StrictAngle = strictAngles,
+        IsDifferentiated = isDifferentiated,
+      };
       AddToPolygons(context, src, det, item, progressDisplayer);
     }
 
@@ -52,6 +60,7 @@
       {
         loadedNfp.IsPriority = item.IsPriority;
         loadedNfp.StrictAngle = item.StrictAngle;
+        loadedNfp.IsDifferentiated = item.IsDifferentiated;
         var quantity = item.Quantity * (item.IsMultiplied ? SvgNest.Config.Multiplier : 1);
         for (int i = 0; i < quantity; i++)
         {

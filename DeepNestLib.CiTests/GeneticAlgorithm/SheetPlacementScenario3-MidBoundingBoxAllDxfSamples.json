@@ -42,7 +42,8 @@
       }
     ],
     "IsPriority": false,
-    "StrictAngle": 0
+    "StrictAngle": 0,
+    "IsDifferentiated": false
   },
   "PartPlacements": [
     {
@@ -151,7 +152,8 @@
           }
         ],
         "IsPriority": false,
-        "StrictAngle": 0
+        "StrictAngle": 0,
+        "IsDifferentiated": false
       }
     },
     {
@@ -380,7 +382,8 @@
           }
         ],
         "IsPriority": false,
-        "StrictAngle": 0
+        "StrictAngle": 0,
+        "IsDifferentiated": false
       }
     },
     {
@@ -460,7 +463,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -502,7 +506,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -544,7 +549,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -586,7 +592,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -628,7 +635,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -670,7 +678,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -832,7 +841,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -898,7 +908,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -940,7 +951,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -982,7 +994,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -1024,7 +1037,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -1066,7 +1080,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -1108,7 +1123,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -1270,7 +1286,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           }
         ],
         "Id": 5,
@@ -1564,7 +1581,8 @@
           }
         ],
         "IsPriority": false,
-        "StrictAngle": 0
+        "StrictAngle": 0,
+        "IsDifferentiated": false
       }
     },
     {
@@ -2093,7 +2111,8 @@
           }
         ],
         "IsPriority": false,
-        "StrictAngle": 0
+        "StrictAngle": 0,
+        "IsDifferentiated": false
       }
     },
     {
@@ -2286,7 +2305,8 @@
           }
         ],
         "IsPriority": false,
-        "StrictAngle": 0
+        "StrictAngle": 0,
+        "IsDifferentiated": false
       }
     },
     {
@@ -2474,7 +2494,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -2648,7 +2669,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -2696,7 +2718,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -2738,7 +2761,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -2912,7 +2936,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -3086,7 +3111,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -3134,7 +3160,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -3176,7 +3203,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           }
         ],
         "Id": 10,
@@ -3536,7 +3564,8 @@
           }
         ],
         "IsPriority": false,
-        "StrictAngle": 0
+        "StrictAngle": 0,
+        "IsDifferentiated": false
       }
     },
     {
@@ -3616,7 +3645,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -3682,7 +3712,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           }
         ],
         "Id": 0,
@@ -3718,7 +3749,8 @@
           }
         ],
         "IsPriority": false,
-        "StrictAngle": 0
+        "StrictAngle": 0,
+        "IsDifferentiated": false
       }
     },
     {
@@ -3780,7 +3812,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -3828,7 +3861,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           }
         ],
         "Id": 2,
@@ -4044,7 +4078,8 @@
           }
         ],
         "IsPriority": false,
-        "StrictAngle": 0
+        "StrictAngle": 0,
+        "IsDifferentiated": false
       }
     },
     {
@@ -4249,7 +4284,8 @@
           }
         ],
         "IsPriority": false,
-        "StrictAngle": 0
+        "StrictAngle": 0,
+        "IsDifferentiated": false
       }
     },
     {
@@ -4425,7 +4461,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -4461,7 +4498,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -4623,7 +4661,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -4785,7 +4824,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -4947,7 +4987,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -4983,7 +5024,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -5145,7 +5187,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -5307,7 +5350,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           }
         ],
         "Id": 9,
@@ -5463,7 +5507,8 @@
           }
         ],
         "IsPriority": false,
-        "StrictAngle": 0
+        "StrictAngle": 0,
+        "IsDifferentiated": false
       }
     },
     {
@@ -5776,7 +5821,8 @@
           }
         ],
         "IsPriority": false,
-        "StrictAngle": 0
+        "StrictAngle": 0,
+        "IsDifferentiated": false
       }
     },
     {
@@ -5850,7 +5896,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           },
           {
             "Fitted": false,
@@ -5910,7 +5957,8 @@
               }
             ],
             "IsPriority": false,
-            "StrictAngle": 0
+            "StrictAngle": 0,
+            "IsDifferentiated": false
           }
         ],
         "Id": 1,
@@ -6126,7 +6174,8 @@
           }
         ],
         "IsPriority": false,
-        "StrictAngle": 0
+        "StrictAngle": 0,
+        "IsDifferentiated": false
       }
     }
   ],

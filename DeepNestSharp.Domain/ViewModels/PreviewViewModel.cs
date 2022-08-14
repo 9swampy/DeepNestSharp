@@ -403,6 +403,12 @@
     private void Set(ObservableDetailLoadInfo item)
     {
       var polygon = item.LoadAsync().Result;
+      polygon.IsDifferentiated = item.IsDifferentiated;
+      foreach (var child in polygon.Children)
+      {
+        child.IsDifferentiated = true;
+      }
+
       var shiftedPart = polygon.Shift(-polygon.MinX, -polygon.MinY);
       this.ZoomDrawingContext.For(new ObservableNfp(shiftedPart));
     }

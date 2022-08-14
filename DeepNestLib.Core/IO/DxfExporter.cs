@@ -140,7 +140,7 @@
         var sheetXoffset = -sheet.WidthCalculated * i;
         //double sheetYoffset = -sheet.Height * i;
         DxfPoint offsetdistance = new DxfPoint(polygon.X + sheetXoffset, polygon.Y, 0D);
-        List<DxfEntity> newlist = OffsetToNest(fl.Outers, offsetdistance, polygon.Rotation, differentiateChildren);
+        List<DxfEntity> newlist = OffsetToNest(fl.Outers, offsetdistance, polygon.Rotation, differentiateChildren, polygon.IsDifferentiated);
         foreach (DxfEntity ent in newlist)
         {
           yield return ent;
@@ -148,7 +148,7 @@
       }
     }
 
-    private static List<DxfEntity> OffsetToNest(IEnumerable<ILocalContour> contours, DxfPoint offsetdistance, double rotation, bool differentiateChildren)
+    private static List<DxfEntity> OffsetToNest(IEnumerable<ILocalContour> contours, DxfPoint offsetdistance, double rotation, bool differentiateChildren, bool isDifferentiated)
     {
       var allEntities = new List<DxfEntity>();
       foreach (var contour in contours)
@@ -160,6 +160,16 @@
             foreach (var child in castContour.Entities)
             {
               child.Color = DxfColorHelpers.GetClosestDefaultIndexColor(255, 0, 0);
+            }
+          }
+          else if (isDifferentiated)
+          {
+            foreach (var ent in castContour.Entities)
+            {
+              if (!differentiateChildren || !castContour.IsChild)
+              {
+                ent.Color = DxfColorHelpers.GetClosestDefaultIndexColor(0, 0, 255);
+              }
             }
           }
 

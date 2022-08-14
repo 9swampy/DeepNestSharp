@@ -54,7 +54,8 @@
       "IsIncluded": true,
       "IsPriority": false,
       "IsMultiplied": true,
-      "StrictAngle": 0
+      "StrictAngle": 0,
+      "IsDifferentiated":  true
     },
     {
       "Path": "C:\\Git\\DeepNestSharp\\DeepNestPort\\dxfs\\_8.dxf",

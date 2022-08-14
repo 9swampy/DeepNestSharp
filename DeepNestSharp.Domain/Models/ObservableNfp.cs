@@ -72,6 +72,14 @@
 
     /// <inheritdoc/>
     [Browsable(false)]
+    public bool IsDifferentiated
+    {
+      get => this.item.IsDifferentiated;
+      set => SetProperty(nameof(IsDifferentiated), () => this.item.IsDifferentiated, v => this.item.IsDifferentiated = v, value);
+    }
+
+    /// <inheritdoc/>
+    [Browsable(false)]
     public int Length => this.item.Length;
 
     /// <inheritdoc/>
