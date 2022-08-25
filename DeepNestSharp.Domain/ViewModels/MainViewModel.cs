@@ -62,6 +62,9 @@
       this.fileIoService = fileIoService;
       this.mouseCursorService = mouseCursorService;
       this.relativePathHelper = relativePathHelper;
+
+      _ = Tools;
+
       this.ActiveDocumentChanged += this.MainViewModel_ActiveDocumentChanged;
     }
 
