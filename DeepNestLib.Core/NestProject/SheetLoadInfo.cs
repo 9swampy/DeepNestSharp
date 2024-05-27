@@ -14,7 +14,7 @@
     }
 
     [JsonConstructor]
-    public SheetLoadInfo(int width, int height, int quantity)
+    public SheetLoadInfo(double width, double height, int quantity)
     {
       this.Width = width;
       this.Height = height;
@@ -26,9 +26,9 @@
     {
     }
 
-    public virtual int Width { get; set; }
+    public virtual double Width { get; set; }
 
-    public virtual int Height { get; set; }
+    public virtual double Height { get; set; }
 
     public virtual int Quantity { get; set; }
 

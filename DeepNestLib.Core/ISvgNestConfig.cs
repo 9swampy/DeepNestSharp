@@ -48,13 +48,13 @@
 
     int SaveAsFileTypeIndex { get; set; }
 
-    int SheetHeight { get; set; }
+    double SheetHeight { get; set; }
 
     int SheetQuantity { get; set; }
 
     double SheetSpacing { get; set; }
 
-    int SheetWidth { get; set; }
+    double SheetWidth { get; set; }
 
     bool Simplify { get; set; }
 

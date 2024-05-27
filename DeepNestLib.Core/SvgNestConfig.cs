@@ -217,11 +217,11 @@ namespace DeepNestLib
     }
 
     /// <inheritdoc />
-    public int SheetWidth
+    public double SheetWidth
     {
       get
       {
-        return (int)Settings.Default["SheetWidth"];
+        return (double)Settings.Default["SheetWidth"];
       }
 
       set
@@ -233,11 +233,11 @@ namespace DeepNestLib
     }
 
     /// <inheritdoc />
-    public int SheetHeight
+    public double SheetHeight
     {
       get
       {
-        return (int)Settings.Default["SheetHeight"];
+        return (double)Settings.Default["SheetHeight"];
       }
 
       set

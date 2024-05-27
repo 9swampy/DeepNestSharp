@@ -2,7 +2,7 @@
 {
   public class RectangleSheet : Sheet
   {
-    internal void Build(int width, int height)
+    internal void Build(double width, double height)
     {
       this.ReplacePoints(new SvgPoint[5]
       {

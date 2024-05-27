@@ -213,7 +213,7 @@
 
     /// <inheritdoc />
     [Category("Sheet Defaults")]
-    public int SheetHeight
+    public double SheetHeight
     {
       get => svgNestConfig.SheetHeight;
       set => SetProperty(nameof(SheetHeight), () => svgNestConfig.SheetHeight, v => svgNestConfig.SheetHeight = v, value);
@@ -237,7 +237,7 @@
 
     /// <inheritdoc />
     [Category("Sheet Defaults")]
-    public int SheetWidth
+    public double SheetWidth
     {
       get => svgNestConfig.SheetWidth;
       set => SetProperty(nameof(SheetWidth), () => svgNestConfig.SheetWidth, v => svgNestConfig.SheetWidth = v, value);

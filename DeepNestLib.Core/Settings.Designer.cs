@@ -98,9 +98,9 @@ namespace DeepNestLib {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("3000")]
-        public int SheetWidth {
+        public double SheetWidth {
             get {
-                return ((int)(this["SheetWidth"]));
+                return ((double)(this["SheetWidth"]));
             }
             set {
                 this["SheetWidth"] = value;
@@ -110,9 +110,9 @@ namespace DeepNestLib {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("1500")]
-        public int SheetHeight {
+        public double SheetHeight {
             get {
-                return ((int)(this["SheetHeight"]));
+                return ((double)(this["SheetHeight"]));
             }
             set {
                 this["SheetHeight"] = value;

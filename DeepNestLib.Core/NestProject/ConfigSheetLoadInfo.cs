@@ -15,13 +15,13 @@
       this.config = config;
     }
 
-    public override int Width
+    public override double Width
     {
       get { return config.SheetWidth; }
       set { config.SheetWidth = value; }
     }
 
-    public override int Height
+    public override double Height
     {
       get { return config.SheetHeight; }
       set { config.SheetHeight = value; }

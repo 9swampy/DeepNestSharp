@@ -2,10 +2,10 @@
 {
   public interface ISheetLoadInfo
   {
-    int Height { get; set; }
+    double Height { get; set; }
 
     int Quantity { get; set; }
 
-    int Width { get; set; }
+    double Width { get; set; }
   }
 }

@@ -31,13 +31,13 @@
 
     public double Scale { get; set; } = 25;
 
-    public int SheetHeight { get; set; } = 395;
+    public double SheetHeight { get; set; } = 395;
 
     public int SheetQuantity { get; set; } = 10;
 
     public double SheetSpacing { get; set; } = 0;
 
-    public int SheetWidth { get; set; } = 595;
+    public double SheetWidth { get; set; } = 595;
 
     public bool Simplify { get; set; } = false;
 

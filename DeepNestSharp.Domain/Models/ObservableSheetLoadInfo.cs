@@ -12,7 +12,7 @@
     /// <param name="sheetLoadInfo">The ProjectInfo to wrap.</param>
     public ObservableSheetLoadInfo(SheetLoadInfo sheetLoadInfo) => this.sheetLoadInfo = sheetLoadInfo;
 
-    public int Height
+    public double Height
     {
       get => sheetLoadInfo.Height;
       set => SetProperty(nameof(Height), () => sheetLoadInfo.Height, v => sheetLoadInfo.Height = v, value);
@@ -26,7 +26,7 @@
       set => SetProperty(nameof(Quantity), () => sheetLoadInfo.Quantity, v => sheetLoadInfo.Quantity = v, value);
     }
 
-    public int Width
+    public double Width
     {
       get => sheetLoadInfo.Width;
       set => SetProperty(nameof(Width), () => sheetLoadInfo.Width, v => sheetLoadInfo.Width = v, value);
