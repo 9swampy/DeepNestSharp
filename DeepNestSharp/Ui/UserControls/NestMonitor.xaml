@@ -84,16 +84,16 @@
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          <GridViewColumn Header="Unplaced" Width="60" DisplayMemberBinding="{Binding Path=TotalUnplacedCount, Mode=OneWay}" />
+          <GridViewColumn Header="Unplaced" Width="70" DisplayMemberBinding="{Binding Path=TotalUnplacedCount, Mode=OneWay}" />
           <GridViewColumn Header="Sheets" Width="60" DisplayMemberBinding="{Binding Path=UsedSheets.Count, Mode=OneWay}" />
           <GridViewColumn Header="Created" Width="80" DisplayMemberBinding="{Binding Path=CreatedAt, StringFormat=ddd HH:mm:ss, Mode=OneWay}"/>
-          <GridViewColumn Width="60" >
+          <GridViewColumn Width="80" >
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel >
                   <Button Command="{Binding DataContext.LoadNestResultCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                           CommandParameter="{Binding }" 
-                          Content="Pop-Out" />
+                          Content=" Pop-Out " />
                 </DockPanel>
               </DataTemplate>
             </GridViewColumn.CellTemplate>

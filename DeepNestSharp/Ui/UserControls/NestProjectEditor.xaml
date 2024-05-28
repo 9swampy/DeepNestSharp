@@ -26,14 +26,14 @@
         <ColumnDefinition Width="*"/>
         <ColumnDefinition Width="Auto"/>
       </Grid.ColumnDefinitions>
-      <StackPanel Grid.Row="0" Grid.Column="0"  Orientation="Horizontal" HorizontalAlignment="Stretch">
-        <Button Content="Execute" Command="{Binding ExecuteNestCommand}" Margin="5,5,5,5" />
-        <Button Content="Add Sheet" Command="{Binding AddSheetCommand}" Margin="5,5,5,5" />
-        <Button Content="Add Part" Command="{Binding AddPartCommand}" Margin="5,5,5,5" />
-        <TextBlock Text="Multiplier" Margin="5,7,0,5" />
+      <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Stretch">
+        <Button Content=" Execute " Command="{Binding ExecuteNestCommand}" Margin="5,5,5,5" />
+        <Button Content=" Add Sheet " Command="{Binding AddSheetCommand}" Margin="5,5,5,5" />
+        <Button Content=" Add Part " Command="{Binding AddPartCommand}" Margin="5,5,5,5" />
+        <TextBlock Text=" Multiplier " Margin="5,7,0,5" />
         <xctk:IntegerUpDown Value="{Binding ProjectInfo.Config.Multiplier}" Margin="5,7,0,5" HorizontalAlignment="Right" />
       </StackPanel>
-      <Button Grid.Column="1" Content="Clear Parts" Command="{Binding ClearPartsCommand}" Margin="5,5,5,5" />
+      <Button Grid.Column="1" Content=" Clear Parts " Command="{Binding ClearPartsCommand}" Margin="5,5,5,5" />
     </Grid>
     <ListView Grid.Row="1" 
               GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler"
@@ -58,9 +58,9 @@
       </behaviors:Interaction.Triggers>
       <ListView.View>
         <GridView>
-          <GridViewColumn Header="Name" Width="auto" DisplayMemberBinding="{Binding Path=Name, Mode=OneWay}" />
-          <!--<GridViewColumn Header="Path" Width="50" DisplayMemberBinding="{Binding Path=Path, Mode=OneWay}"/>-->
-          <GridViewColumn Header="Quantity" Width="auto" >
+          <GridViewColumn Header=" Name " Width="Auto" DisplayMemberBinding="{Binding Path=Name, Mode=OneWay}" />
+          <!--<GridViewColumn Header=" Path " Width="50" DisplayMemberBinding="{Binding Path=Path, Mode=OneWay}"/>-->
+          <GridViewColumn Header=" Quantity " Width="Auto" >
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel HorizontalAlignment="Center">
@@ -69,8 +69,8 @@
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          <GridViewColumn Header="Area" Width="auto" DisplayMemberBinding="{Binding Path=NetArea, Mode=OneWay}" />
-          <GridViewColumn Header="Included" Width="auto">
+          <GridViewColumn Header=" Area " Width="Auto" DisplayMemberBinding="{Binding Path=NetArea, Mode=OneWay}" />
+          <GridViewColumn Header=" Included " Width="Auto">
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel HorizontalAlignment="Center">
@@ -79,7 +79,8 @@
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          <GridViewColumn Header="Priority" Width="{Binding Path=UsePriority, Converter={StaticResource BooleanToWidthConverter}}" >
+          <!-- <GridViewColumn Header=" Priority " Width="{Binding Path=UsePriority, Converter={StaticResource BooleanToWidthConverter}}" > -->
+          <GridViewColumn Header=" Priority " Width="Auto" >
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel HorizontalAlignment="Center">
@@ -88,7 +89,7 @@
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          <GridViewColumn Header="Multiplied" Width="auto">
+          <GridViewColumn Header=" Multiplied " Width="Auto">
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel HorizontalAlignment="Center">
@@ -97,7 +98,7 @@
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          <GridViewColumn Header="StrictAngle" Width="auto">
+          <GridViewColumn Header=" StrictAngle " Width="Auto">
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel HorizontalAlignment="Center">
@@ -106,11 +107,11 @@
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          <GridViewColumn Header="Remove" Width="auto">
+          <GridViewColumn Header=" Remove " Width="Auto">
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel HorizontalAlignment="Center">
-                  <Button Content="Remove" 
+                  <Button Content=" Remove " 
                           Command="{Binding DataContext.RemovePartCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                           CommandParameter="{Binding }" />
                 </DockPanel>
@@ -137,25 +138,25 @@
       </ListView.Resources>
       <ListView.View>
         <GridView>
-          <GridViewColumn Header="Width" Width="100" >
+          <GridViewColumn Header=" Width " Width="100" >
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel HorizontalAlignment="Center">
-                  <xctk:IntegerUpDown HorizontalAlignment="Stretch" MinWidth="50" Minimum="0" HorizontalContentAlignment="Right" Value="{Binding Path=Width, Mode=TwoWay}"/>
+                  <xctk:DecimalUpDown HorizontalAlignment="Stretch" MinWidth="50" Minimum="0" HorizontalContentAlignment="Right" Value="{Binding Path=Width, Mode=TwoWay}"/>
                 </DockPanel>
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          <GridViewColumn Header="Height" Width="100" >
+          <GridViewColumn Header=" Height " Width="100" >
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel HorizontalAlignment="Center">
-                  <xctk:IntegerUpDown HorizontalAlignment="Stretch" MinWidth="50" Minimum="0" HorizontalContentAlignment="Right" Value="{Binding Path=Height, Mode=TwoWay}"/>
+                  <xctk:DecimalUpDown HorizontalAlignment="Stretch" MinWidth="50" Minimum="0" HorizontalContentAlignment="Right" Value="{Binding Path=Height, Mode=TwoWay}"/>
                 </DockPanel>
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          <GridViewColumn Header="Quantity" Width="100" >
+          <GridViewColumn Header=" Quantity " Width="100" >
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel HorizontalAlignment="Center">
@@ -164,11 +165,11 @@
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          <GridViewColumn Header="Remove" Width="auto">
+          <GridViewColumn Header=" Remove " Width="Auto">
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel HorizontalAlignment="Center">
-                  <Button Content="Remove" 
+                  <Button Content=" Remove " 
                           Command="{Binding DataContext.RemoveSheetCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                           CommandParameter="{Binding }" />
                 </DockPanel>

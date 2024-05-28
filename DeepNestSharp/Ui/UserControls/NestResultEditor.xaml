@@ -36,7 +36,7 @@
                 <DockPanel >
                   <Button Command="{Binding DataContext.LoadSheetPlacementCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                           CommandParameter="{Binding }" 
-                          Content="Pop-Out" />
+                          Content=" Pop-Out " />
                 </DockPanel>
               </DataTemplate>
             </GridViewColumn.CellTemplate>
