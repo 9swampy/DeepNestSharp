@@ -325,13 +325,9 @@
 
     private void OnFitAll()
     {
-      //Console.WriteLine(Actual?.Y);
       CanvasScale = Math.Min(
         Actual?.X / (ZoomDrawingContext.Extremum(MinMax.Max, XY.X) - ZoomDrawingContext.Extremum(MinMax.Min, XY.X)) ?? 5,
         Actual?.Y / (ZoomDrawingContext.Extremum(MinMax.Max, XY.Y) - ZoomDrawingContext.Extremum(MinMax.Min, XY.Y)) ?? 5);
-      Console.WriteLine($"Window Height: {Actual?.Y}");
-      Console.WriteLine($"Object Height: {ZoomDrawingContext.Extremum(MinMax.Max, XY.Y) - ZoomDrawingContext.Extremum(MinMax.Min, XY.Y)}");
-      Console.WriteLine($"New Scale Factor: {Actual?.Y / (ZoomDrawingContext.Extremum(MinMax.Max, XY.Y) - ZoomDrawingContext.Extremum(MinMax.Min, XY.Y))}");
     }
 
     private void PreviewViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)

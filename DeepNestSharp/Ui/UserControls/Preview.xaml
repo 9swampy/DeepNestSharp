@@ -19,12 +19,20 @@
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="Auto" />
-      <ColumnDefinition Width="Auto"/>
-      <ColumnDefinition Width="Auto"/>
-      <ColumnDefinition Width="*"/>
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="*" />
     </Grid.ColumnDefinitions>
-    <TextBlock Grid.Column="0" Grid.Row="0" Text="{Binding MousePosition, StringFormat=N2}" Width="100" HorizontalAlignment="Center" Margin="5,0" />
-    <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="0" Margin="5,0">
+    <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="0">
+      <TextBlock Text="X: " Margin="5,0,0,0" />
+      <TextBlock Text="{Binding MousePosition.X, StringFormat=N2}" Width="50" HorizontalAlignment="Center" Margin="0,0,5,0" />
+    </StackPanel>
+    <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="0">
+      <TextBlock Text="Y: " Margin="5,0,0,0" />
+      <TextBlock Text="{Binding MousePosition.Y, StringFormat=N2}" Width="50" HorizontalAlignment="Center" Margin="0,0,5,0" />
+    </StackPanel>
+    <StackPanel Orientation="Vertical" Grid.Column="2" Grid.Row="0" Margin="5,0">
       <!--<StackPanel Orientation="Horizontal">
         <CheckBox Content="IsExperimental" IsChecked="{Binding IsExperimental, Mode=TwoWay}" />
         <TextBlock Text="CanvasPosition=" />
@@ -42,22 +50,26 @@
       <StackPanel Orientation="Horizontal">
         <!--<TextBlock Text="Scale=" Margin="5,0,0,0" />
         <TextBlock Text="{Binding CanvasScale, Mode=OneWay, StringFormat=N2}" />-->
-        <TextBlock Text="Extrema=←" Margin="5,0,0,0" />
-        <TextBlock Text="{Binding LowerBound, StringFormat=0}" />
-        <TextBlock Text="↓→" Margin="0" />
-        <TextBlock Text="{Binding UpperBound, StringFormat=0}" />
-        <TextBlock Text="↑" Margin="0" />
-        <TextBlock Text="Width="  Margin="5,0,0,0"/>
+        <TextBlock Text="Extrema:" />
+        <TextBlock Text="←" Margin="10,0,0,0" />
+        <TextBlock Text="{Binding LowerBound.X, StringFormat=N1}" />
+        <TextBlock Text="↓" Margin="10,0,0,0" />
+        <TextBlock Text="{Binding LowerBound.Y, StringFormat=N1}" />
+        <TextBlock Text="→" Margin="10,0,0,0" />
+        <TextBlock Text="{Binding UpperBound.X, StringFormat=N1}" />
+        <TextBlock Text="↑" Margin="10,0,0,0" />
+        <TextBlock Text="{Binding UpperBound.Y, StringFormat=N1}" />
+        <TextBlock Text="Width: " Margin="10,0,0,0"/>
         <TextBlock Text="{Binding WidthBound, StringFormat=N1}" />
-        <TextBlock Text="Height="  Margin="5,0,0,0"/>
+        <TextBlock Text="Height: " Margin="10,0,0,10"/>
         <TextBlock Text="{Binding HeightBound, StringFormat=N1}" />
       </StackPanel>
-      <TextBlock Text="{Binding HoverPartPlacement.Part.Name}" Margin="5,0"/>
+      <!--<TextBlock Text="{Binding HoverPartPlacement.Part.Name}" Margin="5,0"/>-->
     </StackPanel>
     <usercontrols:DrawingContextBoundZoomPreview 
       Grid.Column="0" 
       Grid.Row="1" 
-      Grid.ColumnSpan="4" 
+      Grid.ColumnSpan="5" 
       HorizontalAlignment="Stretch" 
       HorizontalContentAlignment="Stretch" 
       VerticalAlignment="Stretch" 
