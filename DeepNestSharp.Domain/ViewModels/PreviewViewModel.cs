@@ -325,6 +325,9 @@
 
     private void OnFitAll()
     {
+      //Actual.X: The width, in pixels, of the preview graphics window
+      //Actual.Y: The height, in pixels, of the preview graphics window
+      //ZoomDrawingContext.Extremum(...): seems to calculate extrema of the previewed object in the physical units represented in the dxf file
       CanvasScale = Math.Min(
         Actual?.X / (ZoomDrawingContext.Extremum(MinMax.Max, XY.X) - ZoomDrawingContext.Extremum(MinMax.Min, XY.X)) ?? 5,
         Actual?.Y / (ZoomDrawingContext.Extremum(MinMax.Max, XY.Y) - ZoomDrawingContext.Extremum(MinMax.Min, XY.Y)) ?? 5);
