@@ -63,7 +63,7 @@
     <ListView Grid.Row="3"
               ItemsSource="{Binding TopNestResults}" 
               SelectedItem="{Binding SelectedItem, Mode=TwoWay}" 
-              SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}">
+              SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}" d:ItemsSource="{d:SampleData ItemCount=5}">
       <ListView.Resources>
         <Style TargetType="ListViewItem">
           <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -105,15 +105,16 @@
           Grid.Row="0" 
           Grid.RowSpan="4">
       <ScrollViewer VerticalScrollBarVisibility="Visible"
-                    HorizontalScrollBarVisibility="Visible">
+                    HorizontalScrollBarVisibility="Visible"
+                    Margin="6,0,1,0">
         <ListBox Name="Container"
                HorizontalAlignment="Stretch" 
                HorizontalContentAlignment="Stretch"
-               Margin="5,5,5,5"
                Padding="0"
                Grid.IsSharedSizeScope="True"
                UseLayoutRounding="True"
-               ItemsSource="{Binding SelectedItem.UsedSheets, Converter={StaticResource DrawingContextConverter}}">
+               ItemsSource="{Binding SelectedItem.UsedSheets, Converter={StaticResource DrawingContextConverter}}" d:ItemsSource="{d:SampleData ItemCount=5}">
+            <!--Margin="5,5,5,5"-->
           <ListBox.ItemTemplate>
             <DataTemplate>
               <Grid>

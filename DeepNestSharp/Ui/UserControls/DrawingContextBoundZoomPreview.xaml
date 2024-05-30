@@ -25,7 +25,7 @@
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
     <Button Grid.Column="0" Grid.Row="0" Content=" Fit " Command="{Binding FitAllCommand}" />
-    <Slider Grid.Column="0" Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center" Minimum="1" x:Name="slider" Value="{Binding CanvasScale}"  />
+    <Slider Grid.Column="0" Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center" Minimum="1" x:Name="slider" Value="{Binding CanvasScale}" />
     <ScrollViewer Name="scrollViewer" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible">
       <Grid Name="grid" Width="400" Height="400" RenderTransformOrigin="0.5,0.5">
         <Grid.LayoutTransform>

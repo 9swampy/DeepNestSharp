@@ -24,13 +24,13 @@
       </behaviors:Interaction.Triggers>
       <ListView.View>
         <GridView>
-          <GridViewColumn Header="Fit.Sheets" Width="60" DisplayMemberBinding="{Binding Path=Fitness.Sheets, StringFormat=0.0, Mode=OneWay}" />
-          <GridViewColumn Header="Fit.Wasted" Width="60" DisplayMemberBinding="{Binding Path=Fitness.MaterialWasted, StringFormat=0.0, Mode=OneWay}" />
-          <GridViewColumn Header="Fit.Util" Width="60" DisplayMemberBinding="{Binding Path=Fitness.MaterialUtilization, StringFormat=0.0, Mode=OneWay}" />
-          <GridViewColumn Header="Fit.Bounds" Width="60" DisplayMemberBinding="{Binding Path=Fitness.Bounds, StringFormat=0.0, Mode=OneWay}" />
-          <GridViewColumn Header="Utilization" Width="60" DisplayMemberBinding="{Binding Path=MaterialUtilization, StringFormat={}{0:P2}, Mode=OneWay}" />
-          <GridViewColumn Header="Placed" Width="60" DisplayMemberBinding="{Binding Path=PartPlacements.Count, Mode=OneWay}" />
-          <GridViewColumn Width="60" >
+          <GridViewColumn Header=" Fit.Sheets " Width="Auto" DisplayMemberBinding="{Binding Path=Fitness.Sheets, StringFormat=0.0, Mode=OneWay}" />
+          <GridViewColumn Header=" Fit.Wasted " Width="Auto" DisplayMemberBinding="{Binding Path=Fitness.MaterialWasted, StringFormat=0.0, Mode=OneWay}" />
+          <GridViewColumn Header=" Fit.Util " Width="Auto" DisplayMemberBinding="{Binding Path=Fitness.MaterialUtilization, StringFormat=0.0, Mode=OneWay}" />
+          <GridViewColumn Header=" Fit.Bounds " Width="Auto" DisplayMemberBinding="{Binding Path=Fitness.Bounds, StringFormat=0.0, Mode=OneWay}" />
+          <GridViewColumn Header=" Utilization " Width="Auto" DisplayMemberBinding="{Binding Path=MaterialUtilization, StringFormat={}{0:P2}, Mode=OneWay}" />
+          <GridViewColumn Header=" Placed " Width="Auto" DisplayMemberBinding="{Binding Path=PartPlacements.Count, Mode=OneWay}" />
+          <GridViewColumn Width="Auto" >
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel >
@@ -41,13 +41,13 @@
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          <GridViewColumn Width="60" >
+          <GridViewColumn Width="Auto" >
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel >
                   <Button Command="{Binding DataContext.ExportSheetPlacementCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                           CommandParameter="{Binding }" 
-                          Content="Export" />
+                          Content=" Export " />
                 </DockPanel>
               </DataTemplate>
             </GridViewColumn.CellTemplate>

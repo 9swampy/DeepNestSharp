@@ -15,8 +15,8 @@
       <RowDefinition Height="auto" />
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
-    <Button Grid.Column="0" Content="Rotate -90'" Command="{Binding RotateCommand}" CommandParameter="-90" />
-    <Button Grid.Column="1" Content="Rotate +90'" Command="{Binding RotateCommand}" CommandParameter="90" />
+    <Button Grid.Column="0" Content="Rotate -90'" Margin="0,1,1,2" Command="{Binding RotateCommand}" CommandParameter="-90" />
+    <Button Grid.Column="1" Content="Rotate +90'" Margin="1,1,0,2" Command="{Binding RotateCommand}" CommandParameter="90" />
     <ScrollViewer Grid.Row="1" Grid.ColumnSpan="2">
       <xctk:PropertyGrid 
       HorizontalAlignment="Stretch" 

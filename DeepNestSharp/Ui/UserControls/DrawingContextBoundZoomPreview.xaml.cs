@@ -148,12 +148,12 @@
 
       if (e.Delta > 0)
       {
-        slider.Value += 1;
+        slider.Value += 0.1;
       }
 
       if (e.Delta < 0)
       {
-        slider.Value -= 1;
+        slider.Value -= 0.1;
       }
 
       e.Handled = true;

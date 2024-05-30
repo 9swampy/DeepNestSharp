@@ -27,13 +27,13 @@
         <ColumnDefinition Width="Auto"/>
       </Grid.ColumnDefinitions>
       <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Stretch">
-        <Button Content=" Execute " Command="{Binding ExecuteNestCommand}" Margin="5,5,5,5" />
-        <Button Content=" Add Sheet " Command="{Binding AddSheetCommand}" Margin="5,5,5,5" />
-        <Button Content=" Add Part " Command="{Binding AddPartCommand}" Margin="5,5,5,5" />
-        <TextBlock Text=" Multiplier " Margin="5,7,0,5" />
-        <xctk:IntegerUpDown Value="{Binding ProjectInfo.Config.Multiplier}" Margin="5,7,0,5" HorizontalAlignment="Right" />
+        <Button Content=" Execute " Command="{Binding ExecuteNestCommand}" Margin="2,5,1,5" />
+        <Button Content=" Add Sheet " Command="{Binding AddSheetCommand}" Margin="1,5,1,5" />
+        <Button Content=" Add Part " Command="{Binding AddPartCommand}" Margin="1,5,1,5" />
+        <TextBlock Text=" Multiplier " Margin="5,5,1,5" />
+        <xctk:IntegerUpDown Value="{Binding ProjectInfo.Config.Multiplier}" Margin="1,5,0,5" HorizontalAlignment="Right" />
       </StackPanel>
-      <Button Grid.Column="1" Content=" Clear Parts " Command="{Binding ClearPartsCommand}" Margin="5,5,5,5" />
+      <Button Grid.Column="1" Content=" Clear Parts " Command="{Binding ClearPartsCommand}" Margin="1,5,1,5" />
     </Grid>
     <ListView Grid.Row="1" 
               GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler"

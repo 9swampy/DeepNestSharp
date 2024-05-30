@@ -16,8 +16,8 @@
       <RowDefinition Height="Auto" />
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
-    <Button Grid.Row="0" HorizontalAlignment="Left" Content="Export" Command="{Binding ExportSheetPlacementCommand}" />
-    <Button Grid.Row="0" HorizontalAlignment="Right" Content="Load All Exact" Command="{Binding LoadAllExactCommand}" />
+    <Button Grid.Row="0" HorizontalAlignment="Left" Content="Export" Margin="1,5,1,5" Command="{Binding ExportSheetPlacementCommand}" />
+        <Button Grid.Row="0" HorizontalAlignment="Right" Content="Load All Exact" Margin="1,5,1,5" Command="{Binding LoadAllExactCommand}" />
     <ListView Grid.Row="1"
               ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=UserControl}}" 
               SelectedItem="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=UserControl}}" 
@@ -39,8 +39,8 @@
       </behaviors:Interaction.Triggers>
       <ListView.View>
         <GridView>
-          <GridViewColumn Header="Order" Width="25" DisplayMemberBinding="{Binding Path=Order, Mode=OneWay}" />
-          <GridViewColumn Header="Id" Width="25" DisplayMemberBinding="{Binding Path=Id, Mode=OneWay}" />
+          <GridViewColumn Header="Order" Width="45" DisplayMemberBinding="{Binding Path=Order, Mode=OneWay}" />
+          <GridViewColumn Header="ID" Width="25" DisplayMemberBinding="{Binding Path=Id, Mode=OneWay}" />
           <GridViewColumn Header="Source" Width="50" DisplayMemberBinding="{Binding Path=Source, Mode=OneWay}"/>
           <GridViewColumn Header="Rotation" Width="60" >
             <GridViewColumn.CellTemplate>
@@ -51,7 +51,7 @@
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          <GridViewColumn Header="X" Width="85">
+          <GridViewColumn Header="X" Width="80">
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel >
@@ -60,7 +60,7 @@
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          <GridViewColumn Header="Y" Width="85">
+          <GridViewColumn Header="Y" Width="80">
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel >
