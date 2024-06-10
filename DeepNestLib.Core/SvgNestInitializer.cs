@@ -95,9 +95,9 @@
 
       foreach (var item in clonedSheets)
       {
-        var gap = config.SheetSpacing - (config.Spacing / 2);
+        var offset = (config.Spacing / 2) - config.SheetSpacing;
         INfp sheet = item;
-        SvgNest.OffsetTree(ref sheet, -gap, config, true);
+        SvgNest.OffsetTree(ref sheet, offset, config, true);
       }
     }
 

@@ -86,8 +86,8 @@
           </GridViewColumn>
           <GridViewColumn Header="Unplaced" Width="70" DisplayMemberBinding="{Binding Path=TotalUnplacedCount, Mode=OneWay}" />
           <GridViewColumn Header="Sheets" Width="60" DisplayMemberBinding="{Binding Path=UsedSheets.Count, Mode=OneWay}" />
-          <GridViewColumn Header="Created" Width="80" DisplayMemberBinding="{Binding Path=CreatedAt, StringFormat=ddd HH:mm:ss, Mode=OneWay}"/>
-          <GridViewColumn Width="80" >
+          <GridViewColumn Header="Created" Width="90" DisplayMemberBinding="{Binding Path=CreatedAt, StringFormat=ddd HH:mm:ss, Mode=OneWay}"/>
+          <GridViewColumn Width="Auto" >
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel >
