@@ -26,10 +26,10 @@
       <ColumnDefinition Width="1*" />
     </Grid.ColumnDefinitions>
     <Grid.RowDefinitions>
-      <RowDefinition Height="auto" />
+      <RowDefinition Height="Auto" />
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
-    <Menu Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+    <Menu Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="1" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Stretch">
       <Menu.ItemsPanel>
         <ItemsPanelTemplate>
           <DockPanel HorizontalAlignment="Stretch"></DockPanel>

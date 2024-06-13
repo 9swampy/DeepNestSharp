@@ -127,7 +127,7 @@
     public bool Overlaps(INfp other) => this.item.Overlaps(other);
 
     /// <inheritdoc/>
-    [Description("An index noting the order in the plcement sequence at which this part got inserted.")]
+    [Description("An index noting the order in the placement sequence at which this part got inserted.")]
     [Category("Placement")]
     public int PlacementOrder
     {
