@@ -413,6 +413,7 @@
     /// </summary>
     private void Set(ObservableDetailLoadInfo item)
     {
+      // TODO: this same method needs to be called whenever focus changes from SheetEditor to PartEditor
       var polygon = item.LoadAsync().Result;
       var shiftedPart = polygon.ShiftToOrigin();
       this.ZoomDrawingContext.For(new ObservableNfp(shiftedPart));
@@ -423,7 +424,7 @@
     /// </summary>
     private void Set(ObservableSheetLoadInfo item)
     {
-      // TODO: this same method needs to be called whenever the dimensions of a sheet are changed.
+      // TODO: this same method needs to be called whenever the dimensions of a sheet are changed, and whenever focus changes from PartEditor to SheetEditor
       var polygon = item.LoadAsync().Result;
       var shiftedPart = polygon.ShiftToOrigin();
       this.ZoomDrawingContext.For(new ObservableNfp(shiftedPart));

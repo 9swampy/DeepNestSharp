@@ -26,10 +26,27 @@
     public double Height
     {
       get => sheetLoadInfo.Height;
-      set => SetProperty(nameof(Height), () => sheetLoadInfo.Height, v => sheetLoadInfo.Height = v, value);
+      set
+      {
+        this.nfp = null; // Is this hacky?
+        SetProperty(nameof(Height), () => sheetLoadInfo.Height, v => sheetLoadInfo.Height = v, value);
+      }
     }
 
     public override bool IsDirty => true;
+
+    public int NetArea
+    {
+      get
+      {
+        if (netArea == null)
+        {
+          this.netArea = (int)this.Nfp.NetArea;
+        }
+
+        return netArea.Value;
+      }
+    }
 
     public string Path
     {
@@ -46,25 +63,15 @@
     public SheetTypeEnum SheetType
     {
       get => sheetLoadInfo.SheetType;
-      set => SetProperty(nameof(SheetType), () => sheetLoadInfo.SheetType, v => sheetLoadInfo.SheetType = v, value);
     }
 
     public double Width
     {
       get => sheetLoadInfo.Width;
-      set => SetProperty(nameof(Width), () => sheetLoadInfo.Width, v => sheetLoadInfo.Width = v, value);
-    }
-
-    public int NetArea
-    {
-      get
+      set
       {
-        if (netArea == null)
-        {
-          this.netArea = (int)this.Nfp.NetArea;
-        }
-
-        return netArea.Value;
+        this.nfp = null; // Is this hacky?
+        SetProperty(nameof(Width), () => sheetLoadInfo.Width, v => sheetLoadInfo.Width = v, value);
       }
     }
 
@@ -102,6 +109,7 @@
         this.nfp = new InvalidNoFitPolygon();
       }
 
+      this.netArea = null; // Is this hacky?
       return this.nfp;
     }
   }

@@ -5,6 +5,7 @@
   using System.Text.Json.Serialization;
   using DeepNestLib;
   using DeepNestLib.IO;
+  using Light.GuardClauses;
 
   public class SheetLoadInfo : Saveable, ISheetLoadInfo
   {
@@ -14,6 +15,27 @@
     }
 
     [JsonConstructor]
+    public SheetLoadInfo(string path, double width, double height, int quantity)
+    {
+      // There used to be a "this" in front of each of these. Were they needed? Genuinely don't know.
+      if (path.IsNullOrEmpty())
+      {
+        SheetType = SheetTypeEnum.Rectangle;
+        Path = null;
+        Width = width;
+        Height = height;
+        Quantity = quantity;
+      }
+      else
+      {
+        SheetType = SheetTypeEnum.Arbitrary;
+        Path = path;
+        Width = 0;
+        Height = 0;
+        Quantity = quantity;
+      }
+    }
+
     public SheetLoadInfo(double width, double height, int quantity)
     {
       // There used to be a "this" in front of each of these. Were they needed? Genuinely don't know.
@@ -45,7 +67,7 @@
 
     public virtual int Quantity { get; set; }
 
-    public virtual SheetTypeEnum SheetType { get; set; } // added later than width/height/quantity: does it also need to be virtual?
+    public virtual SheetTypeEnum SheetType { get; } // added later than width/height/quantity: does it also need to be virtual?
 
     public virtual double Width { get; set; }
 

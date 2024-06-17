@@ -8,7 +8,7 @@
 
     int Quantity { get; set; }
 
-    SheetTypeEnum SheetType { get; set; }
+    SheetTypeEnum SheetType { get; }
 
     double Width { get; set; }
   }
