@@ -16,20 +16,22 @@
     [JsonConstructor]
     public SheetLoadInfo(double width, double height, int quantity)
     {
-      this.SheetType = SheetTypeEnum.Rectangle;
-      this.Path = null;
-      this.Width = width;
-      this.Height = height;
-      this.Quantity = quantity;
+      // There used to be a "this" in front of each of these. Were they needed? Genuinely don't know.
+      SheetType = SheetTypeEnum.Rectangle;
+      Path = null;
+      Width = width;
+      Height = height;
+      Quantity = quantity;
     }
 
     public SheetLoadInfo(string path, int quantity)
     {
-      this.SheetType = SheetTypeEnum.Arbitrary;
-      this.Path = path;
-      this.Width = 0;
-      this.Height = 0;
-      this.Quantity = quantity;
+      // There used to be a "this" in front of each of these. Were they needed? Genuinely don't know.
+      SheetType = SheetTypeEnum.Arbitrary;
+      Path = path;
+      Width = 0;
+      Height = 0;
+      Quantity = quantity;
     }
 
     [Obsolete("Only use from ConfigSheetLoadInfo to bypass the constructor - could just pass the config in but if we do it would be less transparent; no other reason to keep it long term is there?")]
