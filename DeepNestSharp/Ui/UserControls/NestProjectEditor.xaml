@@ -30,7 +30,10 @@
         <Button Content=" Execute " Command="{Binding ExecuteNestCommand}" Margin="0,5,1,5" />
         <Button Content=" Add Sheet " Command="{Binding AddSheetCommand}" Margin="1,5,1,5" />
         <Button Content=" Add Part " Command="{Binding AddPartCommand}" Margin="1,5,1,5" />
-        <TextBlock Text=" Multiplier " Margin="5,5,1,5" />
+        <!--<TextBlock Text=" Multiplier " Margin="5,5,1,5" />-->
+        <Label VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
+          Multiplier:
+        </Label>
         <xctk:IntegerUpDown Value="{Binding ProjectInfo.Config.Multiplier}" Margin="1,5,0,5" HorizontalAlignment="Right" />
       </StackPanel>
       <Button Grid.Column="1" Content=" Clear Parts " Command="{Binding ClearPartsCommand}" Margin="1,5,0,5" />
@@ -59,7 +62,6 @@
       <ListView.View>
         <GridView>
           <GridViewColumn Header=" Name " Width="Auto" DisplayMemberBinding="{Binding Path=Name, Mode=OneWay}" />
-          <!--<GridViewColumn Header=" Path " Width="50" DisplayMemberBinding="{Binding Path=Path, Mode=OneWay}"/>-->
           <GridViewColumn Header=" Quantity " Width="Auto" >
             <GridViewColumn.CellTemplate>
               <DataTemplate>
@@ -79,8 +81,8 @@
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          <!-- <GridViewColumn Header=" Priority " Width="{Binding Path=UsePriority, Converter={StaticResource BooleanToWidthConverter}}" > -->
-          <GridViewColumn Header=" Priority " Width="Auto" >
+          <!--Priority not implemented, so commenting out for now:-->
+          <!--<GridViewColumn Header=" Priority " Width="Auto" >
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel HorizontalAlignment="Center">
@@ -88,7 +90,7 @@
                 </DockPanel>
               </DataTemplate>
             </GridViewColumn.CellTemplate>
-          </GridViewColumn>
+          </GridViewColumn>-->
           <GridViewColumn Header=" Multiplied " Width="Auto">
             <GridViewColumn.CellTemplate>
               <DataTemplate>
@@ -138,7 +140,10 @@
       </ListView.Resources>
       <ListView.View>
         <GridView>
-          <GridViewColumn Header=" Width " Width="100" >
+
+          <GridViewColumn Header=" Type " Width="70" DisplayMemberBinding="{Binding Path=SheetType, Mode=OneWay}" />
+
+          <GridViewColumn Header=" Width " Width="80" >
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel HorizontalAlignment="Center">
@@ -147,7 +152,7 @@
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          <GridViewColumn Header=" Height " Width="100" >
+          <GridViewColumn Header=" Height " Width="80" >
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel HorizontalAlignment="Center">
@@ -156,7 +161,7 @@
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          <GridViewColumn Header=" Quantity " Width="100" >
+          <GridViewColumn Header=" Quantity " Width="80" >
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel HorizontalAlignment="Center">

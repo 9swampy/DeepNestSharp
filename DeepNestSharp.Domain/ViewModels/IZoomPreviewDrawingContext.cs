@@ -4,7 +4,7 @@
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain.Models;
 
-  public interface IZoomPreviewDrawingContext : ICollection<object>, IList<object>  //, INotifyCollectionChanged, INotifyPropertyChanged
+  public interface IZoomPreviewDrawingContext : ICollection<object>, IList<object> // , INotifyCollectionChanged, INotifyPropertyChanged
   {
     double Height { get; }
 

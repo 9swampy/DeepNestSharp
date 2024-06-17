@@ -36,7 +36,7 @@
     private void Set(ISheetPlacement item)
     {
       this.observablePartPlacements.Clear();
-      //this.points?.Clear();
+      // this.points?.Clear();
       var order = 0;
       foreach (var partPlacement in item.PartPlacements)
       {

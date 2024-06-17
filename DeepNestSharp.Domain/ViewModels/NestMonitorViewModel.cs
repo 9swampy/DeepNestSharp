@@ -192,10 +192,10 @@
       }
 
       this.nestExecutionHelper.InitialiseNest(
-                        this.Context,
-                        nestProjectViewModel.ProjectInfo.SheetLoadInfos,
-                        nestProjectViewModel.ProjectInfo.DetailLoadInfos,
-                        this.ProgressDisplayer);
+        this.Context,
+        nestProjectViewModel.ProjectInfo.SheetLoadInfos,
+        nestProjectViewModel.ProjectInfo.DetailLoadInfos,
+        this.ProgressDisplayer);
       if (this.Context.Sheets.Count == 0)
       {
         this.ProgressDisplayer.DisplayMessageBox("There are no sheets. Please add some and try again.", "DeepNest", MessageBoxIcon.Error);

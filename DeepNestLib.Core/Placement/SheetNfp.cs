@@ -47,12 +47,12 @@ namespace DeepNestLib
       IEnumerable<INfp> result = new List<INfp>(nfps);
       verboseLog($"RemovedOuterNfps:{result.Where(o => !SmallerThanSheet(sheet, o)).Count()}");
       result = result.Where<INfp>(o => SmallerThanSheet(sheet, o))
-                     .Select(o =>
-                     {
-                       o.Clean();
-                       o.EnsureIsClosed();
-                       return o;
-                     });
+      .Select(o =>
+      {
+        o.Clean();
+        o.EnsureIsClosed();
+        return o;
+      });
       return result.ToArray();
     }
 

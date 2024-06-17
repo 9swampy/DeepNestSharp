@@ -20,7 +20,7 @@
     private ISheetLoadInfo selectedSheetLoadInfo;
     private AsyncRelayCommand executeNestCommand;
     private AsyncRelayCommand addPartCommand;
-    private RelayCommand addSheetCommand;
+    private AsyncRelayCommand addSheetCommand;
     private RelayCommand clearPartsCommand;
     private RelayCommand<IDetailLoadInfo> removePartCommand;
     private RelayCommand<ISheetLoadInfo> removeSheetCommand;
@@ -51,7 +51,7 @@
 
     public IAsyncRelayCommand AddPartCommand => addPartCommand ?? (addPartCommand = new AsyncRelayCommand(OnAddPartAsync));
 
-    public IRelayCommand AddSheetCommand => addSheetCommand ?? (addSheetCommand = new RelayCommand(OnAddSheet));
+    public IAsyncRelayCommand AddSheetCommand => addSheetCommand ?? (addSheetCommand = new AsyncRelayCommand(OnAddSheet));
 
     public IRelayCommand ClearPartsCommand => clearPartsCommand ?? (clearPartsCommand = new RelayCommand(OnClearParts));
 
@@ -121,6 +121,8 @@
       Contextualise();
       OnPropertyChanged(nameof(SelectedDetailLoadInfoIndex));
       OnPropertyChanged(nameof(SelectedDetailLoadInfo));
+      OnPropertyChanged(nameof(SelectedSheetLoadInfoIndex));
+      OnPropertyChanged(nameof(SelectedSheetLoadInfo));
     }
 
     private void Initialise(IMainViewModel mainViewModel, IFileIoService fileIoService)
@@ -173,10 +175,28 @@
       this.IsDirty = true;
     }
 
-    private void OnAddSheet()
+    /// <summary>
+    /// This is a hacky implementation: if a file is selected, that file is added as a sheet. If cancel is pressed, a rectangular sheet is added from config.
+    /// </summary>
+    private async Task OnAddSheet()
     {
-      var newSheet = new SheetLoadInfo(this.ProjectInfo.Config);
-      observableProjectInfo?.SheetLoadInfos.Add(newSheet);
+      var filePaths = await this.fileIoService.GetOpenFilePathsAsync(NoFitPolygon.FileDialogFilter);
+      if (filePaths.Count() == 1 && filePaths[0].IsNullOrWhiteSpace())
+      {
+        var newSheet = new SheetLoadInfo(this.ProjectInfo.Config);
+        observableProjectInfo?.SheetLoadInfos.Add(newSheet);
+      }
+      else
+      {
+        foreach (var filePath in filePaths)
+        {
+          if (!string.IsNullOrWhiteSpace(filePath) && this.fileIoService.Exists(filePath))
+          {
+            var newSheet = new SheetLoadInfo(filePath, this.ProjectInfo.Config.SheetQuantity);
+            observableProjectInfo?.SheetLoadInfos.Add(newSheet);
+          }
+        }
+      }
 
       Contextualise();
       this.IsDirty = true;

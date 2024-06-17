@@ -1,5 +1,6 @@
 ﻿namespace DeepNestSharp.Domain.ViewModels
 {
+  using System;
   using System.Collections.ObjectModel;
   using DeepNestLib;
   using DeepNestLib.Placement;
@@ -25,6 +26,7 @@
     public IZoomPreviewDrawingContext For(ObservableSheetPlacement sheetPlacement)
     {
       this.Clear();
+      // Width and Height should include the offset of the sheet in order for the sheet to be centered on the canvas
       this.Width = sheetPlacement.Sheet.WidthCalculated;
       this.Height = sheetPlacement.Sheet.HeightCalculated;
       this.Add(sheetPlacement);

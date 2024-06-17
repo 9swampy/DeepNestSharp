@@ -1,5 +1,6 @@
 ﻿namespace DeepNestSharp.Domain.ViewModels
 {
+  using System;
   using System.ComponentModel;
   using DeepNestSharp.Domain.Docking;
   using DeepNestSharp.Domain.Models;

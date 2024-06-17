@@ -16,8 +16,19 @@
     [JsonConstructor]
     public SheetLoadInfo(double width, double height, int quantity)
     {
+      this.SheetType = SheetTypeEnum.Rectangle;
+      this.Path = null;
       this.Width = width;
       this.Height = height;
+      this.Quantity = quantity;
+    }
+
+    public SheetLoadInfo(string path, int quantity)
+    {
+      this.SheetType = SheetTypeEnum.Arbitrary;
+      this.Path = path;
+      this.Width = 0;
+      this.Height = 0;
       this.Quantity = quantity;
     }
 
@@ -26,11 +37,15 @@
     {
     }
 
-    public virtual double Width { get; set; }
-
     public virtual double Height { get; set; }
 
+    public virtual string Path { get; set; } // added later than width/height/quantity: does it also need to be virtual?
+
     public virtual int Quantity { get; set; }
+
+    public virtual SheetTypeEnum SheetType { get; set; } // added later than width/height/quantity: does it also need to be virtual?
+
+    public virtual double Width { get; set; }
 
     public override string ToJson(bool writeIndented = false)
     {

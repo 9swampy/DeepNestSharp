@@ -84,17 +84,17 @@
 
       List<DxfVertex> sheetverts = new List<DxfVertex>();
 
-      // Bottom Left Point
-      sheetverts.Add(new DxfVertex(new DxfPoint(0, 0, 0)));
+      // Add the first n - 1 points from the sheet polygon
+      for (var i = 0; i < sheet.Points.Count() - 1; i++)
+      {
+        sheetverts.Add(new DxfVertex(new DxfPoint(sheet.Points[i].X, sheet.Points[i].Y, 0)));
+      }
 
-      // Bottom Right Point
-      sheetverts.Add(new DxfVertex(new DxfPoint(sheet.WidthCalculated, 0, 0)));
-
-      // Top Right Point
-      sheetverts.Add(new DxfVertex(new DxfPoint(sheet.WidthCalculated, sheet.HeightCalculated, 0)));
-
-      // Top Left Point
-      sheetverts.Add(new DxfVertex(new DxfPoint(0, sheet.HeightCalculated, 0)));
+      // If the first and last points are not the same, add the last point from the sheet polygon
+      if (sheet.Points[0].X != sheet.Points.Last().X || sheet.Points[0].Y != sheet.Points.Last().Y)
+      {
+        sheetverts.Add(new DxfVertex(new DxfPoint(sheet.Points.Last().X, sheet.Points.Last().Y, 0)));
+      }
 
       DxfPolyline sheetentity = new DxfPolyline(sheetverts)
       {
@@ -364,17 +364,18 @@
         if (doMergeLines)
         {
           entities = new DxfLineMerger().MergeLines(entities);
-          //Have seen oddness where splitting out verticals and non verticals prevented an errant output; but then it just stopped happening!
-          //var mergeLines = entities.Where(o => o is DxfLine).Cast<DxfLine>().Select(o => new MergeLine(o));
-          //var over = mergeLines.Where(o => o.IsVertical && Math.Max(o.Left.Y, o.Right.Y) > sheet.MaxY);
-          //var under = mergeLines.Where(o => o.IsVertical && Math.Min(o.Left.Y, o.Right.Y) < sheet.MinY);
-          //if (over.Any() || under.Any())
-          //{
-          //  System.Diagnostics.Debugger.Break();
-          //}
 
-          //entities = mergeLines.Where(o => !o.IsVertical).Select(o => o.Line as DxfEntity).ToList();
-          //entities.AddRange(mergeLines.Where(o => o.IsVertical).Select(o => o.Line));
+          // Have seen oddness where splitting out verticals and non verticals prevented an errant output; but then it just stopped happening!
+          // var mergeLines = entities.Where(o => o is DxfLine).Cast<DxfLine>().Select(o => new MergeLine(o));
+          // var over = mergeLines.Where(o => o.IsVertical && Math.Max(o.Left.Y, o.Right.Y) > sheet.MaxY);
+          // var under = mergeLines.Where(o => o.IsVertical && Math.Min(o.Left.Y, o.Right.Y) < sheet.MinY);
+          // if (over.Any() || under.Any())
+          // {
+          //   System.Diagnostics.Debugger.Break();
+          // }
+
+          // entities = mergeLines.Where(o => !o.IsVertical).Select(o => o.Line as DxfEntity).ToList();
+          // entities.AddRange(mergeLines.Where(o => o.IsVertical).Select(o => o.Line));
         }
 
         foreach (var entity in entities)

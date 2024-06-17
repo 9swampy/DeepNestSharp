@@ -39,6 +39,15 @@
       return tt;
     }
 
+    public static Sheet NewSheet(int nameSuffix, INfp nfp)
+    {
+      INfp shiftedNfp = nfp.ShiftToOrigin();
+      var tt = new ArbitrarySheet();
+      tt.Name = "arbSheet" + nameSuffix;
+      tt.Build(shiftedNfp);
+      return tt;
+    }
+
     public override string ToJson()
     {
       var options = new JsonSerializerOptions();

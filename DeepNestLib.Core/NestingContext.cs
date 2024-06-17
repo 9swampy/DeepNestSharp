@@ -45,7 +45,7 @@
     public INestState State { get; }
 
     /// <summary>
-    /// Reinitializes the context and start a new nest.
+    /// Reinitializes the context and starts a new nest.
     /// </summary>
     /// <returns>awaitable Task.</returns>
     public async Task StartNest()
@@ -194,13 +194,11 @@
 
     public void LoadSampleData()
     {
-      Console.WriteLine("Adding sheets..");
       for (int i = 0; i < 5; i++)
       {
         AddSheet(3000, 1500, 0);
       }
 
-      Console.WriteLine("Adding parts..");
       int src1 = GetNextSource();
       for (int i = 0; i < 200; i++)
       {
