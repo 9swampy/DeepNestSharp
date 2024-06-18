@@ -259,9 +259,10 @@
 
     private void InitialiseDrawingContext(object sender)
     {
+      Console.WriteLine($"InitialiseDrawingContext: {lastActiveViewModel?.ToString()}");
       if (lastActiveViewModel != null)
       {
-        lastActiveViewModel.PropertyChanged -= this.ActiveViewModel_PropertyChanged;
+        lastActiveViewModel.PropertyChanged -= this.ActiveViewModel_PropertyChanged; // unsubscribing ActiveViewModel_PropertyChanged from the PropertyChanged notification of lastActiveViewModel.
         lastActiveViewModel = null;
       }
 
@@ -312,7 +313,7 @@
 
         if (lastActiveViewModel != null)
         {
-          lastActiveViewModel.PropertyChanged += this.ActiveViewModel_PropertyChanged;
+          lastActiveViewModel.PropertyChanged += this.ActiveViewModel_PropertyChanged; // step 0: subscribe ActiveViewModel_PropertyChanged to the PropertyChanged notification of lastActiveViewModel.
         }
       }
     }
@@ -344,8 +345,9 @@
       }
     }
 
-    private void ActiveViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    private void ActiveViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e) // step 1: called whenever a property (to which this method is subscribed) is changed. Contains logic determining what action to take based on what property was changed and where the notification came from.
     {
+      Console.WriteLine($"ActiveViewModel_PropertyChanged: {lastActiveViewModel?.ToString()}");
       if (sender == mainViewModel.ActiveDocument)
       {
         if (sender is ISheetPlacementViewModel sheetPlacementViewModel &&
@@ -364,13 +366,13 @@
         else if (sender is NestProjectViewModel nestProjectViewModel)
         {
           if (e.PropertyName == nameof(NestProjectViewModel.SelectedDetailLoadInfo) &&
-                 nestProjectViewModel.SelectedDetailLoadInfo is ObservableDetailLoadInfo detailLoadInfo)
+                 nestProjectViewModel.SelectedDetailLoadInfo is ObservableDetailLoadInfo detailLoadInfo) // step 2: passes detailLoadInfo from nestProjectViewModel to the ObservableDetailLoadInfo constructor, sends to Set method.
           {
             Set(detailLoadInfo);
             this.IsSelected = true;
           }
           else if (e.PropertyName == nameof(NestProjectViewModel.SelectedSheetLoadInfo) &&
-                 nestProjectViewModel.SelectedSheetLoadInfo is ObservableSheetLoadInfo sheetLoadInfo)
+                 nestProjectViewModel.SelectedSheetLoadInfo is ObservableSheetLoadInfo sheetLoadInfo) // step 2: passes sheetLoadInfo from nestProjectViewModel to the ObservableSheetLoadInfo constructor, sends to Set method.
           {
             Set(sheetLoadInfo);
             this.IsSelected = true;
@@ -411,7 +413,7 @@
     /// <summary>
     /// Clear DrawingContext and set for Part as a Frame including Point of origin.
     /// </summary>
-    private void Set(ObservableDetailLoadInfo item)
+    private void Set(ObservableDetailLoadInfo item) // step 3: updates graphics viewer with the geometry from the newly-instantiated ObservableDetailLoadInfo
     {
       // TODO: this same method needs to be called whenever focus changes from SheetEditor to PartEditor
       var polygon = item.LoadAsync().Result;
@@ -422,7 +424,7 @@
     /// <summary>
     /// Clear DrawingContext and set for Sheet as a Frame including Point of origin.
     /// </summary>
-    private void Set(ObservableSheetLoadInfo item)
+    private void Set(ObservableSheetLoadInfo item) // step 3: updates graphics viewer with the geometry from the newly-instantiated ObservableSheetLoadInfo
     {
       // TODO: this same method needs to be called whenever the dimensions of a sheet are changed, and whenever focus changes from PartEditor to SheetEditor
       var polygon = item.LoadAsync().Result;

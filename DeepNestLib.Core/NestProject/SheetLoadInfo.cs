@@ -63,11 +63,11 @@
 
     public virtual double Height { get; set; }
 
-    public virtual string Path { get; set; } // added later than width/height/quantity: does it also need to be virtual?
+    public string Path { get; set; } // added later than width/height/quantity: does it also need to be virtual?
 
     public virtual int Quantity { get; set; }
 
-    public virtual SheetTypeEnum SheetType { get; } // added later than width/height/quantity: does it also need to be virtual?
+    public SheetTypeEnum SheetType { get; } // added later than width/height/quantity: does it also need to be virtual?
 
     public virtual double Width { get; set; }
 

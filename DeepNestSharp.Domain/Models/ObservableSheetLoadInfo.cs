@@ -1,6 +1,7 @@
 ﻿namespace DeepNestSharp.Domain.Models
 {
   using System;
+  using System.ComponentModel;
   using System.IO;
   using System.Threading.Tasks;
   using DeepNestLib;

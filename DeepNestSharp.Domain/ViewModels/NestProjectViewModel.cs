@@ -16,8 +16,10 @@
   {
     private int selectedDetailLoadInfoIndex;
     private IDetailLoadInfo selectedDetailLoadInfo;
+    private bool isInFocusDetailLoadInfo;
     private int selectedSheetLoadInfoIndex;
     private ISheetLoadInfo selectedSheetLoadInfo;
+    private bool isInFocusSheetLoadInfo;
     private AsyncRelayCommand executeNestCommand;
     private AsyncRelayCommand addPartCommand;
     private AsyncRelayCommand addSheetCommand;
@@ -51,7 +53,7 @@
 
     public IAsyncRelayCommand AddPartCommand => addPartCommand ?? (addPartCommand = new AsyncRelayCommand(OnAddPartAsync));
 
-    public IAsyncRelayCommand AddSheetCommand => addSheetCommand ?? (addSheetCommand = new AsyncRelayCommand(OnAddSheet));
+    public IAsyncRelayCommand AddSheetCommand => addSheetCommand ?? (addSheetCommand = new AsyncRelayCommand(OnAddSheetAsync));
 
     public IRelayCommand ClearPartsCommand => clearPartsCommand ?? (clearPartsCommand = new RelayCommand(OnClearParts));
 
@@ -88,7 +90,17 @@
     public int SelectedDetailLoadInfoIndex
     {
       get => selectedDetailLoadInfoIndex;
-      set => SetProperty(ref selectedDetailLoadInfoIndex, value);
+      set
+      {
+        Console.WriteLine($"DetailLoadInfo {value}");
+        SetProperty(ref selectedDetailLoadInfoIndex, value);
+      }
+    }
+
+    public bool IsInFocusDetailLoadInfo
+    {
+      get => isInFocusDetailLoadInfo;
+      set => SetProperty(ref isInFocusDetailLoadInfo, value);
     }
 
     public ISheetLoadInfo SelectedSheetLoadInfo
@@ -102,7 +114,17 @@
     public int SelectedSheetLoadInfoIndex
     {
       get => selectedSheetLoadInfoIndex;
-      set => SetProperty(ref selectedSheetLoadInfoIndex, value);
+      set
+      {
+        Console.WriteLine($"SheetLoadInfo {value}");
+        SetProperty(ref selectedSheetLoadInfoIndex, value);
+      }
+    }
+
+    public bool IsInFocusSheetLoadInfo
+    {
+      get => isInFocusSheetLoadInfo;
+      set => SetProperty(ref isInFocusSheetLoadInfo, value);
     }
 
     public override string TextContent { get => this.ProjectInfo.ToJson(); }
@@ -178,7 +200,7 @@
     /// <summary>
     /// This is a hacky implementation: if a file is selected, that file is added as a sheet. If cancel is pressed, a rectangular sheet is added from config.
     /// </summary>
-    private async Task OnAddSheet()
+    private async Task OnAddSheetAsync()
     {
       var filePaths = await this.fileIoService.GetOpenFilePathsAsync(NoFitPolygon.FileDialogFilter);
       if (filePaths.Count() == 1 && filePaths[0].IsNullOrWhiteSpace())
