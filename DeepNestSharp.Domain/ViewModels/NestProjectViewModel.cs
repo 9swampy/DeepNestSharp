@@ -198,7 +198,7 @@
     }
 
     /// <summary>
-    /// This is a hacky implementation: if a file is selected, that file is added as a sheet. If cancel is pressed, a rectangular sheet is added from config.
+    /// This is a hacky implementation: if a file is selected, that file is added as a sheet. If cancel is pressed, a rectangular sheet is added from config. Later, will separate "add sheet" button into two separate buttons for each sheet type.
     /// </summary>
     private async Task OnAddSheetAsync()
     {
