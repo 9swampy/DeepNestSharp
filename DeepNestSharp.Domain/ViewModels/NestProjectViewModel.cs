@@ -22,7 +22,8 @@
     private bool isInFocusSheetLoadInfo;
     private AsyncRelayCommand executeNestCommand;
     private AsyncRelayCommand addPartCommand;
-    private AsyncRelayCommand addSheetCommand;
+    private AsyncRelayCommand addArbitrarySheetCommand;
+    private RelayCommand addRectangleSheetCommand;
     private RelayCommand clearPartsCommand;
     private RelayCommand<IDetailLoadInfo> removePartCommand;
     private RelayCommand<ISheetLoadInfo> removeSheetCommand;
@@ -53,7 +54,9 @@
 
     public IAsyncRelayCommand AddPartCommand => addPartCommand ?? (addPartCommand = new AsyncRelayCommand(OnAddPartAsync));
 
-    public IAsyncRelayCommand AddSheetCommand => addSheetCommand ?? (addSheetCommand = new AsyncRelayCommand(OnAddSheetAsync));
+    public IAsyncRelayCommand AddArbitrarySheetCommand => addArbitrarySheetCommand ?? (addArbitrarySheetCommand = new AsyncRelayCommand(OnAddArbitrarySheetAsync));
+
+    public IRelayCommand AddRectangleSheetCommand => addRectangleSheetCommand ?? (addRectangleSheetCommand = new RelayCommand(OnAddRectangleSheet));
 
     public IRelayCommand ClearPartsCommand => clearPartsCommand ?? (clearPartsCommand = new RelayCommand(OnClearParts));
 
@@ -197,28 +200,26 @@
       this.IsDirty = true;
     }
 
-    /// <summary>
-    /// This is a hacky implementation: if a file is selected, that file is added as a sheet. If cancel is pressed, a rectangular sheet is added from config. Later, will separate "add sheet" button into two separate buttons for each sheet type.
-    /// </summary>
-    private async Task OnAddSheetAsync()
+    private async Task OnAddArbitrarySheetAsync()
     {
       var filePaths = await this.fileIoService.GetOpenFilePathsAsync(NoFitPolygon.FileDialogFilter);
-      if (filePaths.Count() == 1 && filePaths[0].IsNullOrWhiteSpace())
+      foreach (var filePath in filePaths)
       {
-        var newSheet = new SheetLoadInfo(this.ProjectInfo.Config);
-        observableProjectInfo?.SheetLoadInfos.Add(newSheet);
-      }
-      else
-      {
-        foreach (var filePath in filePaths)
+        if (!string.IsNullOrWhiteSpace(filePath) && this.fileIoService.Exists(filePath))
         {
-          if (!string.IsNullOrWhiteSpace(filePath) && this.fileIoService.Exists(filePath))
-          {
-            var newSheet = new SheetLoadInfo(filePath, this.ProjectInfo.Config.SheetQuantity);
-            observableProjectInfo?.SheetLoadInfos.Add(newSheet);
-          }
+          var newSheet = new SheetLoadInfo(filePath, this.ProjectInfo.Config.SheetQuantity);
+          observableProjectInfo?.SheetLoadInfos.Add(newSheet);
         }
       }
+
+      Contextualise();
+      this.IsDirty = true;
+    }
+
+    private void OnAddRectangleSheet()
+    {
+      var newSheet = new SheetLoadInfo(this.ProjectInfo.Config);
+      observableProjectInfo?.SheetLoadInfos.Add(newSheet);
 
       Contextualise();
       this.IsDirty = true;

@@ -25,7 +25,7 @@
     /// <inheritdoc/>
     public override bool IsDirty => true;
 
-    [Description("The gross outer area, not discounting for any holes.")]
+    [Description("The gross outer area, not accounting for any holes.")]
     [Category("Dimensions")]
     /// <inheritdoc/>
     public double Area => this.item.Area;

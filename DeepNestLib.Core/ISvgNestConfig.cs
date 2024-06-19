@@ -6,11 +6,7 @@
   public interface ISvgNestConfig : ITopNestResultsConfig, IPlacementConfig
   {
     /// <summary>
-    /// Gets or sets whether to clip the simplified polygon used in nesting by the hull.
-    /// This often improves the fit to the original part but may slightly increase the number
-    /// of points in the simplification and accordingly may marginally slow the nest.
-    /// Requires a restart of the application because it's not a part of the cache key so
-    /// you have to restart to reinitialise the cache.
+    /// Gets or sets whether to clip the simplified polygon used in nesting by the hull. This often improves the fit to the original part but may slightly increase the number of points in the simplification and accordingly may marginally slow the nest. Requires a restart of the application because it's not a part of the cache key so you have to restart to reinitialise the cache.
     /// </summary>
     bool ClipByHull { get; set; }
 
@@ -59,10 +55,7 @@
     bool Simplify { get; set; }
 
     /// <summary>
-    /// Gets or sets the spacing to apply to sheet edges during the nest.
-    /// Rounding errors result in approx 1mm margin necessary even with 0 Spacing set.
-    /// If spacing set then tbc the full amount is taken off sheet width available area.
-    /// If spacing set then tbc half the amount is taken off sheet height available area.
+    /// Gets or sets the spacing to apply to sheet edges during the nest. Rounding errors result in approx 1mm margin necessary even with 0 Spacing set. If spacing set then tbc the full amount is taken off sheet width available area. If spacing set then tbc half the amount is taken off sheet height available area.
     /// </summary>
     double Spacing { get; set; }
 
@@ -82,10 +75,7 @@
     bool UseParallel { get; set; }
 
     /// <summary>
-    /// If set then parts will be restricted to <see cref="StrictAngles"/>.
-    /// If also set on an individual part, part wins.
-    /// AsPreviewed: parts will be restricted to the orientation shown in the part preview (and 180').
-    /// Rotate90: parts will be restricted to the orientation shown in the part preview rotated by +/-90'.
+    /// If set then parts will be restricted to <see cref="StrictAngles"/>. If also set on an individual part, part wins. AsPreviewed: parts will be restricted to the orientation shown in the part preview (and 180'). Rotate90: parts will be restricted to the orientation shown in the part preview rotated by +/-90'.
     /// </summary>
     AnglesEnum StrictAngles { get; set; }
 

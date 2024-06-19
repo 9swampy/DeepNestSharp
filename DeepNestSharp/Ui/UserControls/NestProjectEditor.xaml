@@ -28,9 +28,7 @@
       </Grid.ColumnDefinitions>
       <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Stretch">
         <Button Content=" Execute " Command="{Binding ExecuteNestCommand}" Margin="0,5,1,5" />
-        <Button Content=" Add Sheet " Command="{Binding AddSheetCommand}" Margin="1,5,1,5" />
         <Button Content=" Add Part " Command="{Binding AddPartCommand}" Margin="1,5,1,5" />
-        <!--<TextBlock Text=" Multiplier " Margin="5,5,1,5" />-->
         <Label VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
           Multiplier:
         </Label>
@@ -128,7 +126,10 @@
         </GridView>
       </ListView.View>
     </ListView>
-    <GridSplitter Grid.Row="2" Height="5" HorizontalAlignment="Stretch" />
+    <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Stretch">
+      <Button Content=" Add Arbitrary Sheet " Command="{Binding AddArbitrarySheetCommand}" Margin="1,5,1,5" />
+      <Button Content=" Add Rectangle Sheet " Command="{Binding AddRectangleSheetCommand}" Margin="1,5,1,5" />
+    </StackPanel>
     <ListView Grid.Row="3" 
               ItemsSource="{Binding Path=ProjectInfo.SheetLoadInfos}" 
               SelectedItem="{Binding SelectedSheetLoadInfo}" 

@@ -24,11 +24,8 @@
       set => SetProperty(nameof(ClipperScale), () => svgNestConfig.ClipperScale, v => svgNestConfig.ClipperScale = v, value);
     }
 
-    [Description("Gets or sets whether to clip the simplified polygon used in nesting by the hull. " +
-      "This often improves the fit to the original part but may slightly increase the number " +
-      "of points in the simplification and accordingly may marginally slow the nest. " +
-      "Requires a restart of the application because it's not a part of the cache key so " +
-      "you have to restart to reinitialise the cache."), Category("Simplifications")]
+    [Description("Gets or sets whether to clip the simplified polygon used in nesting by the hull. This often improves the fit to the original part but may slightly increase the number of points in the simplification and accordingly may marginally slow the nest. Requires a restart of the application because it's not a part of the cache key so you have to restart to reinitialise the cache.")]
+    [Category("Simplifications")]
     /// <inheritdoc />
     public bool ClipByHull
     {
@@ -105,7 +102,7 @@
       set => SetProperty(nameof(LastNestFilePath), () => svgNestConfig.LastNestFilePath, v => svgNestConfig.LastNestFilePath = v, value);
     }
 
-    [Description("Merge coaligned and coincident lines when exporting to Dxf so they'll only get cut once (no effect if you're exporting Svg, and ofc Spacing setting needs to be 0).")]
+    [Description("Merge coaligned and coincident lines when exporting to Dxf so they'll only get cut once (no effect if you're exporting Svg, and of course Spacing setting needs to be 0).")]
     /// <inheritdoc />
     [Category("File Settings")]
     public bool MergeLines
@@ -139,7 +136,7 @@
     [Description("Percentage chance that a gene will mutate during procreation. Set it too low and the nest could stagnate. Set it too high and fittest gene sequences may not get inherited.")]
     /// <inheritdoc path="MutationRate">
     [Category("Genetic Algorithm")]
-    [DisplayName("Mutation Rate")]
+    [DisplayName("MutationRate")]
     public double MutationRateAsPercent
     {
       get => svgNestConfig.MutationRate / 100D;
@@ -228,6 +225,7 @@
     }
 
     /// <inheritdoc />
+    [Description("Space between parts and the sheet edge.")]
     [Category("File Settings")]
     public double SheetSpacing
     {
@@ -252,8 +250,8 @@
     }
 
     /// <inheritdoc />
-    [Category("Nest Settings")]
     [Description("Space between parts. When laser cutting this should be 0 so you can benefit from the merge lines functionality.")]
+    [Category("Nest Settings")]
     public double Spacing
     {
       get => svgNestConfig.Spacing;
@@ -343,9 +341,7 @@
     }
 
     /// <inheritdoc />
-    [Description("Priority is the notion that some parts should be placed first before any others. " +
-      "This has worked well where all parts can fit on a single sheet but it's bee problematic and " +
-      "can cause parts to overlay on top of each other. Use with caution. .")]
+    [Description("Priority is the notion that some parts should be placed first before any others. This has worked well where all parts can fit on a single sheet, but it's been problematic and can cause parts to overlay on top of each other. Use with caution...")]
     [Category("Experimental")]
     public bool UsePriority
     {
@@ -354,8 +350,7 @@
     }
 
     /// <inheritdoc />
-    [Description("Legacy only used the DllImport. Turn this off with caution. . . and please do give feedback if you" +
-      " try turning it off any experience repeatable problems.")]
+    [Description("Legacy only used the DllImport. Turn this off with caution... and please do give feedback if you try turning it off any experience repeatable problems.")]
     [Category("Experimental")]
     public bool UseDllImport
     {
@@ -364,9 +359,7 @@
     }
 
     /// <inheritdoc />
-    [Description("Gets or sets the percentage difference between an existing TopNest and a new candidate needed for insertion in to Top collection." +
-    "Diversity of the Tops will help keep the Genetic Algorithm innovating at the expense of potentially excluding a novel Top performer." +
-    "1=100% which would kill the nest; anecdotally we've found the best is around 0.0001 but YMMV.")]
+    [Description("Gets or sets the percentage difference between an existing TopNest and a new candidate needed for insertion in to Top collection. Diversity of the Tops will help keep the Genetic Algorithm innovating at the expense of potentially excluding a novel Top performer. 1 = 100% which would kill the nest; anecdotally we've found the best is around 0.0001 but YMMV.")]
     [Category("Genetic Algorithm")]
     public double TopDiversity
     {
