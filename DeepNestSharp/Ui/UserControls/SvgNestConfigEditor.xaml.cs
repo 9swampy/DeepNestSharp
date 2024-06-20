@@ -12,7 +12,7 @@
   {
     public SvgNestConfigEditor()
     {
-      InitializeComponent();
+      this.InitializeComponent();
       this.DataContextChanged += this.SvgNestConfigEditor_DataContextChanged;
     }
 

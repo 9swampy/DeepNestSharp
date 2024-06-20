@@ -40,7 +40,7 @@
       var fixedTolerance = 40 * curveTolerance * 40 * curveTolerance;
       int j;
 
-      var hull = polygon.GetHull();
+      NoFitPolygon hull = polygon.GetHull();
       if (useHull)
       {
         /*
@@ -62,7 +62,7 @@
         }
       }
 
-      var cleaned = SvgNest.CleanPolygon2(polygon);
+      INfp cleaned = SvgNest.CleanPolygon2(polygon);
       if (cleaned != null && cleaned.Length > 1)
       {
         polygon = cleaned;
@@ -82,7 +82,7 @@
       if (doSimplify)
       {
         // polygon to polyline
-        var copy = polygon.Slice(0);
+        INfp copy = polygon.Slice(0);
         ((IHiddenNfp)copy).Push(copy[0]);
 
         // mark all segments greater than ~0.25 in to be kept
@@ -90,8 +90,8 @@
         // we care a great deal
         for (int i = 0; i < copy.Length - 1; i++)
         {
-          var p1 = copy[i];
-          var p2 = copy[i + 1];
+          SvgPoint p1 = copy[i];
+          SvgPoint p2 = copy[i + 1];
           var sqd = ((p2.X - p1.X) * (p2.X - p1.X)) + ((p2.Y - p1.Y) * (p2.Y - p1.Y));
           if (sqd > fixedTolerance)
           {
@@ -116,7 +116,7 @@
         simple = polygon;
       }
 
-      var offsets = SvgNest.PolygonOffsetDeepNest(simple, inside ? -tolerance : tolerance);
+      INfp[] offsets = SvgNest.PolygonOffsetDeepNest(simple, inside ? -tolerance : tolerance);
 
       INfp offset = null;
       double offsetArea = 0;
@@ -148,7 +148,7 @@
       {
         var delta = j * (tolerance / numshells);
         delta = inside ? -delta : delta;
-        var shell = SvgNest.PolygonOffsetDeepNest(simple, delta);
+        INfp[] shell = SvgNest.PolygonOffsetDeepNest(simple, delta);
         if (shell.Count() > 0)
         {
           shells[j] = shell.First();
@@ -174,11 +174,11 @@
             System.Diagnostics.Debug.Print($"{polygon.Name} selectiveReversalOfOffset {i} of {offset.Length}");
           }
 
-          var o = offset[i];
-          var target = GetTarget(o, simple, 2 * tolerance);
+          SvgPoint o = offset[i];
+          SvgPoint target = GetTarget(o, simple, 2 * tolerance);
 
           // reverse point offset and try to find exterior points
-          var test = offset.CloneTop();
+          INfp test = offset.CloneTop();
           test.Points[i] = new SvgPoint(target.X, target.Y);
 
           if (inside ? Interior(test, polygon) : Exterior(test, polygon))
@@ -188,7 +188,7 @@
             {
               if (shells[j] != null)
               {
-                var shell = shells[j];
+                INfp shell = shells[j];
                 var delta = j * (tolerance / numshells);
                 target = GetTarget(o, shell, 2 * delta);
                 test = offset.CloneTop();
@@ -218,8 +218,8 @@
 
         for (int i = 0; i < offset.Length; i++)
         {
-          var p1 = offset[i];
-          var p2 = offset[i + 1 == offset.Length ? 0 : i + 1];
+          SvgPoint p1 = offset[i];
+          SvgPoint p2 = offset[i + 1 == offset.Length ? 0 : i + 1];
 
           var sqd = ((p2.X - p1.X) * (p2.X - p1.X)) + ((p2.Y - p1.Y) * (p2.Y - p1.Y));
 
@@ -230,8 +230,8 @@
 
           for (j = 0; j < simple.Length; j++)
           {
-            var s1 = simple[j];
-            var s2 = simple[j + 1 == simple.Length ? 0 : j + 1];
+            SvgPoint s1 = simple[j];
+            SvgPoint s2 = simple[j + 1 == simple.Length ? 0 : j + 1];
 
             var sqds = ((p2.X - p1.X) * (p2.X - p1.X)) + ((p2.Y - p1.Y) * (p2.Y - p1.Y));
 
@@ -257,11 +257,11 @@
 
         if (straightened)
         {
-          var Ac = DeepNestClipper.ScaleUpPath(offset.Points, 10000000);
-          var Bc = DeepNestClipper.ScaleUpPath(polygon.Points, 10000000);
+          List<IntPoint> Ac = DeepNestClipper.ScaleUpPath(offset.Points, 10000000);
+          List<IntPoint> Bc = DeepNestClipper.ScaleUpPath(polygon.Points, 10000000);
 
-          var combined = new List<List<IntPoint>>();
-          var clipper = new ClipperLib.Clipper();
+          List<List<IntPoint>> combined = new List<List<IntPoint>>();
+          Clipper clipper = new ClipperLib.Clipper();
 
           clipper.AddPath(Ac, ClipperLib.PolyType.ptSubject, true);
           clipper.AddPath(Bc, ClipperLib.PolyType.ptSubject, true);
@@ -272,7 +272,7 @@
             double? largestArea = null;
             for (int i = 0; i < combined.Count; i++)
             {
-              var n = combined[i].ToArray().ToNestCoordinates(10000000);
+              NoFitPolygon n = combined[i].ToArray().ToNestCoordinates(10000000);
               var sarea = -GeometryUtil.PolygonArea(n);
               if (largestArea == null || largestArea < sarea)
               {
@@ -351,8 +351,8 @@
     internal static bool TryClipSubject(INfp subject, INfp clipBounds, double clipperScale, out List<List<IntPoint>> intersect)
     {
       Clipper clipper;
-      var clipperSubject = NfpHelper.InnerNfpToClipperCoordinates(new INfp[] { subject }, clipperScale);
-      var clipperClip = NfpHelper.InnerNfpToClipperCoordinates(new INfp[] { clipBounds }, clipperScale);
+      List<List<IntPoint>> clipperSubject = NfpHelper.InnerNfpToClipperCoordinates(new INfp[] { subject }, clipperScale);
+      List<List<IntPoint>> clipperClip = NfpHelper.InnerNfpToClipperCoordinates(new INfp[] { clipBounds }, clipperScale);
 
       clipper = new Clipper();
       clipper.AddPaths(clipperClip, PolyType.ptClip, true);
@@ -372,7 +372,7 @@
       int i;
       for (i = 0; i < offset.Length; i++)
       {
-        var seg = new SvgPoint[] { offset[i], offset[i + 1 == offset.Length ? 0 : i + 1] };
+        SvgPoint[] seg = new SvgPoint[] { offset[i], offset[i + 1 == offset.Length ? 0 : i + 1] };
         var index1 = Find(seg[0], polygon, curveTolerance);
         var index2 = Find(seg[1], polygon, curveTolerance);
         if (index1 == null)
@@ -402,7 +402,7 @@
     {
       for (int i = 0; i < simple.Length; i++)
       {
-        var seg = new NoFitPolygon();
+        NoFitPolygon seg = new NoFitPolygon();
         seg.AddPoint(simple[i]);
         seg.AddPoint(simple[i + 1 == simple.Length ? 0 : i + 1]);
 
@@ -456,8 +456,8 @@
     {
       for (var i = 0; i < b.Length; i++)
       {
-        var vertex = b[i];
-        var pointInPolygon = PointInPolygon(vertex, a);
+        SvgPoint vertex = b[i];
+        Found pointInPolygon = PointInPolygon(vertex, a);
         if (test(pointInPolygon))
         {
           return true;
@@ -496,8 +496,8 @@
     internal static Found PointInPolygon(SvgPoint point, INfp polygon)
     {
       // scaling is deliberately coarse to distinguish points that lie *on* the polygon
-      var p = SvgToClipper2(polygon, 1000);
-      var pt = new IntPoint(1000 * point.X, 1000 * point.Y);
+      List<IntPoint> p = SvgToClipper2(polygon, 1000);
+      IntPoint pt = new IntPoint(1000 * point.X, 1000 * point.Y);
 
       return (Found)Clipper.PointInPolygon(pt, p);
     }
@@ -505,8 +505,8 @@
     internal static bool IsInnerContainedByOuter(INfp inner, INfp outer)
     {
       // scaling is deliberately coarse to filter out points that lie *on* the polygon
-      var innerClipper = ToOutPt(SvgToClipper2(inner));
-      var outerClipper = ToOutPt(SvgToClipper2(outer));
+      OutPt innerClipper = ToOutPt(SvgToClipper2(inner));
+      OutPt outerClipper = ToOutPt(SvgToClipper2(outer));
 
       return Clipper.Poly2ContainsPoly1(innerClipper, outerClipper);
     }
@@ -523,7 +523,7 @@
       OutPt result = null;
       OutPt current;
       OutPt prior = null;
-      foreach (var point in intPoints)
+      foreach (IntPoint point in intPoints)
       {
         if (idx == 0)
         {
@@ -561,17 +561,17 @@
     // returns a less complex polygon that satisfies the curve tolerance
     private static INfp CleanPolygon(INfp polygon)
     {
-      var p = SvgToClipper2(polygon);
+      List<IntPoint> p = SvgToClipper2(polygon);
 
       // remove self-intersections and find the biggest polygon that's left
-      var simple = ClipperLib.Clipper.SimplifyPolygon(p, ClipperLib.PolyFillType.pftNonZero);
+      List<List<IntPoint>> simple = ClipperLib.Clipper.SimplifyPolygon(p, ClipperLib.PolyFillType.pftNonZero);
 
       if (simple == null || simple.Count == 0)
       {
         return null;
       }
 
-      var biggest = simple[0];
+      List<IntPoint> biggest = simple[0];
       var biggestarea = Math.Abs(ClipperLib.Clipper.Area(biggest));
       for (var i = 1; i < simple.Count; i++)
       {
@@ -584,7 +584,7 @@
       }
 
       // clean up singularities, coincident points and edges
-      var clean = ClipperLib.Clipper.CleanPolygon(biggest, 0.01 * SvgNest.Config.CurveTolerance * SvgNest.Config.ClipperScale);
+      List<IntPoint> clean = ClipperLib.Clipper.CleanPolygon(biggest, 0.01 * SvgNest.Config.CurveTolerance * SvgNest.Config.ClipperScale);
 
       if (clean == null || clean.Count == 0)
       {
@@ -597,7 +597,7 @@
     // converts a polygon from normal double coordinates to integer coordinates used by clipper, as well as x/y -> X/Y
     private static List<IntPoint> SvgToClipper2(INfp polygon, double? scale = null)
     {
-      var d = DeepNestClipper.ScaleUpPath(polygon.Points, scale == null ? SvgNest.Config.ClipperScale : scale.Value);
+      List<IntPoint> d = DeepNestClipper.ScaleUpPath(polygon.Points, scale == null ? SvgNest.Config.ClipperScale : scale.Value);
       return d;
     }
 
@@ -608,7 +608,7 @@
       // find closest points within 2 offset deltas
       for (var j = 0; j < simple.Length; j++)
       {
-        var s = simple[j];
+        SvgPoint s = simple[j];
         var d2 = ((o.X - s.X) * (o.X - s.X)) + ((o.Y - s.Y) * (o.Y - s.Y));
         if (d2 < tol * tol)
         {
@@ -619,7 +619,7 @@
       SvgPoint target = null;
       if (inrange.Count > 0)
       {
-        var filtered = inrange.Where((p) =>
+        List<InrangeItem> filtered = inrange.Where((p) =>
         {
           return p.point.Exact;
         }).ToList();
@@ -639,7 +639,7 @@
         double? mind = null;
         for (int j = 0; j < simple.Length; j++)
         {
-          var s = simple[j];
+          SvgPoint s = simple[j];
           var d2 = ((o.X - s.X) * (o.X - s.X)) + ((o.Y - s.Y) * (o.Y - s.Y));
           if (mind == null || d2 < mind)
           {

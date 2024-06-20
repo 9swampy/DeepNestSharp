@@ -32,35 +32,35 @@
     {
       if (NfpPairCache.Count == 0)
       {
-        progressDisplayer.InitialiseLoopProgress(ProgressBar.Secondary, "Pmap. . .", pairs.Count);
-        showSecondaryProgress = true;
+        this.progressDisplayer.InitialiseLoopProgress(ProgressBar.Secondary, "Pmap. . .", this.pairs.Count);
+        this.showSecondaryProgress = true;
       }
-      NfpPair[] ret = new NfpPair[pairs.Count];
+      NfpPair[] ret = new NfpPair[this.pairs.Count];
       if (this.useParallel)
       {
         Parallel.For(0, this.pairs.Count, (i) =>
         {
-          var item = pairs[i];
-          ProcessAndCaptureResult(item, result => ret[i] = result);
+          NfpPair item = this.pairs[i];
+          this.ProcessAndCaptureResult(item, result => ret[i] = result);
         });
       }
       else
       {
-        for (var i = 0; i < pairs.Count; i++)
+        for (var i = 0; i < this.pairs.Count; i++)
         {
-          var item = pairs[i];
+          NfpPair item = this.pairs[i];
           ret[i] = this.Process(item);
         }
       }
 
       if (UseNfpPairCache)
       {
-        state.SetNfpPairCachePercentCached(NfpPairCache.PercentCached);
+        this.state.SetNfpPairCachePercentCached(NfpPairCache.PercentCached);
       }
 
-      if (showSecondaryProgress)
+      if (this.showSecondaryProgress)
       {
-        progressDisplayer.IsVisibleSecondaryProgressBar = false;
+        this.progressDisplayer.IsVisibleSecondaryProgressBar = false;
       }
 
       return ret.ToArray();
@@ -68,8 +68,8 @@
 
     internal NfpPair Process(NfpPair pair)
     {
-      var pattern = pair.A.Rotate(pair.ARotation, WithChildren.Excluded);
-      var path = pair.B.Rotate(pair.BRotation, WithChildren.Excluded);
+      INfp pattern = pair.A.Rotate(pair.ARotation, WithChildren.Excluded);
+      INfp path = pair.B.Rotate(pair.BRotation, WithChildren.Excluded);
 
       NoFitPolygon clipperNfp;
       if (UseNfpPairCache)
@@ -78,21 +78,21 @@
         {
           if (!NfpPairCache.TryGetValue(pattern.Points, path.Points, pair.ARotation, pair.BRotation, pair.Asource, pair.Bsource, MinkowskiSumPick.Largest, out clipperNfp))
           {
-            clipperNfp = minkoskiSumService.ClipperExecuteOuterNfp(pattern.Points, path.Points, MinkowskiSumPick.Largest);
+            clipperNfp = this.minkoskiSumService.ClipperExecuteOuterNfp(pattern.Points, path.Points, MinkowskiSumPick.Largest);
             NfpPairCache.Add(pattern.Points, path.Points, pair.ARotation, pair.BRotation, pair.Asource, pair.Bsource, MinkowskiSumPick.Largest, clipperNfp);
-            if (showSecondaryProgress)
+            if (this.showSecondaryProgress)
             {
-              progressDisplayer.IncrementLoopProgress(ProgressBar.Secondary);
+              this.progressDisplayer.IncrementLoopProgress(ProgressBar.Secondary);
             }
           }
         }
       }
       else
       {
-        clipperNfp = minkoskiSumService.ClipperExecuteOuterNfp(pattern.Points, path.Points, MinkowskiSumPick.Largest);
-        if (showSecondaryProgress)
+        clipperNfp = this.minkoskiSumService.ClipperExecuteOuterNfp(pattern.Points, path.Points, MinkowskiSumPick.Largest);
+        if (this.showSecondaryProgress)
         {
-          progressDisplayer.IncrementLoopProgress(ProgressBar.Secondary);
+          this.progressDisplayer.IncrementLoopProgress(ProgressBar.Secondary);
         }
       }
 

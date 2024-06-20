@@ -75,21 +75,21 @@
       new SvgPoint(50,0),
       };
       firstPart.Points.Should().BeEquivalentTo(expectationFirstPart, opt => opt.WithStrictOrdering());
-      var firstPartOriginal = firstPart.Clone();
+      INfp firstPartOriginal = firstPart.Clone();
       firstPartOriginal.Should().BeEquivalentTo(firstPart, opt => opt.WithStrictOrdering(), "only the placement clone should be altered.");
 
       secondPart = DxfGenerator.GenerateRectangle($"{secondWidth}x{secondHeight}second", secondWidth, secondHeight, RectangleType.FileLoad, true).ToNfp();
       secondPart.Id = 2;
       secondPart.Source = 2;
       secondPart.Points.Should().BeEquivalentTo(expectationSecondPart, opt => opt.WithStrictOrdering());
-      var secondPartOriginal = secondPart.Clone();
+      INfp secondPartOriginal = secondPart.Clone();
       secondPartOriginal.Should().BeEquivalentTo(secondPart, opt => opt.WithStrictOrdering(), "only the placement clone should be altered.");
-      var gene = new DeepNestGene(new Chromosome[] { firstPart.ToChromosome(firstRotation), secondPart.ToChromosome(secondRotation) }.ApplyIndex());
+      DeepNestGene gene = new DeepNestGene(new Chromosome[] { firstPart.ToChromosome(firstRotation), secondPart.ToChromosome(secondRotation) }.ApplyIndex());
       VerifyPartIsNotMutated(firstPart, firstPartOriginal, expectationFirstPart);
       VerifyPartIsNotMutated(secondPart, secondPartOriginal, expectationSecondPart);
 
       nfpHelper = A.Dummy<NfpHelper>();
-      var placementWorker = new PlacementWorker(
+      PlacementWorker placementWorker = new PlacementWorker(
         nfpHelper,
         new ISheet[] { firstSheet },
         gene,
@@ -108,7 +108,7 @@
       //firstPart = firstPart.Shift(nestResult.UsedSheets[0].PartPlacements[0]);
       //secondPart = secondPart.Shift(nestResult.UsedSheets[0].PartPlacements[1]);
 
-      var lastPartPlacementWorker = ((ITestPlacementWorker)placementWorker).LastPartPlacementWorker;
+      PartPlacementWorker lastPartPlacementWorker = ((ITestPlacementWorker)placementWorker).LastPartPlacementWorker;
       VerifyLastSheetNfp(secondPartOriginal, lastPartPlacementWorker.SheetNfp);
 
       nestResult.UsedSheets[0].PartPlacements[1].PlacedPart.Overlaps(nestResult.UsedSheets[0].PartPlacements[0].PlacedPart)

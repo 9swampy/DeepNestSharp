@@ -12,18 +12,18 @@
       this.chromosomes = chromosomes;
     }
 
-    public int Count => chromosomes.Count;
+    public int Count => this.chromosomes.Count;
 
-    public int Length => chromosomes.Count;
+    public int Length => this.chromosomes.Count;
 
-    public Chromosome this[int index] { get => chromosomes[index]; }
+    public Chromosome this[int index] { get => this.chromosomes[index]; }
 
-    public int IndexOf(Chromosome item) => chromosomes.IndexOf(item);
+    public int IndexOf(Chromosome item) => this.chromosomes.IndexOf(item);
 
-    public IEnumerator<Chromosome> GetEnumerator() => chromosomes.GetEnumerator();
+    public IEnumerator<Chromosome> GetEnumerator() => this.chromosomes.GetEnumerator();
 
-    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => chromosomes.GetEnumerator();
+    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => this.chromosomes.GetEnumerator();
 
-    internal int IndexOf(int partId) => chromosomes.IndexOf(chromosomes.Single(o => o.Part.Id == partId));
+    internal int IndexOf(int partId) => this.chromosomes.IndexOf(this.chromosomes.Single(o => o.Part.Id == partId));
   }
 }

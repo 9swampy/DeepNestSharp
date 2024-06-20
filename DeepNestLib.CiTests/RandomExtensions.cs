@@ -18,7 +18,7 @@
     public static TEnum Next<TEnum>(this Random random)
       where TEnum : Enum
     {
-      var values = Enum.GetValues(typeof(TEnum)).Cast<TEnum>().ToArray();
+      TEnum[] values = Enum.GetValues(typeof(TEnum)).Cast<TEnum>().ToArray();
       var index = random.Next(0, values.Length - 1);
       return values[index];
     }

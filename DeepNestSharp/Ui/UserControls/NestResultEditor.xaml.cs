@@ -9,7 +9,7 @@
   {
     public NestResultEditor()
     {
-      InitializeComponent();
+      this.InitializeComponent();
     }
   }
 }

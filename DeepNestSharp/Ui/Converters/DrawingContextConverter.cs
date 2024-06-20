@@ -12,8 +12,8 @@
     {
       if (value is SheetPlacementCollection sheetPlacementCollection)
       {
-        var result = new List<IZoomPreviewDrawingContext>(sheetPlacementCollection.Count);
-        foreach (var sp in sheetPlacementCollection)
+        List<IZoomPreviewDrawingContext> result = new List<IZoomPreviewDrawingContext>(sheetPlacementCollection.Count);
+        foreach (ISheetPlacement? sp in sheetPlacementCollection)
         {
           result.Add(new ZoomPreviewDrawingContext().For(sp));
         }

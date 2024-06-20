@@ -20,7 +20,7 @@
         StringBuilder sb = new StringBuilder();
         sb.AppendLine("	<svg version=\"1.1\" id=\"svg2\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"   xml:space=\"preserve\">");
 
-        foreach (var item in polygons.Union(sheets))
+        foreach (INfp item in polygons.Union(sheets))
         {
           if (!sheets.Contains(item))
           {
@@ -30,13 +30,13 @@
             }
           }
 
-          var m = new Matrix();
+          Matrix m = new Matrix();
           m.Translate((float)item.X, (float)item.Y);
           m.Rotate((float)item.Rotation);
 
           PointF[] pp = item.Points.Select(z => new PointF((float)z.X, (float)z.Y)).ToArray();
           m.TransformPoints(pp);
-          var points = pp.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+          SvgPoint[] points = pp.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
 
           var fill = "lightblue";
           if (sheets.Contains(item))
@@ -47,7 +47,7 @@
           sb.AppendLine($"<path fill=\"{fill}\"  stroke=\"black\" d=\"");
           for (var i = 0; i < points.Count(); i++)
           {
-            var p = points[i];
+            SvgPoint p = points[i];
             var coord = p.X.ToString().Replace(",", ".") + " " + p.Y.ToString().Replace(",", ".");
             if (i == 0)
             {
@@ -61,7 +61,7 @@
           sb.Append("z ");
           if (item.Children != null)
           {
-            foreach (var citem in item.Children)
+            foreach (INfp citem in item.Children)
             {
               pp = citem.Points.Select(z => new PointF((float)z.X, (float)z.Y)).ToArray();
               m.TransformPoints(pp);
@@ -69,7 +69,7 @@
 
               for (var i = 0; i < points.Count(); i++)
               {
-                var p = points[i];
+                SvgPoint p = points[i];
                 var coord = p.X.ToString().Replace(",", ".") + " " + p.Y.ToString().Replace(",", ".");
                 if (i == 0)
                 {

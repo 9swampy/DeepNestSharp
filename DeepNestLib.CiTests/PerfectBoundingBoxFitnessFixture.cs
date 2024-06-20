@@ -35,35 +35,35 @@
     [Fact]
     public void GivenPerfectFitThenFitnessShouldBeApproximatelyExpected()
     {
-      var sut = new OriginalFitnessSheet(sp);
+      OriginalFitnessSheet sut = new OriginalFitnessSheet(sp);
       sut.Evaluate().Should().BeLessThan(area * 3);
     }
 
     [Fact]
     public void GivenPerfectFitThenMaterialUtilizationShouldBeZero()
     {
-      var sut = new OriginalFitnessSheet(sp);
+      OriginalFitnessSheet sut = new OriginalFitnessSheet(sp);
       sut.MaterialUtilization.Should().Be(0);
     }
 
     [Fact]
     public void GivenPerfectFitWhenNoPrimaryThenSheetsShouldBeArea()
     {
-      var sut = new OriginalFitnessSheet(sp);
+      OriginalFitnessSheet sut = new OriginalFitnessSheet(sp);
       sut.Sheets.Should().Be(area);
     }
 
     [Fact]
     public void GivenPerfectFitThenMaterialWastedShouldBeZero()
     {
-      var sut = new OriginalFitnessSheet(sp);
+      OriginalFitnessSheet sut = new OriginalFitnessSheet(sp);
       sut.MaterialWasted.Should().BeApproximately(0, 1);
     }
 
     [Fact]
     public void GivenBoundsPenaltyShouldBeInLineWithSheetsPenaltyThenBoundsShouldBeComingCloseToSheets()
     {
-      var sut = new OriginalFitnessSheet(sp);
+      OriginalFitnessSheet sut = new OriginalFitnessSheet(sp);
       FitnessAlignment.BoundsPenaltyShouldBeInLineWithSheetsPenalty(sut, FitnessRange.Upper);
     }
   }

@@ -4,21 +4,18 @@
   using System.Collections.ObjectModel;
   using System.IO;
   using System.Threading.Tasks;
+  using CommunityToolkit.Mvvm.ComponentModel;
   using DeepNestLib;
   using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Geometry;
   using DeepNestLib.Placement;
-  using Microsoft.Toolkit.Mvvm.ComponentModel;
 
   public class ObservableSheetPlacement : ObservableObject, ISheetPlacement, IWrapper<ISheetPlacement, SheetPlacement>
   {
     private readonly SheetPlacement sheetPlacement;
     private readonly ObservableCollection<ObservablePartPlacement> observablePartPlacements;
 
-    private ObservableSheetPlacement()
-    {
-      this.observablePartPlacements = new ObservableCollection<ObservablePartPlacement>();
-    }
+    private ObservableSheetPlacement() => this.observablePartPlacements = new ObservableCollection<ObservablePartPlacement>();
 
     public ObservableSheetPlacement(SheetPlacement sheetPlacement)
       : this()
@@ -38,17 +35,17 @@
       this.observablePartPlacements.Clear();
       // this.points?.Clear();
       var order = 0;
-      foreach (var partPlacement in item.PartPlacements)
+      foreach (IPartPlacement partPlacement in item.PartPlacements)
       {
-        var obsPart = new ObservablePartPlacement(partPlacement, order);
+        ObservablePartPlacement obsPart = new ObservablePartPlacement(partPlacement, order);
         order++;
         obsPart.PropertyChanged += this.ObsPart_PropertyChanged;
         this.observablePartPlacements.Add(obsPart);
       }
 
-      OnPropertyChanged(nameof(PartPlacements));
-      OnPropertyChanged(nameof(IsSet));
-      OnPropertyChanged(nameof(Sheet));
+      this.OnPropertyChanged(nameof(this.PartPlacements));
+      this.OnPropertyChanged(nameof(this.IsSet));
+      this.OnPropertyChanged(nameof(this.Sheet));
     }
 
     private void ObsPart_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -57,28 +54,28 @@
           !obsPart.IsDragging &&
           (e.PropertyName == nameof(ObservablePartPlacement.X) || e.PropertyName == nameof(ObservablePartPlacement.Y)))
       {
-        if (this.sheetPlacement != sheetPlacement)
+        if (this.sheetPlacement != this.sheetPlacement)
         {
-          Set(sheetPlacement);
+          this.Set(this.sheetPlacement);
         }
 
-        OnPropertyChanged(nameof(PartPlacements));
+        this.OnPropertyChanged(nameof(this.PartPlacements));
       }
     }
 
-    public OriginalFitnessSheet Fitness => sheetPlacement.Fitness;
+    public OriginalFitnessSheet Fitness => this.sheetPlacement.Fitness;
 
-    public INfp Hull => sheetPlacement.Hull;
+    public INfp Hull => this.sheetPlacement.Hull;
 
     public bool IsDirty => true;
 
-    public SheetPlacement Item => sheetPlacement;
+    public SheetPlacement Item => this.sheetPlacement;
 
-    public double MaxX => this.sheetPlacement?.MaxX ?? MinX;
+    public double MaxX => this.sheetPlacement?.MaxX ?? this.MinX;
 
-    public double MaxY => this.sheetPlacement?.MaxY ?? MinY;
+    public double MaxY => this.sheetPlacement?.MaxY ?? this.MinY;
 
-    public double MaterialUtilization => sheetPlacement?.MaterialUtilization ?? 0;
+    public double MaterialUtilization => this.sheetPlacement?.MaterialUtilization ?? 0;
 
     public double MergedLength => ((ISheetPlacement)this.Item).MergedLength;
 
@@ -88,21 +85,21 @@
 
     public IReadOnlyList<IPartPlacement> PartPlacements => this.observablePartPlacements;
 
-    public PlacementTypeEnum PlacementType => sheetPlacement?.PlacementType ?? PlacementTypeEnum.Gravity;
+    public PlacementTypeEnum PlacementType => this.sheetPlacement?.PlacementType ?? PlacementTypeEnum.Gravity;
 
-    public PolygonBounds RectBounds => sheetPlacement.RectBounds;
+    public PolygonBounds RectBounds => this.sheetPlacement.RectBounds;
 
-    public ISheet Sheet => sheetPlacement?.Sheet;
+    public ISheet Sheet => this.sheetPlacement?.Sheet;
 
-    public int SheetId => sheetPlacement.SheetId;
+    public int SheetId => this.sheetPlacement.SheetId;
 
-    public int SheetSource => sheetPlacement.SheetSource;
+    public int SheetSource => this.sheetPlacement.SheetSource;
 
-    public INfp Simplify => sheetPlacement.Simplify;
+    public INfp Simplify => this.sheetPlacement.Simplify;
 
-    public double TotalPartsArea => sheetPlacement.TotalPartsArea;
+    public double TotalPartsArea => this.sheetPlacement.TotalPartsArea;
 
-    public IEnumerable<NoFitPolygon> PolygonsForExport => sheetPlacement.PolygonsForExport;
+    public IEnumerable<NoFitPolygon> PolygonsForExport => this.sheetPlacement.PolygonsForExport;
 
     public string ToJson(bool writeIndented = false)
     {
@@ -117,7 +114,7 @@
 
     public async Task ExportDxf(Stream stream, bool mergeLines, bool differentiateChildren)
     {
-      await sheetPlacement.ExportDxf(stream, mergeLines, differentiateChildren);
+      await this.sheetPlacement.ExportDxf(stream, mergeLines, differentiateChildren);
     }
   }
 }

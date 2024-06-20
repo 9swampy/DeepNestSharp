@@ -68,12 +68,12 @@
     {
       this.item = item;
       this.observableSheetPlacements.Clear();
-      foreach (var sheetPlacement in item.UsedSheets)
+      foreach (ISheetPlacement sheetPlacement in item.UsedSheets)
       {
         this.observableSheetPlacements.Add(sheetPlacement);
       }
 
-      OnPropertyChanged(nameof(this.UsedSheets));
+      this.OnPropertyChanged(nameof(this.UsedSheets));
     }
   }
 }

@@ -8,7 +8,7 @@
   public class DetailLoadInfo : Saveable, IDetailLoadInfo
   {
     [JsonIgnore]
-    public string Name => new FileInfo(Path).Name;
+    public string Name => new FileInfo(this.Path).Name;
 
     public string Path { get; set; }
 
@@ -27,7 +27,7 @@
 
     public override string ToJson(bool writeIndented = false)
     {
-      var options = new JsonSerializerOptions();
+      JsonSerializerOptions options = new JsonSerializerOptions();
       options.WriteIndented = writeIndented;
       return JsonSerializer.Serialize(this, options);
     }

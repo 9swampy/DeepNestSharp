@@ -32,14 +32,14 @@
 
     public ICollection<INfp> Polygons { get; } = new HashSet<INfp>();
 
-    public IList<ISheet> Sheets { get; } = new List<ISheet>();
+    public IList<ISheet> Sheets { get; } = new List<ISheet>(); // list of the original, non-offset sheets, populated by NestExecutionHelper. remove before flight
 
     public INestResult Current { get; private set; } = null;
 
     public SvgNest Nest
     {
-      get => nest;
-      private set => nest = value;
+      get => this.nest;
+      private set => this.nest = value;
     }
 
     public INestState State { get; }
@@ -58,7 +58,7 @@
       (NestItem<INfp>[] PartsLocal, List<NestItem<ISheet>> SheetsLocal) nestItems = await Task.Run(
         () =>
         {
-          return SvgNestInitializer.BuildNestItems(config, this.Polygons, this.Sheets, progressDisplayer);
+          return SvgNestInitializer.BuildNestItems(this.config, this.Polygons, this.Sheets, this.progressDisplayer);
         }).ConfigureAwait(false);
 
       this.Nest = new SvgNest(
@@ -81,34 +81,34 @@
       {
         if (!this.isStopped)
         {
-          if (Nest.IsStopped)
+          if (this.Nest.IsStopped)
           {
             this.StopNest();
           }
           else
           {
-            Nest.LaunchWorkers(config, stateBackground);
+            this.Nest.LaunchWorkers(config, this.stateBackground);
           }
         }
 
-        if (state.TopNestResults != null && State.TopNestResults.Count > 0)
+        if (this.state.TopNestResults != null && this.State.TopNestResults.Count > 0)
         {
-          var plcpr = State.TopNestResults.Top;
+          INestResult plcpr = this.State.TopNestResults.Top;
 
-          if (Current == null || plcpr.Fitness < Current.Fitness)
+          if (this.Current == null || plcpr.Fitness < this.Current.Fitness)
           {
-            AssignPlacement(plcpr);
+            this.AssignPlacement(plcpr);
           }
         }
 
         this.progressDisplayer.InitialiseLoopProgress(ProgressBar.Secondary, config.PopulationSize);
-        stateNestingContext.IncrementIterations();
+        this.stateNestingContext.IncrementIterations();
       }
       catch (Exception ex)
       {
-        if (!State.IsErrored)
+        if (!this.State.IsErrored)
         {
-          state.SetIsErrored();
+          this.state.SetIsErrored();
           this.messageService.DisplayMessage(ex);
         }
 
@@ -120,17 +120,17 @@
 
     public void AssignPlacement(INestResult plcpr)
     {
-      Current = plcpr;
+      this.Current = plcpr;
 
       List<INfp> placed = new List<INfp>();
-      foreach (var item in Polygons)
+      foreach (INfp item in this.Polygons)
       {
         item.Sheet = null;
       }
 
       List<int> sheetsIds = new List<int>();
 
-      foreach (var sheetPlacement in plcpr.UsedSheets)
+      foreach (ISheetPlacement sheetPlacement in plcpr.UsedSheets)
       {
         var sheetid = sheetPlacement.SheetId;
         if (!sheetsIds.Contains(sheetid))
@@ -138,11 +138,11 @@
           sheetsIds.Add(sheetid);
         }
 
-        var sheet = Sheets.First(z => z.Id == sheetid);
+        ISheet sheet = this.Sheets.First(z => z.Id == sheetid);
 
-        foreach (var partPlacement in sheetPlacement.PartPlacements)
+        foreach (IPartPlacement partPlacement in sheetPlacement.PartPlacements)
         {
-          var poly = Polygons.First(z => z.Id == partPlacement.Id);
+          INfp poly = this.Polygons.First(z => z.Id == partPlacement.Id);
           placed.Add(poly);
           poly.Sheet = sheet;
           poly.X = partPlacement.X + sheet.X;
@@ -151,8 +151,8 @@
         }
       }
 
-      var ppps = Polygons.Where(z => !placed.Contains(z));
-      foreach (var item in ppps)
+      IEnumerable<INfp> ppps = this.Polygons.Where(z => !placed.Contains(z));
+      foreach (INfp item in ppps)
       {
         item.X = -1000;
         item.Y = 0;
@@ -164,18 +164,18 @@
       double x = 0;
       double y = 0;
       int gap = 10;
-      for (int i = 0; i < Sheets.Count; i++)
+      for (int i = 0; i < this.Sheets.Count; i++)
       {
-        Sheets[i].X = x;
-        Sheets[i].Y = y;
-        if (Sheets[i] is Sheet sheet)
+        this.Sheets[i].X = x;
+        this.Sheets[i].Y = y;
+        if (this.Sheets[i] is Sheet sheet)
         {
           x += sheet.WidthCalculated + gap;
         }
         else
         {
-          var maxx = Sheets[i].Points.Max(z => z.X);
-          var minx = Sheets[i].Points.Min(z => z.X);
+          var maxx = this.Sheets[i].Points.Max(z => z.X);
+          var minx = this.Sheets[i].Points.Min(z => z.X);
           var w = maxx - minx;
           x += w + gap;
         }
@@ -184,33 +184,33 @@
 
     private void AddSheet(int width, int height, int src)
     {
-      var tt = new RectangleSheet();
-      tt.Name = "sheet" + (Sheets.Count + 1);
-      Sheets.Add(tt);
+      RectangleSheet tt = new RectangleSheet();
+      tt.Name = "sheet" + (this.Sheets.Count + 1);
+      this.Sheets.Add(tt);
       tt.Source = src;
       tt.Build(width, height);
-      ReorderSheets();
+      this.ReorderSheets();
     }
 
     public void LoadSampleData()
     {
       for (int i = 0; i < 5; i++)
       {
-        AddSheet(3000, 1500, 0);
+        this.AddSheet(3000, 1500, 0);
       }
 
-      int src1 = GetNextSource();
+      int src1 = this.GetNextSource();
       for (int i = 0; i < 200; i++)
       {
-        AddRectanglePart(src1, 250, 220);
+        this.AddRectanglePart(src1, 250, 220);
       }
     }
 
     public int GetNextSource()
     {
-      if (Polygons.Any())
+      if (this.Polygons.Any())
       {
-        return Polygons.Max(z => z.Source) + 1;
+        return this.Polygons.Max(z => z.Source) + 1;
       }
 
       return 0;
@@ -218,9 +218,9 @@
 
     public int GetNextSheetSource()
     {
-      if (Sheets.Any())
+      if (this.Sheets.Any())
       {
-        return Sheets.Max(z => z.Source) + 1;
+        return this.Sheets.Max(z => z.Source) + 1;
       }
 
       return 0;
@@ -232,7 +232,7 @@
       int yy = 0;
       NoFitPolygon pl = new NoFitPolygon();
 
-      Polygons.Add(pl);
+      this.Polygons.Add(pl);
       pl.Source = src;
       pl.AddPoint(new SvgPoint(xx, yy));
       pl.AddPoint(new SvgPoint(xx + ww, yy));
@@ -242,25 +242,25 @@
 
     public void LoadXml(string v)
     {
-      var d = XDocument.Load(v);
-      var f = d.Descendants().First();
+      XDocument d = XDocument.Load(v);
+      XElement f = d.Descendants().First();
       var gap = int.Parse(f.Attribute("gap").Value);
       SvgNest.Config.Spacing = gap;
 
-      foreach (var item in d.Descendants("sheet"))
+      foreach (XElement item in d.Descendants("sheet"))
       {
-        int src = GetNextSheetSource();
+        int src = this.GetNextSheetSource();
         var cnt = int.Parse(item.Attribute("count").Value);
         var ww = int.Parse(item.Attribute("width").Value);
         var hh = int.Parse(item.Attribute("height").Value);
 
         for (int i = 0; i < cnt; i++)
         {
-          AddSheet(ww, hh, src);
+          this.AddSheet(ww, hh, src);
         }
       }
 
-      foreach (var item in d.Descendants("part"))
+      foreach (XElement item in d.Descendants("part"))
       {
         var cnt = int.Parse(item.Attribute("count").Value);
         var path = item.Attribute("path").Value;
@@ -278,7 +278,7 @@
           continue;
         }
 
-        var src = GetNextSource();
+        var src = this.GetNextSource();
 
         for (int i = 0; i < cnt; i++)
         {
@@ -299,8 +299,8 @@
     {
       this.Polygons.Clear();
       this.Sheets.Clear();
-      InternalReset();
-      progressDisplayer.UpdateNestsList();
+      this.InternalReset();
+      this.progressDisplayer.UpdateNestsList();
     }
 
     /// <summary>
@@ -308,8 +308,8 @@
     /// </summary>
     private void InternalReset()
     {
-      stateNestingContext.Reset();
-      Current = null;
+      this.stateNestingContext.Reset();
+      this.Current = null;
       this.Current = null;
     }
 

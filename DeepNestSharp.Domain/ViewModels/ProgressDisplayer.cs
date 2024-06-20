@@ -23,48 +23,48 @@
     {
       get
       {
-        return nestMonitorViewModel.IsSecondaryProgressVisible;
+        return this.nestMonitorViewModel.IsSecondaryProgressVisible;
       }
 
       set
       {
-        if (dispatcherService.InvokeRequired)
+        if (this.dispatcherService.InvokeRequired)
         {
-          dispatcherService.Invoke(() => IsVisibleSecondaryProgressBar = value);
+          this.dispatcherService.Invoke(() => this.IsVisibleSecondaryProgressBar = value);
         }
         else
         {
-          nestMonitorViewModel.IsSecondaryProgressVisible = value;
+          this.nestMonitorViewModel.IsSecondaryProgressVisible = value;
         }
       }
     }
 
     public void DisplayMessageBox(string text, string caption, MessageBoxIcon icon)
     {
-      if (dispatcherService.InvokeRequired)
+      if (this.dispatcherService.InvokeRequired)
       {
-        dispatcherService.Invoke(() => DisplayMessageBox(text, caption, icon));
+        this.dispatcherService.Invoke(() => this.DisplayMessageBox(text, caption, icon));
       }
       else
       {
-        messageService.DisplayMessageBox(text, caption, icon);
+        this.messageService.DisplayMessageBox(text, caption, icon);
       }
     }
 
     public override void DisplayProgress(ProgressBar progressBar, double percentageComplete)
     {
-      if (dispatcherService.InvokeRequired)
+      if (this.dispatcherService.InvokeRequired)
       {
         if (progressBar == ProgressBar.Primary)
         {
-          var frame = new System.Diagnostics.StackTrace().GetFrame(2);
+          System.Diagnostics.StackFrame frame = new System.Diagnostics.StackTrace().GetFrame(2);
           System.Diagnostics.Debug.Print($"{progressBar} {percentageComplete:0.0} {frame.GetMethod().DeclaringType.FullName}.{frame.GetMethod().Name} {frame.GetFileLineNumber()}");
         }
 
         if (progressBar == ProgressBar.Primary ||
-            (progressBar == ProgressBar.Secondary && nestMonitorViewModel.IsSecondaryProgressVisible))
+            (progressBar == ProgressBar.Secondary && this.nestMonitorViewModel.IsSecondaryProgressVisible))
         {
-          dispatcherService.Invoke(() => DisplayProgress(progressBar, percentageComplete));
+          this.dispatcherService.Invoke(() => this.DisplayProgress(progressBar, percentageComplete));
         }
       }
       else
@@ -73,10 +73,10 @@
         {
           case ProgressBar.Primary:
           default:
-            nestMonitorViewModel.Progress = percentageComplete;
+            this.nestMonitorViewModel.Progress = percentageComplete;
             break;
           case ProgressBar.Secondary:
-            nestMonitorViewModel.ProgressSecondary = percentageComplete;
+            this.nestMonitorViewModel.ProgressSecondary = percentageComplete;
             break;
         }
 
@@ -86,40 +86,40 @@
 
     public void DisplayProgress(int currentPopulation, INestResult topNest)
     {
-      DisplayProgress(ProgressBar.Primary, CalculatePercentageComplete(topNest));
+      this.DisplayProgress(ProgressBar.Primary, CalculatePercentageComplete(topNest));
     }
 
     public override void ClearTransientMessage()
     {
-      if (dispatcherService.InvokeRequired)
+      if (this.dispatcherService.InvokeRequired)
       {
-        dispatcherService.Invoke(() => ClearTransientMessage());
+        this.dispatcherService.Invoke(() => this.ClearTransientMessage());
       }
       else
       {
-        SetTransientMessage(string.Empty);
+        this.SetTransientMessage(string.Empty);
       }
     }
 
     public override void DisplayTransientMessage(string message)
     {
-      if (dispatcherService.InvokeRequired)
+      if (this.dispatcherService.InvokeRequired)
       {
-        dispatcherService.Invoke(() => DisplayTransientMessage(message));
+        this.dispatcherService.Invoke(() => this.DisplayTransientMessage(message));
       }
       else
       {
         if (!string.IsNullOrWhiteSpace(message))
         {
-          SetTransientMessage(message);
+          this.SetTransientMessage(message);
         }
       }
     }
 
     private void SetTransientMessage(string message)
     {
-      nestMonitorViewModel.LastLogMessage = message;
-      nestMonitorViewModel.MessageLogBuilder.AppendLine(message);
+      this.nestMonitorViewModel.LastLogMessage = message;
+      this.nestMonitorViewModel.MessageLogBuilder.AppendLine(message);
     }
 
     public void InitialiseUiForStartNest()
@@ -129,13 +129,13 @@
 
     public void UpdateNestsList()
     {
-      if (dispatcherService.InvokeRequired)
+      if (this.dispatcherService.InvokeRequired)
       {
-        dispatcherService.Invoke(() => UpdateNestsList());
+        this.dispatcherService.Invoke(() => this.UpdateNestsList());
       }
       else
       {
-        nestMonitorViewModel.UpdateNestsList();
+        this.nestMonitorViewModel.UpdateNestsList();
       }
     }
   }

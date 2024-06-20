@@ -13,7 +13,7 @@
 
     public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
     {
-      if (CanConvert(typeToConvert))
+      if (this.CanConvert(typeToConvert))
       {
         return new DetailLoadInfoJsonConverterInner();
       }

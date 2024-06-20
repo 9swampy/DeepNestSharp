@@ -20,7 +20,7 @@
 
     public double Evaluate()
     {
-      return Total;
+      return this.Total;
     }
 
     public double Total
@@ -28,10 +28,10 @@
       get
       {
         var result = 0d;
-        result += Bounds;
-        result += Sheets;
-        result += MaterialWasted;
-        result += MaterialUtilization;
+        result += this.Bounds;
+        result += this.Sheets;
+        result += this.MaterialWasted;
+        result += this.MaterialUtilization;
 
         return result;
       }
@@ -46,12 +46,12 @@
       {
         lock (syncLock)
         {
-          if (!sheets.HasValue)
+          if (!this.sheets.HasValue)
           {
-            sheets = sheetPlacement.Sheet.Area;
+            this.sheets = this.sheetPlacement.Sheet.Area;
           }
 
-          return sheets.Value;
+          return this.sheets.Value;
         }
       }
     }
@@ -65,22 +65,22 @@
       {
         lock (syncLock)
         {
-          if (!materialWasted.HasValue)
+          if (!this.materialWasted.HasValue)
           {
-            var rectBounds = sheetPlacement.RectBounds;
-            materialWasted = sheetPlacement.MaterialUtilization < 0.6 ? rectBounds.Width * rectBounds.Height * 2 : sheetPlacement.Sheet.Area;
-            materialWasted += sheetPlacement.Hull.Area + (rectBounds.Width * rectBounds.Height);
-            materialWasted *= 2;
-            materialWasted -= sheetPlacement.MaterialUtilization < 0.6 ? 7 : 6 * sheetPlacement.TotalPartsArea;
-            if (sheetPlacement.MaterialUtilization < 0.3)
+            Geometry.PolygonBounds rectBounds = this.sheetPlacement.RectBounds;
+            this.materialWasted = this.sheetPlacement.MaterialUtilization < 0.6 ? rectBounds.Width * rectBounds.Height * 2 : this.sheetPlacement.Sheet.Area;
+            this.materialWasted += this.sheetPlacement.Hull.Area + (rectBounds.Width * rectBounds.Height);
+            this.materialWasted *= 2;
+            this.materialWasted -= this.sheetPlacement.MaterialUtilization < 0.6 ? 7 : 6 * this.sheetPlacement.TotalPartsArea;
+            if (this.sheetPlacement.MaterialUtilization < 0.3)
             {
-              materialWasted *= 1.25;
+              this.materialWasted *= 1.25;
             }
 
-            materialWasted = Math.Max(0, materialWasted.Value / 2);
+            this.materialWasted = Math.Max(0, this.materialWasted.Value / 2);
           }
 
-          return materialWasted.Value;
+          return this.materialWasted.Value;
         }
       }
     }
@@ -94,16 +94,16 @@
       {
         lock (syncLock)
         {
-          if (!materialUtilization.HasValue)
+          if (!this.materialUtilization.HasValue)
           {
-            materialUtilization = (double)Math.Pow(1 - this.sheetPlacement.MaterialUtilization, 1.1) * sheetPlacement.Sheet.Area;
-            if (!materialUtilization.HasValue || double.IsNaN(materialUtilization.Value))
+            this.materialUtilization = (double)Math.Pow(1 - this.sheetPlacement.MaterialUtilization, 1.1) * this.sheetPlacement.Sheet.Area;
+            if (!this.materialUtilization.HasValue || double.IsNaN(this.materialUtilization.Value))
             {
-              materialUtilization = sheetPlacement.Sheet.Area;
+              this.materialUtilization = this.sheetPlacement.Sheet.Area;
             }
           }
 
-          return materialUtilization.Value;
+          return this.materialUtilization.Value;
         }
       }
     }
@@ -122,12 +122,12 @@
             if (!this.bounds.HasValue)
             {
               double area;
-              var rectBounds = sheetPlacement.RectBounds;
+              Geometry.PolygonBounds rectBounds = this.sheetPlacement.RectBounds;
               double bound;
-              if (sheetPlacement.PlacementType == PlacementTypeEnum.Gravity)
+              if (this.sheetPlacement.PlacementType == PlacementTypeEnum.Gravity)
               {
                 area = Math.Pow(((rectBounds.Width * 3) + rectBounds.Height) / 4, 2);
-                bound = rectBounds.Width / sheetPlacement.Sheet.WidthCalculated * sheetPlacement.Sheet.Area;
+                bound = rectBounds.Width / this.sheetPlacement.Sheet.WidthCalculated * this.sheetPlacement.Sheet.Area;
               }
               else
               {
@@ -135,7 +135,7 @@
                 bound = area;
               }
 
-              bounds = ((bound * 4) + area + sheetPlacement.Hull.Area) / 7;
+              this.bounds = ((bound * 4) + area + this.sheetPlacement.Hull.Area) / 7;
             }
 
             return this.bounds.Value;
@@ -152,7 +152,7 @@
 
     public override string ToString()
     {
-      return $"{Evaluate():N0}=B{Bounds:N0}+S{Sheets:N0}+W{MaterialWasted:N0}+U{MaterialUtilization:N0}";
+      return $"{this.Evaluate():N0}=B{this.Bounds:N0}+S{this.Sheets:N0}+W{this.MaterialWasted:N0}+U{this.MaterialUtilization:N0}";
     }
   }
 }

@@ -79,8 +79,8 @@
         json = reader.ReadToEnd().Replace(" ", string.Empty).Replace("\r\n", string.Empty);
       }
 
-      var sut = PartPlacementWorker.FromJson(json);
-      var placementWorker = A.Fake<IPlacementWorker>();
+      PartPlacementWorker sut = PartPlacementWorker.FromJson(json);
+      IPlacementWorker placementWorker = A.Fake<IPlacementWorker>();
       ((ITestPartPlacementWorker)sut).PlacementWorker = placementWorker;
       ((ITestPartPlacementWorker)sut).ExportExecutions = false;
       ((ITestPartPlacementWorker)sut).EnableCaches = useCache;

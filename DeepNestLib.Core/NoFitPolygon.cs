@@ -22,7 +22,7 @@
     public NoFitPolygon(IList<INfp> children)
         : this()
     {
-      Children = children;
+      this.Children = children;
     }
 
     /// <summary>
@@ -48,7 +48,7 @@
 
       if (withChildren == WithChildren.Included)
       {
-        foreach (var child in source.Children)
+        foreach (INfp child in source.Children)
         {
           this.Children.Add(new NoFitPolygon(child, withChildren));
         }
@@ -86,11 +86,11 @@
 
     [JsonIgnore]
     /// <inheritdoc />
-    public double MaxX => points.Length == 0 ? 0 : points.Max(p => p.X);
+    public double MaxX => this.points.Length == 0 ? 0 : this.points.Max(p => p.X);
 
     [JsonIgnore]
     /// <inheritdoc />
-    public double MinX => points.Length == 0 ? 0 : points.Min(p => p.X);
+    public double MinX => this.points.Length == 0 ? 0 : this.points.Min(p => p.X);
 
     [JsonConverter(typeof(DoublePrecisionConverter))]
     /// <inheritdoc />
@@ -98,11 +98,11 @@
 
     [JsonIgnore]
     /// <inheritdoc />
-    public double MaxY => points.Length == 0 ? 0 : points.Max(p => p.Y);
+    public double MaxY => this.points.Length == 0 ? 0 : this.points.Max(p => p.Y);
 
     [JsonIgnore]
     /// <inheritdoc />
-    public double MinY => points.Length == 0 ? 0 : points.Min(p => p.Y);
+    public double MinY => this.points.Length == 0 ? 0 : this.points.Min(p => p.Y);
 
     [JsonIgnore]
     /// <inheritdoc />
@@ -236,7 +236,7 @@
         }
 
         IPointXY lastPoint = null;
-        foreach (var point in this.Points)
+        foreach (SvgPoint point in this.Points)
         {
           if (lastPoint != null &&
               Math.Abs(point.X - lastPoint.X) < tolerance &&
@@ -278,7 +278,7 @@
     /// <returns>New <see cref="NoFitPolygon"/>.</returns>
     public static NoFitPolygon FromJson(string json)
     {
-      var options = new JsonSerializerOptions();
+      JsonSerializerOptions options = new JsonSerializerOptions();
       options.Converters.Add(new NfpJsonConverter());
       return JsonSerializer.Deserialize<NoFitPolygon>(json, options);
     }
@@ -311,13 +311,13 @@
     /// <inheritdoc/>
     public void Clean()
     {
-      var cleaned = SvgNest.CleanPolygon2(this);
+      INfp cleaned = SvgNest.CleanPolygon2(this);
       if (cleaned != null)
       {
         this.ReplacePoints(cleaned.Points);
       }
 
-      foreach (var child in this.Children)
+      foreach (INfp child in this.Children)
       {
         child.Clean();
       }
@@ -340,7 +340,7 @@
         }
         else
         {
-          foreach (var hole in other.Children)
+          foreach (INfp hole in other.Children)
           {
             if (hole.Children.Count == 0)
             {
@@ -383,7 +383,7 @@
     /// <inheritdoc />
     public INfp Slice(int v)
     {
-      var ret = new NoFitPolygon();
+      NoFitPolygon ret = new NoFitPolygon();
       List<SvgPoint> pp = new List<SvgPoint>();
       for (int i = v; i < this.Length; i++)
       {
@@ -416,13 +416,13 @@
     /// <inheritdoc />
     public INfp Clone()
     {
-      return CloneInstance();
+      return this.CloneInstance();
     }
 
     /// <inheritdoc />
     public INfp CloneTop()
     {
-      var newp = new NoFitPolygon();
+      NoFitPolygon newp = new NoFitPolygon();
       for (var i = 0; i < this.Length; i++)
       {
         newp.AddPoint(new SvgPoint(
@@ -437,16 +437,16 @@
     public INfp CloneExact()
     {
       NoFitPolygon clone = new NoFitPolygon();
-      CopyStateProperties(clone);
-      CopyInstructionProperties(clone);
+      this.CopyStateProperties(clone);
+      this.CopyInstructionProperties(clone);
 
       clone.ReplacePoints(this.Points.Select(z => new SvgPoint(z.X, z.Y) { Exact = z.Exact }));
       if (this.Children != null)
       {
-        foreach (var citem in this.Children)
+        foreach (INfp citem in this.Children)
         {
           clone.Children.Add(new NoFitPolygon());
-          var l = clone.Children.Last();
+          INfp l = clone.Children.Last();
           l.Id = citem.Id;
           l.Source = citem.Source;
           l.ReplacePoints(citem.Points.Select(z => new SvgPoint(z.X, z.Y) { Exact = z.Exact }));
@@ -471,7 +471,7 @@
         pp.Add(new SvgPoint(x1, y1));
       }
 
-      var rotated = this.CloneInstance();
+      NoFitPolygon rotated = this.CloneInstance();
       rotated.ReplacePoints(pp);
       rotated.Rotation += degrees;
 
@@ -499,7 +499,7 @@
         result = new NoFitPolygon();
       }
 
-      foreach (var t in this.Points)
+      foreach (SvgPoint t in this.Points)
       {
         result.AddPoint(new SvgPoint(t.X, t.Y) { Exact = t.Exact });
       }
@@ -513,7 +513,7 @@
 
       if (this.Children != null && this.Children.Count > 0)
       {
-        foreach (var c in this.Children)
+        foreach (INfp c in this.Children)
         {
           result.Children.Add(c.CloneTree());
         }
@@ -545,7 +545,7 @@
       }
       else
       {
-        var svgPoints = new SvgPoint[hullpoints.Length];
+        SvgPoint[] svgPoints = new SvgPoint[hullpoints.Length];
         for (int i = 0; i < hullpoints.Length; i++)
         {
           svgPoints[i] = new SvgPoint(hullpoints[i][0], hullpoints[i][1]);
@@ -568,7 +568,7 @@
     /// <inheritdoc />
     public virtual string ToJson()
     {
-      var options = new JsonSerializerOptions();
+      JsonSerializerOptions options = new JsonSerializerOptions();
       options.Converters.Add(new NfpJsonConverter());
       options.WriteIndented = true;
       return JsonSerializer.Serialize(this, options);
@@ -577,21 +577,21 @@
     /// <inheritdoc />
     public string ToOpenScadPolygon()
     {
-      var resultBuilder = new StringBuilder("polygon ([");
-      foreach (var p in this.Points)
+      StringBuilder resultBuilder = new StringBuilder("polygon ([");
+      foreach (SvgPoint p in this.Points)
       {
         resultBuilder.AppendLine($"[{p.X:0.######},{p.Y:0.######}],");
       }
 
       resultBuilder.AppendLine("]);");
 
-      if (Children.Count > 0)
+      if (this.Children.Count > 0)
       {
         var outer = resultBuilder.ToString();
         resultBuilder = new StringBuilder();
         resultBuilder.AppendLine("difference() {");
         resultBuilder.Append(outer);
-        foreach (var c in Children)
+        foreach (INfp c in this.Children)
         {
           resultBuilder.Append(c.ToOpenScadPolygon());
         }
@@ -605,14 +605,14 @@
     /// <inheritdoc />
     public INfp Shift(IPartPlacement shift)
     {
-      return Shift(shift.X, shift.Y);
+      return this.Shift(shift.X, shift.Y);
     }
 
     /// <inheritdoc />
     public INfp Shift(double x, double y)
     {
       NoFitPolygon shifted = new NoFitPolygon();
-      CopyStateProperties(shifted);
+      this.CopyStateProperties(shifted);
 
       shifted.PlacementOrder = this.PlacementOrder;
       shifted.StrictAngle = this.StrictAngle;
@@ -636,12 +636,12 @@
     /// <inheritdoc />
     public INfp ShiftToOrigin()
     {
-      return Shift(-this.MinX, -this.MinY);
+      return this.Shift(-this.MinX, -this.MinY);
     }
 
     bool IEquatable<IPolygon>.Equals(IPolygon other)
     {
-      var thisPolygon = this as IPolygon;
+      IPolygon thisPolygon = this as IPolygon;
       if (other != null &&
           //thisPolygon.Points.SequenceEqual(other.Points, new SvgPointCloseEqualityComparer()) &&
           thisPolygon.Id == other.Id &&
@@ -660,16 +660,16 @@
     {
       if (!this.IsClosed)
       {
-        var closedPoints = points.ToList();
+        List<SvgPoint> closedPoints = this.points.ToList();
         closedPoints.Add(closedPoints.First());
-        ReplacePoints(closedPoints);
+        this.ReplacePoints(closedPoints);
       }
     }
 
     public DxfFile ToDxfFile()
     {
-      var result = new DxfFile();
-      result.Entities.Add(ToDxfPolyLine());
+      DxfFile result = new DxfFile();
+      result.Entities.Add(this.ToDxfPolyLine());
       return result;
     }
 
@@ -683,8 +683,8 @@
 
     internal DxfPolyline ToDxfPolyLine()
     {
-      var resultSource = new List<DxfVertex>();
-      foreach (var point in points)
+      List<DxfVertex> resultSource = new List<DxfVertex>();
+      foreach (SvgPoint point in this.points)
       {
         resultSource.Add(new DxfVertex(new DxfPoint(point.X, point.Y, 0)));
       }
@@ -696,7 +696,7 @@
     {
       for (int c = 0; c < thisPolygon.Children.Count; c++)
       {
-        var childPolygon = thisPolygon.Children[c] as IEquatable<IPolygon>;
+        IEquatable<IPolygon> childPolygon = thisPolygon.Children[c] as IEquatable<IPolygon>;
         if (!childPolygon.Equals(other.Children[c]))
         {
           return false;
@@ -738,7 +738,7 @@
         result = new NoFitPolygon();
       }
 
-      CopyStateProperties(result);
+      this.CopyStateProperties(result);
       result.IsPriority = this.IsPriority;
       result.StrictAngle = this.StrictAngle;
 
@@ -749,7 +749,7 @@
 
       if (this.Children != null && this.Children.Count > 0)
       {
-        foreach (var child in this.Children)
+        foreach (INfp child in this.Children)
         {
           result.Children.Add(child.Clone());
         }

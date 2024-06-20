@@ -37,9 +37,9 @@
 
       for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
       {
-        var child = VisualTreeHelper.GetChild(depObj, i);
+        DependencyObject child = VisualTreeHelper.GetChild(depObj, i);
 
-        var result = (child as T) ?? GetChildOfType<T>(child);
+        T result = (child as T) ?? GetChildOfType<T>(child);
         if (result != null)
         {
           return result;

@@ -9,21 +9,21 @@
 
     public ToolViewModel(string name)
     {
-      Name = name;
-      Title = name;
+      this.Name = name;
+      this.Title = name;
     }
 
     public string Name { get; private set; }
 
     public bool IsVisible
     {
-      get => isVisible;
+      get => this.isVisible;
       set
       {
-        if (isVisible != value)
+        if (this.isVisible != value)
         {
-          isVisible = value;
-          OnPropertyChanged(nameof(IsVisible));
+          this.isVisible = value;
+          this.OnPropertyChanged(nameof(this.IsVisible));
         }
       }
     }

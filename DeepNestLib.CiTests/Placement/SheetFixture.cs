@@ -50,7 +50,7 @@
     [Fact]
     public void PointsExpected()
     {
-      var expected = new SvgPoint[] {
+      SvgPoint[] expected = new SvgPoint[] {
           new SvgPoint(0, 0),
           new SvgPoint(0, 200),
           new SvgPoint(100, 200),

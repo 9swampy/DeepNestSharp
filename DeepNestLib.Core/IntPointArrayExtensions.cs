@@ -8,7 +8,7 @@
   {
     public static NoFitPolygon ToNestCoordinates(this IntPoint[] polygon, double scale)
     {
-      var clone = new List<SvgPoint>();
+      List<SvgPoint> clone = new List<SvgPoint>();
 
       for (var i = 0; i < polygon.Count(); i++)
       {

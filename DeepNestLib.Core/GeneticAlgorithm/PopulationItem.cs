@@ -13,7 +13,7 @@
 
     public DeepNestGene Gene { get; }
 
-    public bool IsPending => !Processing && Fitness == -1;
+    public bool IsPending => !this.Processing && this.Fitness == -1;
 
     public int Index { get; internal set; }
   }

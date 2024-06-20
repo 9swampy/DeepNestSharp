@@ -8,7 +8,7 @@
   {
     public WindowUnk()
     {
-      db = new DbCache(this);
+      this.db = new DbCache(this);
     }
 
     public Dictionary<string, List<INfp>> nfpCache { get; } = new Dictionary<string, List<INfp>>();
@@ -32,7 +32,7 @@
 
     public string ToJson(bool writeIndented = false)
     {
-      var options = new JsonSerializerOptions();
+      JsonSerializerOptions options = new JsonSerializerOptions();
       options.Converters.Add(new SheetJsonConverter());
       options.Converters.Add(new NfpJsonConverter());
       options.WriteIndented = writeIndented;
@@ -41,7 +41,7 @@
 
     internal static WindowUnk FromJson(string json)
     {
-      var options = new JsonSerializerOptions();
+      JsonSerializerOptions options = new JsonSerializerOptions();
       options.Converters.Add(new WindowUnkJsonConverter());
       options.Converters.Add(new SheetJsonConverter());
       options.Converters.Add(new NfpJsonConverter());

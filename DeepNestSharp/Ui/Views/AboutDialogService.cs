@@ -14,7 +14,7 @@
 
     public bool? ShowDialog()
     {
-      var dialog = aboutDialogFactory();
+      IAboutDialogService dialog = this.aboutDialogFactory();
       return dialog.ShowDialog();
     }
   }

@@ -29,25 +29,25 @@
 
     private void Items_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
     {
-      if (dispatcherService.InvokeRequired)
+      if (this.dispatcherService.InvokeRequired)
       {
-        dispatcherService.Invoke(() => Items_CollectionChanged(sender, e));
+        this.dispatcherService.Invoke(() => this.Items_CollectionChanged(sender, e));
       }
       else
       {
-        CollectionChanged?.Invoke(this, e);
+        this.CollectionChanged?.Invoke(this, e);
       }
     }
 
-    public int Count => items.Count;
+    public int Count => this.items.Count;
 
-    public INestResult Top => items?.FirstOrDefault();
+    public INestResult Top => this.items?.FirstOrDefault();
 
     public int EliteSurvivors
     {
       get
       {
-        return Math.Max(config.PopulationSize / 10, UiSurvivorsMin);
+        return Math.Max(this.config.PopulationSize / 10, UiSurvivorsMin);
       }
     }
 
@@ -55,13 +55,13 @@
     {
       get
       {
-        var result = config.PopulationSize * 2 / 10;
+        var result = this.config.PopulationSize * 2 / 10;
         if (result <= 0)
         {
           throw new InvalidOperationException("MaxCapacity is zero so no results will ever be captured. Fix the configuration (or feed in DefaultSvgNestConfig if it's a test).");
         }
 
-        return Math.Max(result, EliteSurvivors);
+        return Math.Max(result, this.EliteSurvivors);
       }
     }
 
@@ -69,12 +69,12 @@
 
     public IEnumerator<INestResult> GetEnumerator()
     {
-      return items.GetEnumerator();
+      return this.items.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
     {
-      return items.GetEnumerator();
+      return this.items.GetEnumerator();
     }
 
     public int IndexOf(INestResult nestResult)
@@ -94,9 +94,9 @@
 
     internal void Clear()
     {
-      if (dispatcherService.InvokeRequired)
+      if (this.dispatcherService.InvokeRequired)
       {
-        dispatcherService.Invoke(() => Clear());
+        this.dispatcherService.Invoke(() => this.Clear());
       }
       else
       {
@@ -110,36 +110,36 @@
     internal TryAddResult TryAdd(INestResult payload)
     {
       TryAddResult result = TryAddResult.NotAdded;
-      if (dispatcherService.InvokeRequired)
+      if (this.dispatcherService.InvokeRequired)
       {
-        dispatcherService.Invoke(() => result = TryAdd(payload));
+        this.dispatcherService.Invoke(() => result = this.TryAdd(payload));
       }
       else
       {
         lock (lockItemsObject)
         {
-          if (items.Count == 0)
+          if (this.items.Count == 0)
           {
-            items.Insert(0, payload);
+            this.items.Insert(0, payload);
             result = TryAddResult.Added;
           }
           else
           {
             int i = 0;
-            while (i < items.Count && items[i].Fitness < payload.Fitness)
+            while (i < this.items.Count && this.items[i].Fitness < payload.Fitness)
             {
               i++;
             }
 
-            if (i == items.Count)
+            if (i == this.items.Count)
             {
-              if (items.Count < MaxCapacity)
+              if (this.items.Count < this.MaxCapacity)
               {
-                items.Add(payload);
+                this.items.Add(payload);
                 result = TryAddResult.Added;
               }
             }
-            else if (!IsANovelNest(payload.Fitness, items[i].Fitness, i, config.TopDiversity))
+            else if (!IsANovelNest(payload.Fitness, this.items[i].Fitness, i, this.config.TopDiversity))
             {
               // Duplicate - respond true so the TryAdd consumer can report duplicate as
               // it won't find the result in the list
@@ -147,14 +147,14 @@
             }
             else
             {
-              items.Insert(i, payload);
+              this.items.Insert(i, payload);
               result = TryAddResult.Added;
             }
           }
 
-          if (items.Count > MaxCapacity)
+          if (this.items.Count > this.MaxCapacity)
           {
-            items.RemoveAt(items.Count - 1);
+            this.items.RemoveAt(this.items.Count - 1);
           }
         }
       }

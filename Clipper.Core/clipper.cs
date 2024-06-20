@@ -3327,7 +3327,7 @@ namespace ClipperLib
 
       public static void ReversePaths(Paths polys)
       {
-        foreach (var poly in polys) { poly.Reverse(); }
+        foreach (Path poly in polys) { poly.Reverse(); }
       }
       //------------------------------------------------------------------------------
 

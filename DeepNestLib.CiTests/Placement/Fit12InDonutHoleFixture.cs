@@ -106,7 +106,7 @@
     {
       PartPlacementWorker sut;
       IPlacementWorker placementWorker;
-      var partPlacement = GetPartPlacementForFit12InDonutHole(useDllImport, out sut, out placementWorker);
+      PartPlacement partPlacement = GetPartPlacementForFit12InDonutHole(useDllImport, out sut, out placementWorker);
 
       A.CallTo(() => placementWorker.AddPlacement(sut.InputPart, A<List<IPartPlacement>>._, A<INfp>._, partPlacement, A<PlacementTypeEnum>._, A<ISheet>._, A<double>._)).MustHaveHappened();
     }
@@ -128,7 +128,7 @@
     [InlineData(false)]
     public void GivenPartFitsWhenProcessPartThenShouldPlaceAtExpectedPositionY(bool useDllImport)
     {
-      var partPlacement = GetPartPlacementForFit12InDonutHole(useDllImport, out _, out _);
+      PartPlacement partPlacement = GetPartPlacementForFit12InDonutHole(useDllImport, out _, out _);
 
       partPlacement.Y.Should().BeApproximately(62, 1);
     }
@@ -140,7 +140,7 @@
     {
       PartPlacementWorker sut;
       IPlacementWorker placementWorker;
-      var partPlacement = GetPartPlacementForFit12InDonutHole(useDllImport, out sut, out placementWorker);
+      PartPlacement partPlacement = GetPartPlacementForFit12InDonutHole(useDllImport, out sut, out placementWorker);
 
       A.CallTo(() => placementWorker.AddPlacement(sut.InputPart, A<List<IPartPlacement>>._, A<INfp>._, partPlacement, A<PlacementTypeEnum>._, A<ISheet>._, A<double>._)).MustHaveHappened();
     }
@@ -149,8 +149,8 @@
     {
       IPlacementWorker localPlacementWorker;
       SetupFit12InDonutHolePartPlacementWorker(useDllImport, out sut, out localPlacementWorker);
-      var inputPart = sut.InputPart;
-      var partPlacementArg = new Capture<PartPlacement>();
+      INfp inputPart = sut.InputPart;
+      Capture<PartPlacement> partPlacementArg = new Capture<PartPlacement>();
       A.CallTo(() => localPlacementWorker.AddPlacement(inputPart, A<List<IPartPlacement>>._, A<INfp>._, partPlacementArg, A<PlacementTypeEnum>._, A<ISheet>._, A<double>._)).Returns(default);
       ((ITestPartPlacementWorker)sut).ExportExecutions = false;
       sut.ProcessPart(sut.InputPart, 0);
@@ -169,11 +169,11 @@
       }
 
       sut = PartPlacementWorker.FromJson(json);
-      var config = sut.Config as ISvgNestConfig;
+      ISvgNestConfig config = sut.Config as ISvgNestConfig;
       config.Rotations = 1;
       config.UseDllImport = useDllImport;
       config.ExportExecutions = false;
-      var dispatcherService = A.Fake<IDispatcherService>();
+      IDispatcherService dispatcherService = A.Fake<IDispatcherService>();
       A.CallTo(() => dispatcherService.InvokeRequired).Returns(false);
 
       sut.Config.ClipperScale.Should().Be(10000000);
@@ -206,12 +206,12 @@
         json = reader.ReadToEnd().Replace(" ", string.Empty).Replace("\r\n", string.Empty);
       }
 
-      var options = new System.Text.Json.JsonSerializerOptions();
+      System.Text.Json.JsonSerializerOptions options = new System.Text.Json.JsonSerializerOptions();
       options.IncludeFields = true;
-      var pathScaledUpList = System.Text.Json.JsonSerializer.Deserialize<List<List<IntPoint>>>(json, options);
+      List<List<IntPoint>> pathScaledUpList = System.Text.Json.JsonSerializer.Deserialize<List<List<IntPoint>>>(json, options);
       pathScaledUpList.Count.Should().Be(2);
       pathScaledUpList[0].Count.Should().Be(4);
-      var n = pathScaledUpList[0].ToArray().ToNestCoordinates(scaler);
+      NoFitPolygon n = pathScaledUpList[0].ToArray().ToNestCoordinates(scaler);
       var sarea = Math.Abs(GeometryUtil.PolygonArea(n));
       sarea.Should().Be(40000);
       n = pathScaledUpList[1].ToArray().ToNestCoordinates(scaler);
@@ -224,12 +224,12 @@
         json = reader.ReadToEnd().Replace(" ", string.Empty).Replace("\r\n", string.Empty);
       }
 
-      var patternScaledUp = System.Text.Json.JsonSerializer.Deserialize<List<IntPoint>>(json, options);
+      List<IntPoint> patternScaledUp = System.Text.Json.JsonSerializer.Deserialize<List<IntPoint>>(json, options);
       patternScaledUp.Count.Should().Be(29);
       patternScaledUp[10].X.Should().Be(-173960648L);
       patternScaledUp[10].Y.Should().Be(288437271L);
 
-      var solution = ClipperLib.Clipper.MinkowskiSum(new List<IntPoint>(patternScaledUp), new List<List<IntPoint>>(pathScaledUpList.Select(pointsArray => pointsArray.ToList())), true);
+      List<List<IntPoint>> solution = ClipperLib.Clipper.MinkowskiSum(new List<IntPoint>(patternScaledUp), new List<List<IntPoint>>(pathScaledUpList.Select(pointsArray => pointsArray.ToList())), true);
 
       solution.Count.Should().Be(2);
     }
@@ -244,12 +244,12 @@
         json = reader.ReadToEnd().Replace(" ", string.Empty).Replace("\r\n", string.Empty);
       }
 
-      var options = new System.Text.Json.JsonSerializerOptions();
+      System.Text.Json.JsonSerializerOptions options = new System.Text.Json.JsonSerializerOptions();
       options.IncludeFields = true;
-      var pathScaledUpList = System.Text.Json.JsonSerializer.Deserialize<List<List<IntPoint>>>(json, options);
+      List<List<IntPoint>> pathScaledUpList = System.Text.Json.JsonSerializer.Deserialize<List<List<IntPoint>>>(json, options);
       pathScaledUpList.Count.Should().Be(2);
       pathScaledUpList[0].Count.Should().Be(4);
-      var n = pathScaledUpList[0].ToArray().ToNestCoordinates(scaler);
+      NoFitPolygon n = pathScaledUpList[0].ToArray().ToNestCoordinates(scaler);
       var sarea = Math.Abs(GeometryUtil.PolygonArea(n));
       sarea.Should().Be(40000);
       n.Area.Should().Be(40000);
@@ -272,12 +272,12 @@
         json = reader.ReadToEnd().Replace(" ", string.Empty).Replace("\r\n", string.Empty);
       }
 
-      var patternScaledUp = System.Text.Json.JsonSerializer.Deserialize<List<IntPoint>>(json, options);
+      List<IntPoint> patternScaledUp = System.Text.Json.JsonSerializer.Deserialize<List<IntPoint>>(json, options);
       patternScaledUp.Count.Should().Be(46);
       patternScaledUp[10].X.Should().Be(-220905000L);
       patternScaledUp[10].Y.Should().Be(-765603000L);
 
-      var solution = ClipperLib.Clipper.MinkowskiSum(new List<IntPoint>(patternScaledUp), new List<List<IntPoint>>(pathScaledUpList.Select(pointsArray => pointsArray.ToList())), true);
+      List<List<IntPoint>> solution = ClipperLib.Clipper.MinkowskiSum(new List<IntPoint>(patternScaledUp), new List<List<IntPoint>>(pathScaledUpList.Select(pointsArray => pointsArray.ToList())), true);
 
       solution.Count.Should().Be(2);
     }
@@ -290,12 +290,12 @@
       pathScaledUpResourcePath = "Placement.pathScaledUpListOrig.json";
       patternScaledUpResourcePath = "Placement.patternScaledUpOrig.json";
 
-      var options = new System.Text.Json.JsonSerializerOptions();
+      System.Text.Json.JsonSerializerOptions options = new System.Text.Json.JsonSerializerOptions();
       options.IncludeFields = true;
-      var pathScaledUpList = System.Text.Json.JsonSerializer.Deserialize<List<List<IntPoint>>>(LoadJson(pathScaledUpResourcePath), options);
-      var patternScaledUp = System.Text.Json.JsonSerializer.Deserialize<List<IntPoint>>(LoadJson(patternScaledUpResourcePath), options);
+      List<List<IntPoint>> pathScaledUpList = System.Text.Json.JsonSerializer.Deserialize<List<List<IntPoint>>>(LoadJson(pathScaledUpResourcePath), options);
+      List<IntPoint> patternScaledUp = System.Text.Json.JsonSerializer.Deserialize<List<IntPoint>>(LoadJson(patternScaledUpResourcePath), options);
 
-      var solution = ClipperLib.Clipper.MinkowskiSum(new List<IntPoint>(patternScaledUp), new List<List<IntPoint>>(pathScaledUpList.Select(pointsArray => pointsArray.ToList())), true);
+      List<List<IntPoint>> solution = ClipperLib.Clipper.MinkowskiSum(new List<IntPoint>(patternScaledUp), new List<List<IntPoint>>(pathScaledUpList.Select(pointsArray => pointsArray.ToList())), true);
 
       solution.Count.Should().Be(2);
       //solution[0].Count.Should().Be(18);

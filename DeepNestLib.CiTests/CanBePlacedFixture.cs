@@ -108,9 +108,9 @@
     [InlineData(false, 1200, 200)]
     public void GivenPartWhenSheetNfpMemoisesShouldBeEquivalentOnly(bool useDllImport, double sheetSize, double partSize)
     {
-      var generator = new DxfGenerator();
-      var sheet = generator.GenerateRectangle("Sheet", sheetSize, sheetSize, RectangleType.FileLoad).ToSheet();
-      var part = generator.GenerateRectangle("Sheet", partSize, partSize, RectangleType.FileLoad).ToNfp();
+      DxfGenerator generator = new DxfGenerator();
+      ISheet sheet = generator.GenerateRectangle("Sheet", sheetSize, sheetSize, RectangleType.FileLoad).ToSheet();
+      INfp part = generator.GenerateRectangle("Sheet", partSize, partSize, RectangleType.FileLoad).ToNfp();
       sheet.IsClosed.Should().BeTrue();
 
       SheetNfp sheetNfp = GivenPartWhenFitOnSheetThenGetSheetNfp(useDllImport, sheet, part);
@@ -125,10 +125,10 @@
     [InlineData(false, 1200, 200)]
     public void GivenSheetWhenSheetNfpMemoisesShouldBeEquivalentOnly(bool useDllImport, double sheetSize, double partSize)
     {
-      var generator = new DxfGenerator();
-      var sheet = generator.GenerateRectangle("Sheet", sheetSize, sheetSize, RectangleType.FileLoad).ToSheet();
+      DxfGenerator generator = new DxfGenerator();
+      ISheet sheet = generator.GenerateRectangle("Sheet", sheetSize, sheetSize, RectangleType.FileLoad).ToSheet();
       sheet.EnsureIsClosed();
-      var part = generator.GenerateRectangle("Sheet", partSize, partSize, RectangleType.FileLoad).ToNfp();
+      INfp part = generator.GenerateRectangle("Sheet", partSize, partSize, RectangleType.FileLoad).ToNfp();
       sheet.EnsureIsClosed();
 
       SheetNfp sheetNfp = GivenPartWhenFitOnSheetThenGetSheetNfp(useDllImport, sheet, part);
@@ -171,17 +171,17 @@
 
     private static SheetNfp GivenPartWhenFitOnSheetThenGetSheetNfp(bool useDllImport, double sheetSize, double partSize)
     {
-      var generator = new DxfGenerator();
-      var sheet = generator.GenerateRectangle("Sheet", sheetSize, sheetSize, RectangleType.TopLeftClockwise, false).ToSheet();
-      var part = generator.GenerateRectangle("Part", partSize, partSize, RectangleType.FileLoad).ToNfp();
+      DxfGenerator generator = new DxfGenerator();
+      ISheet sheet = generator.GenerateRectangle("Sheet", sheetSize, sheetSize, RectangleType.TopLeftClockwise, false).ToSheet();
+      INfp part = generator.GenerateRectangle("Part", partSize, partSize, RectangleType.FileLoad).ToNfp();
       return GivenPartWhenFitOnSheetThenGetSheetNfp(useDllImport, sheet, part);
     }
 
     private static SheetNfp GivenPartWhenFitOnSheetThenGetSheetNfp(bool useDllImport, ISheet sheet, INfp part)
     {
-      var nfpHelper = new NfpHelper();
+      NfpHelper nfpHelper = new NfpHelper();
       ((ITestNfpHelper)nfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(false, A.Fake<INestStateMinkowski>());
-      var sheetNfp = new SheetNfp(
+      SheetNfp sheetNfp = new SheetNfp(
         nfpHelper,
         sheet,
         part,

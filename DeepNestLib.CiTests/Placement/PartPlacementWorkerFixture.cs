@@ -27,7 +27,7 @@
     [Fact]
     public void ShouldSerialize()
     {
-      var sut = A.Dummy<PartPlacementWorker>();
+      PartPlacementWorker sut = A.Dummy<PartPlacementWorker>();
 
       Action act = () => _ = sut.ToJson();
 
@@ -82,12 +82,12 @@
     [Fact]
     public void GivenClipCacheItemJsonConverterWithClipCacheShouldRoundTripSerialize()
     {
-      var clipCache = new Dictionary<string, ClipCacheItem>();
+      Dictionary<string, ClipCacheItem> clipCache = new Dictionary<string, ClipCacheItem>();
       clipCache.Add("item1", new ClipCacheItem() { index = 1, nfpp = new ClipperLib.IntPoint[][] { new ClipperLib.IntPoint[] { new ClipperLib.IntPoint(0, 0), new ClipperLib.IntPoint(1, 1) } } });
 
-      var sut = new ClipCacheItemJsonConverter();
+      ClipCacheItemJsonConverter sut = new ClipCacheItemJsonConverter();
 
-      var options = new JsonSerializerOptions();
+      JsonSerializerOptions options = new JsonSerializerOptions();
       options.Converters.Add(new ClipCacheItemJsonConverter());
       string json = System.Text.Json.JsonSerializer.Serialize<Dictionary<string, ClipCacheItem>>(clipCache, options);
       System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, ClipCacheItem>>(json, options);
@@ -137,7 +137,7 @@
               -9.9184322M,
               -33.7844009M,
             };
-      var keyOne = new MinkowskiKey(1, new List<double>(), 1, new int[0], new List<double>(), 1, item7One.Select(o => (double)o));
+      MinkowskiKey keyOne = new MinkowskiKey(1, new List<double>(), 1, new int[0], new List<double>(), 1, item7One.Select(o => (double)o));
 
       var item7Two = new decimal[] {
               -40.0815659M,
@@ -149,7 +149,7 @@
               9.9184322M,
               33.7844009M,
             };
-      var keyTwo = new MinkowskiKey(1, new List<double>(), 1, new int[0], new List<double>(), 1, item7Two.Select(o => (double)o));
+      MinkowskiKey keyTwo = new MinkowskiKey(1, new List<double>(), 1, new int[0], new List<double>(), 1, item7Two.Select(o => (double)o));
 
       keyOne.GetHashCode().Should().NotBe(keyTwo.GetHashCode());
     }
@@ -168,7 +168,7 @@
               -9.9184322M,
               -33.7844009M,
             };
-      var keyOne = new MinkowskiKey(1, new List<double>(), 1, new int[0], new List<double>(), 1, item7One.Select(o => (double)o));
+      MinkowskiKey keyOne = new MinkowskiKey(1, new List<double>(), 1, new int[0], new List<double>(), 1, item7One.Select(o => (double)o));
 
       var item7Two = new decimal[]
             {
@@ -181,7 +181,7 @@
               -9.9184322M,
               -33.7844009M,
             };
-      var keyTwo = new MinkowskiKey(1, new List<double>(), 1, new int[0], new List<double>(), 1, item7Two.Select(o => (double)o));
+      MinkowskiKey keyTwo = new MinkowskiKey(1, new List<double>(), 1, new int[0], new List<double>(), 1, item7Two.Select(o => (double)o));
 
       keyOne.GetHashCode().Should().Be(keyTwo.GetHashCode());
     }
@@ -196,11 +196,11 @@
         json = reader.ReadToEnd().Replace(" ", string.Empty).Replace("\r\n", string.Empty);
       }
 
-      var options = new JsonSerializerOptions();
+      JsonSerializerOptions options = new JsonSerializerOptions();
       options.Converters.Add(new NfpJsonConverter());
       options.Converters.Add(new MinkowskiDictionaryJsonConverter());
-      var kvpList = JsonSerializer.Deserialize<List<KeyValuePair<MinkowskiKey, INfp>>>(json, options);
-      var hashCodeList = kvpList.Select(o => o.GetHashCode());
+      List<KeyValuePair<MinkowskiKey, INfp>> kvpList = JsonSerializer.Deserialize<List<KeyValuePair<MinkowskiKey, INfp>>>(json, options);
+      IEnumerable<int> hashCodeList = kvpList.Select(o => o.GetHashCode());
       hashCodeList.Distinct().Count().Should().Be(kvpList.Count);
     }
 
@@ -214,13 +214,13 @@
         json = reader.ReadToEnd().Replace(" ", string.Empty).Replace("\r\n", string.Empty);
       }
 
-      var options = new JsonSerializerOptions();
+      JsonSerializerOptions options = new JsonSerializerOptions();
       options.Converters.Add(new NfpJsonConverter());
       options.Converters.Add(new MinkowskiDictionaryJsonConverter());
-      var kvpList = JsonSerializer.Deserialize<List<KeyValuePair<MinkowskiKey, INfp>>>(json, options);
+      List<KeyValuePair<MinkowskiKey, INfp>> kvpList = JsonSerializer.Deserialize<List<KeyValuePair<MinkowskiKey, INfp>>>(json, options);
 
-      var key2 = kvpList[2].Key;
-      var key4 = kvpList[4].Key;
+      MinkowskiKey key2 = kvpList[2].Key;
+      MinkowskiKey key4 = kvpList[4].Key;
       key2.Item1.Should().Be(key4.Item1);
       key2.Item2.Should().BeEquivalentTo(key4.Item2);
       System.Diagnostics.Debug.Print(string.Join(",", key2.Item2));

@@ -36,7 +36,7 @@
         canvas.Focus();
         if (this.mainViewModel != null)
         {
-          mainViewModel.PreviewViewModel.HoverPartPlacement = this.partPlacement;
+          this.mainViewModel.PreviewViewModel.HoverPartPlacement = this.partPlacement;
           System.Diagnostics.Debug.WriteLine($"Hover {this.partPlacement?.Id ?? -1}");
         }
       }
@@ -47,7 +47,7 @@
       if (this.mainViewModel != null &&
           !this.mainViewModel.PreviewViewModel.IsDragging)
       {
-        mainViewModel.PreviewViewModel.HoverPartPlacement = null;
+        this.mainViewModel.PreviewViewModel.HoverPartPlacement = null;
       }
     }
   }

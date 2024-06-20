@@ -29,7 +29,7 @@
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryConvertToNfp(firstPartIdSrc, out firstPart).Should().BeTrue();
       Chromosome secondPart;
       DxfGenerator.GenerateSquare("Part", 11D, RectangleType.FileLoad).TryConvertToNfp(secondPartIdSrc, out secondPart).Should().BeTrue();
-      var config = A.Fake<IPlacementConfig>();
+      IPlacementConfig config = A.Fake<IPlacementConfig>();
       A.CallTo(() => config.PlacementType).Returns(PlacementTypeEnum.BoundingBox);
       A.CallTo(() => config.UseDllImport).Returns(false);
       A.CallTo(() => config.Rotations).Returns(2);

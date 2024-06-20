@@ -22,28 +22,28 @@ namespace DeepNestLib.NestProject
     {
       get
       {
-        if (wrappableSheetLoadInfos == null)
+        if (this.wrappableSheetLoadInfos == null)
         {
           ISheetLoadInfo sheetLoadInfo;
-          if (config == null)
+          if (this.config == null)
           {
             // This is a bit of a fudge for during deserialisation; ultimately this should get set with the deserialised object, just need to get the deserializer past this
             sheetLoadInfo = new SheetLoadInfo(SvgNest.Config);
           }
           else
           {
-            sheetLoadInfo = new ConfigSheetLoadInfo(Config);
+            sheetLoadInfo = new ConfigSheetLoadInfo(this.Config);
           }
 
-          wrappableSheetLoadInfos = new WrappableList<ISheetLoadInfo, SheetLoadInfo>() { sheetLoadInfo };
+          this.wrappableSheetLoadInfos = new WrappableList<ISheetLoadInfo, SheetLoadInfo>() { sheetLoadInfo };
         }
 
-        return wrappableSheetLoadInfos;
+        return this.wrappableSheetLoadInfos;
       }
 
       private set
       {
-        wrappableSheetLoadInfos = (WrappableList<ISheetLoadInfo, SheetLoadInfo>)value;
+        this.wrappableSheetLoadInfos = (WrappableList<ISheetLoadInfo, SheetLoadInfo>)value;
       }
     }
 
@@ -52,12 +52,12 @@ namespace DeepNestLib.NestProject
     {
       get
       {
-        return config ?? (config = SvgNest.Config);
+        return this.config ?? (this.config = SvgNest.Config);
       }
 
       private set
       {
-        config = value;
+        this.config = value;
       }
     }
 
@@ -67,14 +67,14 @@ namespace DeepNestLib.NestProject
       {
         if (!string.IsNullOrWhiteSpace(json))
         {
-          var options = new JsonSerializerOptions();
+          JsonSerializerOptions options = new JsonSerializerOptions();
           options.Converters.Add(new DetailLoadInfoJsonConverter());
           options.Converters.Add(new WrappableListJsonConverter<IDetailLoadInfo, DetailLoadInfo>());
           options.Converters.Add(new WrappableListJsonConverter<ISheetLoadInfo, SheetLoadInfo>());
           options.Converters.Add(new SheetLoadInfoJsonConverter());
           options.Converters.Add(new SvgNestConfigJsonConverter());
-          var result = JsonSerializer.Deserialize<ProjectInfo>(json, options);
-          var deserialized = result.config;
+          ProjectInfo result = JsonSerializer.Deserialize<ProjectInfo>(json, options);
+          ISvgNestConfig deserialized = result.config;
           result.config = config;
           if (deserialized != null)
           {
@@ -99,7 +99,7 @@ namespace DeepNestLib.NestProject
     public void Load(ProjectInfo source)
     {
       this.DetailLoadInfos.Clear();
-      foreach (var p in source.DetailLoadInfos)
+      foreach (IDetailLoadInfo p in source.DetailLoadInfos)
       {
         this.DetailLoadInfos.Add(p);
       }
@@ -115,7 +115,7 @@ namespace DeepNestLib.NestProject
       }
 #else
       this.SheetLoadInfos.Clear();
-      foreach (var s in source.SheetLoadInfos)
+      foreach (ISheetLoadInfo s in source.SheetLoadInfos)
       {
         this.SheetLoadInfos.Add(s);
       }
@@ -124,10 +124,10 @@ namespace DeepNestLib.NestProject
 
     public string ToJson()
     {
-      Config.MustBe(this.config);
-      SheetLoadInfos.MustNotBeNull();
+      this.Config.MustBe(this.config);
+      this.SheetLoadInfos.MustNotBeNull();
 
-      var options = new JsonSerializerOptions();
+      JsonSerializerOptions options = new JsonSerializerOptions();
       options.Converters.Add(new DetailLoadInfoJsonConverter());
       options.Converters.Add(new WrappableListJsonConverter<IDetailLoadInfo, DetailLoadInfo>());
       options.Converters.Add(new WrappableListJsonConverter<ISheetLoadInfo, SheetLoadInfo>());
@@ -147,8 +147,8 @@ namespace DeepNestLib.NestProject
 
     public void Load(ISvgNestConfig config, string filePath)
     {
-      var source = LoadFromFile(config, filePath);
-      Load(source);
+      ProjectInfo source = LoadFromFile(config, filePath);
+      this.Load(source);
     }
 
     public void Save(string fileName)

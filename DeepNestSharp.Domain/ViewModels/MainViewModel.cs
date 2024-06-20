@@ -7,14 +7,14 @@
   using System.Linq;
   using System.Threading.Tasks;
   using System.Windows.Input;
+  using CommunityToolkit.Mvvm.ComponentModel;
+  using CommunityToolkit.Mvvm.Input;
   using DeepNestLib;
   using DeepNestLib.IO;
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain.Docking;
   using DeepNestSharp.Domain.Services;
-  using Microsoft.Toolkit.Mvvm.ComponentModel;
-  using Microsoft.Toolkit.Mvvm.Input;
 
   public abstract class MainViewModel : ObservableRecipient, IMainViewModel
   {
@@ -45,10 +45,10 @@
 
     public MainViewModel(IMessageService messageService, IDispatcherService dispatcherService, ISvgNestConfig config, IFileIoService fileIoService, IMouseCursorService mouseCursorService)
     {
-      SvgNestConfigViewModel = new SvgNestConfigViewModel(config);
+      this.SvgNestConfigViewModel = new SvgNestConfigViewModel(config);
 
-      files = new ObservableCollection<IFileViewModel>();
-      Files = new ReadOnlyObservableCollection<IFileViewModel>(files);
+      this.files = new ObservableCollection<IFileViewModel>();
+      this.Files = new ReadOnlyObservableCollection<IFileViewModel>(this.files);
 
       this.messageService = messageService;
       this.DispatcherService = dispatcherService;
@@ -61,22 +61,22 @@
 
     public IAboutDialogService AboutDialogService { get; set; }
 
-    public ICommand AboutDialogCommand => aboutDialogCommand ?? (aboutDialogCommand = new RelayCommand(() => OnAboutDialog()));
+    public ICommand AboutDialogCommand => this.aboutDialogCommand ?? (this.aboutDialogCommand = new RelayCommand(() => this.OnAboutDialog()));
 
-    public ICommand ActiveDocumentSaveCommand => activeDocumentSaveCommand ?? (activeDocumentSaveCommand = new RelayCommand(() => Save(this.ActiveDocument, false), () => this.ActiveDocument?.IsDirty ?? false));
+    public ICommand ActiveDocumentSaveCommand => this.activeDocumentSaveCommand ?? (this.activeDocumentSaveCommand = new RelayCommand(() => this.Save(this.ActiveDocument, false), () => this.ActiveDocument?.IsDirty ?? false));
 
-    public ICommand ActiveDocumentSaveAsCommand => activeDocumentSaveAsCommand ?? (activeDocumentSaveAsCommand = new RelayCommand(() => Save(this.ActiveDocument, true), () => true));
+    public ICommand ActiveDocumentSaveAsCommand => this.activeDocumentSaveAsCommand ?? (this.activeDocumentSaveAsCommand = new RelayCommand(() => this.Save(this.ActiveDocument, true), () => true));
 
     public IEnumerable<IToolViewModel> Tools
     {
       get
       {
-        if (tools == null)
+        if (this.tools == null)
         {
-          tools = new IToolViewModel[] { PreviewViewModel, SvgNestConfigViewModel, PropertiesViewModel, NestMonitorViewModel };
+          this.tools = new IToolViewModel[] { this.PreviewViewModel, this.SvgNestConfigViewModel, this.PropertiesViewModel, this.NestMonitorViewModel };
         }
 
-        return tools;
+        return this.tools;
       }
     }
 
@@ -86,12 +86,12 @@
     {
       get
       {
-        if (nestMonitorViewModel == null)
+        if (this.nestMonitorViewModel == null)
         {
-          nestMonitorViewModel = new NestMonitorViewModel(this, this.messageService, mouseCursorService);
+          this.nestMonitorViewModel = new NestMonitorViewModel(this, this.messageService, this.mouseCursorService);
         }
 
-        return nestMonitorViewModel;
+        return this.nestMonitorViewModel;
       }
     }
 
@@ -99,12 +99,12 @@
     {
       get
       {
-        if (previewViewModel == null)
+        if (this.previewViewModel == null)
         {
-          previewViewModel = new PreviewViewModel(this);
+          this.previewViewModel = new PreviewViewModel(this);
         }
 
-        return previewViewModel;
+        return this.previewViewModel;
       }
     }
 
@@ -112,50 +112,50 @@
     {
       get
       {
-        if (propertiesViewModel == null)
+        if (this.propertiesViewModel == null)
         {
-          propertiesViewModel = new PropertiesViewModel(this);
+          this.propertiesViewModel = new PropertiesViewModel(this);
         }
 
-        return propertiesViewModel;
+        return this.propertiesViewModel;
       }
     }
 
     public ISvgNestConfigViewModel SvgNestConfigViewModel { get; }
 
-    public ICommand LoadSheetPlacementCommand => loadSheetPlacementCommand ?? (loadSheetPlacementCommand = new AsyncRelayCommand(OnLoadSheetPlacementAsync));
+    public ICommand LoadSheetPlacementCommand => this.loadSheetPlacementCommand ?? (this.loadSheetPlacementCommand = new AsyncRelayCommand(this.OnLoadSheetPlacementAsync));
 
-    public ICommand LoadPartCommand => loadPartCommand ?? (loadPartCommand = new AsyncRelayCommand(OnLoadPartAsync));
+    public ICommand LoadPartCommand => this.loadPartCommand ?? (this.loadPartCommand = new AsyncRelayCommand(this.OnLoadPartAsync));
 
-    public ICommand LoadSheetNfpCommand => loadSheetNfpCommand ?? (loadSheetNfpCommand = new AsyncRelayCommand(OnLoadSheetNfpAsync));
+    public ICommand LoadSheetNfpCommand => this.loadSheetNfpCommand ?? (this.loadSheetNfpCommand = new AsyncRelayCommand(this.OnLoadSheetNfpAsync));
 
-    public ICommand LoadNfpCandidatesCommand => loadNfpCandidatesCommand ?? (loadNfpCandidatesCommand = new AsyncRelayCommand(OnLoadNfpCandidatesAsync));
+    public ICommand LoadNfpCandidatesCommand => this.loadNfpCandidatesCommand ?? (this.loadNfpCandidatesCommand = new AsyncRelayCommand(this.OnLoadNfpCandidatesAsync));
 
-    public ICommand LoadNestResultCommand => loadNestResultCommand ?? (loadNestResultCommand = new AsyncRelayCommand(OnLoadNestResultAsync));
+    public ICommand LoadNestResultCommand => this.loadNestResultCommand ?? (this.loadNestResultCommand = new AsyncRelayCommand(this.OnLoadNestResultAsync));
 
-    public ICommand CreateNestProjectCommand => createNestProjectCommand ?? (createNestProjectCommand = new RelayCommand(OnCreateNestProject));
+    public ICommand CreateNestProjectCommand => this.createNestProjectCommand ?? (this.createNestProjectCommand = new RelayCommand(this.OnCreateNestProject));
 
-    public ICommand LoadNestProjectCommand => loadNestProjectCommand ?? (loadNestProjectCommand = new AsyncRelayCommand(OnLoadNestProjectAsync));
+    public ICommand LoadNestProjectCommand => this.loadNestProjectCommand ?? (this.loadNestProjectCommand = new AsyncRelayCommand(this.OnLoadNestProjectAsync));
 
-    public ICommand ExitCommand => exitCommand ?? (exitCommand = new RelayCommand(OnExit, CanExit));
+    public ICommand ExitCommand => this.exitCommand ?? (this.exitCommand = new RelayCommand(this.OnExit, this.CanExit));
 
     protected abstract void OnExit();
 
-    public ICommand LoadLayoutCommand => loadLayoutCommand ?? (loadLayoutCommand = new RelayCommand(OnLoadLayout, CanLoadLayout));
+    public ICommand LoadLayoutCommand => this.loadLayoutCommand ?? (this.loadLayoutCommand = new RelayCommand(this.OnLoadLayout, this.CanLoadLayout));
 
-    public ICommand SaveLayoutCommand => saveLayoutCommand ?? (saveLayoutCommand = new RelayCommand(OnSaveLayout, CanSaveLayout));
+    public ICommand SaveLayoutCommand => this.saveLayoutCommand ?? (this.saveLayoutCommand = new RelayCommand(this.OnSaveLayout, this.CanSaveLayout));
 
     public IFileViewModel ActiveDocument
     {
-      get => activeDocument;
+      get => this.activeDocument;
       set
       {
-        if (activeDocument != value)
+        if (this.activeDocument != value)
         {
-          activeDocument = value;
-          OnPropertyChanged(nameof(ActiveDocument));
-          ActiveDocumentChanged?.Invoke(this, EventArgs.Empty);
-          SetSelectedToolView(value);
+          this.activeDocument = value;
+          this.OnPropertyChanged(nameof(this.ActiveDocument));
+          this.ActiveDocumentChanged?.Invoke(this, EventArgs.Empty);
+          this.SetSelectedToolView(value);
         }
       }
     }
@@ -172,11 +172,11 @@
     {
       if (fileViewModel is NestProjectViewModel)
       {
-        NestMonitorViewModel.IsSelected = true;
+        this.NestMonitorViewModel.IsSelected = true;
       }
       else
       {
-        PreviewViewModel.IsSelected = true;
+        this.PreviewViewModel.IsSelected = true;
       }
     }
 
@@ -187,22 +187,22 @@
 
     public async Task OnLoadNestProjectAsync()
     {
-      var filePath = await fileIoService.GetOpenFilePathAsync(ProjectInfo.FileDialogFilter, SvgNestConfigViewModel.SvgNestConfig.LastNestFilePath).ConfigureAwait(false);
-      OnLoadNestProject(filePath);
+      var filePath = await this.fileIoService.GetOpenFilePathAsync(ProjectInfo.FileDialogFilter, this.SvgNestConfigViewModel.SvgNestConfig.LastNestFilePath).ConfigureAwait(false);
+      this.OnLoadNestProject(filePath);
     }
 
     public void OnLoadNestProject(string filePath)
     {
-      if (DispatcherService.InvokeRequired)
+      if (this.DispatcherService.InvokeRequired)
       {
-        DispatcherService.Invoke(() => OnLoadNestProject(filePath));
+        this.DispatcherService.Invoke(() => this.OnLoadNestProject(filePath));
       }
       else
       {
         string locatedFilePath;
-        if (TryLocateFile(filePath, out locatedFilePath))
+        if (this.TryLocateFile(filePath, out locatedFilePath))
         {
-          var loaded = new NestProjectViewModel(this, locatedFilePath, fileIoService);
+          NestProjectViewModel loaded = new NestProjectViewModel(this, locatedFilePath, this.fileIoService);
           loaded.PropertyChanged += this.NestProjectViewModel_PropertyChanged;
           this.files.Add(loaded);
           this.ActiveDocument = loaded;
@@ -212,13 +212,13 @@
 
     public async Task OnLoadNestResultAsync()
     {
-      var filePath = await fileIoService.GetOpenFilePathAsync(NestResult.FileDialogFilter, SvgNestConfigViewModel.SvgNestConfig.LastNestFilePath).ConfigureAwait(false);
-      LoadNestResult(filePath);
+      var filePath = await this.fileIoService.GetOpenFilePathAsync(NestResult.FileDialogFilter, this.SvgNestConfigViewModel.SvgNestConfig.LastNestFilePath).ConfigureAwait(false);
+      this.LoadNestResult(filePath);
     }
 
     public void OnLoadNestResult(INestResult nestResult)
     {
-      var loaded = new NestResultViewModel(this, nestResult);
+      NestResultViewModel loaded = new NestResultViewModel(this, nestResult);
       this.files.Add(loaded);
       this.ActiveDocument = loaded;
     }
@@ -226,9 +226,9 @@
     public void LoadNestResult(string filePath)
     {
       string locatedFilePath;
-      if (TryLocateFile(filePath, out locatedFilePath))
+      if (this.TryLocateFile(filePath, out locatedFilePath))
       {
-        var loaded = new NestResultViewModel(this, locatedFilePath);
+        NestResultViewModel loaded = new NestResultViewModel(this, locatedFilePath);
         this.files.Add(loaded);
         this.ActiveDocument = loaded;
       }
@@ -236,16 +236,16 @@
 
     public async Task OnLoadPartAsync()
     {
-      var filePath = await fileIoService.GetOpenFilePathAsync(NoFitPolygon.FileDialogFilter, SvgNestConfigViewModel.SvgNestConfig.LastNestFilePath).ConfigureAwait(false);
-      LoadPart(filePath);
+      var filePath = await this.fileIoService.GetOpenFilePathAsync(NoFitPolygon.FileDialogFilter, this.SvgNestConfigViewModel.SvgNestConfig.LastNestFilePath).ConfigureAwait(false);
+      this.LoadPart(filePath);
     }
 
     public void LoadPart(string filePath)
     {
       string locatedFilePath;
-      if (TryLocateFile(filePath, out locatedFilePath))
+      if (this.TryLocateFile(filePath, out locatedFilePath))
       {
-        var loaded = new PartEditorViewModel(this, locatedFilePath);
+        PartEditorViewModel loaded = new PartEditorViewModel(this, locatedFilePath);
         this.files.Add(loaded);
         this.ActiveDocument = loaded;
       }
@@ -254,9 +254,9 @@
     public void LoadNfpCandidates(string filePath)
     {
       string locatedFilePath;
-      if (TryLocateFile(filePath, out locatedFilePath))
+      if (this.TryLocateFile(filePath, out locatedFilePath))
       {
-        var loaded = new NfpCandidateListViewModel(this, locatedFilePath);
+        NfpCandidateListViewModel loaded = new NfpCandidateListViewModel(this, locatedFilePath);
         this.files.Add(loaded);
         this.ActiveDocument = loaded;
       }
@@ -265,9 +265,9 @@
     public void LoadSheetNfp(string filePath)
     {
       string locatedFilePath;
-      if (TryLocateFile(filePath, out locatedFilePath))
+      if (this.TryLocateFile(filePath, out locatedFilePath))
       {
-        var loaded = new NfpCandidateListViewModel(this, locatedFilePath);
+        NfpCandidateListViewModel loaded = new NfpCandidateListViewModel(this, locatedFilePath);
         this.files.Add(loaded);
         this.ActiveDocument = loaded;
       }
@@ -275,16 +275,16 @@
 
     public async Task OnLoadSheetPlacementAsync()
     {
-      var filePath = await fileIoService.GetOpenFilePathAsync(SheetPlacement.FileDialogFilter, SvgNestConfigViewModel.SvgNestConfig.LastDebugFilePath).ConfigureAwait(false);
-      LoadSheetPlacement(filePath);
+      var filePath = await this.fileIoService.GetOpenFilePathAsync(SheetPlacement.FileDialogFilter, this.SvgNestConfigViewModel.SvgNestConfig.LastDebugFilePath).ConfigureAwait(false);
+      this.LoadSheetPlacement(filePath);
     }
 
     public void LoadSheetPlacement(string filePath)
     {
       string locatedFilePath;
-      if (TryLocateFile(filePath, out locatedFilePath))
+      if (this.TryLocateFile(filePath, out locatedFilePath))
       {
-        var loaded = new SheetPlacementViewModel(this, locatedFilePath);
+        SheetPlacementViewModel loaded = new SheetPlacementViewModel(this, locatedFilePath);
         this.files.Add(loaded);
         this.ActiveDocument = loaded;
       }
@@ -292,7 +292,7 @@
 
     public void LoadSheetPlacement(ISheetPlacement sheetPlacement)
     {
-      var loaded = new SheetPlacementViewModel(this, sheetPlacement, mouseCursorService);
+      SheetPlacementViewModel loaded = new SheetPlacementViewModel(this, sheetPlacement, this.mouseCursorService);
       this.files.Add(loaded);
       this.ActiveDocument = loaded;
     }
@@ -301,7 +301,7 @@
     {
       if (fileToClose.IsDirty)
       {
-        var res = messageService.DisplayYesNoCancel(string.Format("Save changes for file '{0}'?", fileToClose.FileName), "DeepNestSharp", MessageBoxIcon.Question);
+        MessageBoxResult res = this.messageService.DisplayYesNoCancel(string.Format("Save changes for file '{0}'?", fileToClose.FileName), "DeepNestSharp", MessageBoxIcon.Question);
         if (res == MessageBoxResult.Cancel)
         {
           return;
@@ -309,11 +309,11 @@
 
         if (res == MessageBoxResult.Yes)
         {
-          Save(fileToClose);
+          this.Save(fileToClose);
         }
       }
 
-      files.Remove(fileToClose);
+      this.files.Remove(fileToClose);
     }
 
     public async Task ExportSheetPlacementAsync(ISheetPlacement sheetPlacement)
@@ -325,15 +325,15 @@
           return;
         }
 
-        var parts = sheetPlacement.PartPlacements.Select(o => o.Part).ToList();
+        List<INfp> parts = sheetPlacement.PartPlacements.Select(o => o.Part).ToList();
         if (parts.ContainsDxfs() && parts.ContainsSvgs())
         {
-          MessageService.DisplayMessageBox("It's not possible to export when your parts were a mix of Svg's and Dxf's.", "DeepNestPort: Not Implemented", MessageBoxIcon.Information);
+          this.MessageService.DisplayMessageBox("It's not possible to export when your parts were a mix of Svg's and Dxf's.", "DeepNestPort: Not Implemented", MessageBoxIcon.Information);
         }
         else
         {
           IExport exporter = ExporterFactory.GetExporter(sheetPlacement.PartPlacements.Select(o => o.Part).ToList());
-          var filePath = fileIoService.GetSaveFilePath(exporter.SaveFileDialogFilter);
+          var filePath = this.fileIoService.GetSaveFilePath(exporter.SaveFileDialogFilter);
           if (!string.IsNullOrWhiteSpace(filePath))
           {
             await exporter.Export(filePath, sheetPlacement, SvgNest.Config.MergeLines, SvgNest.Config.DifferentiateChildren);
@@ -342,7 +342,7 @@
       }
       catch (Exception ex)
       {
-        MessageService.DisplayMessageBox(ex.Message, "Error Saving", MessageBoxIcon.Exclamation);
+        this.MessageService.DisplayMessageBox(ex.Message, "Error Saving", MessageBoxIcon.Exclamation);
       }
     }
 
@@ -352,7 +352,7 @@
       {
         if (fileToSave.FilePath == null || saveAsFlag)
         {
-          var filePath = fileIoService.GetSaveFilePath(fileToSave.FileDialogFilter, SvgNestConfigViewModel.SvgNestConfig.LastNestFilePath);
+          var filePath = this.fileIoService.GetSaveFilePath(fileToSave.FileDialogFilter, this.SvgNestConfigViewModel.SvgNestConfig.LastNestFilePath);
           if (!string.IsNullOrWhiteSpace(filePath))
           {
             fileToSave.FilePath = filePath;
@@ -365,23 +365,23 @@
         }
 
         File.WriteAllText(fileToSave.FilePath, fileToSave.TextContent);
-        if (ActiveDocument != null)
+        if (this.ActiveDocument != null)
         {
-          ActiveDocument.IsDirty = false;
+          this.ActiveDocument.IsDirty = false;
         }
       }
     }
 
     private async Task OnLoadNfpCandidatesAsync()
     {
-      var filePath = await fileIoService.GetOpenFilePathAsync(NfpCandidateList.FileDialogFilter, SvgNestConfigViewModel.SvgNestConfig.LastDebugFilePath).ConfigureAwait(false);
-      LoadNfpCandidates(filePath);
+      var filePath = await this.fileIoService.GetOpenFilePathAsync(NfpCandidateList.FileDialogFilter, this.SvgNestConfigViewModel.SvgNestConfig.LastDebugFilePath).ConfigureAwait(false);
+      this.LoadNfpCandidates(filePath);
     }
 
     private async Task OnLoadSheetNfpAsync()
     {
-      var filePath = await fileIoService.GetOpenFilePathAsync(SheetNfp.FileDialogFilter, SvgNestConfigViewModel.SvgNestConfig.LastDebugFilePath).ConfigureAwait(false);
-      LoadSheetNfp(filePath);
+      var filePath = await this.fileIoService.GetOpenFilePathAsync(SheetNfp.FileDialogFilter, this.SvgNestConfigViewModel.SvgNestConfig.LastDebugFilePath).ConfigureAwait(false);
+      this.LoadSheetNfp(filePath);
     }
 
     private bool TryLocateFile(string filePath, out string locatedFilePath)
@@ -405,7 +405,7 @@
 
     private void OnCreateNestProject()
     {
-      var newFile = new NestProjectViewModel(this, fileIoService);
+      NestProjectViewModel newFile = new NestProjectViewModel(this, this.fileIoService);
       this.files.Add(newFile);
       this.ActiveDocument = newFile;
     }
@@ -440,8 +440,8 @@
     {
       if (e.PropertyName == $"{nameof(IFileViewModel.IsDirty)}")
       {
-        activeDocumentSaveCommand?.NotifyCanExecuteChanged();
-        activeDocumentSaveAsCommand?.NotifyCanExecuteChanged();
+        this.activeDocumentSaveCommand?.NotifyCanExecuteChanged();
+        this.activeDocumentSaveAsCommand?.NotifyCanExecuteChanged();
       }
     }
 

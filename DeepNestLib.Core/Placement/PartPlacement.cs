@@ -46,7 +46,7 @@
 
     /// <inheritdoc />
     [JsonIgnore]
-    public bool IsExact => Part.IsExact;
+    public bool IsExact => this.Part.IsExact;
 
     /// <inheritdoc />
     [JsonIgnore]
@@ -96,6 +96,6 @@
 
     /// <inheritdoc />
     [JsonIgnore]
-    public INfp PlacedPart => Part.Shift(this);
+    public INfp PlacedPart => this.Part.Shift(this);
   }
 }

@@ -27,9 +27,9 @@
         {
           loadedRawDetail = DxfParser.LoadDxfFileStreamAsRawDetail(DxfTestFilename);
           hasImportedRawDetail = loadedRawDetail.TryConvertToNfp(A.Dummy<int>(), out loadedNfp);
-          var sw = new Stopwatch();
+          Stopwatch sw = new Stopwatch();
           sw.Start();
-          var config = new TestSvgNestConfig() { CurveTolerance = 0.72D };
+          TestSvgNestConfig config = new TestSvgNestConfig() { CurveTolerance = 0.72D };
           simplifiedNfp = NfpSimplifier.SimplifyFunction(loadedNfp, false, config.CurveTolerance, config.Simplify);
           sw.Stop();
           simplifiedNfpTime = sw.ElapsedMilliseconds;
@@ -46,7 +46,7 @@
     [Fact]
     public void ShouldLoadDxfToRawDetail()
     {
-      var rawDetail = DxfParser.LoadDxfFileStreamAsRawDetail(DxfTestFilename);
+      RawDetail<IxMilia.Dxf.Entities.DxfEntity> rawDetail = DxfParser.LoadDxfFileStreamAsRawDetail(DxfTestFilename);
 
       rawDetail.Should().NotBeNull();
     }

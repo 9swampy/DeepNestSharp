@@ -34,7 +34,7 @@
     {
       if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
       {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LastTopFoundTimestamp)));
+        this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.LastTopFoundTimestamp)));
       }
     }
 
@@ -43,41 +43,41 @@
     [Description("Average time per Nest Result since start of the run.")]
     [Category("Performance")]
     [DisplayName("Average Nest Time")]
-    public long AverageNestTime => nestCount == 0 ? 0 : totalNestTime / nestCount;
+    public long AverageNestTime => this.nestCount == 0 ? 0 : this.totalNestTime / this.nestCount;
 
     [Description("Average time per Nest Result since start of the run.")]
     [Category("Performance")]
     [DisplayName("Average Placement Time")]
-    public long AveragePlacementTime => nestCount == 0 ? 0 : totalPlacementTime / nestCount;
+    public long AveragePlacementTime => this.nestCount == 0 ? 0 : this.totalPlacementTime / this.nestCount;
 
     [Description("The number of times the external C++ Minkowski library has been called. This should stabilise at the number of distinct parts in the nest times the number of rotations. If it keeps growing then the caching mechanism may not be working as intended; possibly due to complexity of the parts, possibly due to overflow failures in the Minkoski Sum. That said, if your parts have holes then the calls to hole NfpSums aren't cached?")]
     [Category("Minkowski")]
     [DisplayName("Dll Call Counter")]
-    public int DllCallCounter => dllCallCounter;
+    public int DllCallCounter => this.dllCallCounter;
 
     [Category("Minkowski")]
     [DisplayName("Clipper Call Counter")]
-    public int ClipperCallCounter => clipperCallCounter;
+    public int ClipperCallCounter => this.clipperCallCounter;
 
     [Description("The number of generations processed.")]
     [Category("Genetic Algorithm")]
-    public int Generations => generations;
+    public int Generations => this.generations;
 
     [Category("Progress")]
     public bool IsErrored { get; private set; }
 
     [Category("Progress")]
-    public int Iterations => iterations;
+    public int Iterations => this.iterations;
 
     [Description("Last Nest Time (milliseconds). The total time for the nest including Pmap, DeepNest and Placement.")]
     [Category("Performance")]
     [DisplayName("Last Nest Time")]
-    public long LastNestTime => lastNestTime;
+    public long LastNestTime => this.lastNestTime;
 
     [Description("Last Placement Time (milliseconds).")]
     [Category("Performance")]
     [DisplayName("Last Placement Time")]
-    public long LastPlacementTime => lastPlacementTime;
+    public long LastPlacementTime => this.lastPlacementTime;
 
     [Description("Time last top placement found.")]
     [Category("Performance")]
@@ -99,24 +99,24 @@
 
     [Category("Progress")]
     [DisplayName("Nest Count")]
-    public int NestCount => nestCount;
+    public int NestCount => this.nestCount;
 
     [Category("Performance")]
     [DisplayName("NfpPair % Cached")]
-    public double NfpPairCachePercentCached => nfpPairCachePercentCached;
+    public double NfpPairCachePercentCached => this.nfpPairCachePercentCached;
 
     /// <inheritdoc />
     [Description("Population of the current generation.")]
     [Category("Genetic Algorithm")]
-    public int Population => population;
+    public int Population => this.population;
 
     [Description("Number of rejected Nests.")]
     [Category("Performance")]
-    public int Rejected => rejected;
+    public int Rejected => this.rejected;
 
     [Description("Number of active Nest threads.")]
     [Category("Performance")]
-    public int Threads => threads;
+    public int Threads => this.threads;
 
     [Browsable(false)]
     public TopNestResultsCollection TopNestResults { get; }
@@ -125,117 +125,117 @@
 
     void INestStateNestingContext.Reset()
     {
-      Interlocked.Exchange(ref nestCount, 0);
-      Interlocked.Exchange(ref totalNestTime, 0);
-      Interlocked.Exchange(ref totalPlacementTime, 0);
-      Interlocked.Exchange(ref generations, 0);
-      Interlocked.Exchange(ref population, 0);
-      Interlocked.Exchange(ref lastNestTime, 0);
-      Interlocked.Exchange(ref lastPlacementTime, 0);
-      Interlocked.Exchange(ref iterations, 0);
-      Interlocked.Exchange(ref dllCallCounter, 0);
-      Interlocked.Exchange(ref clipperCallCounter, 0);
+      Interlocked.Exchange(ref this.nestCount, 0);
+      Interlocked.Exchange(ref this.totalNestTime, 0);
+      Interlocked.Exchange(ref this.totalPlacementTime, 0);
+      Interlocked.Exchange(ref this.generations, 0);
+      Interlocked.Exchange(ref this.population, 0);
+      Interlocked.Exchange(ref this.lastNestTime, 0);
+      Interlocked.Exchange(ref this.lastPlacementTime, 0);
+      Interlocked.Exchange(ref this.iterations, 0);
+      Interlocked.Exchange(ref this.dllCallCounter, 0);
+      Interlocked.Exchange(ref this.clipperCallCounter, 0);
       this.IsErrored = false;
-      TopNestResults.Clear();
+      this.TopNestResults.Clear();
       this.SetNfpPairCachePercentCached(0);
 
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LastTopFoundTimestamp)));
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Population)));
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LastPlacementTime)));
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LastNestTime)));
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NestCount)));
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AveragePlacementTime)));
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AverageNestTime)));
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Generations)));
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Threads)));
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Iterations)));
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DllCallCounter)));
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ClipperCallCounter)));
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TopNestResults)));
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.LastTopFoundTimestamp)));
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Population)));
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.LastPlacementTime)));
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.LastNestTime)));
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.NestCount)));
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.AveragePlacementTime)));
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.AverageNestTime)));
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Generations)));
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Threads)));
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Iterations)));
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.DllCallCounter)));
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.ClipperCallCounter)));
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.TopNestResults)));
     }
 
     void INestStateSvgNest.IncrementPopulation()
     {
-      Interlocked.Increment(ref population);
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Population)));
+      Interlocked.Increment(ref this.population);
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Population)));
     }
 
     void INestStateSvgNest.SetLastPlacementTime(long placePartTime)
     {
-      lastPlacementTime = placePartTime;
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LastPlacementTime)));
+      this.lastPlacementTime = placePartTime;
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.LastPlacementTime)));
     }
 
     void INestStateSvgNest.SetLastNestTime(long backgroundTime)
     {
-      lastNestTime = backgroundTime;
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LastNestTime)));
+      this.lastNestTime = backgroundTime;
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.LastNestTime)));
     }
 
     void INestStateSvgNest.IncrementNestCount()
     {
-      Interlocked.Increment(ref nestCount);
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NestCount)));
+      Interlocked.Increment(ref this.nestCount);
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.NestCount)));
     }
 
     void INestStateSvgNest.IncrementNestTime(long backgroundTime)
     {
-      totalPlacementTime += backgroundTime;
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AverageNestTime)));
+      this.totalPlacementTime += backgroundTime;
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.AverageNestTime)));
     }
 
     void INestStateSvgNest.IncrementPlacementTime(long placePartTime)
     {
-      totalNestTime += placePartTime;
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AveragePlacementTime)));
+      this.totalNestTime += placePartTime;
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.AveragePlacementTime)));
     }
 
     void INestStateSvgNest.IncrementGenerations()
     {
-      Interlocked.Increment(ref generations);
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Generations)));
+      Interlocked.Increment(ref this.generations);
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Generations)));
     }
 
     void INestStateSvgNest.ResetPopulation()
     {
-      Interlocked.Exchange(ref population, 0);
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Population)));
+      Interlocked.Exchange(ref this.population, 0);
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Population)));
     }
 
     void INestStateSvgNest.IncrementThreads()
     {
-      Interlocked.Increment(ref threads);
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Threads)));
+      Interlocked.Increment(ref this.threads);
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Threads)));
     }
 
     void INestStateSvgNest.DecrementThreads()
     {
-      Interlocked.Decrement(ref threads);
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Threads)));
+      Interlocked.Decrement(ref this.threads);
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Threads)));
     }
 
     void INestStateNestingContext.IncrementIterations()
     {
-      Interlocked.Increment(ref iterations);
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Iterations)));
+      Interlocked.Increment(ref this.iterations);
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Iterations)));
     }
 
     void INestStateMinkowski.IncrementDllCallCounter()
     {
-      Interlocked.Increment(ref dllCallCounter);
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DllCallCounter)));
+      Interlocked.Increment(ref this.dllCallCounter);
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.DllCallCounter)));
     }
 
     void INestStateMinkowski.IncrementClipperCallCounter()
     {
-      Interlocked.Increment(ref clipperCallCounter);
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ClipperCallCounter)));
+      Interlocked.Increment(ref this.clipperCallCounter);
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.ClipperCallCounter)));
     }
 
     public void IncrementRejected()
     {
-      Interlocked.Increment(ref rejected);
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Rejected)));
+      Interlocked.Increment(ref this.rejected);
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Rejected)));
     }
 
     public void SetIsErrored()
@@ -245,8 +245,8 @@
 
     public void SetNfpPairCachePercentCached(double percentCached)
     {
-      nfpPairCachePercentCached = percentCached;
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NfpPairCachePercentCached)));
+      this.nfpPairCachePercentCached = percentCached;
+      this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.NfpPairCachePercentCached)));
     }
   }
 }

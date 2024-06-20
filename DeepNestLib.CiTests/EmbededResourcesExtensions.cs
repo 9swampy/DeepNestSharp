@@ -15,7 +15,7 @@
       }
 
       var resourcePath = string.Format("{0}.{1}", Regex.Replace(assembly.ManifestModule.Name, @"\.(exe|dll)$", string.Empty, RegexOptions.IgnoreCase), relativeResourcePath);
-      var stream = assembly.GetManifestResourceStream(resourcePath);
+      Stream stream = assembly.GetManifestResourceStream(resourcePath);
       if (stream == null)
       {
         throw new ArgumentException(string.Format("The specified embedded resource \"{0}\" is not found.", relativeResourcePath));

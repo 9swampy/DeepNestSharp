@@ -8,9 +8,9 @@
     [Fact]
     public void ShouldRoundTripSerialize()
     {
-      var sut = SvgNest.Config;
+      ISvgNestConfig sut = SvgNest.Config;
       var json = sut.ToJson();
-      var actual = SvgNestConfig.FromJson(json);
+      ISvgNestConfig actual = SvgNestConfig.FromJson(json);
 
       actual.Should().BeEquivalentTo(sut);
     }

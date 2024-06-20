@@ -26,11 +26,11 @@
 
     public double Height
     {
-      get => sheetLoadInfo.Height;
+      get => this.sheetLoadInfo.Height;
       set
       {
         this.nfp = null; // Is this hacky?
-        SetProperty(nameof(Height), () => sheetLoadInfo.Height, v => sheetLoadInfo.Height = v, value);
+        this.SetProperty(nameof(this.Height), () => this.sheetLoadInfo.Height, v => this.sheetLoadInfo.Height = v, value);
       }
     }
 
@@ -40,39 +40,39 @@
     {
       get
       {
-        if (netArea == null)
+        if (this.netArea == null)
         {
           this.netArea = (int)this.Nfp.NetArea;
         }
 
-        return netArea.Value;
+        return this.netArea.Value;
       }
     }
 
     public string Path
     {
-      get => sheetLoadInfo.Path;
-      set => SetProperty(nameof(Path), () => sheetLoadInfo.Path, v => sheetLoadInfo.Path = v, value);
+      get => this.sheetLoadInfo.Path;
+      set => this.SetProperty(nameof(this.Path), () => this.sheetLoadInfo.Path, v => this.sheetLoadInfo.Path = v, value);
     }
 
     public int Quantity
     {
-      get => sheetLoadInfo.Quantity;
-      set => SetProperty(nameof(Quantity), () => sheetLoadInfo.Quantity, v => sheetLoadInfo.Quantity = v, value);
+      get => this.sheetLoadInfo.Quantity;
+      set => this.SetProperty(nameof(this.Quantity), () => this.sheetLoadInfo.Quantity, v => this.sheetLoadInfo.Quantity = v, value);
     }
 
     public SheetTypeEnum SheetType
     {
-      get => sheetLoadInfo.SheetType;
+      get => this.sheetLoadInfo.SheetType;
     }
 
     public double Width
     {
-      get => sheetLoadInfo.Width;
+      get => this.sheetLoadInfo.Width;
       set
       {
         this.nfp = null; // Is this hacky?
-        SetProperty(nameof(Width), () => sheetLoadInfo.Width, v => sheetLoadInfo.Width = v, value);
+        this.SetProperty(nameof(this.Width), () => this.sheetLoadInfo.Width, v => this.sheetLoadInfo.Width = v, value);
       }
     }
 
@@ -93,14 +93,14 @@
       {
         if (this.nfp == null)
         {
-          if (sheetLoadInfo.SheetType == SheetTypeEnum.Arbitrary)
+          if (this.sheetLoadInfo.SheetType == SheetTypeEnum.Arbitrary)
           {
-            var raw = await DxfParser.LoadDxfFile(sheetLoadInfo.Path);
+            IRawDetail raw = await DxfParser.LoadDxfFile(this.sheetLoadInfo.Path);
             this.nfp = raw.ToNfp();
           }
           else
           {
-            Sheet rectSheet = Sheet.NewSheet(0, sheetLoadInfo.Width, sheetLoadInfo.Height);
+            Sheet rectSheet = Sheet.NewSheet(0, this.sheetLoadInfo.Width, this.sheetLoadInfo.Height);
             this.nfp = rectSheet;
           }
         }

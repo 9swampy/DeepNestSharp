@@ -22,9 +22,9 @@
       }
 
       sut = PartPlacementWorker.FromJson(json);
-      var config = sut.Config as ISvgNestConfig;
+      ISvgNestConfig config = sut.Config as ISvgNestConfig;
       config.Rotations = 1;
-      var dispatcherService = A.Fake<IDispatcherService>();
+      IDispatcherService dispatcherService = A.Fake<IDispatcherService>();
       A.CallTo(() => dispatcherService.InvokeRequired).Returns(false);
       sut.Config.ClipperScale.Should().Be(10000000);
       sut.Config.Rotations.Should().Be(1);
@@ -137,10 +137,10 @@
         json = reader.ReadToEnd().Replace(" ", string.Empty).Replace("\r\n", string.Empty);
       }
 
-      var scenarioIn = PartPlacementWorker.FromJson(json);
-      var sut = MinkowskiSum.CreateInstance(scenarioIn.Config as ISvgNestConfig, A.Fake<INestStateMinkowski>());
-      var executor = new NfpHelper(sut, A.Fake<IWindowUnk>());
-      var result = executor.ExecuteDllImportMinkowski(scenarioIn.Sheet, scenarioIn.InputPart, MinkowskiCache.NoCache, true);
+      PartPlacementWorker scenarioIn = PartPlacementWorker.FromJson(json);
+      IMinkowskiSumService sut = MinkowskiSum.CreateInstance(scenarioIn.Config as ISvgNestConfig, A.Fake<INestStateMinkowski>());
+      NfpHelper executor = new NfpHelper(sut, A.Fake<IWindowUnk>());
+      INfp[] result = executor.ExecuteDllImportMinkowski(scenarioIn.Sheet, scenarioIn.InputPart, MinkowskiCache.NoCache, true);
       result.Length.Should().Be(1);
       json = result[0].ToJson();
       result[0].HeightCalculated.Should().BeApproximately(352.23, 0.01);
@@ -163,17 +163,17 @@
         json = reader.ReadToEnd().Replace(" ", string.Empty).Replace("\r\n", string.Empty);
       }
 
-      var scenarioIn = PartPlacementWorker.FromJson(json);
-      var sut = MinkowskiSum.CreateInstance(scenarioIn.Config as ISvgNestConfig, A.Fake<INestStateMinkowski>());
-      var executor = new NfpHelper(sut, A.Fake<IWindowUnk>()) as ITestNfpHelper;
+      PartPlacementWorker scenarioIn = PartPlacementWorker.FromJson(json);
+      IMinkowskiSumService sut = MinkowskiSum.CreateInstance(scenarioIn.Config as ISvgNestConfig, A.Fake<INestStateMinkowski>());
+      ITestNfpHelper executor = new NfpHelper(sut, A.Fake<IWindowUnk>()) as ITestNfpHelper;
 
       scenarioIn.Sheet.EnsureIsClosed();
-      var result = executor.ExecuteInterchangeableMinkowski(useDllImport, scenarioIn.Sheet, scenarioIn.InputPart);
+      INfp[] result = executor.ExecuteInterchangeableMinkowski(useDllImport, scenarioIn.Sheet, scenarioIn.InputPart);
       result[0].HeightCalculated.Should().BeApproximately(352.23, 0.01);
       result[0].WidthCalculated.Should().BeApproximately(319.33, 0.01);
       result.Length.Should().Be(1);
       result[0].IsClosed.Should().Be(true);
-      var cleanedResult = SvgNest.CleanPolygon2(result[0]);
+      INfp cleanedResult = SvgNest.CleanPolygon2(result[0]);
       cleanedResult.Points.Length.Should().Be(27);
       cleanedResult.IsClosed.Should().Be(true);
       if (useDllImport)

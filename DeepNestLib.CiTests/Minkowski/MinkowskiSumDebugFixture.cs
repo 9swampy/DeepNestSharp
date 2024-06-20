@@ -48,7 +48,7 @@
 
       ret = NoFitPolygon.FromJson(json);
 
-      var minkowski = MinkowskiSum.CreateInstance(false, A.Fake<INestStateMinkowski>());
+      IMinkowskiSumService minkowski = MinkowskiSum.CreateInstance(false, A.Fake<INestStateMinkowski>());
 
       dllResult = ((ITestNfpHelper)new NfpHelper(minkowski, A.Fake<IWindowUnk>())).ExecuteInterchangeableMinkowski(true, sheet, part);
       newClipperResult = ((ITestNfpHelper)new NfpHelper(minkowski, A.Fake<IWindowUnk>())).ExecuteInterchangeableMinkowski(false, sheet, part);
@@ -127,14 +127,14 @@
     [InlineData(false)]
     public void Test(bool useDllImport)
     {
-      var minkowski = MinkowskiSum.CreateInstance(false, A.Fake<INestStateMinkowski>());
-      var config = new TestSvgNestConfig();
+      IMinkowskiSumService minkowski = MinkowskiSum.CreateInstance(false, A.Fake<INestStateMinkowski>());
+      TestSvgNestConfig config = new TestSvgNestConfig();
 
       INfp[] result;
       SheetNfp sheetNfp;
-      var deframedSheet = new Sheet(sheet.Children[0], WithChildren.Excluded);
+      Sheet deframedSheet = new Sheet(sheet.Children[0], WithChildren.Excluded);
       deframedSheet.IsClosed.Should().BeTrue();
-      var windowUnk = A.Fake<IWindowUnk>();
+      IWindowUnk windowUnk = A.Fake<IWindowUnk>();
       A.CallTo(() => windowUnk.Find(A<DbCacheKey>._, A<bool>._)).Returns(null);
       if (useDllImport)
       {

@@ -25,8 +25,8 @@
     [InlineData(MinkowskiExecutor.NewMinkowskiSum)]
     public void ShouldExecuteWithoutError(MinkowskiExecutor executor)
     {
-      var sheet = InitSheet();
-      var part = InitPart();
+      Sheet sheet = InitSheet();
+      INfp part = InitPart();
       Action act = () => _ = GetNfp(executor, sheet, part);
 
       act.Should().NotThrow();
@@ -35,8 +35,8 @@
     [Fact]
     public void LoadedSheetIsActuallyAFramedSheet()
     {
-      var frame = InitSheet();
-      var sheet = new Sheet(frame.Children[0], WithChildren.Excluded);
+      Sheet frame = InitSheet();
+      Sheet sheet = new Sheet(frame.Children[0], WithChildren.Excluded);
 
       new Sheet(NfpHelper.GetExpandedFrame(sheet), WithChildren.Included).Should().BeEquivalentTo(
         frame,
@@ -50,9 +50,9 @@
     [InlineData(MinkowskiExecutor.NewMinkowskiSum)]
     public void GivenEmptySheetShouldReturnSingleNfp(MinkowskiExecutor executor)
     {
-      var sheet = InitSheet();
-      var part = InitPart();
-      var actual = GetNfp(executor, sheet, part);
+      Sheet sheet = InitSheet();
+      INfp part = InitPart();
+      INfp[] actual = GetNfp(executor, sheet, part);
 
       actual.Length.Should().Be(1);
     }
@@ -71,7 +71,7 @@
       ISheet frame;
       if (useSimplePart)
       {
-        var generator = new DxfGenerator();
+        DxfGenerator generator = new DxfGenerator();
         sheet = generator.GenerateSquare("Sheet", 20, RectangleType.FileLoad).ToSheet();
         part = generator.GenerateSquare("Part", 10, RectangleType.FileLoad).ToNfp();
         frame = new Sheet(NfpHelper.GetExpandedFrame(sheet), WithChildren.Included);
@@ -82,7 +82,7 @@
         part = InitPart();
       }
 
-      var actual = GetNfp(executor, frame, part);
+      INfp[] actual = GetNfp(executor, frame, part);
 
       actual[0].HeightCalculated.Should().BeApproximately(frame.HeightCalculated + part.HeightCalculated, 0.01, "this is an outer Nfp but the frame makes it useless so it's discarded? It's the child we actually want. tbc...");
     }
@@ -95,11 +95,11 @@
     {
       //var sheet = InitSheet();
       //var part = InitPart();
-      var generator = new DxfGenerator();
-      var sheet = generator.GenerateSquare("Sheet", 20, RectangleType.FileLoad).ToSheet();
-      var part = generator.GenerateSquare("Part", 10, RectangleType.FileLoad).ToNfp();
+      DxfGenerator generator = new DxfGenerator();
+      ISheet sheet = generator.GenerateSquare("Sheet", 20, RectangleType.FileLoad).ToSheet();
+      INfp part = generator.GenerateSquare("Part", 10, RectangleType.FileLoad).ToNfp();
 
-      var actual = GetNfp(executor, sheet, part);
+      INfp[] actual = GetNfp(executor, sheet, part);
 
       actual[0].WidthCalculated.Should().BeApproximately(sheet.WidthCalculated + part.WidthCalculated, 0.01);
     }
@@ -112,12 +112,12 @@
     {
       //var sheet = InitSheet();
       //var part = InitPart();
-      var generator = new DxfGenerator();
-      var sheet = generator.GenerateSquare("Sheet", 20, RectangleType.FileLoad).ToSheet();
-      var frame = new Sheet(NfpHelper.GetExpandedFrame(sheet), WithChildren.Included);
-      var part = generator.GenerateSquare("Part", 10, RectangleType.FileLoad).ToNfp();
+      DxfGenerator generator = new DxfGenerator();
+      ISheet sheet = generator.GenerateSquare("Sheet", 20, RectangleType.FileLoad).ToSheet();
+      Sheet frame = new Sheet(NfpHelper.GetExpandedFrame(sheet), WithChildren.Included);
+      INfp part = generator.GenerateSquare("Part", 10, RectangleType.FileLoad).ToNfp();
 
-      var actual = GetNfp(executor, frame, part);
+      INfp[] actual = GetNfp(executor, frame, part);
 
       actual[0].Children[0].HeightCalculated.Should().BeApproximately(sheet.HeightCalculated - part.HeightCalculated, 0.01);
     }
@@ -141,7 +141,7 @@
     [InlineData(MinkowskiExecutor.NewMinkowskiSum, false, false, false)]
     public void GivenEmptySheetReturn1NfpWith1Child(MinkowskiExecutor e, bool generatePart, bool generateSheet, bool manipulateSheetToMatchLoaded)
     {
-      var generator = new DxfGenerator();
+      DxfGenerator generator = new DxfGenerator();
       var minSheetSize = 159.340005;
       var expectedSheetLength = 5;
       INfp part;
@@ -172,7 +172,7 @@
           sheet = generator.GenerateRectangle("Sheet", minSheetSize, minSheetSize, RectangleType.TopLeftClockwise, false).ToSheet();
           sheet.Length.Should().Be(expectedSheetLength);
           // All above work with 5 points and Cleaning breaks them all...
-          var cleaned = new Sheet(SvgNest.CleanPolygon2(sheet), WithChildren.Excluded);
+          Sheet cleaned = new Sheet(SvgNest.CleanPolygon2(sheet), WithChildren.Excluded);
           sheet = cleaned;
           //sheet.Length.Should().Be(expectedSheetLength);
           sheet.WidthCalculated.Should().BeApproximately(minSheetSize, 0.01);
@@ -196,7 +196,7 @@
 
       //sheet.Length.Should().Be(expectedSheetLength);
 
-      var actual = GetNfp(e, frame, part);
+      INfp[] actual = GetNfp(e, frame, part);
 
       actual[0].Children.Count().Should().Be(1);
     }
@@ -210,7 +210,7 @@
     [InlineData(MinkowskiExecutor.NewMinkowskiSum, false)]
     public void GivenEmptySheetShouldReturnSingleNfpWithAChildOfExpectedWidth(MinkowskiExecutor executor, bool useSimplePart)
     {
-      var generator = new DxfGenerator();
+      DxfGenerator generator = new DxfGenerator();
       INfp part;
       ISheet sheet;
       ISheet frame;
@@ -229,14 +229,14 @@
         part = InitPart();
       }
 
-      var actual = GetNfp(executor, frame, part);
+      INfp[] actual = GetNfp(executor, frame, part);
 
       actual[0].Children[0].WidthCalculated.Should().BeApproximately(sheet.WidthCalculated - part.WidthCalculated, 0.01);
     }
 
     private static INfp[] GetNfp(MinkowskiExecutor executor, ISheet path, INfp pattern)
     {
-      var minkowski = MinkowskiSum.CreateInstance(false, A.Fake<INestStateMinkowski>());
+      IMinkowskiSumService minkowski = MinkowskiSum.CreateInstance(false, A.Fake<INestStateMinkowski>());
       switch (executor)
       {
         case MinkowskiExecutor.DllImportCleaned:

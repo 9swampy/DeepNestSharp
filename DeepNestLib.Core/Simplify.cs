@@ -51,8 +51,8 @@
     // basic distance-based simplification
     private static SvgPoint[] SimplifyRadialDist(SvgPoint[] points, double? sqTolerance)
     {
-      var prevPoint = points[0];
-      var newPoints = new NoFitPolygon();
+      SvgPoint prevPoint = points[0];
+      NoFitPolygon newPoints = new NoFitPolygon();
       newPoints.AddPoint(prevPoint);
 
       SvgPoint point = null;
@@ -126,7 +126,7 @@
     {
       var last = points.Length - 1;
 
-      var simplified = new NoFitPolygon();
+      NoFitPolygon simplified = new NoFitPolygon();
       simplified.AddPoint(points[0]);
       SimplifyDPStep(points, 0, last, sqTolerance, ref simplified);
       ((IHiddenNfp)simplified).Push(points[last]);
@@ -160,8 +160,8 @@
         }
       }
 
-      var result = new NoFitPolygon();
-      foreach (var point in resultSource)
+      NoFitPolygon result = new NoFitPolygon();
+      foreach (SvgPoint point in resultSource)
       {
         result.AddPoint(point.Clone());
       }

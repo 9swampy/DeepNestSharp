@@ -9,7 +9,7 @@
   {
     public NfpCandidateListEditor()
     {
-      InitializeComponent();
+      this.InitializeComponent();
     }
   }
 }

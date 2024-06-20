@@ -9,7 +9,7 @@
   {
     public PartPlacementUserControl()
     {
-      InitializeComponent();
+      this.InitializeComponent();
     }
   }
 }

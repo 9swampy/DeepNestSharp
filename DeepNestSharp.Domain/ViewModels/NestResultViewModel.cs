@@ -2,10 +2,10 @@
 {
   using System;
   using System.Threading.Tasks;
+  using CommunityToolkit.Mvvm.Input;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Ui.Docking;
-  using Microsoft.Toolkit.Mvvm.Input;
 
   public class NestResultViewModel : FileViewModel
   {
@@ -47,11 +47,11 @@
       }
     }
 
-    public IRelayCommand<ISheetPlacement> ExportSheetPlacementCommand => exportSheetPlacementCommand ?? (exportSheetPlacementCommand = new AsyncRelayCommand<ISheetPlacement>(OnExportSheetPlacementAsync));
+    public IRelayCommand<ISheetPlacement> ExportSheetPlacementCommand => this.exportSheetPlacementCommand ?? (this.exportSheetPlacementCommand = new AsyncRelayCommand<ISheetPlacement>(this.OnExportSheetPlacementAsync));
 
     public override string FileDialogFilter => DeepNestLib.Placement.NestResult.FileDialogFilter;
 
-    public IRelayCommand<ISheetPlacement> LoadSheetPlacementCommand => loadSheetPlacementCommand ?? (loadSheetPlacementCommand = new RelayCommand<ISheetPlacement>(OnLoadSheetPlacement));
+    public IRelayCommand<ISheetPlacement> LoadSheetPlacementCommand => this.loadSheetPlacementCommand ?? (this.loadSheetPlacementCommand = new RelayCommand<ISheetPlacement>(this.OnLoadSheetPlacement));
 
     public INestResult NestResult => this.nestResult;
 
@@ -59,43 +59,38 @@
 
     public int SelectedIndex
     {
-      get => selectedIndex;
-      set => SetProperty(ref selectedIndex, value);
+      get => this.selectedIndex;
+      set => this.SetProperty(ref this.selectedIndex, value);
     }
 
     public ObservableSheetPlacement SelectedItem
     {
-      get => selectedItem;
+      get => this.selectedItem;
       set
       {
         if (value is ObservableSheetPlacement observableSheetPlacement)
         {
-          SetProperty(ref selectedItem, observableSheetPlacement, nameof(SelectedItem));
+          this.SetProperty(ref this.selectedItem, observableSheetPlacement, nameof(this.SelectedItem));
         }
         else
         {
-          throw new ArgumentException(nameof(SelectedItem));
+          throw new ArgumentException(nameof(this.SelectedItem));
         }
       }
     }
 
     protected override void LoadContent()
     {
-      var nestResult = DeepNestLib.Placement.NestResult.LoadFromFile(this.FilePath);
+      NestResult nestResult = DeepNestLib.Placement.NestResult.LoadFromFile(this.FilePath);
       this.nestResult = new ObservableNestResult(nestResult);
 
       this.nestResult.PropertyChanged += this.NestResult_PropertyChanged;
-      NotifyContentUpdated();
-    }
-
-    private void NestResult_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-      NotifyContentUpdated();
+      this.NotifyContentUpdated();
     }
 
     protected override void NotifyContentUpdated()
     {
-      OnPropertyChanged(nameof(NestResult));
+      this.OnPropertyChanged(nameof(this.NestResult));
     }
 
     protected override void SaveState()
@@ -103,16 +98,21 @@
       // Don't do anything, DeepNestSharp only consumes and can be used to inspect Part files.
     }
 
+    private void NestResult_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+      this.NotifyContentUpdated();
+    }
+
     private async Task OnExportSheetPlacementAsync(ISheetPlacement sheetPlacement)
     {
-      await MainViewModel.ExportSheetPlacementAsync(sheetPlacement).ConfigureAwait(false);
+      await this.MainViewModel.ExportSheetPlacementAsync(sheetPlacement).ConfigureAwait(false);
     }
 
     private void OnLoadSheetPlacement(ISheetPlacement sheetPlacement)
     {
       if (sheetPlacement != null)
       {
-        MainViewModel.LoadSheetPlacement(sheetPlacement);
+        this.MainViewModel.LoadSheetPlacement(sheetPlacement);
       }
     }
   }

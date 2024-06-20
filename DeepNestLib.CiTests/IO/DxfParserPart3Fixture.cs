@@ -36,7 +36,7 @@
     [Fact]
     public void ShouldLoadDxfToRawDetail()
     {
-      var rawDetail = DxfParser.LoadDxfFileStreamAsRawDetail(DxfTestFilename);
+      RawDetail<DxfEntity> rawDetail = DxfParser.LoadDxfFileStreamAsRawDetail(DxfTestFilename);
 
       rawDetail.Should().NotBeNull();
     }

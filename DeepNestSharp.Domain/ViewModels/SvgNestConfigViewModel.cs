@@ -22,7 +22,7 @@
 
     public void RaiseNotifyUpdatePropertyGrid()
     {
-      NotifyUpdatePropertyGrid?.Invoke(this, EventArgs.Empty);
+      this.NotifyUpdatePropertyGrid?.Invoke(this, EventArgs.Empty);
     }
   }
 }

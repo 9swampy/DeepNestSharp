@@ -9,8 +9,8 @@
     [Fact]
     public void GivenTriangleThenOutPtChainedLoopShouldBeExpected()
     {
-      var sut = NfpSimplifier.ToOutPt(NoFitPolygon.FromDxf(new DxfGenerator().IsoscelesTriangle(10)));
-      var origin = sut;
+      ClipperLib.OutPt sut = NfpSimplifier.ToOutPt(NoFitPolygon.FromDxf(new DxfGenerator().IsoscelesTriangle(10)));
+      ClipperLib.OutPt origin = sut;
       do
       {
         sut.Next.Should().NotBeNull();

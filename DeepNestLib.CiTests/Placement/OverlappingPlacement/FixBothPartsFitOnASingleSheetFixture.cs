@@ -60,7 +60,7 @@
       config.ToleranceSvg = 0.005;
       config.ParallelNests = 10;
       nfpHelper = A.Dummy<NfpHelper>();
-      var placementWorker = new PlacementWorker(nfpHelper, new ISheet[] { firstSheet, secondSheet }, new DeepNestGene(new Chromosome[] { firstPart.ToChromosome(0), secondPart.ToChromosome(-90) }.ApplyIndex()), config, A.Dummy<Stopwatch>(), A.Fake<INestState>());
+      PlacementWorker placementWorker = new PlacementWorker(nfpHelper, new ISheet[] { firstSheet, secondSheet }, new DeepNestGene(new Chromosome[] { firstPart.ToChromosome(0), secondPart.ToChromosome(-90) }.ApplyIndex()), config, A.Dummy<Stopwatch>(), A.Fake<INestState>());
       sut = placementWorker;
       nestResult = placementWorker.PlaceParts();
       //config.Should().BeEquivalentTo(new TestSvgNestConfig());

@@ -21,23 +21,23 @@
     {
       if (items != null)
       {
-        foreach (var nfp in items)
+        foreach (INfp nfp in items)
         {
           nfp.Clean();
         }
       }
 
-      Items = items;
-      Sheet = new Sheet(sheet, WithChildren.Included);
-      Part = new NoFitPolygon(part, WithChildren.Included);
+      this.Items = items;
+      this.Sheet = new Sheet(sheet, WithChildren.Included);
+      this.Part = new NoFitPolygon(part, WithChildren.Included);
     }
 
     // inner NFP
     internal NfpCandidateList(INfpHelper nfpHelper, ISheet sheet, INfp part, double clipperScale, bool useDllImport)
     {
-      Items = nfpHelper.GetInnerNfp(sheet, part, MinkowskiCache.Cache, clipperScale, useDllImport, o => { }); // ?? new INfp[0];
-      Sheet = sheet;
-      Part = part;
+      this.Items = nfpHelper.GetInnerNfp(sheet, part, MinkowskiCache.Cache, clipperScale, useDllImport, o => { }); // ?? new INfp[0];
+      this.Sheet = sheet;
+      this.Part = part;
     }
 
     [JsonInclude]
@@ -47,7 +47,7 @@
     public INfp Part { get; private set; }
 
     [JsonIgnore]
-    public int NumberOfNfps => Items.Length;
+    public int NumberOfNfps => this.Items.Length;
 
     [JsonInclude]
     public INfp[] Items { get; private set; }
@@ -57,11 +57,11 @@
     /// </summary>
     /// <param name="index">The zero-based index of the element to get or set.</param>
     /// <returns>The element at the specified index.</returns>
-    public INfp this[int index] { get => Items[index]; }
+    public INfp this[int index] { get => this.Items[index]; }
 
     public static NfpCandidateList FromJson(string json)
     {
-      var options = new JsonSerializerOptions();
+      JsonSerializerOptions options = new JsonSerializerOptions();
       options.Converters.Add(new SheetJsonConverter());
       options.Converters.Add(new NfpJsonConverter());
       return JsonSerializer.Deserialize<NfpCandidateList>(json, options);
@@ -77,7 +77,7 @@
 
     public string ToJson()
     {
-      var options = new JsonSerializerOptions();
+      JsonSerializerOptions options = new JsonSerializerOptions();
       options.Converters.Add(new SheetJsonConverter());
       options.Converters.Add(new NfpJsonConverter());
       return JsonSerializer.Serialize(this, options);

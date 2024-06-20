@@ -9,20 +9,20 @@
   {
     public DbCacheKey(int? a, int? b, double aRotation, double bRotation, IEnumerable<INfp> nfps)
     {
-      A = a;
-      B = b;
-      ARotation = aRotation;
-      BRotation = bRotation;
-      Nfp = nfps.ToArray();
+      this.A = a;
+      this.B = b;
+      this.ARotation = aRotation;
+      this.BRotation = bRotation;
+      this.Nfp = nfps.ToArray();
     }
 
     public DbCacheKey(int? a, int? b, double aRotation, double bRotation)
     // : this(a, b, aRotation, bRotation, null)
     {
-      A = a;
-      B = b;
-      ARotation = aRotation;
-      BRotation = bRotation;
+      this.A = a;
+      this.B = b;
+      this.ARotation = aRotation;
+      this.BRotation = bRotation;
     }
 
     public int? A { get; }

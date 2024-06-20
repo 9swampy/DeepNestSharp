@@ -21,15 +21,15 @@
       {
         var minY = Math.Min(Math.Min(a.Left.Y, a.Right.Y), Math.Min(b.Left.Y, b.Right.Y));
         var maxY = Math.Max(Math.Max(a.Left.Y, a.Right.Y), Math.Max(b.Left.Y, b.Right.Y));
-        var min = new DxfPoint(a.Left.X, minY, 0);
-        var max = new DxfPoint(a.Left.X, maxY, 0);
+        DxfPoint min = new DxfPoint(a.Left.X, minY, 0);
+        DxfPoint max = new DxfPoint(a.Left.X, maxY, 0);
 
         return new MergeLine(new DxfLine(min, max));
       }
       else
       {
         var newY = (double)b.Slope * Math.Max(b.Right.X, a.Right.X) + (double)b.Intercept;
-        var right = new DxfPoint(Math.Max(b.Right.X, a.Right.X), newY, 0);
+        DxfPoint right = new DxfPoint(Math.Max(b.Right.X, a.Right.X), newY, 0);
         return new MergeLine(new DxfLine(a.Left, right));
       }
     }
@@ -70,8 +70,8 @@
 
     internal DxfFile MergeLines(DxfFile dxfFile)
     {
-      var result = new DxfFile();
-      foreach (var entity in MergeLines(dxfFile.Entities))
+      DxfFile result = new DxfFile();
+      foreach (DxfEntity entity in this.MergeLines(dxfFile.Entities))
       {
         result.Entities.Add(entity);
       }
@@ -85,7 +85,7 @@
       do
       {
         entityCount = entities.Count();
-        entities = DoMergeLines(entities);
+        entities = this.DoMergeLines(entities);
       }
       while (entityCount != entities.Count());
       return entities;
@@ -93,21 +93,21 @@
 
     private IEnumerable<DxfEntity> DoMergeLines(IEnumerable<DxfEntity> entities)
     {
-      var result = new List<DxfEntity>();
-      var splitEntities = SplitLines(entities);
+      List<DxfEntity> result = new List<DxfEntity>();
+      IEnumerable<DxfEntity> splitEntities = this.SplitLines(entities);
       result.AddRange(splitEntities.Where(o => !(o is DxfLine)));
-      var mergeLines = MergeLines(splitEntities.Where(o => o is DxfLine).Cast<DxfLine>()).ToList();
+      List<DxfLine> mergeLines = this.MergeLines(splitEntities.Where(o => o is DxfLine).Cast<DxfLine>()).ToList();
       result.AddRange(mergeLines);
       return result;
     }
 
     internal IEnumerable<DxfEntity> SplitLines(IEnumerable<DxfEntity> entities)
     {
-      foreach (var entity in entities)
+      foreach (DxfEntity entity in entities)
       {
         if (entity is DxfPolyline polyline)
         {
-          foreach (var line in Split(polyline))
+          foreach (DxfLine line in Split(polyline))
           {
             yield return line;
           }
@@ -130,13 +130,13 @@
         return list;
       }
 
-      var result = new List<MergeLine>();
-      foreach (var line in list)
+      List<MergeLine> result = new List<MergeLine>();
+      foreach (DxfLine line in list)
       {
         result.Add(new MergeLine(line));
       }
 
-      var lines = result
+      List<MergeLine> lines = result
         .OrderBy(o => o.Slope)
         .ThenBy(o => o.Intercept)
         .ThenBy(o => o.IsVertical ? o.Left.Y : o.Left.X)
@@ -156,7 +156,7 @@
           {
             lines.Remove(current);
             i--;
-            var combined = GetCombined(prior, current);
+            MergeLine combined = GetCombined(prior, current);
             lines[i] = combined;
             prior = combined;
           }
@@ -175,7 +175,7 @@
       var isFirst = true;
       DxfVertex origin = null;
       DxfVertex prior = null;
-      foreach (var point in polyline.Vertices)
+      foreach (DxfVertex point in polyline.Vertices)
       {
         if (isFirst)
         {

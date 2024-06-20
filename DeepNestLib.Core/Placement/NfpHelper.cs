@@ -44,10 +44,10 @@
     // inner nfps can be an array of nfps, outer nfps are always singular
     public static List<List<IntPoint>> InnerNfpToClipperCoordinates(IList<INfp> nfp, double clipperScale)
     {
-      var clipperNfp = new List<List<IntPoint>>();
+      List<List<IntPoint>> clipperNfp = new List<List<IntPoint>>();
       for (var i = 0; i < nfp.Count(); i++)
       {
-        var clip = NfpToClipperCoordinates(nfp[i], clipperScale);
+        List<List<IntPoint>> clip = NfpToClipperCoordinates(nfp[i], clipperScale);
         clipperNfp.AddRange(clip);
 
         // clipperNfp = clipperNfp.Concat(new[] { clip }).ToList();
@@ -64,7 +64,7 @@
     /// <returns></returns>
     public static List<List<IntPoint>> NfpToClipperCoordinates(INfp nfp, double clipperScale)
     {
-      var clipperNfp = new List<List<IntPoint>>();
+      List<List<IntPoint>> clipperNfp = new List<List<IntPoint>>();
 
       // children first
       if (nfp.Children != null && nfp.Children.Count > 0)
@@ -77,7 +77,7 @@
           }
 
           // var childNfp = SvgNest.toClipperCoordinates(nfp.Children[j]);
-          var childNfp = DeepNestClipper.ScaleUpPath(nfp.Children[j].Points, clipperScale);
+          List<IntPoint> childNfp = DeepNestClipper.ScaleUpPath(nfp.Children[j].Points, clipperScale);
           clipperNfp.Add(childNfp);
         }
       }
@@ -90,7 +90,7 @@
       // var outerNfp = SvgNest.toClipperCoordinates(nfp);
 
       // clipper js defines holes based on orientation
-      var outerNfp = DeepNestClipper.ScaleUpPath(nfp.Points, clipperScale);
+      List<IntPoint> outerNfp = DeepNestClipper.ScaleUpPath(nfp.Points, clipperScale);
 
       // var cleaned = ClipperLib.Clipper.CleanPolygon(outerNfp, 0.00001*config.clipperScale);
       clipperNfp.Add(outerNfp);
@@ -101,12 +101,12 @@
 
     internal INfp[] GetInnerNfp(ISheet sheet, INfp part, MinkowskiCache minkowskiCache, double clipperScale, bool useDllImport)
     {
-      return GetInnerNfp(sheet, part, minkowskiCache, clipperScale, useDllImport, o => { });
+      return this.GetInnerNfp(sheet, part, minkowskiCache, clipperScale, useDllImport, o => { });
     }
 
     public INfp[] GetInnerNfp(ISheet sheet, INfp part, MinkowskiCache minkowskiCache, double clipperScale, bool useDllImport, Action<string> verboseLog)
     {
-      var result = GetInnerNfp((INfp)sheet, part, minkowskiCache, clipperScale, useDllImport, verboseLog);
+      INfp[] result = this.GetInnerNfp((INfp)sheet, part, minkowskiCache, clipperScale, useDllImport, verboseLog);
       return result;
     }
 
@@ -116,17 +116,17 @@
       sheet.MustNotBeNull();
       part.MustNotBeNull();
 
-      var key = new DbCacheKey(sheet.Source, part.Source, 0, part.Rotation);
+      DbCacheKey key = new DbCacheKey(sheet.Source, part.Source, 0, part.Rotation);
 
       // var doc = window.db.find({ A: A.source, B: B.source, Arotation: 0, Brotation: B.rotation }, true);
-      var res = Window.Find(key, true);
+      INfp[] res = this.Window.Find(key, true);
       if (res != null)
       {
         verboseLog($"GetInnerNfp found {key}");
         return res;
       }
 
-      var nfp = GetInnerNfp(sheet, part, minkowskiCache, useDllImport, verboseLog);
+      INfp nfp = this.GetInnerNfp(sheet, part, minkowskiCache, useDllImport, verboseLog);
 
       if (nfp == null || nfp.Children == null || nfp.Children.Count == 0)
       {
@@ -138,7 +138,7 @@
       {
         for (var i = 0; i < sheet.Children.Count; i++)
         {
-          var hnfp = GetOuterNfp(sheet.Children[i], part, MinkowskiCache.NoCache, useDllImport);
+          INfp hnfp = this.GetOuterNfp(sheet.Children[i], part, MinkowskiCache.NoCache, useDllImport);
           if (hnfp != null)
           {
             holes.Add(hnfp);
@@ -151,11 +151,11 @@
         return nfp.Children.ToArray();
       }
 
-      var clipperNfp = InnerNfpToClipperCoordinates(nfp.Children, clipperScale);
-      var clipperHoles = InnerNfpToClipperCoordinates(holes, clipperScale);
+      List<List<IntPoint>> clipperNfp = InnerNfpToClipperCoordinates(nfp.Children, clipperScale);
+      List<List<IntPoint>> clipperHoles = InnerNfpToClipperCoordinates(holes, clipperScale);
 
       List<List<IntPoint>> finalNfp = new List<List<IntPoint>>();
-      var clipper = new Clipper();
+      Clipper clipper = new Clipper();
 
       clipper.AddPaths(clipperHoles, PolyType.ptClip, true);
       clipper.AddPaths(clipperNfp, PolyType.ptSubject, true);
@@ -180,8 +180,8 @@
       {
         // insert into db
         // console.log('inserting inner: ', A.source, B.source, B.rotation, f);
-        var keyItem = new DbCacheKey(sheet.Source, part.Source, 0, part.Rotation, f.ToArray());
-        Window.Insert(keyItem, true);
+        DbCacheKey keyItem = new DbCacheKey(sheet.Source, part.Source, 0, part.Rotation, f.ToArray());
+        this.Window.Insert(keyItem, true);
       }
 
       return f.ToArray();
@@ -192,15 +192,15 @@
       var key = new StringBuilder(12).Append(path.Source).Append(";").Append(pattern.Source).Append(";").Append(path.Rotation).Append(";").Append(pattern.Rotation).ToString();
       bool cacheAllow = minkowskiCache == MinkowskiCache.Cache;
 
-      if (UseCacheProcess && cacheProcess.ContainsKey(key) && cacheAllow)
+      if (this.UseCacheProcess && this.cacheProcess.ContainsKey(key) && cacheAllow)
       {
-        return cacheProcess[key];
+        return this.cacheProcess[key];
       }
 
       INfp[] res = ((ITestNfpHelper)this).ExecuteInterchangeableMinkowski(useDllImport, path, pattern);
-      if (UseCacheProcess && cacheAllow)
+      if (this.UseCacheProcess && cacheAllow)
       {
-        cacheProcess.Add(key, res);
+        this.cacheProcess.Add(key, res);
       }
 
       return res;
@@ -208,7 +208,7 @@
 
     INfp[] ITestNfpHelper.ExecuteInterchangeableMinkowski(bool useDllImport, INfp path, INfp pattern)
     {
-      return ExecuteInterchangeableMinkowski(useDllImport, path, pattern);
+      return this.ExecuteInterchangeableMinkowski(useDllImport, path, pattern);
     }
 
     /// <summary>
@@ -220,7 +220,7 @@
     /// <returns>The generated InnerFitPolygon if found, otherwise null.</returns>
     internal INfp GetInnerNfp(ISheet sheet, INfp part, MinkowskiCache minkowskiCache, bool useDllImport)
     {
-      return GetInnerNfp((INfp)sheet, part, minkowskiCache, useDllImport, o => { });
+      return this.GetInnerNfp((INfp)sheet, part, minkowskiCache, useDllImport, o => { });
     }
 
     /// <summary>
@@ -235,7 +235,7 @@
     /// <returns>NoFitPolygon AB.</returns>
     internal INfp GetOuterNfp(INfp a, INfp b, MinkowskiCache minkowskiCache, bool useDllImport)
     {
-      return GetNoFitPolygon(a, b, minkowskiCache, NoFitPolygonType.Outer, useDllImport);
+      return this.GetNoFitPolygon(a, b, minkowskiCache, NoFitPolygonType.Outer, useDllImport);
     }
 
     /// <summary>
@@ -245,7 +245,7 @@
     /// <returns>Expanded frame with passsed in a as a child.</returns>
     internal static INfp GetExpandedFrame(INfp a)
     {
-      var bounds = GeometryUtil.GetPolygonBounds(a);
+      PolygonBounds bounds = GeometryUtil.GetPolygonBounds(a);
 
       // expand bounds by 10%
       bounds.Width *= 1.1;
@@ -253,7 +253,7 @@
       bounds.X -= 0.5 * (bounds.Width - (bounds.Width / 1.1));
       bounds.Y -= 0.5 * (bounds.Height - (bounds.Height / 1.1));
 
-      var frame = new NoFitPolygon(new List<INfp>() { a });
+      NoFitPolygon frame = new NoFitPolygon(new List<INfp>() { a });
       ((IHiddenNfp)frame).Push(new SvgPoint(bounds.X, bounds.Y));
       ((IHiddenNfp)frame).Push(new SvgPoint(bounds.X + bounds.Width, bounds.Y));
       ((IHiddenNfp)frame).Push(new SvgPoint(bounds.X + bounds.Width, bounds.Y + bounds.Height));
@@ -305,7 +305,7 @@
         frame.EnsureIsClosed();
       }
 
-      return GetNoFitPolygon(frame, part, minkowskiCache, NoFitPolygonType.Inner, useDllImport);
+      return this.GetNoFitPolygon(frame, part, minkowskiCache, NoFitPolygonType.Inner, useDllImport);
     }
 
     private INfp GetNoFitPolygon(INfp a, INfp b, MinkowskiCache minkowskiCache, NoFitPolygonType nfpType, bool useDllImport)
@@ -314,11 +314,11 @@
       {
         INfp[] nfpList;
 
-        var key = new DbCacheKey(a.Source, b.Source, a.Rotation, b.Rotation);
+        DbCacheKey key = new DbCacheKey(a.Source, b.Source, a.Rotation, b.Rotation);
 
         lock (lockobj)
         {
-          var doc = Window.Find(key);
+          INfp[] doc = this.Window.Find(key);
           if (doc != null)
           {
             return doc.First();
@@ -327,11 +327,11 @@
           // not found in cache
           if (nfpType == NoFitPolygonType.Inner || (a.Children != null && a.Children.Count > 0))
           {
-            nfpList = ExecuteDllImportMinkowski(a, b, minkowskiCache, useDllImport);
+            nfpList = this.ExecuteDllImportMinkowski(a, b, minkowskiCache, useDllImport);
           }
           else
           {
-            NoFitPolygon clipperNfp = minkowskiSumService.ClipperExecuteOuterNfp(a.Points, b.Points, MinkowskiSumPick.Smallest);
+            NoFitPolygon clipperNfp = this.minkowskiSumService.ClipperExecuteOuterNfp(a.Points, b.Points, MinkowskiSumPick.Smallest);
             nfpList = new NoFitPolygon[] { new NoFitPolygon(clipperNfp.Points) };
           }
 
@@ -349,8 +349,8 @@
 
           if (nfpType == NoFitPolygonType.Outer)
           {
-            var doc2 = new DbCacheKey(a.Source, b.Source, a.Rotation, b.Rotation, nfpList);
-            Window.Insert(doc2);
+            DbCacheKey doc2 = new DbCacheKey(a.Source, b.Source, a.Rotation, b.Rotation, nfpList);
+            this.Window.Insert(doc2);
           }
 
           /*
@@ -404,12 +404,12 @@
         // clean to get NewMinkowski to be same as incumbent but changing from none is wrong thing to do surely; should
         // be keeping as it was not getting the origina lto match with the added.
         // The only place calling the method is this; so shift all UnitTests that have gone the cleaned way to none.
-        res = minkowskiSumService.DllImportExecute(path, pattern, MinkowskiSumCleaning.None);
+        res = this.minkowskiSumService.DllImportExecute(path, pattern, MinkowskiSumCleaning.None);
       }
       else
       {
-        res = minkowskiSumService.NewMinkowskiSum(pattern.Points, path, WithChildren.Included, takeOnlyBiggestArea: false);
-        foreach (var nfp in res)
+        res = this.minkowskiSumService.NewMinkowskiSum(pattern.Points, path, WithChildren.Included, takeOnlyBiggestArea: false);
+        foreach (INfp nfp in res)
         {
           nfp.EnsureIsClosed();
         }

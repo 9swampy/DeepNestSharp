@@ -37,22 +37,22 @@
     {
       get
       {
-        lock (syncLock)
+        lock (this.syncLock)
         {
-          if (sheets == 0)
+          if (this.sheets == 0)
           {
             for (int i = 0; i < this.Count; i++)
             {
-              var sheet = this[i];
-              sheets += sheet.Fitness.Sheets;
+              ISheetPlacement sheet = this[i];
+              this.sheets += sheet.Fitness.Sheets;
               if (i < this.Count - 1 && this[i + 1].PartPlacements.Any(o => o.Part.IsPriority))
               {
-                sheets += sheet.Sheet.Area;
+                this.sheets += sheet.Sheet.Area;
               }
             }
           }
 
-          return sheets;
+          return this.sheets;
         }
       }
     }

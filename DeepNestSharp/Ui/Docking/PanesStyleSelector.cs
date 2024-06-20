@@ -22,12 +22,12 @@
     {
       if (item is ToolViewModel)
       {
-        return ToolStyle;
+        return this.ToolStyle;
       }
 
       if (item is FileViewModel)
       {
-        return FileStyle;
+        return this.FileStyle;
       }
 
       return base.SelectStyle(item, container);

@@ -25,17 +25,17 @@
 
     public DrawingContextBoundZoomPreview()
     {
-      InitializeComponent();
+      this.InitializeComponent();
 
-      scrollViewer.ScrollChanged += OnScrollViewerScrollChanged;
-      scrollViewer.MouseLeftButtonUp += OnMouseLeftButtonUp;
-      scrollViewer.PreviewMouseLeftButtonUp += OnMouseLeftButtonUp;
-      scrollViewer.PreviewMouseWheel += OnPreviewMouseWheel;
+      this.scrollViewer.ScrollChanged += this.OnScrollViewerScrollChanged;
+      this.scrollViewer.MouseLeftButtonUp += this.OnMouseLeftButtonUp;
+      this.scrollViewer.PreviewMouseLeftButtonUp += this.OnMouseLeftButtonUp;
+      this.scrollViewer.PreviewMouseWheel += this.OnPreviewMouseWheel;
 
-      scrollViewer.PreviewMouseLeftButtonDown += OnMouseLeftButtonDown;
-      scrollViewer.MouseMove += OnMouseMove;
+      this.scrollViewer.PreviewMouseLeftButtonDown += this.OnMouseLeftButtonDown;
+      this.scrollViewer.MouseMove += this.OnMouseMove;
 
-      slider.ValueChanged += OnSliderValueChanged;
+      this.slider.ValueChanged += this.OnSliderValueChanged;
     }
 
     private static bool IsScrollModifierPressed
@@ -87,34 +87,34 @@
     {
       if (IsScrollModifierPressed)
       {
-        if (lastDragPoint.HasValue)
+        if (this.lastDragPoint.HasValue)
         {
-          Point posNow = e.GetPosition(scrollViewer);
+          Point posNow = e.GetPosition(this.scrollViewer);
 
-          double dX = posNow.X - lastDragPoint.Value.X;
-          double dY = posNow.Y - lastDragPoint.Value.Y;
+          double dX = posNow.X - this.lastDragPoint.Value.X;
+          double dY = posNow.Y - this.lastDragPoint.Value.Y;
 
-          lastDragPoint = posNow;
+          this.lastDragPoint = posNow;
 
-          scrollViewer.ScrollToHorizontalOffset(scrollViewer.HorizontalOffset - dX);
-          scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - dY);
+          this.scrollViewer.ScrollToHorizontalOffset(this.scrollViewer.HorizontalOffset - dX);
+          this.scrollViewer.ScrollToVerticalOffset(this.scrollViewer.VerticalOffset - dY);
         }
       }
     }
 
     private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
-      var mousePos = e.GetPosition(scrollViewer);
+      Point mousePos = e.GetPosition(this.scrollViewer);
       if (IsScrollModifierPressed)
       {
-        if (CanUseScrollbars(ref mousePos))
+        if (this.CanUseScrollbars(ref mousePos))
         {
-          scrollViewer.Cursor = Cursors.SizeAll;
-          lastDragPoint = mousePos;
-          Mouse.Capture(scrollViewer);
+          this.scrollViewer.Cursor = Cursors.SizeAll;
+          this.lastDragPoint = mousePos;
+          Mouse.Capture(this.scrollViewer);
         }
       }
-      else if (DataContext is PreviewViewModel vm &&
+      else if (this.DataContext is PreviewViewModel vm &&
             sender is ScrollViewer senderScrollViewer &&
             senderScrollViewer.InputHitTest(mousePos) is System.Windows.Shapes.Polygon polygon &&
             polygon.GetVisualParent<Canvas>() is Canvas canvas &&
@@ -139,21 +139,21 @@
 
     private bool CanUseScrollbars(ref Point mousePos)
     {
-      return mousePos.X <= scrollViewer.ViewportWidth && mousePos.Y < scrollViewer.ViewportHeight;
+      return mousePos.X <= this.scrollViewer.ViewportWidth && mousePos.Y < this.scrollViewer.ViewportHeight;
     }
 
     private void OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
     {
-      lastMousePositionOnTarget = Mouse.GetPosition(grid);
+      this.lastMousePositionOnTarget = Mouse.GetPosition(this.grid);
 
       if (e.Delta > 0)
       {
-        slider.Value += 0.2;
+        this.slider.Value += 0.2;
       }
 
       if (e.Delta < 0)
       {
-        slider.Value -= 0.2;
+        this.slider.Value -= 0.2;
       }
 
       e.Handled = true;
@@ -161,18 +161,18 @@
 
     private void OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
     {
-      scrollViewer.Cursor = Cursors.Arrow;
-      scrollViewer.ReleaseMouseCapture();
-      lastDragPoint = null;
+      this.scrollViewer.Cursor = Cursors.Arrow;
+      this.scrollViewer.ReleaseMouseCapture();
+      this.lastDragPoint = null;
     }
 
     private void OnSliderValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
-      scaleTransform.ScaleX = e.NewValue;
-      scaleTransform.ScaleY = e.NewValue;
+      this.scaleTransform.ScaleX = e.NewValue;
+      this.scaleTransform.ScaleY = e.NewValue;
 
-      var centerOfViewport = new Point(scrollViewer.ViewportWidth / 2, scrollViewer.ViewportHeight / 2);
-      lastCenterPositionOnTarget = scrollViewer.TranslatePoint(centerOfViewport, grid);
+      Point centerOfViewport = new Point(this.scrollViewer.ViewportWidth / 2, this.scrollViewer.ViewportHeight / 2);
+      this.lastCenterPositionOnTarget = this.scrollViewer.TranslatePoint(centerOfViewport, this.grid);
     }
 
     private void OnScrollViewerScrollChanged(object sender, ScrollChangedEventArgs e)
@@ -182,23 +182,23 @@
         Point? targetBefore = null;
         Point? targetNow = null;
 
-        if (!lastMousePositionOnTarget.HasValue)
+        if (!this.lastMousePositionOnTarget.HasValue)
         {
-          if (lastCenterPositionOnTarget.HasValue)
+          if (this.lastCenterPositionOnTarget.HasValue)
           {
-            var centerOfViewport = new Point(scrollViewer.ViewportWidth / 2, scrollViewer.ViewportHeight / 2);
-            Point centerOfTargetNow = scrollViewer.TranslatePoint(centerOfViewport, grid);
+            Point centerOfViewport = new Point(this.scrollViewer.ViewportWidth / 2, this.scrollViewer.ViewportHeight / 2);
+            Point centerOfTargetNow = this.scrollViewer.TranslatePoint(centerOfViewport, this.grid);
 
-            targetBefore = lastCenterPositionOnTarget;
+            targetBefore = this.lastCenterPositionOnTarget;
             targetNow = centerOfTargetNow;
           }
         }
         else
         {
-          targetBefore = lastMousePositionOnTarget;
-          targetNow = Mouse.GetPosition(grid);
+          targetBefore = this.lastMousePositionOnTarget;
+          targetNow = Mouse.GetPosition(this.grid);
 
-          lastMousePositionOnTarget = null;
+          this.lastMousePositionOnTarget = null;
         }
 
         if (targetBefore.HasValue && targetNow.HasValue)
@@ -206,19 +206,19 @@
           var dXInTargetPixels = targetNow.Value.X - targetBefore.Value.X;
           var dYInTargetPixels = targetNow.Value.Y - targetBefore.Value.Y;
 
-          var multiplicatorX = e.ExtentWidth / grid.Width;
-          var multiplicatorY = e.ExtentHeight / grid.Height;
+          var multiplicatorX = e.ExtentWidth / this.grid.Width;
+          var multiplicatorY = e.ExtentHeight / this.grid.Height;
 
-          var newOffsetX = scrollViewer.HorizontalOffset - (dXInTargetPixels * multiplicatorX);
-          var newOffsetY = scrollViewer.VerticalOffset - (dYInTargetPixels * multiplicatorY);
+          var newOffsetX = this.scrollViewer.HorizontalOffset - (dXInTargetPixels * multiplicatorX);
+          var newOffsetY = this.scrollViewer.VerticalOffset - (dYInTargetPixels * multiplicatorY);
 
           if (double.IsNaN(newOffsetX) || double.IsNaN(newOffsetY))
           {
             return;
           }
 
-          scrollViewer.ScrollToHorizontalOffset(newOffsetX);
-          scrollViewer.ScrollToVerticalOffset(newOffsetY);
+          this.scrollViewer.ScrollToHorizontalOffset(newOffsetX);
+          this.scrollViewer.ScrollToVerticalOffset(newOffsetY);
         }
       }
     }
@@ -226,11 +226,11 @@
     private void Polygon_MouseUp(object sender, MouseButtonEventArgs e)
     {
       System.Diagnostics.Debug.Print("Polygon_MouseUp");
-      if (DataContext is PreviewViewModel vm)
+      if (this.DataContext is PreviewViewModel vm)
       {
-        var mousePos = e.GetPosition(scrollViewer);
+        Point mousePos = e.GetPosition(this.scrollViewer);
         vm.MousePosition = new SvgPoint(mousePos.X, mousePos.Y);
-        MouseUpHandler(vm);
+        this.MouseUpHandler(vm);
       }
     }
 
@@ -238,33 +238,33 @@
     {
       if (sender is ItemsControl itemsControl &&
           itemsControl.GetChildOfType<Canvas>() is Canvas canvas &&
-          DataContext is PreviewViewModel vm)
+          this.DataContext is PreviewViewModel vm)
       {
-        var mousePos = e.GetPosition(scrollViewer);
+        Point mousePos = e.GetPosition(this.scrollViewer);
         vm.MousePosition = new SvgPoint(mousePos.X, mousePos.Y);
-        var canvasPos = e.GetPosition(canvas);
+        Point canvasPos = e.GetPosition(canvas);
         vm.CanvasPosition = new SvgPoint(canvasPos.X, canvasPos.Y);
         if (vm.IsDragging &&
             vm.DragStart != null &&
-            capturePartPlacement != null)
+            this.capturePartPlacement != null)
         {
           if (IsDragModifierPressed)
           {
-            var dragStart = vm.DragStart;
-            vm.DragOffset = new SvgPoint((vm.MousePosition.X - dragStart.X) / scaleTransform.ScaleX, (vm.MousePosition.Y - dragStart.Y) / scaleTransform.ScaleY);
+            IPointXY dragStart = vm.DragStart;
+            vm.DragOffset = new SvgPoint((vm.MousePosition.X - dragStart.X) / this.scaleTransform.ScaleX, (vm.MousePosition.Y - dragStart.Y) / this.scaleTransform.ScaleY);
 
             // System.Diagnostics.Debug.Print($"DragOffset={vm.DragOffset:N2}");
-            capturePartPlacement.X = partPlacementStartPos.X + vm.DragOffset.X;
-            capturePartPlacement.Y = partPlacementStartPos.Y + vm.DragOffset.Y;
+            this.capturePartPlacement.X = this.partPlacementStartPos.X + vm.DragOffset.X;
+            this.capturePartPlacement.Y = this.partPlacementStartPos.Y + vm.DragOffset.Y;
           }
           else
           {
             System.Diagnostics.Debug.Print("Drag cancel MouseMove:IsDragModifierPressed.");
-            capturePartPlacement.X = partPlacementStartPos.X;
-            capturePartPlacement.Y = partPlacementStartPos.Y;
-            capturePolygon?.ReleaseMouseCapture();
+            this.capturePartPlacement.X = this.partPlacementStartPos.X;
+            this.capturePartPlacement.Y = this.partPlacementStartPos.Y;
+            this.capturePolygon?.ReleaseMouseCapture();
             vm.DragStart = null;
-            capturePartPlacement.IsDragging = false;
+            this.capturePartPlacement.IsDragging = false;
           }
 
           vm.RaiseDrawingContext();
@@ -276,31 +276,31 @@
     private void MouseUpHandler(PreviewViewModel vm)
     {
       System.Diagnostics.Debug.Print("Handle MouseUp");
-      scrollViewer.Cursor = Cursors.Arrow;
+      this.scrollViewer.Cursor = Cursors.Arrow;
       if (vm.IsDragging && IsDragModifierPressed && vm.DragStart != null)
       {
-        var dragStart = vm.DragStart;
-        vm.DragOffset = new SvgPoint((vm.MousePosition.X - dragStart.X) / scaleTransform.ScaleX, (vm.MousePosition.Y - dragStart.Y) / scaleTransform.ScaleY);
+        IPointXY dragStart = vm.DragStart;
+        vm.DragOffset = new SvgPoint((vm.MousePosition.X - dragStart.X) / this.scaleTransform.ScaleX, (vm.MousePosition.Y - dragStart.Y) / this.scaleTransform.ScaleY);
         System.Diagnostics.Debug.Print($"Drag commit@{vm.DragOffset.X:N2},{vm.DragOffset.Y:N2}");
-        if (capturePartPlacement != null)
+        if (this.capturePartPlacement != null)
         {
-          capturePartPlacement.X = partPlacementStartPos.X + vm.DragOffset.X;
-          capturePartPlacement.Y = partPlacementStartPos.Y + vm.DragOffset.Y;
+          this.capturePartPlacement.X = this.partPlacementStartPos.X + vm.DragOffset.X;
+          this.capturePartPlacement.Y = this.partPlacementStartPos.Y + vm.DragOffset.Y;
         }
       }
 
-      capturePolygon?.ReleaseMouseCapture();
+      this.capturePolygon?.ReleaseMouseCapture();
       vm.DragStart = null;
-      if (capturePartPlacement != null)
+      if (this.capturePartPlacement != null)
       {
-        capturePartPlacement.IsDragging = false;
+        this.capturePartPlacement.IsDragging = false;
       }
 
       vm.RaiseSelectItem();
       vm.RaiseDrawingContext();
       System.Diagnostics.Debug.Print("Force ItemsControl.UpdateTarget");
-      itemsControl.GetBindingExpression(ItemsControl.ItemsSourceProperty).UpdateTarget();
-      itemsControl.GetBindingExpression(ItemsControl.ItemsSourceProperty).UpdateSource();
+      this.itemsControl.GetBindingExpression(ItemsControl.ItemsSourceProperty).UpdateTarget();
+      this.itemsControl.GetBindingExpression(ItemsControl.ItemsSourceProperty).UpdateSource();
       this.InvalidateVisual();
     }
   }

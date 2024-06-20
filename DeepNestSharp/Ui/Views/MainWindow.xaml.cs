@@ -9,15 +9,15 @@
   {
     public MainWindow(IMainViewModel viewModel)
     {
-      InitializeComponent();
+      this.InitializeComponent();
       this.DataContext = viewModel;
       viewModel.DockManager = new DockingManagerFacade(this.dockManager);
       viewModel.AboutDialogService = new AboutDialogService(() => new AboutDialog());
-      this.Loaded += new RoutedEventHandler(MainWindow_Loaded);
-      this.Unloaded += new RoutedEventHandler(MainWindow_Unloaded);
+      this.Loaded += new RoutedEventHandler(this.MainWindow_Loaded);
+      this.Unloaded += new RoutedEventHandler(this.MainWindow_Unloaded);
     }
 
-    public IMainViewModel ViewModel => (IMainViewModel)DataContext;
+    public IMainViewModel ViewModel => (IMainViewModel)this.DataContext;
 
     private void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
@@ -28,7 +28,7 @@
 #endif
       return;
 
-      var serializer = new AvalonDock.Layout.Serialization.XmlLayoutSerializer(dockManager);
+      AvalonDock.Layout.Serialization.XmlLayoutSerializer serializer = new AvalonDock.Layout.Serialization.XmlLayoutSerializer(this.dockManager);
       serializer.LayoutSerializationCallback += (s, args) =>
       {
         args.Content = args.Content;
@@ -42,7 +42,7 @@
 
     private void MainWindow_Unloaded(object sender, RoutedEventArgs e)
     {
-      var serializer = new AvalonDock.Layout.Serialization.XmlLayoutSerializer(dockManager);
+      AvalonDock.Layout.Serialization.XmlLayoutSerializer serializer = new AvalonDock.Layout.Serialization.XmlLayoutSerializer(this.dockManager);
       serializer.Serialize(@".\AvalonDock.config");
     }
   }

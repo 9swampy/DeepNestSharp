@@ -21,7 +21,7 @@
 
     public DxfFile GenerateRectangle(double width, double height, RectangleType type, bool isClosed = false)
     {
-      var result = new DxfFile();
+      DxfFile result = new DxfFile();
       result.Entities.Add(Rectangle(width, height, type, isClosed));
       return result;
     }

@@ -50,11 +50,11 @@
         <Style TargetType="ListViewItem">
           <Setter Property="HorizontalContentAlignment" Value="Stretch" />
           <Setter Property="Background" Value="{Binding IsValid, Converter={StaticResource IsValidToListViewItemBackgroundColor}}" />
-          <!--<Style.Triggers>
+          <Style.Triggers>
             <Trigger Property="IsFocused" Value="True">
               <Setter Property="Foreground" Value="Green" />
             </Trigger>
-          </Style.Triggers>-->
+          </Style.Triggers>
         </Style>
       </ListView.Resources>
       <behaviors:Interaction.Triggers>
@@ -142,11 +142,11 @@
         </DataTemplate>
         <Style TargetType="ListViewItem">
           <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-          <!--<Style.Triggers>
+          <Style.Triggers>
             <Trigger Property="IsFocused" Value="True">
               <Setter Property="Foreground" Value="Green" />
             </Trigger>
-          </Style.Triggers>-->
+          </Style.Triggers>
         </Style>
       </ListView.Resources>
       <ListView.View>

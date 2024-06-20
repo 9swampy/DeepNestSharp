@@ -13,7 +13,7 @@
   {
     public Preview()
     {
-      InitializeComponent();
+      this.InitializeComponent();
       this.Loaded += this.Preview_Loaded;
     }
 

@@ -2,10 +2,10 @@
 {
   using System.IO;
   using System.Windows.Input;
+  //using System.Windows.Media;
+  using CommunityToolkit.Mvvm.Input;
   using DeepNestSharp.Domain.Docking;
   using DeepNestSharp.Domain.ViewModels;
-  //using System.Windows.Media;
-  using Microsoft.Toolkit.Mvvm.Input;
 
   public abstract class FileViewModel : PaneViewModel, IFileViewModel
   {
@@ -28,10 +28,10 @@
     public FileViewModel(IMainViewModel mainViewModel, string filePath)
     {
       this.MainViewModel = mainViewModel;
-      FilePath = filePath;
-      Title = FileName;
-      LoadFile(filePath);
-      IsDirty = false;
+      this.FilePath = filePath;
+      this.Title = this.FileName;
+      this.LoadFile(filePath);
+      this.IsDirty = false;
 
       // Set the icon only for open documents (just a test)
       // IconSource = imageSourceConverter.ConvertFromInvariantString(@"pack://application:,,/Images/document.png") as ImageSource;
@@ -44,17 +44,17 @@
     public FileViewModel(IMainViewModel mainViewModel)
     {
       this.MainViewModel = mainViewModel;
-      IsDirty = true;
-      Title = FileName;
+      this.IsDirty = true;
+      this.Title = this.FileName;
     }
 
     public string DirectoryName
     {
       get
       {
-        if (!string.IsNullOrWhiteSpace(FilePath))
+        if (!string.IsNullOrWhiteSpace(this.FilePath))
         {
-          return new FileInfo(FilePath).DirectoryName;
+          return new FileInfo(this.FilePath).DirectoryName;
         }
 
         return string.Empty;
@@ -73,12 +73,12 @@
     {
       get
       {
-        if (string.IsNullOrWhiteSpace(FilePath))
+        if (string.IsNullOrWhiteSpace(this.FilePath))
         {
-          return $"New{FileTypeName}" + (IsDirty ? "*" : string.Empty);
+          return $"New{this.FileTypeName}" + (this.IsDirty ? "*" : string.Empty);
         }
 
-        return Path.GetFileName(FilePath) + (IsDirty ? "*" : string.Empty);
+        return Path.GetFileName(this.FilePath) + (this.IsDirty ? "*" : string.Empty);
       }
     }
 
@@ -87,16 +87,16 @@
     /// </summary>
     public string FilePath
     {
-      get => filePath ?? string.Empty;
+      get => this.filePath ?? string.Empty;
       set
       {
-        if (filePath != value)
+        if (this.filePath != value)
         {
-          filePath = value;
-          Title = FileName;
-          OnPropertyChanged(nameof(FilePath));
-          OnPropertyChanged(nameof(FileName));
-          OnPropertyChanged(nameof(Title));
+          this.filePath = value;
+          this.Title = this.FileName;
+          this.OnPropertyChanged(nameof(this.FilePath));
+          this.OnPropertyChanged(nameof(this.FileName));
+          this.OnPropertyChanged(nameof(this.Title));
         }
       }
     }
@@ -104,25 +104,25 @@
     /// <summary>
     /// Gets the default name for a new file of this type.
     /// </summary>
-    public string FileTypeName => GetType().Name.Replace("ViewModel", string.Empty);
+    public string FileTypeName => this.GetType().Name.Replace("ViewModel", string.Empty);
 
     public abstract string TextContent { get; }
 
     public bool IsDirty
     {
-      get => isDirty;
+      get => this.isDirty;
       set
       {
-        if (isDirty != value)
+        if (this.isDirty != value)
         {
-          isDirty = value;
-          if (!isDirty)
+          this.isDirty = value;
+          if (!this.isDirty)
           {
-            SaveState();
+            this.SaveState();
           }
 
-          OnPropertyChanged(nameof(IsDirty));
-          OnPropertyChanged(nameof(FileName));
+          this.OnPropertyChanged(nameof(this.IsDirty));
+          this.OnPropertyChanged(nameof(this.FileName));
         }
       }
     }
@@ -131,12 +131,12 @@
     {
       get
       {
-        if (saveCommand == null)
+        if (this.saveCommand == null)
         {
-          saveCommand = new RelayCommand(OnSave, CanSave);
+          this.saveCommand = new RelayCommand(this.OnSave, this.CanSave);
         }
 
-        return saveCommand;
+        return this.saveCommand;
       }
     }
 
@@ -144,12 +144,12 @@
     {
       get
       {
-        if (saveAsCommand == null)
+        if (this.saveAsCommand == null)
         {
-          saveAsCommand = new RelayCommand(OnSaveAs, CanSaveAs);
+          this.saveAsCommand = new RelayCommand(this.OnSaveAs, this.CanSaveAs);
         }
 
-        return saveAsCommand;
+        return this.saveAsCommand;
       }
     }
 
@@ -157,12 +157,12 @@
     {
       get
       {
-        if (closeCommand == null)
+        if (this.closeCommand == null)
         {
-          closeCommand = new RelayCommand(OnClose, CanClose);
+          this.closeCommand = new RelayCommand(this.OnClose, this.CanClose);
         }
 
-        return closeCommand;
+        return this.closeCommand;
       }
     }
 
@@ -183,9 +183,9 @@
     {
       if (File.Exists(filePath))
       {
-        LoadContent();
-        ContentId = filePath;
-        NotifyContentUpdated();
+        this.LoadContent();
+        this.ContentId = filePath;
+        this.NotifyContentUpdated();
         if (this is NestProjectViewModel ||
             this is NestResultViewModel ||
             this is PartEditorViewModel)
@@ -202,27 +202,27 @@
 
     private void OnClose()
     {
-      MainViewModel.Close(this);
+      this.MainViewModel.Close(this);
     }
 
     private bool CanSave()
     {
-      return IsDirty;
+      return this.IsDirty;
     }
 
     private void OnSave()
     {
-      MainViewModel.Save(this, false);
+      this.MainViewModel.Save(this, false);
     }
 
     private bool CanSaveAs()
     {
-      return IsDirty;
+      return this.IsDirty;
     }
 
     private void OnSaveAs()
     {
-      MainViewModel.Save(this, true);
+      this.MainViewModel.Save(this, true);
     }
   }
 }

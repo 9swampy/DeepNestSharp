@@ -76,7 +76,7 @@
         return null;
       }
 
-      var pnts = new NoFitPolygon[]
+      NoFitPolygon[] pnts = new NoFitPolygon[]
       {
                 new NoFitPolygon(new SvgPoint[]
                 {
@@ -203,10 +203,10 @@
           }
 
           // generate translation vectors from touching vertices/edges
-          var vectors = new List<NVector>();
+          List<NVector> vectors = new List<NVector>();
           for (i = 0; i < touching.Count; i++)
           {
-            var vertexA = a[touching[i].A];
+            SvgPoint vertexA = a[touching[i].A];
             vertexA.Marked = true;
 
             // adjacent A vertices
@@ -216,11 +216,11 @@
             prevAindex = prevAindex < 0 ? a.Length - 1 : prevAindex; // loop
             nextAindex = nextAindex >= a.Length ? 0 : nextAindex; // loop
 
-            var prevA = a[prevAindex];
-            var nextA = a[nextAindex];
+            SvgPoint prevA = a[prevAindex];
+            SvgPoint nextA = a[nextAindex];
 
             // adjacent B vertices
-            var vertexB = b[touching[i].B];
+            SvgPoint vertexB = b[touching[i].B];
 
             var prevBindex = touching[i].B - 1;
             var nextBindex = touching[i].B + 1;
@@ -228,31 +228,31 @@
             prevBindex = prevBindex < 0 ? b.Length - 1 : prevBindex; // loop
             nextBindex = nextBindex >= b.Length ? 0 : nextBindex; // loop
 
-            var prevB = b[prevBindex];
-            var nextB = b[nextBindex];
+            SvgPoint prevB = b[prevBindex];
+            SvgPoint nextB = b[nextBindex];
 
             if (touching[i].Type == 0)
             {
-              var vA1 = new NVector(
+              NVector vA1 = new NVector(
                    prevA.X - vertexA.X,
                    prevA.Y - vertexA.Y,
                    vertexA,
                    prevA);
 
-              var vA2 = new NVector(
+              NVector vA2 = new NVector(
                        nextA.X - vertexA.X,
                        nextA.Y - vertexA.Y,
                        vertexA,
                        nextA);
 
               // B vectors need to be inverted
-              var vB1 = new NVector(
+              NVector vB1 = new NVector(
                            vertexB.X - prevB.X,
                            vertexB.Y - prevB.Y,
                            prevB,
                            vertexB);
 
-              var vB2 = new NVector(
+              NVector vB2 = new NVector(
                                vertexB.X - nextB.X,
                                vertexB.Y - nextB.Y,
                                nextB,
@@ -311,10 +311,10 @@
             {
               // compare magnitude with unit vectors
               var vectorlength = (double)Math.Sqrt((vectors[i].X * vectors[i].X) + (vectors[i].Y * vectors[i].Y));
-              var unitv = new SvgPoint(vectors[i].X / vectorlength, vectors[i].Y / vectorlength);
+              SvgPoint unitv = new SvgPoint(vectors[i].X / vectorlength, vectors[i].Y / vectorlength);
 
               var prevlength = (double)Math.Sqrt((prevvector.X * prevvector.X) + (prevvector.Y * prevvector.Y));
-              var prevunit = new SvgPoint(prevvector.X / prevlength, prevvector.Y / prevlength);
+              SvgPoint prevunit = new SvgPoint(prevvector.X / prevlength, prevvector.Y / prevlength);
 
               // we need to scale down to unit vectors to normalize vector length. Could also just do a tan here
               if (Math.Abs((unitv.Y * prevunit.X) - (unitv.X * prevunit.Y)) < 0.0001)
@@ -486,7 +486,7 @@
               return null;
             }
 
-            var startPoint = new SvgPoint(b.OffsetX.Value, b.OffsetY.Value);
+            SvgPoint startPoint = new SvgPoint(b.OffsetX.Value, b.OffsetY.Value);
             if (((bInside.Value && inside) || (!bInside.Value && !inside)) &&
                 !Intersect(a, b) && !InNfp(startPoint, nfp))
             {
@@ -584,31 +584,31 @@
         ((IHiddenNfp)b).Push(b[0]);
       }
 
-      var edgeA = a;
-      var edgeB = b;
+      INfp edgeA = a;
+      INfp edgeB = b;
 
       double? distance = null;
 
       // var p, s1, s2;
       double? d;
 
-      var dir = NormalizeVector(new SvgPoint(direction.X, direction.Y));
+      SvgPoint dir = NormalizeVector(new SvgPoint(direction.X, direction.Y));
 
-      var normal = new SvgPoint(
+      SvgPoint normal = new SvgPoint(
           dir.Y,
           -dir.X);
 
-      var reverse = new SvgPoint(-dir.X, -dir.Y);
+      SvgPoint reverse = new SvgPoint(-dir.X, -dir.Y);
 
       for (var i = 0; i < edgeB.Length - 1; i++)
       {
         // var mind = null;
         for (var j = 0; j < edgeA.Length - 1; j++)
         {
-          var aCurrent = new SvgPoint(edgeA[j].X + a.OffsetX ?? 0, edgeA[j].Y + a.OffsetY ?? 0);
-          var aNext = new SvgPoint(edgeA[j + 1].X + a.OffsetX ?? 0, edgeA[j + 1].Y + a.OffsetY ?? 0);
-          var bCurrent = new SvgPoint(edgeB[i].X + b.OffsetX ?? 0, edgeB[i].Y + b.OffsetY ?? 0);
-          var bNext = new SvgPoint(edgeB[i + 1].X + b.OffsetX ?? 0, edgeB[i + 1].Y + b.OffsetY ?? 0);
+          SvgPoint aCurrent = new SvgPoint(edgeA[j].X + a.OffsetX ?? 0, edgeA[j].Y + a.OffsetY ?? 0);
+          SvgPoint aNext = new SvgPoint(edgeA[j + 1].X + a.OffsetX ?? 0, edgeA[j + 1].Y + a.OffsetY ?? 0);
+          SvgPoint bCurrent = new SvgPoint(edgeB[i].X + b.OffsetX ?? 0, edgeB[i].Y + b.OffsetY ?? 0);
+          SvgPoint bNext = new SvgPoint(edgeB[i + 1].X + b.OffsetX ?? 0, edgeB[i + 1].Y + b.OffsetY ?? 0);
           if ((AlmostEqual(aCurrent.X, aNext.X) && AlmostEqual(aCurrent.Y, aNext.Y)) || (AlmostEqual(bCurrent.X, bNext.X) && AlmostEqual(bCurrent.Y, bNext.Y)))
           {
             continue; // ignore extremely small lines
@@ -646,10 +646,10 @@
       {
         for (var j = 0; j < b.Length - 1; j++)
         {
-          var a1 = new SvgPoint(a[i].X + aOffsetx, a[i].Y + aOffsety);
-          var a2 = new SvgPoint(a[i + 1].X + aOffsetx, a[i + 1].Y + aOffsety);
-          var b1 = new SvgPoint(b[j].X + bOffsetx, b[j].Y + bOffsety);
-          var b2 = new SvgPoint(b[j + 1].X + bOffsetx, b[j + 1].Y + bOffsety);
+          SvgPoint a1 = new SvgPoint(a[i].X + aOffsetx, a[i].Y + aOffsety);
+          SvgPoint a2 = new SvgPoint(a[i + 1].X + aOffsetx, a[i + 1].Y + aOffsety);
+          SvgPoint b1 = new SvgPoint(b[j].X + bOffsetx, b[j].Y + bOffsety);
+          SvgPoint b2 = new SvgPoint(b[j + 1].X + bOffsetx, b[j + 1].Y + bOffsety);
 
           var prevbindex = j == 0 ? b.Length - 1 : j - 1;
           var prevaindex = i == 0 ? a.Length - 1 : i - 1;
@@ -678,11 +678,11 @@
             nextaindex = nextaindex == a.Length - 1 ? 0 : nextaindex + 1;
           }
 
-          var a0 = new SvgPoint(a[prevaindex].X + aOffsetx, a[prevaindex].Y + aOffsety);
-          var b0 = new SvgPoint(b[prevbindex].X + bOffsetx, b[prevbindex].Y + bOffsety);
+          SvgPoint a0 = new SvgPoint(a[prevaindex].X + aOffsetx, a[prevaindex].Y + aOffsety);
+          SvgPoint b0 = new SvgPoint(b[prevbindex].X + bOffsetx, b[prevbindex].Y + bOffsety);
 
-          var a3 = new SvgPoint(a[nextaindex].X + aOffsetx, a[nextaindex].Y + aOffsety);
-          var b3 = new SvgPoint(b[nextbindex].X + bOffsetx, b[nextbindex].Y + bOffsety);
+          SvgPoint a3 = new SvgPoint(a[nextaindex].X + aOffsetx, a[nextaindex].Y + aOffsety);
+          SvgPoint b3 = new SvgPoint(b[nextbindex].X + bOffsetx, b[nextbindex].Y + bOffsety);
 
           if (OnSegment(a1, a2, b1) || (AlmostEqual(a1.X, b1.X) && AlmostEqual(a1.Y, b1.Y)))
           {
@@ -747,7 +747,7 @@
             }
           }
 
-          var p = LineIntersect(b1, b2, a1, a2);
+          SvgPoint p = LineIntersect(b1, b2, a1, a2);
 
           if (p != null)
           {
@@ -809,8 +809,8 @@
         ((IHiddenNfp)b).Push(b[0]);
       }
 
-      var edgeA = a;
-      var edgeB = b;
+      INfp edgeA = a;
+      INfp edgeB = b;
 
       double? distance = null;
       SvgPoint p, s1, s2;
@@ -867,11 +867,11 @@
 
     public static double? SegmentDistance(SvgPoint a, SvgPoint b, SvgPoint e, SvgPoint f, SvgPoint direction)
     {
-      var normal = new SvgPoint(
+      SvgPoint normal = new SvgPoint(
           direction.Y,
           -direction.X);
 
-      var reverse = new SvgPoint(
+      SvgPoint reverse = new SvgPoint(
               -direction.X,
               -direction.Y);
 
@@ -932,8 +932,8 @@
       // lines are colinear
       if (AlmostEqual(crossABE, 0) && AlmostEqual(crossABF, 0))
       {
-        var abNorm = new SvgPoint(b.Y - a.Y, a.X - b.X);
-        var efNorm = new SvgPoint(f.Y - e.Y, e.X - f.X);
+        SvgPoint abNorm = new SvgPoint(b.Y - a.Y, a.X - b.X);
+        SvgPoint efNorm = new SvgPoint(f.Y - e.Y, e.X - f.X);
 
         var abNormLength = Math.Sqrt((abNorm.X * abNorm.X) + (abNorm.Y * abNorm.Y));
         abNorm.X /= abNormLength;
@@ -964,7 +964,7 @@
         return null;
       }
 
-      var distances = new List<double>();
+      List<double> distances = new List<double>();
 
       // coincident points
       if (AlmostEqual(dotA, dotE))
@@ -1132,7 +1132,7 @@
     {
       normal = NormalizeVector(normal);
 
-      var dir = new SvgPoint(normal.Y, -normal.X);
+      SvgPoint dir = new SvgPoint(normal.Y, -normal.X);
 
       var pdot = (p.X * dir.X) + (p.Y * dir.Y);
       var s1dot = (s1.X * dir.X) + (s1.Y * dir.Y);

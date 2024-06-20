@@ -31,7 +31,7 @@
       DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Square(11D) }).TryConvertToNfp(firstPartIdSrc, out firstPart).Should().BeTrue();
       INfp secondPart;
       DxfParser.ConvertDxfToRawDetail("Part", new List<DxfEntity>() { DxfGenerator.Square(11D) }).TryConvertToNfp(secondPartIdSrc, out secondPart).Should().BeTrue();
-      var sw = new Stopwatch();
+      Stopwatch sw = new Stopwatch();
       sw.Start();
       IMinkowskiSumService minkowskiSumService = A.Dummy<MinkowskiSum>();
       for (int i = 0; i < iterations; i++)

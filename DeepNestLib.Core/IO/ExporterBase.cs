@@ -10,7 +10,7 @@
 
     public async Task Export(string path, ISheetPlacement sheetPlacement, bool doMergeLines, bool differentiateChildren)
     {
-      await Export(
+      await this.Export(
         path,
         sheetPlacement.PolygonsForExport,
         new ISheet[] { sheetPlacement.Sheet, },

@@ -40,12 +40,12 @@
     /// <summary>
     /// Gets memoised sheet.Id; to maintain legacy - monitor if sheet.Id is ever getting updated (may be Liskov breach in Sheet?).
     /// </summary>
-    public int SheetId => Sheet.Id;
+    public int SheetId => this.Sheet.Id;
 
     /// <summary>
     /// Gets memoised sheet.Source; to maintain legacy - monitor if sheet.Id is ever getting updated (may be Liskov breach in Sheet?).
     /// </summary>
-    public int SheetSource => Sheet.Source;
+    public int SheetSource => this.Sheet.Source;
 
     [JsonInclude]
     public PlacementTypeEnum PlacementType { get; private set; }
@@ -64,12 +64,12 @@
     {
       get
       {
-        if (hull == null)
+        if (this.hull == null)
         {
-          hull = CombinedPoints(this.PartPlacements).GetHull();
+          this.hull = CombinedPoints(this.PartPlacements).GetHull();
         }
 
-        return hull;
+        return this.hull;
       }
     }
 
@@ -83,11 +83,11 @@
 #else
         var clipperScale = this.clipperScale;
 #endif
-        var allpoints = CombinedPoints(this.PartPlacements);
-        var clipperNfp = NfpHelper.NfpToClipperCoordinates(allpoints, clipperScale);
+        NoFitPolygon allpoints = CombinedPoints(this.PartPlacements);
+        List<List<ClipperLib.IntPoint>> clipperNfp = NfpHelper.NfpToClipperCoordinates(allpoints, clipperScale);
 
-        var combinedNfp = new List<List<ClipperLib.IntPoint>>();
-        var clipper = new ClipperLib.Clipper();
+        List<List<ClipperLib.IntPoint>> combinedNfp = new List<List<ClipperLib.IntPoint>>();
+        ClipperLib.Clipper clipper = new ClipperLib.Clipper();
         _ = clipper.AddPaths(clipperNfp, ClipperLib.PolyType.ptSubject, true);
         _ = clipper.Execute(ClipperLib.ClipType.ctUnion, combinedNfp, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero);
 
@@ -105,7 +105,7 @@
       {
         try
         {
-          return Math.Abs(TotalPartsArea / this.Sheet.Area);
+          return Math.Abs(this.TotalPartsArea / this.Sheet.Area);
         }
         catch (Exception ex)
         {
@@ -120,16 +120,16 @@
     public OriginalFitnessSheet Fitness { get; }
 
     [JsonIgnore]
-    public double MaxX => PartPlacements.Max(pp => pp.MaxX);
+    public double MaxX => this.PartPlacements.Max(pp => pp.MaxX);
 
     [JsonIgnore]
-    public double MaxY => PartPlacements.Max(pp => pp.MaxY);
+    public double MaxY => this.PartPlacements.Max(pp => pp.MaxY);
 
     [JsonIgnore]
-    public double MinX => PartPlacements.Min(pp => pp.MinX);
+    public double MinX => this.PartPlacements.Min(pp => pp.MinX);
 
     [JsonIgnore]
-    public double MinY => PartPlacements.Min(pp => pp.MinY);
+    public double MinY => this.PartPlacements.Min(pp => pp.MinY);
 
     public double MergedLength { get; }
 
@@ -141,7 +141,7 @@
         return this.PartPlacements.Select(
                 o =>
                 {
-                  var result = new NoFitPolygon(o.Part, WithChildren.Included);
+                  NoFitPolygon result = new NoFitPolygon(o.Part, WithChildren.Included);
                   result.Sheet = this.Sheet;
                   result.X = o.X;
                   result.Y = o.Y;
@@ -165,7 +165,7 @@
 
     public static SheetPlacement FromJson(string json)
     {
-      var options = new JsonSerializerOptions();
+      JsonSerializerOptions options = new JsonSerializerOptions();
       options.Converters.Add(new SheetJsonConverter());
       options.Converters.Add(new NfpJsonConverter());
       options.Converters.Add(new PartPlacementJsonConverter());
@@ -174,7 +174,7 @@
 
     public override string ToJson(bool writeIndented = false)
     {
-      var options = new JsonSerializerOptions();
+      JsonSerializerOptions options = new JsonSerializerOptions();
       options.Converters.Add(new SheetJsonConverter());
       options.Converters.Add(new NfpJsonConverter());
       options.Converters.Add(new PartPlacementJsonConverter());
@@ -195,14 +195,14 @@
 
     internal static NoFitPolygon CombinedPoints(IReadOnlyList<IPartPlacement> partPlacements)
     {
-      var allPoints = new List<SvgPoint>();
+      List<SvgPoint> allPoints = new List<SvgPoint>();
       for (var partIndex = 0; partIndex < partPlacements.Count; partIndex++)
       {
         var length = partPlacements[partIndex].Part.Points.Length;
         for (var pointIndex = 0; pointIndex < length; pointIndex++)
         {
-          var part = partPlacements[partIndex].Part.Points[pointIndex];
-          var placement = partPlacements[partIndex];
+          SvgPoint part = partPlacements[partIndex].Part.Points[pointIndex];
+          IPartPlacement placement = partPlacements[partIndex];
           allPoints.Add(
               new SvgPoint(
                part.X + placement.X,

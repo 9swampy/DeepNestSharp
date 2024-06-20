@@ -15,7 +15,7 @@
 
     public override string ToString()
     {
-      return "x: " + X + "; y: " + Y;
+      return "x: " + this.X + "; y: " + this.Y;
     }
 
     public SvgPoint(double x, double y)
@@ -37,9 +37,9 @@
     [JsonConverter(typeof(DoublePrecisionConverter))]
     public double X { get; internal set; }
 
-    double IPointXY.X => X;
+    double IPointXY.X => this.X;
 
-    double IPointXY.Y => Y;
+    double IPointXY.Y => this.Y;
 
     [JsonConverter(typeof(DoublePrecisionConverter))]
     public double Y { get; internal set; }
@@ -51,7 +51,7 @@
 
     public override int GetHashCode()
     {
-      return HashCode.Combine(Exact, Marked, Math.Round(X, 4), Math.Round(Y, 4));
+      return HashCode.Combine(this.Exact, this.Marked, Math.Round(this.X, 4), Math.Round(this.Y, 4));
     }
 
     public bool Equals(SvgPoint other)

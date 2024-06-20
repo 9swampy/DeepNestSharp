@@ -40,7 +40,7 @@
 
       set
       {
-        SetProperty(ref nfpCandidateList, value, nameof(NfpCandidateList));
+        this.SetProperty(ref this.nfpCandidateList, value, nameof(this.NfpCandidateList));
       }
     }
 
@@ -48,16 +48,16 @@
 
     public int SelectedIndex
     {
-      get => selectedIndex;
-      set => SetProperty(ref selectedIndex, value);
+      get => this.selectedIndex;
+      set => this.SetProperty(ref this.selectedIndex, value);
     }
 
     public INfp SelectedItem
     {
-      get => selectedItem;
+      get => this.selectedItem;
       set
       {
-        SetProperty(ref selectedItem, value, nameof(SelectedItem));
+        this.SetProperty(ref this.selectedItem, value, nameof(this.SelectedItem));
       }
     }
 
@@ -65,7 +65,7 @@
 
     protected override void LoadContent()
     {
-      var fileInfo = new FileInfo(this.FilePath);
+      FileInfo fileInfo = new FileInfo(this.FilePath);
       if (!fileInfo.Exists)
       {
         this.MainViewModel.MessageService.DisplayMessageBox($"File not found: {this.FilePath}.", "File Not Found", MessageBoxIcon.Information);
@@ -84,7 +84,7 @@
 
     protected override void NotifyContentUpdated()
     {
-      OnPropertyChanged(nameof(NfpCandidateList));
+      this.OnPropertyChanged(nameof(this.NfpCandidateList));
     }
 
     protected override void SaveState()

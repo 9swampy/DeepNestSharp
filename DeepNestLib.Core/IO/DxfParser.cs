@@ -63,11 +63,11 @@
 
     private static Dictionary<DxfEntity, IList<LineElement>> ApproximateEntities(IEnumerable<DxfEntity> entities)
     {
-      var approximations = new Dictionary<DxfEntity, IList<LineElement>>();
+      Dictionary<DxfEntity, IList<LineElement>> approximations = new Dictionary<DxfEntity, IList<LineElement>>();
 
       foreach (DxfEntity ent in entities)
       {
-        var elems = new List<LineElement>();
+        List<LineElement> elems = new List<LineElement>();
         switch (ent.EntityType)
         {
           case DxfEntityType.LwPolyline:
@@ -78,7 +78,7 @@
                 continue;
               }
 
-              var localContour = new List<PointF>();
+              List<PointF> localContour = new List<PointF>();
               foreach (DxfLwPolylineVertex vert in poly.Vertices)
               {
                 localContour.Add(new PointF((float)vert.X, (float)vert.Y));
@@ -100,16 +100,16 @@
 
               for (var i = arc.StartAngle; i < arc.EndAngle; i += 15)
               {
-                var tt = arc.GetPointFromAngle(i);
+                DxfPoint tt = arc.GetPointFromAngle(i);
                 pp.Add(new PointF((float)tt.X, (float)tt.Y));
               }
 
-              var t = arc.GetPointFromAngle(arc.EndAngle);
+              DxfPoint t = arc.GetPointFromAngle(arc.EndAngle);
               pp.Add(new PointF((float)t.X, (float)t.Y));
               for (var j = 1; j < pp.Count; j++)
               {
-                var p1 = pp[j - 1];
-                var p2 = pp[j];
+                PointF p1 = pp[j - 1];
+                PointF p2 = pp[j];
                 elems.Add(new LineElement() { Start = new PointF((float)p1.X, (float)p1.Y), End = new PointF((float)p2.X, (float)p2.Y) });
               }
             }
@@ -118,7 +118,7 @@
           case DxfEntityType.Circle:
             {
               DxfCircle cr = (DxfCircle)ent;
-              var cc = new List<PointF>();
+              List<PointF> cc = new List<PointF>();
 
               for (var i = 0; i <= 360; i += 15)
               {
@@ -147,7 +147,7 @@
                 continue;
               }
 
-              var localContour = new List<PointF>();
+              List<PointF> localContour = new List<PointF>();
               foreach (DxfVertex vert in poly.Vertices)
               {
                 localContour.Add(new PointF((float)vert.Location.X, (float)vert.Location.Y));
@@ -171,7 +171,7 @@
 
     internal static RawDetail<DxfEntity> LoadDxfFileStreamAsRawDetail(string path)
     {
-      using (var inputStream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream(path))
+      using (Stream inputStream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream(path))
       {
         return LoadDxfStream(path, inputStream);
       }
@@ -179,7 +179,7 @@
 
     internal static INfp LoadDxfFileStreamAsNfp(string path)
     {
-      using (var inputStream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream(path))
+      using (Stream inputStream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream(path))
       {
         return LoadDxfStream(path, inputStream).ToNfp();
       }
@@ -187,7 +187,7 @@
 
     internal static DxfFile LoadDxfFileStream(string path)
     {
-      using (var inputStream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream(path))
+      using (Stream inputStream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream(path))
       {
         return DxfFile.Load(inputStream);
       }
@@ -209,8 +209,8 @@
     {
       for (var i = 0; i < points.Count; i++)
       {
-        var p0 = points[i];
-        var p1 = points[(i + 1) % points.Count];
+        PointF p0 = points[i];
+        PointF p1 = points[(i + 1) % points.Count];
         yield return new LineElement() { Start = p0, End = p1 };
       }
     }
@@ -221,13 +221,13 @@
 
       PointF prior = default;
       List<PointF> newContourPoints = new List<PointF>();
-      var newContourEntities = new HashSet<DxfEntity>();
-      var result = new List<LocalContour<DxfEntity>>();
+      HashSet<DxfEntity> newContourEntities = new HashSet<DxfEntity>();
+      List<LocalContour<DxfEntity>> result = new List<LocalContour<DxfEntity>>();
       while (allLineElements.Any())
       {
         if (newContourPoints.Count == 0)
         {
-          var toStart = allLineElements.First().LineElement;
+          LineElement toStart = allLineElements.First().LineElement;
           newContourPoints.Add(toStart.Start);
           prior = toStart.End;
           newContourPoints.Add(prior);
@@ -263,7 +263,7 @@
 
     private static List<(DxfEntity Entity, LineElement LineElement)> GetAllLineElements(Dictionary<DxfEntity, IList<LineElement>> approximations)
     {
-      var allLineElements = new List<(DxfEntity Entity, LineElement LineElement)>();
+      List<(DxfEntity Entity, LineElement LineElement)> allLineElements = new List<(DxfEntity Entity, LineElement LineElement)>();
       foreach (KeyValuePair<DxfEntity, IList<LineElement>> kvp in approximations)
       {
         allLineElements.AddRange(kvp.Value.Select(o => (kvp.Key, o)));
@@ -279,7 +279,7 @@
 
     private static bool TryGetAnotherPoint(PointF prior, List<(DxfEntity Entity, LineElement LineElement)> allLineElements, out (DxfEntity Entity, LineElement LineElement) next)
     {
-      var match = allLineElements.Select(candidate => (candidate, MinDistance(prior, candidate)))
+      ((DxfEntity Entity, LineElement LineElement) candidate, double) match = allLineElements.Select(candidate => (candidate, MinDistance(prior, candidate)))
                        .Where(o => o.Item2 <= ClosingThreshold)
                        .OrderBy(o => o.Item2).FirstOrDefault();
       if (match != default)

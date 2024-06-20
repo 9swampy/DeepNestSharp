@@ -160,18 +160,18 @@
           this.exportList.Clear();
           this.PrepExport(inputPartIndex, "In.json", () => this.ToJson(true));
 
-          var processedPart = new NoFitPolygon(inputPart, WithChildren.Included) as INfp;
+          INfp processedPart = new NoFitPolygon(inputPart, WithChildren.Included) as INfp;
           this.VerboseLog($"ProcessPart {inputPart.ToShortString()}.");
 
           return this.Placements.Count == 0
-            ? ProcessFirstPartOnSheet(inputPart, inputPartIndex, processedPart)
-            : ProcessSecondaryPartOnSheet(inputPart, inputPartIndex, processedPart);
+            ? this.ProcessFirstPartOnSheet(inputPart, inputPartIndex, processedPart)
+            : this.ProcessSecondaryPartOnSheet(inputPart, inputPartIndex, processedPart);
         }
       }
       catch (Exception ex)
       {
-        VerboseLog(ex.Message);
-        VerboseLog(ex.StackTrace);
+        this.VerboseLog(ex.Message);
+        this.VerboseLog(ex.StackTrace);
         throw;
       }
       finally
@@ -202,7 +202,7 @@
         string clipkey = "s:" + processedPart.Source + "r:" + processedPart.Rotation;
 
         List<List<IntPoint>> combinedNfp;
-        if (!TryGetCombinedNfp(this.Placements, processedPart, clipkey, out combinedNfp))
+        if (!this.TryGetCombinedNfp(this.Placements, processedPart, clipkey, out combinedNfp))
         {
           this.VerboseLog($"{nameof(this.TryGetCombinedNfp)} clipper error.");
           return InnerFlowResult.Continue;
@@ -225,8 +225,8 @@
 
         // console.log('save cache', placed.length - 1);
 
-        //Moved because I'm certain SheetNfp isn't accessed between where this was and here...
-        var clipperSheetNfp = NfpHelper.InnerNfpToClipperCoordinates(this.SheetNfp.Items, this.Config.ClipperScale);
+        // Moved because I'm certain SheetNfp isn't accessed between where this was and here...
+        List<List<IntPoint>> clipperSheetNfp = NfpHelper.InnerNfpToClipperCoordinates(this.SheetNfp.Items, this.Config.ClipperScale);
         this.PrepExport(inputPartIndex, "clipperSheetNfp.scad", () => clipperSheetNfp.ToOpenScadPolygon());
 
         List<INfp> finalNfp;
@@ -243,7 +243,7 @@
         }
 
         this.PrepExport(inputPartIndex, "finalNfp.scad", () => finalNfp.ToOpenScadPolygon());
-        PartPlacement position = GetBestPosition(
+        PartPlacement position = this.GetBestPosition(
                                           processedPart,
                                           finalNfp,
                                           this.VerboseLog,
@@ -305,11 +305,11 @@
         processedPart = processedPart.Rotate(360D / this.Config.Rotations);
       }
 
-      if (this.SheetNfp != null && SheetNfp.CanAcceptPart)
+      if (this.SheetNfp != null && this.SheetNfp.CanAcceptPart)
       {
         this.VerboseLog("First placement, put it on the bottom left corner. . .");
-        var candidatePoint = this.SheetNfp.GetCandidatePointClosestToOrigin();
-        var position = new PartPlacement(processedPart)
+        IPointXY candidatePoint = this.SheetNfp.GetCandidatePointClosestToOrigin();
+        PartPlacement position = new PartPlacement(processedPart)
         {
           X = candidatePoint.X - processedPart[0].X,
           Y = candidatePoint.Y - processedPart[0].Y,
@@ -376,7 +376,7 @@
             Rotation = processedPart.Rotation,
           };
 
-          if (Config.OverlapDetection && !IsPositionValid(shiftvector))
+          if (this.Config.OverlapDetection && !this.IsPositionValid(shiftvector))
           {
             isRejected = true;
             verboseLog("Would overlap so skip.");
@@ -412,7 +412,7 @@
             else
             {
               // must be convex hull
-              var localpoints = allpoints.Clone();
+              INfp localpoints = allpoints.Clone();
 
               for (int m = 0; m < processedPart.Length; m++)
               {
@@ -462,7 +462,7 @@
         }
       }
 
-      if (position == null && isRejected && state is INestStateSvgNest nestStateSvgNest)
+      if (position == null && isRejected && this.state is INestStateSvgNest nestStateSvgNest)
       {
         nestStateSvgNest.IncrementRejected();
       }
@@ -472,10 +472,10 @@
 
     private bool IsPositionValid(PartPlacement position)
     {
-      var proposed = position.PlacedPart;
-      foreach (var prior in this.Placements)
+      INfp proposed = position.PlacedPart;
+      foreach (IPartPlacement prior in this.Placements)
       {
-        var shiftedPrior = prior.PlacedPart;
+        INfp shiftedPrior = prior.PlacedPart;
         if (proposed.Overlaps(shiftedPrior))
         {
           return false;
@@ -498,14 +498,14 @@
 
     private SheetNfp InitialiseSheetNfp(INfp processedPart)
     {
-      var result = new SheetNfp(this.NfpHelper, this.Sheet, processedPart, this.Config.ClipperScale, this.Config.UseDllImport, this.VerboseLog);
+      SheetNfp result = new SheetNfp(this.NfpHelper, this.Sheet, processedPart, this.Config.ClipperScale, this.Config.UseDllImport, this.VerboseLog);
       this.VerboseLog($"SheetNfp has {result.NumberOfNfps}.Items");
       return result;
     }
 
     public string ToJson(bool writeIndented = false)
     {
-      var options = new JsonSerializerOptions();
+      JsonSerializerOptions options = new JsonSerializerOptions();
       options.Converters.Add(new SvgNestConfigJsonConverter());
       options.Converters.Add(new SheetJsonConverter());
       options.Converters.Add(new NfpJsonConverter());
@@ -520,7 +520,7 @@
 
     private SheetPlacement AddPlacement(INfp inputPart, INfp processedPart, PartPlacement position, int inputPartIndex)
     {
-      var result = this.placementWorker.AddPlacement(inputPart, this.Placements, processedPart, position, this.Config.PlacementType, this.Sheet, this.MergedLength);
+      SheetPlacement result = this.placementWorker.AddPlacement(inputPart, this.Placements, processedPart, position, this.Config.PlacementType, this.Sheet, this.MergedLength);
       if (this.ExportExecutions)
       {
         this.PrepExport(inputPartIndex, "Out.json", () => this.ToJson(true));
@@ -592,10 +592,10 @@
     {
       if (!string.IsNullOrEmpty(this.Config.ExportExecutionPath))
       {
-        var dirInfo = new DirectoryInfo(this.Config.ExportExecutionPath);
+        DirectoryInfo dirInfo = new DirectoryInfo(this.Config.ExportExecutionPath);
         if (dirInfo.Exists)
         {
-          foreach (var export in this.exportList)
+          foreach ((string Filename, string Content) export in this.exportList)
           {
             var filePath = Path.Combine(this.Config.ExportExecutionPath, export.Filename);
             System.Diagnostics.Debug.Print($"Export {filePath}");
@@ -611,7 +611,7 @@
 
     internal static PartPlacementWorker FromJson(string json)
     {
-      var options = new JsonSerializerOptions();
+      JsonSerializerOptions options = new JsonSerializerOptions();
       options.Converters.Add(new ListJsonConverter<INfp>());
       options.Converters.Add(new IListInterfaceConverterFactory(typeof(NoFitPolygon)));
       options.Converters.Add(new WindowUnkJsonConverter());
@@ -642,10 +642,10 @@
     {
       // check if stored in clip cache
       var startIndex = 0;
-      var clipper = new Clipper();
+      Clipper clipper = new Clipper();
       if (this.EnableCaches && this.ClipCache.ContainsKey(clipkey))
       {
-        var prevNfp = this.ClipCache[clipkey].nfpp;
+        IntPoint[][] prevNfp = this.ClipCache[clipkey].nfpp;
         clipper.AddPaths(prevNfp.Select(z => z.ToList()).ToList(), PolyType.ptSubject, true);
         startIndex = this.ClipCache[clipkey].index;
         this.VerboseLog($"Retrieve {clipkey}:{startIndex} from {nameof(this.ClipCache)}; populate {nameof(clipper)}");
@@ -659,7 +659,7 @@
       {
         this.VerboseLog($"TryGetCombinedNfp(j={j})=>NfpHelper.GetOuterNfp");
         ((MinkowskiSum)((ITestNfpHelper)this.NfpHelper).MinkowskiSumService).VerboseLogAction = s => this.VerboseLog(s);
-        var outerNfp = this.NfpHelper.GetOuterNfp(placements[j].Part, part, MinkowskiCache.Cache, this.Config.UseDllImport);
+        INfp outerNfp = this.NfpHelper.GetOuterNfp(placements[j].Part, part, MinkowskiCache.Cache, this.Config.UseDllImport);
         ((MinkowskiSum)((ITestNfpHelper)this.NfpHelper).MinkowskiSumService).VerboseLogAction = s => { };
         this.VerboseLog($"NfpHelper.GetOuterNfp=>TryGetCombinedNfp(j={j})");
         if (outerNfp == null)
@@ -688,7 +688,7 @@
           }
         }
 
-        var clipperNfp = NfpHelper.NfpToClipperCoordinates(outerNfp, this.Config.ClipperScale);
+        List<List<IntPoint>> clipperNfp = NfpHelper.NfpToClipperCoordinates(outerNfp, this.Config.ClipperScale);
         this.VerboseLog($"Add {placements[j].Part.ToShortString()} paths to {nameof(clipper)} ({placements[j].Part.Name})");
         clipper.AddPaths(clipperNfp, PolyType.ptSubject, true);
       }
@@ -718,7 +718,7 @@
       differenceWithSheetPolygonNfp = new List<INfp>();
 
       List<List<IntPoint>> differenceWithSheetPolygonNfpPoints = new List<List<IntPoint>>();
-      var clipperForDifference = new Clipper();
+      Clipper clipperForDifference = new Clipper();
 
       this.VerboseLog($"Add clip {nameof(combinedNfp)} to {nameof(clipperForDifference)}");
       clipperForDifference.AddPaths(combinedNfp, PolyType.ptClip, true);

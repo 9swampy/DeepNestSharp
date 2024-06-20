@@ -32,7 +32,7 @@
       DxfGenerator.GenerateSquare("thirdPart", 11D, RectangleType.FitFour).TryConvertToNfp(thirdPartIdSrc, 180, out thirdPart).Should().BeTrue();
       Chromosome fourthPart;
       DxfGenerator.GenerateSquare("fourthPart", 11D, RectangleType.FitFour).TryConvertToNfp(fourthPartIdSrc, 180, out fourthPart).Should().BeTrue();
-      var config = new TestSvgNestConfig();
+      TestSvgNestConfig config = new TestSvgNestConfig();
       config.PlacementType = PlacementTypeEnum.BoundingBox;
       this.nestResult = new PlacementWorker(A.Dummy<NfpHelper>(), new ISheet[] { firstSheet }, new DeepNestGene(new Chromosome[] { firstPart, secondPart, thirdPart, fourthPart }.ApplyIndex()), config, A.Dummy<Stopwatch>(), A.Fake<INestState>()).PlaceParts();
     }

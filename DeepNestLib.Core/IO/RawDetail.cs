@@ -10,12 +10,12 @@
   {
     private List<LocalContour<TSourceEntity>> outers = new List<LocalContour<TSourceEntity>>();
 
-    public IReadOnlyCollection<ILocalContour> Outers => outers;
+    public IReadOnlyCollection<ILocalContour> Outers => this.outers;
 
     public RectangleF BoundingBox()
     {
       GraphicsPath gp = new GraphicsPath();
-      foreach (var item in Outers)
+      foreach (ILocalContour item in this.Outers)
       {
         gp.AddPolygon(item.Points.ToArray());
       }
@@ -25,12 +25,12 @@
 
     public void AddContour(LocalContour<TSourceEntity> contour)
     {
-      outers.Add(contour);
+      this.outers.Add(contour);
     }
 
     public void AddRangeContour(IEnumerable<LocalContour<TSourceEntity>> collection)
     {
-      outers.AddRange(collection);
+      this.outers.AddRange(collection);
     }
 
     public string Name { get; set; }
@@ -43,7 +43,7 @@
         return false;
       }
 
-      loadedNfp = ToNfp();
+      loadedNfp = this.ToNfp();
       if (loadedNfp == null)
       {
         return false;
@@ -56,21 +56,21 @@
     public bool TryConvertToNfp(int src, out Chromosome loadedChromosome)
     {
       INfp loadedNfp;
-      var result = TryConvertToNfp(src, out loadedNfp);
+      var result = this.TryConvertToNfp(src, out loadedNfp);
       loadedChromosome = new Chromosome(loadedNfp, loadedNfp?.Rotation ?? 0);
       return result;
     }
 
     bool IRawDetail.TryConvertToNfp(int src, int rotation, out Chromosome loadedChromosome)
     {
-      var result = TryConvertToNfp(src, out loadedChromosome);
+      var result = this.TryConvertToNfp(src, out loadedChromosome);
       loadedChromosome.Rotation = rotation;
       return result;
     }
 
     public (INfp, double) ToChromosome()
     {
-      INfp nfp = ToNfp();
+      INfp nfp = this.ToNfp();
       return (nfp, nfp.Rotation);
     }
 
@@ -78,11 +78,11 @@
     {
       NoFitPolygon result = null;
       List<NoFitPolygon> nfps = new List<NoFitPolygon>();
-      foreach (var item in Outers)
+      foreach (ILocalContour item in this.Outers)
       {
-        var nn = new NoFitPolygon();
+        NoFitPolygon nn = new NoFitPolygon();
         nfps.Add(nn);
-        foreach (var pitem in item.Points)
+        foreach (PointF pitem in item.Points)
         {
           nn.AddPoint(new SvgPoint(pitem.X, pitem.Y));
         }
@@ -90,11 +90,11 @@
 
       if (nfps.Any())
       {
-        var parent = nfps.OrderByDescending(z => z.Area).First();
+        NoFitPolygon parent = nfps.OrderByDescending(z => z.Area).First();
         result = parent; // Reference caution needed here; should be cloning not messing with the original object?
-        result.Name = Name;
+        result.Name = this.Name;
 
-        foreach (var child in nfps.Where(o => o != parent))
+        foreach (NoFitPolygon child in nfps.Where(o => o != parent))
         {
           if (result.Children == null)
           {
@@ -110,13 +110,13 @@
 
     public ISheet ToSheet()
     {
-      return new Sheet(ToNfp(), WithChildren.Excluded);
+      return new Sheet(this.ToNfp(), WithChildren.Excluded);
     }
 
     bool IRawDetail.TryConvertToSheet(int firstSheetIdSrc, out ISheet firstSheet)
     {
       INfp nfp;
-      if (TryConvertToNfp(firstSheetIdSrc, out nfp))
+      if (this.TryConvertToNfp(firstSheetIdSrc, out nfp))
       {
         firstSheet = new Sheet(nfp, WithChildren.Excluded);
         return true;

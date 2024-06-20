@@ -12,7 +12,7 @@ namespace DeepNestSharp.CiTests
     public void Test1()
     {
       collection = new ObservableCollection<int>();
-      var t = new Task(() => Worker());
+      Task t = new Task(() => Worker());
       t.Start();
     }
 

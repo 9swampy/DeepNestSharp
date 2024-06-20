@@ -30,19 +30,19 @@
         // new Tuple<string, Theme>(nameof(Vs2013LightTheme),new Vs2013LightTheme()),
       };
 
-      this.SelectedTheme = Themes.First();
+      this.SelectedTheme = this.Themes.First();
     }
 
     public List<Tuple<string, Theme>> Themes { get; set; }
 
     public Tuple<string, Theme>? SelectedTheme
     {
-      get => selectedTheme;
+      get => this.selectedTheme;
 
       set
       {
-        selectedTheme = value;
-        OnPropertyChanged(nameof(SelectedTheme));
+        this.selectedTheme = value;
+        this.OnPropertyChanged(nameof(this.SelectedTheme));
       }
     }
 

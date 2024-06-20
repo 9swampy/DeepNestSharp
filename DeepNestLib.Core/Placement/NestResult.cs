@@ -19,10 +19,7 @@
     private SheetPlacementCollection sheetPlacementCollection;
 
     [Obsolete("Use only for deserialization.")]
-    public NestResult()
-    {
-      this.fitness = new OriginalFitness(this);
-    }
+    public NestResult() => this.fitness = new OriginalFitness(this);
 
     public NestResult(
       int totalParts,
@@ -46,23 +43,14 @@
     public DateTime CreatedAt { get; } = DateTime.Now;
 
     [JsonIgnore]
-    public double Fitness
-    {
-      get
-      {
-        return this.fitness.Evaluate();
-      }
-    }
+    public double Fitness => this.fitness.Evaluate();
 
     public double[] Rotation { get; set; }
 
     [JsonInclude]
     public IList<ISheetPlacement, SheetPlacement> UsedSheets
     {
-      get
-      {
-        return sheetPlacementCollection;
-      }
+      get => this.sheetPlacementCollection;
 
       private set
       {
@@ -72,7 +60,7 @@
         }
         else
         {
-          var newSheetPlacementCollection = new SheetPlacementCollection(value);
+          SheetPlacementCollection newSheetPlacementCollection = new SheetPlacementCollection(value);
           this.sheetPlacementCollection = newSheetPlacementCollection;
         }
       }
@@ -82,7 +70,7 @@
     public IList<INfp> UnplacedParts { get; private set; }
 
     [JsonInclude]
-    public double MergedLength => UsedSheets.Sum(o => o.MergedLength);
+    public double MergedLength => this.UsedSheets.Sum(o => o.MergedLength);
 
     [JsonIgnore]
     public double FitnessSheets
@@ -150,13 +138,13 @@
     public double TotalSheetsArea => this.UsedSheets.Sum(s => s.Sheet.Area);
 
     [JsonIgnore]
-    public double MaterialUtilization => Math.Abs(TotalPartsArea / TotalSheetsArea);
+    public double MaterialUtilization => Math.Abs(this.TotalPartsArea / this.TotalSheetsArea);
 
     public bool IsValid => !(double.IsNaN(this.Fitness) || this.TotalPartsCount > this.TotalParts);
 
     public static NestResult FromJson(string json)
     {
-      var options = new JsonSerializerOptions();
+      JsonSerializerOptions options = new JsonSerializerOptions();
       options.Converters.Add(new InterfaceConverterFactory(typeof(NoFitPolygon), typeof(INfp)));
       options.Converters.Add(new IListInterfaceConverterFactory(typeof(INfp)));
       options.Converters.Add(new WrappableListJsonConverter<ISheetPlacement, SheetPlacement>());
@@ -177,12 +165,12 @@
 
     public override string ToString()
     {
-      return $"{fitness.Evaluate()}=ƩB{this.SheetPlacementFitness.Bounds:N0}+ƩS{this.SheetPlacementFitness.Sheets:N0}+ƩW{this.SheetPlacementFitness.MaterialWasted:N0}+ƩU{this.SheetPlacementFitness.MaterialUtilization:N0}+U{this.fitness.Unplaced:N0}";
+      return $"{this.fitness.Evaluate()}=ƩB{this.SheetPlacementFitness.Bounds:N0}+ƩS{this.SheetPlacementFitness.Sheets:N0}+ƩW{this.SheetPlacementFitness.MaterialWasted:N0}+ƩU{this.SheetPlacementFitness.MaterialUtilization:N0}+U{this.fitness.Unplaced:N0}";
     }
 
     public override string ToJson(bool writeIndented = true)
     {
-      var options = new JsonSerializerOptions();
+      JsonSerializerOptions options = new JsonSerializerOptions();
       options.Converters.Add(new SheetJsonConverter());
       options.Converters.Add(new NfpJsonConverter());
       options.Converters.Add(new PartPlacementJsonConverter());

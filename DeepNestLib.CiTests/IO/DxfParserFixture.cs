@@ -33,7 +33,7 @@
     [Fact]
     public void ShouldLoadDxfToRawDetail()
     {
-      var rawDetail = DxfParser.LoadDxfFileStreamAsRawDetail(DxfTestFilename);
+      RawDetail<DxfEntity> rawDetail = DxfParser.LoadDxfFileStreamAsRawDetail(DxfTestFilename);
 
       rawDetail.Should().NotBeNull();
     }
@@ -77,7 +77,7 @@
     [Fact]
     public void GivenCreatedOneSquareWhenComparedToLoadedOneSquareThenShouldBeEquivalent()
     {
-      var created = DxfParser.ConvertDxfToRawDetail(loadedNfp.Name, new List<DxfEntity>() { DxfGenerator.Square(11D) });
+      RawDetail<DxfEntity> created = DxfParser.ConvertDxfToRawDetail(loadedNfp.Name, new List<DxfEntity>() { DxfGenerator.Square(11D) });
       created.Should().BeEquivalentTo(loadedRawDetail);
     }
   }

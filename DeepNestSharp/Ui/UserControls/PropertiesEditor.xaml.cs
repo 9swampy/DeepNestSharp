@@ -1,5 +1,6 @@
 ﻿namespace DeepNestSharp.Ui.UserControls
 {
+  using System;
   using System.Windows.Controls;
 
   /// <summary>
@@ -9,7 +10,7 @@
   {
     public PropertiesEditor()
     {
-      InitializeComponent();
+      this.InitializeComponent();
     }
   }
 }

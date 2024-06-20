@@ -22,7 +22,7 @@
 
     public App()
     {
-      host = new HostBuilder()
+      this.host = new HostBuilder()
            .ConfigureServices((hostContext, services) =>
            {
              services.AddScoped<ISettingsService, SettingsService>();
@@ -36,21 +36,21 @@
              services.AddSingleton<MainWindow>();
            }).Build();
 
-      using (var serviceScope = host.Services.CreateScope())
+      using (IServiceScope serviceScope = this.host.Services.CreateScope())
       {
-        var services = serviceScope.ServiceProvider;
+        IServiceProvider services = serviceScope.ServiceProvider;
         try
         {
-          var mainWindow = services.GetRequiredService<MainWindow>();
+          MainWindow mainWindow = services.GetRequiredService<MainWindow>();
           mainWindow?.Show();
 
           var args = Environment.GetCommandLineArgs();
           if (args != null && args.Length > 0)
           {
-            var mainViewModel = services.GetRequiredService<IMainViewModel>();
+            IMainViewModel mainViewModel = services.GetRequiredService<IMainViewModel>();
             foreach (var arg in args)
             {
-              var fileInfo = new FileInfo(arg);
+              FileInfo fileInfo = new FileInfo(arg);
               if (fileInfo.Exists)
               {
                 if (fileInfo.Extension == ".dll" ||
@@ -77,7 +77,7 @@
                 }
                 else
                 {
-                  var message = new StringBuilder();
+                  StringBuilder message = new StringBuilder();
                   message.AppendLine($"Unable to load {fileInfo.Name}");
                   message.AppendLine("Files supported include: ");
                   message.AppendLine("  DeepNest Project (*.dnest)");

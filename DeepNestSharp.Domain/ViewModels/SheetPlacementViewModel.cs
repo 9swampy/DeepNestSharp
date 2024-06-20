@@ -6,11 +6,11 @@
   using System.Linq;
   using System.Threading.Tasks;
   using System.Windows.Input;
+  using CommunityToolkit.Mvvm.Input;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Domain.Services;
   using DeepNestSharp.Ui.Docking;
-  using Microsoft.Toolkit.Mvvm.Input;
 
   public class SheetPlacementViewModel : FileViewModel, ISheetPlacementViewModel
   {
@@ -61,34 +61,34 @@
     {
     }
 
-    public ICommand ExportSheetPlacementCommand => exportSheetPlacementCommand ?? (exportSheetPlacementCommand = new AsyncRelayCommand(OnExportSheetPlacement));
+    public ICommand ExportSheetPlacementCommand => this.exportSheetPlacementCommand ?? (this.exportSheetPlacementCommand = new AsyncRelayCommand(this.OnExportSheetPlacement));
 
     public override string FileDialogFilter => DeepNestLib.Placement.SheetPlacement.FileDialogFilter;
 
-    public ICommand LoadAllExactCommand => loadAllExactCommand ?? (loadAllExactCommand = new AsyncRelayCommand(OnLoadAllExactAsync, () => true)); // this.SheetPlacement.PartPlacements.Any(p => !p.Part.IsExact)));
+    public ICommand LoadAllExactCommand => this.loadAllExactCommand ?? (this.loadAllExactCommand = new AsyncRelayCommand(this.OnLoadAllExactAsync, () => true)); // this.SheetPlacement.PartPlacements.Any(p => !p.Part.IsExact)));
 
-    public ICommand LoadPartFileCommand => loadPartFileCommand ?? (loadPartFileCommand = new RelayCommand(OnLoadPartFile, () => new FileInfo(this.SelectedItem.Part.Name).Exists));
+    public ICommand LoadPartFileCommand => this.loadPartFileCommand ?? (this.loadPartFileCommand = new RelayCommand(this.OnLoadPartFile, () => new FileInfo(this.SelectedItem.Part.Name).Exists));
 
-    public ISheetPlacement SheetPlacement => observableSheetPlacement;
+    public ISheetPlacement SheetPlacement => this.observableSheetPlacement;
 
     public int SelectedIndex
     {
-      get => selectedIndex;
-      set => SetProperty(ref selectedIndex, value);
+      get => this.selectedIndex;
+      set => this.SetProperty(ref this.selectedIndex, value);
     }
 
     public IPartPlacement SelectedItem
     {
-      get => selectedItem;
+      get => this.selectedItem;
       set
       {
         if (value is ObservablePartPlacement observablePartPlacement)
         {
-          SetProperty(ref selectedItem, observablePartPlacement, nameof(SelectedItem));
+          this.SetProperty(ref this.selectedItem, observablePartPlacement, nameof(this.SelectedItem));
         }
         else
         {
-          throw new ArgumentException(nameof(SelectedItem));
+          throw new ArgumentException(nameof(this.SelectedItem));
         }
       }
     }
@@ -98,57 +98,57 @@
     public void RaiseDrawingContext()
     {
       // This makes the drag render holes correctly but seriously kills the drag.
-      OnPropertyChanged(nameof(SelectedItem));
+      this.OnPropertyChanged(nameof(this.SelectedItem));
     }
 
     protected override void LoadContent()
     {
-      var sheetPlacement = new ObservableSheetPlacement(DeepNestLib.Placement.SheetPlacement.LoadFromFile(this.FilePath));
+      ObservableSheetPlacement sheetPlacement = new ObservableSheetPlacement(DeepNestLib.Placement.SheetPlacement.LoadFromFile(this.FilePath));
       Debug.Print("Force Exact=false on SheetPlacement load.");
-      foreach (var pp in sheetPlacement.PartPlacements)
+      foreach (IPartPlacement pp in sheetPlacement.PartPlacements)
       {
         pp.Part.Points.First().Exact = false;
       }
 
       sheetPlacement.PropertyChanged += this.SheetPlacement_PropertyChanged;
       this.observableSheetPlacement = sheetPlacement;
-      OnPropertyChanged(nameof(SheetPlacement));
+      this.OnPropertyChanged(nameof(this.SheetPlacement));
     }
 
     private void SheetPlacement_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-      NotifyContentUpdated();
+      this.NotifyContentUpdated();
     }
 
     protected override void NotifyContentUpdated()
     {
-      OnPropertyChanged(nameof(SheetPlacement));
-      OnPropertyChanged(nameof(IsDirty));
+      this.OnPropertyChanged(nameof(this.SheetPlacement));
+      this.OnPropertyChanged(nameof(this.IsDirty));
     }
 
     private async Task OnExportSheetPlacement()
     {
-      await MainViewModel.ExportSheetPlacementAsync(this.SheetPlacement).ConfigureAwait(false);
+      await this.MainViewModel.ExportSheetPlacementAsync(this.SheetPlacement).ConfigureAwait(false);
     }
 
     private async Task OnLoadAllExactAsync()
     {
-      mouseCursorService.OverrideCursor = Cursors.Wait;
-      var partPlacementList = this.observableSheetPlacement.PartPlacements.Cast<ObservablePartPlacement>().ToList();
-      foreach (var pp in partPlacementList)
+      this.mouseCursorService.OverrideCursor = Cursors.Wait;
+      System.Collections.Generic.List<ObservablePartPlacement> partPlacementList = this.observableSheetPlacement.PartPlacements.Cast<ObservablePartPlacement>().ToList();
+      foreach (ObservablePartPlacement pp in partPlacementList)
       {
         await pp.OnLoadExact();
       }
 
       this.IsDirty = false;
-      NotifyContentUpdated();
-      loadAllExactCommand?.NotifyCanExecuteChanged();
-      mouseCursorService.OverrideCursor = Cursors.Null;
+      this.NotifyContentUpdated();
+      this.loadAllExactCommand?.NotifyCanExecuteChanged();
+      this.mouseCursorService.OverrideCursor = Cursors.Null;
     }
 
     private void OnLoadPartFile()
     {
-      this.MainViewModel.LoadPart(SelectedItem.Part.Name);
+      this.MainViewModel.LoadPart(this.SelectedItem.Part.Name);
     }
 
     protected override void SaveState()

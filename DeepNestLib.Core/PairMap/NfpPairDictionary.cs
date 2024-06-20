@@ -9,7 +9,7 @@
     private int wasCached = 0;
     private int notCached = 0;
 
-    public double PercentCached => (double)wasCached / (wasCached + notCached);
+    public double PercentCached => (double)this.wasCached / (this.wasCached + this.notCached);
 
     public NfpPairDictionary()
       : base(new NfpPairEqualityComparer())
@@ -21,11 +21,11 @@
       var result = this.TryGetValue(new NfpPairEqualityComparerKey(a, b, aRotation, bRotation, aSource, bSource, minkowskiSumPick), out value);
       if (result)
       {
-        Interlocked.Increment(ref wasCached);
+        Interlocked.Increment(ref this.wasCached);
       }
       else
       {
-        Interlocked.Increment(ref notCached);
+        Interlocked.Increment(ref this.notCached);
       }
 
       return result;

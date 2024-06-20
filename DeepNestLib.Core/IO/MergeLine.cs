@@ -15,23 +15,23 @@
 
     public MergeLine(DxfLine line)
     {
-      Line = line;
+      this.Line = line;
     }
 
-    public decimal Slope => slope ?? (slope = CalcSlope()).Value;
+    public decimal Slope => this.slope ?? (this.slope = this.CalcSlope()).Value;
 
-    public decimal Intercept => intercept ?? (intercept = CalcIntercept(Line)).Value;
+    public decimal Intercept => this.intercept ?? (this.intercept = this.CalcIntercept(this.Line)).Value;
 
     public DxfPoint Left
     {
       get
       {
-        if (!left.HasValue)
+        if (!this.left.HasValue)
         {
-          SetLeftRight();
+          this.SetLeftRight();
         }
 
-        return left.Value;
+        return this.left.Value;
       }
     }
 
@@ -39,67 +39,67 @@
     {
       get
       {
-        if (!right.HasValue)
+        if (!this.right.HasValue)
         {
-          SetLeftRight();
+          this.SetLeftRight();
         }
 
-        return right.Value;
+        return this.right.Value;
       }
     }
 
     public DxfLine Line { get; }
 
-    public bool IsVertical => Math.Round(Line.P1.X, FractionalDigits) == Math.Round(Line.P2.X, FractionalDigits);
+    public bool IsVertical => Math.Round(this.Line.P1.X, FractionalDigits) == Math.Round(this.Line.P2.X, FractionalDigits);
 
     private void SetLeftRight()
     {
-      if (IsVertical)
+      if (this.IsVertical)
       {
-        if (Line.P1.Y < Line.P2.Y)
+        if (this.Line.P1.Y < this.Line.P2.Y)
         {
-          left = Line.P1;
-          right = Line.P2;
+          this.left = this.Line.P1;
+          this.right = this.Line.P2;
         }
         else
         {
-          left = Line.P2;
-          right = Line.P1;
+          this.left = this.Line.P2;
+          this.right = this.Line.P1;
         }
       }
-      else if (Line.P1.X < Line.P2.X)
+      else if (this.Line.P1.X < this.Line.P2.X)
       {
-        left = Line.P1;
-        right = Line.P2;
+        this.left = this.Line.P1;
+        this.right = this.Line.P2;
       }
       else
       {
-        left = Line.P2;
-        right = Line.P1;
+        this.left = this.Line.P2;
+        this.right = this.Line.P1;
       }
     }
 
     private decimal CalcSlope()
     {
-      if (IsVertical)
+      if (this.IsVertical)
       {
         return decimal.MaxValue;
       }
       else
       {
-        return (decimal)Math.Round((Right.Y - Left.Y) / (Right.X - Left.X), FractionalDigits);
+        return (decimal)Math.Round((this.Right.Y - this.Left.Y) / (this.Right.X - this.Left.X), FractionalDigits);
       }
     }
 
     private decimal CalcIntercept(DxfLine line)
     {
-      if (IsVertical)
+      if (this.IsVertical)
       {
         return (decimal)Math.Round(line.P1.X, FractionalDigits);
       }
       else
       {
-        return (decimal)Math.Round(line.P1.Y - (double)Slope * line.P1.X, FractionalDigits);
+        return (decimal)Math.Round(line.P1.Y - (double)this.Slope * line.P1.X, FractionalDigits);
       }
     }
   }

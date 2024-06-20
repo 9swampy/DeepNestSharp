@@ -84,10 +84,10 @@ namespace DeepNestLib
 
     public static new SheetNfp FromJson(string json)
     {
-      var options = new JsonSerializerOptions();
+      JsonSerializerOptions options = new JsonSerializerOptions();
       options.Converters.Add(new SheetJsonConverter());
       options.Converters.Add(new NfpJsonConverter());
-      var nfpCandidateList = JsonSerializer.Deserialize<NfpCandidateList>(json, options);
+      NfpCandidateList nfpCandidateList = JsonSerializer.Deserialize<NfpCandidateList>(json, options);
       return new SheetNfp(nfpCandidateList);
     }
 
@@ -101,7 +101,7 @@ namespace DeepNestLib
 
     internal static SheetNfp LoadFromStream(string path)
     {
-      using (var stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream(path))
+      using (Stream stream = Assembly.GetExecutingAssembly().GetEmbeddedResourceStream(path))
       {
         return LoadFromStream(stream);
       }
@@ -125,10 +125,10 @@ namespace DeepNestLib
       SvgPoint result = null;
       for (int nfpCandidateIndex = 0; nfpCandidateIndex < this.NumberOfNfps; nfpCandidateIndex++)
       {
-        var nfpCandidate = this[nfpCandidateIndex];
+        INfp nfpCandidate = this[nfpCandidateIndex];
         for (int pointIndex = 0; pointIndex < nfpCandidate.Points.Length; pointIndex++)
         {
-          var nfpPoint = nfpCandidate.Points[pointIndex];
+          SvgPoint nfpPoint = nfpCandidate.Points[pointIndex];
           if (result == null ||
               nfpPoint.X < result.X ||
               (GeometryUtil.AlmostEqual(nfpPoint.X, result.X) && nfpPoint.Y < result.Y))

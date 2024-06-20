@@ -16,9 +16,9 @@
       this.dispatcher = dispatcher;
     }
 
-    public bool InvokeRequired => !dispatcher.CheckAccess();
+    public bool InvokeRequired => !this.dispatcher.CheckAccess();
 
-    public void Invoke(Action callback) => joinableTaskContext.Factory.Run(async () => await InvokeAsync(callback).ConfigureAwait(false));
+    public void Invoke(Action callback) => joinableTaskContext.Factory.Run(async () => await this.InvokeAsync(callback).ConfigureAwait(false));
 
     public async Task InvokeAsync(Func<Task> asyncMethod)
     {

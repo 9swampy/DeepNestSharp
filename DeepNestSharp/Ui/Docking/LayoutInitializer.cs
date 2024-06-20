@@ -17,7 +17,7 @@
         return false;
       }
 
-      var toolsPane = layout.Descendents().OfType<LayoutAnchorablePane>().FirstOrDefault(d => d.Name == "ToolsPane");
+      LayoutAnchorablePane? toolsPane = layout.Descendents().OfType<LayoutAnchorablePane>().FirstOrDefault(d => d.Name == "ToolsPane");
       if (toolsPane != null)
       {
         toolsPane.Children.Add(anchorableToShow);

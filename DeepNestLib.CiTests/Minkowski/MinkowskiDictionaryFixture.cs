@@ -10,15 +10,15 @@
     [Fact]
     public void ShouldSerialize()
     {
-      var sut = new MinkowskiDictionary();
+      MinkowskiDictionary sut = new MinkowskiDictionary();
       var json = sut.ToJson();
     }
 
     [Fact]
     public void ShouldRoundTripSerialize()
     {
-      var sut = new MinkowskiDictionary();
-      var nfp = new NoFitPolygon();
+      MinkowskiDictionary sut = new MinkowskiDictionary();
+      NoFitPolygon nfp = new NoFitPolygon();
       sut.Add(new MinkowskiKey(1, new double[] { 1, 2 }, 2, new int[] { 3, 4 }, new double[] { 1, 2 }, 5, new double[] { 6, 8 }), nfp);
       var json = sut.ToJson();
 
@@ -28,8 +28,8 @@
     [Fact]
     public void ShouldThrowWhenAddSameItemTwice()
     {
-      var sut = new MinkowskiDictionary();
-      var nfp = new NoFitPolygon();
+      MinkowskiDictionary sut = new MinkowskiDictionary();
+      NoFitPolygon nfp = new NoFitPolygon();
       Action act = () => sut.Add(new MinkowskiKey(1, new double[] { 1, 2 }, 2, new int[] { 3, 4 }, new double[] { 1, 2 }, 5, new double[] { 6, 8 }), nfp);
 
       act.Should().NotThrow();

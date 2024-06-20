@@ -27,8 +27,8 @@
     /// </summary>
     private MinkowskiSum(bool useMinkowskiCache, INestStateMinkowski state)
     {
-      UseMinkowskiCache = useMinkowskiCache;
-      State = state;
+      this.UseMinkowskiCache = useMinkowskiCache;
+      this.State = state;
     }
 
     [JsonInclude]
@@ -59,48 +59,48 @@
 
     INfp[] IMinkowskiSumService.DllImportExecute(INfp path, INfp pattern, MinkowskiSumCleaning minkowskiSumCleaning)
     {
-      var b = new NoFitPolygon(pattern, WithChildren.Included);
+      NoFitPolygon b = new NoFitPolygon(pattern, WithChildren.Included);
       Dictionary<string, List<PointF>> dic1 = new Dictionary<string, List<PointF>>();
       Dictionary<string, List<double>> dic2 = new Dictionary<string, List<double>>();
       dic2.Add("A", new List<double>());
-      foreach (var item in path.Points)
+      foreach (SvgPoint item in path.Points)
       {
-        var target = dic2["A"];
+        List<double> target = dic2["A"];
         target.Add(item.X);
         target.Add(item.Y);
       }
 
       dic2.Add("B", new List<double>());
-      foreach (var item in b.Points)
+      foreach (SvgPoint item in b.Points)
       {
-        var target = dic2["B"];
+        List<double> target = dic2["B"];
         target.Add(item.X);
         target.Add(item.Y);
       }
 
       List<double> hdat = new List<double>();
 
-      foreach (var item in path.Children)
+      foreach (INfp item in path.Children)
       {
-        foreach (var pitem in item.Points)
+        foreach (SvgPoint pitem in item.Points)
         {
           hdat.Add(pitem.X);
           hdat.Add(pitem.Y);
         }
       }
 
-      var aa = dic2["A"];
-      var bb = dic2["B"];
+      List<double> aa = dic2["A"];
+      List<double> bb = dic2["B"];
       var arr1 = path.Children.Select(z => z.Points.Count() * 2).ToArray();
 
-      var key = new MinkowskiKey(aa.Count, aa, path.Children.Count, arr1, hdat, bb.Count, bb);
+      MinkowskiKey key = new MinkowskiKey(aa.Count, aa, path.Children.Count, arr1, hdat, bb.Count, bb);
       INfp ret;
       lock (minkowskiSyncLock)
       {
         INfp cacheRetrieval;
-        if (!MinkowskiCache.TryGetValue(key, out cacheRetrieval))
+        if (!this.MinkowskiCache.TryGetValue(key, out cacheRetrieval))
         {
-          VerboseLogAction?.Invoke($"{path.ToShortString()}-{b.ToShortString()} {key} not found in {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)} so calculating. . .");
+          this.VerboseLogAction?.Invoke($"{path.ToShortString()}-{b.ToShortString()} {key} not found in {nameof(MinkowskiSum)}.{nameof(this.MinkowskiCache)} so calculating. . .");
 #if x64
           // System.Diagnostics.Debug.Print($"{state.CallCounter}.Minkowski_x64");
           long[] longs = arr1.Select(o => (long)o).ToArray();
@@ -111,7 +111,7 @@
 #endif
           MinkowskiWrapper.calculateNFP();
 
-          State.IncrementDllCallCounter();
+          this.State.IncrementDllCallCounter();
 
           int[] sizes;
           int[] sizes1;
@@ -159,7 +159,7 @@
           }
 
           List<List<PointF>> holesout = new List<List<PointF>>();
-          foreach (var item in holesval)
+          foreach (List<double> item in holesval)
           {
             holesout.Add(new List<PointF>());
             for (var i = 0; i < item.Count; i += 2)
@@ -171,15 +171,15 @@
           }
 
           ret = new NoFitPolygon();
-          foreach (var item in apts)
+          foreach (PointF item in apts)
           {
             ret.AddPoint(new SvgPoint(item.X, item.Y));
           }
 
-          foreach (var item in holesout)
+          foreach (List<PointF> item in holesout)
           {
             ret.Children.Add(new NoFitPolygon());
-            foreach (var hitem in item)
+            foreach (PointF hitem in item)
             {
               ret.Children.Last().AddPoint(new SvgPoint(hitem.X, hitem.Y));
             }
@@ -187,18 +187,18 @@
 
           if (cacheRetrieval == null)
           {
-            if (MinkowskiCache.Values.Any(o => o.Equals(ret)))
+            if (this.MinkowskiCache.Values.Any(o => o.Equals(ret)))
             {
               if (ret.Points.Length == 0)
               {
                 System.Diagnostics.Debugger.Break();
                 if (SvgNest.Config.ExportExecutions)
                 {
-                  var matchKvp = MinkowskiCache.ToList().First(o => o.Value.Equals(ret));
+                  KeyValuePair<MinkowskiKey, INfp> matchKvp = this.MinkowskiCache.ToList().First(o => o.Value.Equals(ret));
                   File.WriteAllText(@"C:\Temp\MinkowskiSum\MatchKey.json", matchKvp.Key.ToJson());
                   File.WriteAllText(@"C:\Temp\MinkowskiSum\MatchValue.json", matchKvp.Value.ToJson());
                   var nameSuffix = "Sum2";
-                  File.WriteAllText($"C:\\Temp\\MinkowskiSum\\Minkowski{nameSuffix}.dnpoly", MinkowskiCache.ToJson());
+                  File.WriteAllText($"C:\\Temp\\MinkowskiSum\\Minkowski{nameSuffix}.dnpoly", this.MinkowskiCache.ToJson());
                   File.WriteAllText($"C:\\Temp\\MinkowskiSum\\Minkowski{nameSuffix}A.dnpoly", path.ToJson());
                   File.WriteAllText($"C:\\Temp\\MinkowskiSum\\Minkowski{nameSuffix}B.dnpoly", b.ToJson());
                   File.WriteAllText($"C:\\Temp\\MinkowskiSum\\Minkowski{nameSuffix}Ret.dnpoly", ret.ToJson());
@@ -206,10 +206,10 @@
               }
             }
 
-            if (UseMinkowskiCache)
+            if (this.UseMinkowskiCache)
             {
-              VerboseLogAction?.Invoke($"Add {path.ToShortString()}-{b.ToShortString()} {key} to {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)}. . .");
-              MinkowskiCache.Add(key, ret);
+              this.VerboseLogAction?.Invoke($"Add {path.ToShortString()}-{b.ToShortString()} {key} to {nameof(MinkowskiSum)}.{nameof(this.MinkowskiCache)}. . .");
+              this.MinkowskiCache.Add(key, ret);
             }
           }
           else if (!ret.Equals(cacheRetrieval))
@@ -219,14 +219,14 @@
         }
         else
         {
-          VerboseLogAction?.Invoke($"{path.ToShortString()}-{b.ToShortString()} {key} found in {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)}. . .");
+          this.VerboseLogAction?.Invoke($"{path.ToShortString()}-{b.ToShortString()} {key} found in {nameof(MinkowskiSum)}.{nameof(this.MinkowskiCache)}. . .");
           ret = new NoFitPolygon(cacheRetrieval, WithChildren.Included);
         }
       }
 
       if (minkowskiSumCleaning == MinkowskiSumCleaning.Cleaned)
       {
-        VerboseLogAction?.Invoke("Clean MinkowskiSum. . .");
+        this.VerboseLogAction?.Invoke("Clean MinkowskiSum. . .");
         ret.Clean();
       }
 
@@ -235,7 +235,7 @@
 
     NoFitPolygon IMinkowskiSumService.ClipperExecuteOuterNfp(SvgPoint[] pattern, SvgPoint[] path, MinkowskiSumPick minkowskiSumPick)
     {
-      var result = ClipperExecuteOuterNfp(pattern, path, minkowskiSumPick);
+      NoFitPolygon result = this.ClipperExecuteOuterNfp(pattern, path, minkowskiSumPick);
       result.EnsureIsClosed();
       return result;
     }
@@ -243,16 +243,16 @@
     private NoFitPolygon ClipperExecuteOuterNfp(SvgPoint[] pattern, SvgPoint[] path, MinkowskiSumPick minkowskiSumPick)
     {
       var scaler = 10000000;
-      var patternClipper = DeepNestClipper.ScaleUpPath(pattern, scaler);
-      var pathClipper = DeepNestClipper.ScaleUpPath(path, -scaler);
+      List<IntPoint> patternClipper = DeepNestClipper.ScaleUpPath(pattern, scaler);
+      List<IntPoint> pathClipper = DeepNestClipper.ScaleUpPath(path, -scaler);
 
-      var solution = Clipper.MinkowskiSum(patternClipper, pathClipper, true);
+      List<List<IntPoint>> solution = Clipper.MinkowskiSum(patternClipper, pathClipper, true);
       NoFitPolygon clipperNfp = null;
 
       double? largestArea = null;
       for (var i = 0; i < solution.Count(); i++)
       {
-        var n = solution[i].ToArray().ToNestCoordinates(scaler);
+        NoFitPolygon n = solution[i].ToArray().ToNestCoordinates(scaler);
         var sarea = -GeometryUtil.PolygonArea(n);
         if (largestArea == null ||
             minkowskiSumPick == MinkowskiSumPick.Largest && largestArea < sarea ||
@@ -283,13 +283,13 @@
     /// <returns></returns>
     INfp[] IMinkowskiSumService.NewMinkowskiSum(IList<SvgPoint> pattern, INfp path, WithChildren withChildren, bool takeOnlyBiggestArea)
     {
-      State.IncrementClipperCallCounter();
+      this.State.IncrementClipperCallCounter();
       var scaler = 10000000;
-      var patternScaledUp = DeepNestClipper.ScaleUpPath(pattern, scaler);
+      List<IntPoint> patternScaledUp = DeepNestClipper.ScaleUpPath(pattern, scaler);
       List<List<IntPoint>> solution;
       if (withChildren == WithChildren.Included)
       {
-        var pathScaledUpList = NfpHelper.NfpToClipperCoordinates(path, -scaler);
+        List<List<IntPoint>> pathScaledUpList = NfpHelper.NfpToClipperCoordinates(path, -scaler);
         // var options = new System.Text.Json.JsonSerializerOptions();
         // options.IncludeFields = true;
         // var json = System.Text.Json.JsonSerializer.Serialize(patternScaledUp, options);
@@ -312,7 +312,7 @@
 
       for (var i = 0; i < solution.Count(); i++)
       {
-        var n = solution[i].ToArray().ToNestCoordinates(scaler);
+        NoFitPolygon n = solution[i].ToArray().ToNestCoordinates(scaler);
         var sarea = Math.Abs(GeometryUtil.PolygonArea(n));
         if (largestArea == null || largestArea < sarea)
         {
@@ -331,7 +331,7 @@
             continue;
           }
 
-          var n = solution[j].ToArray().ToNestCoordinates(scaler);
+          NoFitPolygon n = solution[j].ToArray().ToNestCoordinates(scaler);
           clipperNfp.Children.Add(n);
         }
       }
@@ -346,7 +346,7 @@
 
       if (clipperNfp.Children != null)
       {
-        foreach (var nFP in clipperNfp.Children)
+        foreach (INfp nFP in clipperNfp.Children)
         {
           for (var j = 0; j < nFP.Length; j++)
           {
@@ -359,7 +359,7 @@
       }
 
       clipperNfp.EnsureIsClosed();
-      var res = new[] { clipperNfp };
+      NoFitPolygon[] res = new[] { clipperNfp };
       return res;
     }
   }

@@ -23,24 +23,24 @@
       // Walk down the layout and gather the LayoutContent elements.
       // AD bails out when it tries to invoke RemoveViewFromLogicalChild
       // on them.
-      var l = GatherLayoutContent(dockManager.Layout).ToArray();
+      LayoutContent[] l = GatherLayoutContent(this.dockManager.Layout).ToArray();
       // Remove the views by force
-      foreach (var x in l)
+      foreach (LayoutContent? x in l)
       {
-        dockManager.GetType()
+        this.dockManager.GetType()
             .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
             .Where(m => m.Name.Equals("RemoveViewFromLogicalChild"))
             .First()
-            .Invoke(dockManager, new object[] { x });
+            .Invoke(this.dockManager, new object[] { x });
       }
 
-      var layoutSerializer = new XmlLayoutSerializer(this.dockManager);
+      XmlLayoutSerializer layoutSerializer = new XmlLayoutSerializer(this.dockManager);
       /*layoutSerializer.LayoutSerializationCallback += (s, e) =>
       //{
       //  object o = e.Content;
       };*/
 
-      var configFile = new FileInfo(@".\AvalonDock.Layout.config");
+      FileInfo configFile = new FileInfo(@".\AvalonDock.Layout.config");
       if (configFile.Exists)
       {
         layoutSerializer.Deserialize(configFile.FullName);
@@ -49,7 +49,7 @@
 
     public void SaveLayout()
     {
-      var layoutSerializer = new XmlLayoutSerializer(this.dockManager);
+      XmlLayoutSerializer layoutSerializer = new XmlLayoutSerializer(this.dockManager);
       layoutSerializer.Serialize(@".\AvalonDock.Layout.config");
     }
 
@@ -82,9 +82,9 @@
         children = ((LayoutDocumentPane)le).Children;
       }
 
-      foreach (var child in children)
+      foreach (ILayoutElement child in children)
       {
-        foreach (var x in GatherLayoutContent(child))
+        foreach (LayoutContent x in GatherLayoutContent(child))
         {
           yield return x;
         }

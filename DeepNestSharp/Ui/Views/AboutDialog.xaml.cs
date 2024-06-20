@@ -12,8 +12,8 @@
   {
     public AboutDialog()
     {
-      InitializeComponent();
-      Title = $"About DeepNest# {ProcessorArchitecture}:{InformationalVersion}";
+      this.InitializeComponent();
+      this.Title = $"About DeepNest# {this.ProcessorArchitecture}:{this.InformationalVersion}";
       this.DataContext = this;
     }
 
@@ -33,7 +33,7 @@
 
     private void OkClick(object sender, RoutedEventArgs e)
     {
-      DialogResult = true;
+      this.DialogResult = true;
     }
   }
 }

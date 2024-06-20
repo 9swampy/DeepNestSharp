@@ -23,7 +23,7 @@
 
     ClipperLib.IntPoint[] IDeprecatedClipper.ScaleUpPathsSlowerParallel(SvgPoint[] points, double scale)
     {
-      var result = from point in points.AsParallel().AsSequential()
+      IEnumerable<ClipperLib.IntPoint> result = from point in points.AsParallel().AsSequential()
                    select new ClipperLib.IntPoint((long)Math.Round((decimal)point.X * (decimal)scale), (long)Math.Round((decimal)point.Y * (decimal)scale));
 
       return result.ToArray();
@@ -31,7 +31,7 @@
 
     public static List<ClipperLib.IntPoint> ScaleUpPath(IList<SvgPoint> points, double scale)
     {
-      var result = new ClipperLib.IntPoint[points.Count];
+      ClipperLib.IntPoint[] result = new ClipperLib.IntPoint[points.Count];
 
       Parallel.For(0, points.Count, i => result[i] = new ClipperLib.IntPoint((long)Math.Round((decimal)points[i].X * (decimal)scale), (long)Math.Round((decimal)points[i].Y * (decimal)scale)));
 

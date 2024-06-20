@@ -20,8 +20,8 @@
       {
         try
         {
-          var json = ToJson();
-          var deserialized = FromJson(json);
+          var json = this.ToJson();
+          MinkowskiDictionary deserialized = FromJson(json);
         }
         catch (Exception ex)
         {
@@ -33,7 +33,7 @@
 
     public string ToJson()
     {
-      var options = new JsonSerializerOptions();
+      JsonSerializerOptions options = new JsonSerializerOptions();
       options.Converters.Add(new NfpJsonConverter());
       options.Converters.Add(new MinkowskiDictionaryJsonConverter());
       return JsonSerializer.Serialize(this, options);
@@ -41,7 +41,7 @@
 
     public static MinkowskiDictionary FromJson(string json)
     {
-      var options = new JsonSerializerOptions();
+      JsonSerializerOptions options = new JsonSerializerOptions();
       options.Converters.Add(new NfpJsonConverter());
       options.Converters.Add(new MinkowskiDictionaryJsonConverter());
       return JsonSerializer.Deserialize<MinkowskiDictionary>(json, options);

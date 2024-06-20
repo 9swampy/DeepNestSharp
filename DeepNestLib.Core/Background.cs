@@ -38,30 +38,30 @@
       this.minkowskiSumService = minkowskiSumService;
       this.state = state;
       this.useDllImport = useDllImport;
-      this.nfpHelper = new NfpHelper(minkowskiSumService, window);
+      this.nfpHelper = new NfpHelper(minkowskiSumService, this.window);
     }
 
     internal void BackgroundStart(PopulationItem individual, ISheet[] sheets, ISvgNestConfig config)
     {
       try
       {
-        var backgroundStopwatch = new Stopwatch();
+        Stopwatch backgroundStopwatch = new Stopwatch();
         backgroundStopwatch.Start();
-        var gene = individual.Gene;
+        DeepNestGene gene = individual.Gene;
         for (int i = 0; i < sheets.Length; i++)
         {
-          var sheet = sheets[i];
+          ISheet sheet = sheets[i];
         }
 
         // preprocess
-        List<NfpPair> pairs = new NfpPairsFactory(window).Generate(config.UseParallel, gene);
+        List<NfpPair> pairs = new NfpPairsFactory(this.window).Generate(config.UseParallel, gene);
 
         // console.log('pairs: ', pairs.length);
         // console.time('Total');
         if (pairs.Count > 0)
         {
-          var pmapWorker = new PmapWorker(pairs, progressDisplayer, config.UseParallel, minkowskiSumService, state);
-          var pmapResult = pmapWorker.PmapDeepNest();
+          PmapWorker pmapWorker = new PmapWorker(pairs, this.progressDisplayer, config.UseParallel, this.minkowskiSumService, this.state);
+          NfpPair[] pmapResult = pmapWorker.PmapDeepNest();
           this.ThenDeepNest(pmapResult, gene, sheets, config, individual.Index, backgroundStopwatch);
         }
         else
@@ -91,7 +91,7 @@
     {
       try
       {
-        var nestResult = new PlacementWorker(this.nfpHelper, sheets, gene, config, backgroundStopwatch, state).PlaceParts();
+        NestResult nestResult = new PlacementWorker(this.nfpHelper, sheets, gene, config, backgroundStopwatch, this.state).PlaceParts();
         if (nestResult != null)
         {
           nestResult.Index = index;
@@ -108,10 +108,10 @@
     {
       // returned data only contains outer nfp, we have to account for any holes separately in the synchronous portion
       // this is because the c++ addon which can process interior nfps cannot run in the worker thread
-      var holeProvider = gene.FirstOrDefault(p => p.Part.Source == processed.Asource);
-      var partToFit = gene.FirstOrDefault(p => p.Part.Source == processed.Bsource);
+      Chromosome holeProvider = gene.FirstOrDefault(p => p.Part.Source == processed.Asource);
+      Chromosome partToFit = gene.FirstOrDefault(p => p.Part.Source == processed.Bsource);
 
-      var holes = new List<INfp>();
+      List<INfp> holes = new List<INfp>();
 
       if (holeProvider.Part.Children != null && holeProvider.Part.Children.Count > 0)
       {
@@ -120,16 +120,16 @@
           holes.Add(holeProvider.Part.Children[j].Rotate(processed.ARotation));
         }
 
-        var partRotated = partToFit.Part.Rotate(processed.BRotation);
-        var partBounds = GeometryUtil.GetPolygonBounds(partRotated);
-        var cnfp = new List<INfp>();
+        INfp partRotated = partToFit.Part.Rotate(processed.BRotation);
+        PolygonBounds partBounds = GeometryUtil.GetPolygonBounds(partRotated);
+        List<INfp> cnfp = new List<INfp>();
 
         for (int j = 0; j < holes.Count; j++)
         {
-          var holeBounds = GeometryUtil.GetPolygonBounds(holes[j]);
+          PolygonBounds holeBounds = GeometryUtil.GetPolygonBounds(holes[j]);
           if (holeBounds.Width > partBounds.Width && holeBounds.Height > partBounds.Height)
           {
-            var n = nfpHelper.GetInnerNfp(holes[j], partRotated, MinkowskiCache.NoCache, clipperScale, this.useDllImport, o => { });
+            INfp[] n = this.nfpHelper.GetInnerNfp(holes[j], partRotated, MinkowskiCache.NoCache, clipperScale, this.useDllImport, o => { });
             if (n != null && n.Count() > 0)
             {
               cnfp.AddRange(n);
@@ -150,16 +150,16 @@
               nfp: processed[i].nfp
 
           };*/
-      window.Insert(keyItem);
+      this.window.Insert(keyItem);
     }
 
     private void ThenDeepNest(NfpPair[] nfpPairs, DeepNestGene gene, ISheet[] sheets, ISvgNestConfig config, int index, Stopwatch backgroundStopwatch)
     {
       bool hideSecondaryProgress = false;
-      if (state.NestCount == 0 || state.AverageNestTime > 2000)
+      if (this.state.NestCount == 0 || this.state.AverageNestTime > 2000)
       {
         hideSecondaryProgress = true;
-        progressDisplayer.InitialiseLoopProgress(ProgressBar.Secondary, "Placement. . .", nfpPairs.Length);
+        this.progressDisplayer.InitialiseLoopProgress(ProgressBar.Secondary, "Placement. . .", nfpPairs.Length);
       }
 
       if (config.UseParallel)
@@ -182,7 +182,7 @@
       this.SyncPlaceParts(gene, sheets, config, index, backgroundStopwatch);
       if (hideSecondaryProgress)
       {
-        progressDisplayer.IsVisibleSecondaryProgressBar = false;
+        this.progressDisplayer.IsVisibleSecondaryProgressBar = false;
       }
     }
   }

@@ -30,9 +30,9 @@
 
     private void ObservableDetailLoadInfo_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-      if (e.PropertyName != nameof(IsDirty))
+      if (e.PropertyName != nameof(this.IsDirty))
       {
-        OnPropertyChanged(nameof(IsDirty));
+        this.OnPropertyChanged(nameof(this.IsDirty));
       }
     }
 
@@ -46,59 +46,59 @@
 
     public bool IsIncluded
     {
-      get => detailLoadInfo.IsIncluded;
-      set => SetProperty(nameof(IsIncluded), () => detailLoadInfo.IsIncluded, v => detailLoadInfo.IsIncluded = v, value);
+      get => this.detailLoadInfo.IsIncluded;
+      set => this.SetProperty(nameof(this.IsIncluded), () => this.detailLoadInfo.IsIncluded, v => this.detailLoadInfo.IsIncluded = v, value);
     }
 
     public bool IsMultiplied
     {
-      get => detailLoadInfo.IsMultiplied;
-      set => SetProperty(nameof(IsMultiplied), () => detailLoadInfo.IsMultiplied, v => detailLoadInfo.IsMultiplied = v, value);
+      get => this.detailLoadInfo.IsMultiplied;
+      set => this.SetProperty(nameof(this.IsMultiplied), () => this.detailLoadInfo.IsMultiplied, v => this.detailLoadInfo.IsMultiplied = v, value);
     }
 
     public bool IsPriority
     {
-      get => detailLoadInfo.IsPriority;
-      set => SetProperty(nameof(IsPriority), () => detailLoadInfo.IsPriority, v => detailLoadInfo.IsPriority = v, value);
+      get => this.detailLoadInfo.IsPriority;
+      set => this.SetProperty(nameof(this.IsPriority), () => this.detailLoadInfo.IsPriority, v => this.detailLoadInfo.IsPriority = v, value);
     }
 
     public string Name
     {
-      get => detailLoadInfo.Name;
+      get => this.detailLoadInfo.Name;
     }
 
     public string Path
     {
-      get => detailLoadInfo.Path;
-      set => SetProperty(nameof(Path), () => detailLoadInfo.Path, v => detailLoadInfo.Path = v, value);
+      get => this.detailLoadInfo.Path;
+      set => this.SetProperty(nameof(this.Path), () => this.detailLoadInfo.Path, v => this.detailLoadInfo.Path = v, value);
     }
 
     public int Quantity
     {
-      get => detailLoadInfo.Quantity;
-      set => SetProperty(nameof(Quantity), () => detailLoadInfo.Quantity, v => detailLoadInfo.Quantity = v, value);
+      get => this.detailLoadInfo.Quantity;
+      set => this.SetProperty(nameof(this.Quantity), () => this.detailLoadInfo.Quantity, v => this.detailLoadInfo.Quantity = v, value);
     }
 
     public int NetArea
     {
       get
       {
-        if (netArea == null)
+        if (this.netArea == null)
         {
           this.netArea = (int)this.Nfp.NetArea;
         }
 
-        return netArea.Value;
+        return this.netArea.Value;
       }
     }
 
     public AnglesEnum StrictAngle
     {
-      get => detailLoadInfo.StrictAngle;
-      set => SetProperty(nameof(StrictAngle), () => detailLoadInfo.StrictAngle, v => detailLoadInfo.StrictAngle = v, value);
+      get => this.detailLoadInfo.StrictAngle;
+      set => this.SetProperty(nameof(this.StrictAngle), () => this.detailLoadInfo.StrictAngle, v => this.detailLoadInfo.StrictAngle = v, value);
     }
 
-    public DetailLoadInfo Item => detailLoadInfo;
+    public DetailLoadInfo Item => this.detailLoadInfo;
 
     internal INfp Nfp
     {
@@ -115,9 +115,9 @@
       {
         if (this.nfp == null)
         {
-          if (new FileInfo(detailLoadInfo.Path).Exists)
+          if (new FileInfo(this.detailLoadInfo.Path).Exists)
           {
-            var raw = await DxfParser.LoadDxfFile(detailLoadInfo.Path);
+            IRawDetail raw = await DxfParser.LoadDxfFile(this.detailLoadInfo.Path);
             this.nfp = raw.ToNfp();
           }
           else

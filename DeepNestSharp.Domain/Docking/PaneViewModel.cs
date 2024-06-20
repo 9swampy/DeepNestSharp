@@ -1,7 +1,7 @@
 ﻿namespace DeepNestSharp.Domain.Docking
 {
   //using System.Windows.Media;
-  using Microsoft.Toolkit.Mvvm.ComponentModel;
+  using CommunityToolkit.Mvvm.ComponentModel;
 
   public class PaneViewModel : ObservableRecipient
   {
@@ -15,13 +15,13 @@
 
     public string Title
     {
-      get => title;
+      get => this.title;
       set
       {
-        if (title != value)
+        if (this.title != value)
         {
-          title = value;
-          OnPropertyChanged(nameof(Title));
+          this.title = value;
+          this.OnPropertyChanged(nameof(this.Title));
         }
       }
     }
@@ -30,26 +30,26 @@
 
     public string ContentId
     {
-      get => contentId;
+      get => this.contentId;
       set
       {
-        if (contentId != value)
+        if (this.contentId != value)
         {
-          contentId = value;
-          OnPropertyChanged(nameof(ContentId));
+          this.contentId = value;
+          this.OnPropertyChanged(nameof(this.ContentId));
         }
       }
     }
 
     public bool IsSelected
     {
-      get => isSelected;
+      get => this.isSelected;
       set
       {
-        if (isSelected != value)
+        if (this.isSelected != value)
         {
-          isSelected = value;
-          OnPropertyChanged(nameof(IsSelected));
+          this.isSelected = value;
+          this.OnPropertyChanged(nameof(this.IsSelected));
         }
       }
     }

@@ -9,8 +9,8 @@
     [Fact]
     public void ShouldRoundTripSerialize()
     {
-      var config = SvgNest.Config;
-      var sut = new ProjectInfo(config);
+      ISvgNestConfig config = SvgNest.Config;
+      ProjectInfo sut = new ProjectInfo(config);
       sut.SheetLoadInfos.Should().NotBeEmpty();
       var json = sut.ToJson();
       ProjectInfo actual = ProjectInfo.FromJson(config, json);

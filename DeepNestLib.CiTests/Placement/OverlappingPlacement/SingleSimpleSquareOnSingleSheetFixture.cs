@@ -67,12 +67,12 @@
       new SvgPoint(0,0),
       };
 
-      var firstPartOriginal = firstPart.Clone();
+      INfp firstPartOriginal = firstPart.Clone();
       firstPartOriginal.Should().BeEquivalentTo(firstPart, opt => opt.WithStrictOrdering(), "only the placement clone should be altered.");
-      var gene = new DeepNestGene(new Chromosome[] { firstPart.ToChromosome(firstRotation) }.ApplyIndex());
+      DeepNestGene gene = new DeepNestGene(new Chromosome[] { firstPart.ToChromosome(firstRotation) }.ApplyIndex());
       VerifyPartIsNotMutated(firstPart, firstPartOriginal, expectationFirstPart);
       nfpHelper = A.Dummy<NfpHelper>();
-      var placementWorker = new PlacementWorker(
+      PlacementWorker placementWorker = new PlacementWorker(
         nfpHelper,
         new ISheet[] { firstSheet },
         gene,
@@ -88,10 +88,10 @@
       nestResult.UnplacedParts.Count().Should().Be(0);
       ValidateFirstPlacement(firstRotation, nestResult.UsedSheets[0].PartPlacements[0], firstPart);
 
-      var lastPartPlacementWorker = ((ITestPlacementWorker)placementWorker).LastPartPlacementWorker;
+      PartPlacementWorker lastPartPlacementWorker = ((ITestPlacementWorker)placementWorker).LastPartPlacementWorker;
       VerifyLastSheetNfp(firstPartOriginal, lastPartPlacementWorker.SheetNfp);
 
-      var firstPartPlaced = nestResult.UsedSheets[0].PartPlacements[0].PlacedPart;
+      INfp firstPartPlaced = nestResult.UsedSheets[0].PartPlacements[0].PlacedPart;
       firstPartPlaced.MinX.Should().BeApproximately(0, DoublePrecision);
       firstPartPlaced.MinY.Should().BeApproximately(0, DoublePrecision);
       firstPartPlaced.MaxX.Should().BeApproximately(firstPart.Rotate(firstRotation).WidthCalculated, DoublePrecision);

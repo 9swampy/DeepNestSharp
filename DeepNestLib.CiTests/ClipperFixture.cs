@@ -11,10 +11,10 @@
     [Fact]
     public void ArrayHashCodeShouldMatchDeprecated()
     {
-      var source = new SvgPoint[] { new SvgPoint(new Random().Next(), new Random().Next()), new SvgPoint(new Random().Next(), new Random().Next()), new SvgPoint(new Random().Next(), new Random().Next()), new SvgPoint(new Random().Next(), new Random().Next()) };
-      var original = new NoFitPolygon(source);
-      var alternate = new NoFitPolygon(source);
-      var sut = new DeepNestClipper() as IDeprecatedClipper;
+      SvgPoint[] source = new SvgPoint[] { new SvgPoint(new Random().Next(), new Random().Next()), new SvgPoint(new Random().Next(), new Random().Next()), new SvgPoint(new Random().Next(), new Random().Next()), new SvgPoint(new Random().Next(), new Random().Next()) };
+      NoFitPolygon original = new NoFitPolygon(source);
+      NoFitPolygon alternate = new NoFitPolygon(source);
+      IDeprecatedClipper sut = new DeepNestClipper() as IDeprecatedClipper;
       sut.ScaleUpPathsOriginal(original, 1D).Should().BeEquivalentTo(DeepNestClipper.ScaleUpPath(alternate.Points, 1D));
     }
 
@@ -28,15 +28,15 @@
 #endif
 
       int points = 2000;
-      var source = new SvgPoint[points];
+      SvgPoint[] source = new SvgPoint[points];
       for (int i = 0; i < points; i++)
       {
         source[i] = new SvgPoint(new Random().Next(), new Random().Next());
       }
 
-      var original = new NoFitPolygon(source);
-      var sut = new DeepNestClipper() as IDeprecatedClipper;
-      var sw = new Stopwatch();
+      NoFitPolygon original = new NoFitPolygon(source);
+      IDeprecatedClipper sut = new DeepNestClipper() as IDeprecatedClipper;
+      Stopwatch sw = new Stopwatch();
       long deprecatedOriginal = 0;
       long current = 0;
       long deprecatedSlowerParallel = 0;

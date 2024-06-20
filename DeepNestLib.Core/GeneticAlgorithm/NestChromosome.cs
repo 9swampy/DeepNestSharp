@@ -7,7 +7,7 @@
   {
     public NestChromosome(int numberOfParts)
       : base(numberOfParts)
-    => CreateGenes();
+    => this.CreateGenes();
 
     public override IChromosome CreateNew()
     {

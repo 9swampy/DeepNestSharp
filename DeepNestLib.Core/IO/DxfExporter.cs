@@ -16,13 +16,13 @@
 
     public async Task Export(Stream stream, ISheetPlacement sheetPlacement, bool doMergeLines, bool differentiateChildren)
     {
-      await Export(stream, sheetPlacement.PolygonsForExport, sheetPlacement.Sheet, doMergeLines, differentiateChildren);
+      await this.Export(stream, sheetPlacement.PolygonsForExport, sheetPlacement.Sheet, doMergeLines, differentiateChildren);
     }
 
     public async Task Export(Stream stream, IEnumerable<INfp> polygons, ISheet sheet, bool doMergeLines, bool differentiateChildren)
     {
-      DxfFile sheetdxf = GenerateDxfFile(polygons, sheet, sheet.Id, doMergeLines, differentiateChildren);
-      var dxf = sheetdxf;
+      DxfFile sheetdxf = this.GenerateDxfFile(polygons, sheet, sheet.Id, doMergeLines, differentiateChildren);
+      DxfFile dxf = sheetdxf;
       var id = sheet.Id;
 
       if (dxf.Entities.Count != 1)
@@ -40,17 +40,17 @@
       try
       {
         Dictionary<DxfFile, int> dxfexports = new Dictionary<DxfFile, int>();
-        var sheetList = sheets.ToList();
+        List<ISheet> sheetList = sheets.ToList();
         for (var i = 0; i < sheets.Count(); i++)
         {
-          var sheet = sheetList[i];
-          DxfFile sheetdxf = GenerateDxfFile(polygons, sheet, i, doMergeLines, differentiateChildren);
+          ISheet sheet = sheetList[i];
+          DxfFile sheetdxf = this.GenerateDxfFile(polygons, sheet, i, doMergeLines, differentiateChildren);
           dxfexports.Add(sheetdxf, sheet.Id);
         }
 
         for (var i = 0; i < dxfexports.Count(); i++)
         {
-          var dxf = dxfexports.ElementAt(i).Key;
+          DxfFile dxf = dxfexports.ElementAt(i).Key;
           var id = dxfexports.ElementAt(i).Value;
 
           if (dxf.Entities.Count != 1)
@@ -79,7 +79,7 @@
     private static DxfFile GenerateDxfFileWithSheetOutline(ISheet sheet)
     {
       // Generate Sheet Outline in Dxf
-      var sheetdxf = new DxfFile();
+      DxfFile sheetdxf = new DxfFile();
       sheetdxf.Views.Clear();
 
       List<DxfVertex> sheetverts = new List<DxfVertex>();
@@ -109,7 +109,7 @@
 
     private static IEnumerable<DxfEntity> GetOffsetDxfEntities(IEnumerable<INfp> polygons, ISheet sheet, int i, bool differentiateChildren)
     {
-      foreach (var polygon in polygons)
+      foreach (INfp polygon in polygons)
       {
         RawDetail<DxfEntity> fl;
         if (polygon.Fitted == false || !polygon.Name.ToLower().Contains(".dxf") || polygon.Sheet.Id != sheet.Id)
@@ -150,14 +150,14 @@
 
     private static List<DxfEntity> OffsetToNest(IEnumerable<ILocalContour> contours, DxfPoint offsetdistance, double rotation, bool differentiateChildren)
     {
-      var allEntities = new List<DxfEntity>();
-      foreach (var contour in contours)
+      List<DxfEntity> allEntities = new List<DxfEntity>();
+      foreach (ILocalContour contour in contours)
       {
         if (contour is LocalContour<DxfEntity> castContour)
         {
           if (differentiateChildren && castContour.IsChild)
           {
-            foreach (var child in castContour.Entities)
+            foreach (DxfEntity child in castContour.Entities)
             {
               child.Color = DxfColorHelpers.GetClosestDefaultIndexColor(255, 0, 0);
             }
@@ -172,7 +172,7 @@
 
     private static List<DxfEntity> OffsetToNest(IList<DxfEntity> dxfEntities, DxfPoint offset, double rotationAngle)
     {
-      var result = new List<DxfEntity>();
+      List<DxfEntity> result = new List<DxfEntity>();
       List<DxfPoint> tmpPts;
       foreach (DxfEntity entity in dxfEntities)
       {
@@ -238,7 +238,7 @@
 
             foreach (DxfPoint vrt in dxfLeader.Vertices)
             {
-              var tmppnt = RotateLocation(rotationAngle, vrt);
+              DxfPoint tmppnt = RotateLocation(rotationAngle, vrt);
               tmppnt += offset;
               tmpPts.Add(tmppnt);
             }
@@ -277,7 +277,7 @@
 
             foreach (DxfPoint vrt in mLine.Vertices)
             {
-              var tmppnt = RotateLocation(rotationAngle, vrt);
+              DxfPoint tmppnt = RotateLocation(rotationAngle, vrt);
               tmppnt += offset;
               tmpPts.Add(tmppnt);
             }
@@ -293,7 +293,7 @@
             List<DxfVertex> verts = new List<DxfVertex>();
             foreach (DxfVertex vrt in polyline.Vertices)
             {
-              var tmppnt = vrt;
+              DxfVertex tmppnt = vrt;
               tmppnt.Location = RotateLocation(rotationAngle, tmppnt.Location);
               tmppnt.Location += offset;
               verts.Add(tmppnt);
@@ -359,7 +359,7 @@
       try
       {
         DxfFile sheetdxf = GenerateDxfFileWithSheetOutline(sheet);
-        var entities = GetOffsetDxfEntities(polygons.Where(o => o.Sheet.Id == sheet.Id), sheet, i, differentiateChildren);
+        IEnumerable<DxfEntity> entities = GetOffsetDxfEntities(polygons.Where(o => o.Sheet.Id == sheet.Id), sheet, i, differentiateChildren);
 
         if (doMergeLines)
         {
@@ -378,7 +378,7 @@
           // entities.AddRange(mergeLines.Where(o => o.IsVertical).Select(o => o.Line));
         }
 
-        foreach (var entity in entities)
+        foreach (DxfEntity entity in entities)
         {
           sheetdxf.Entities.Add(entity);
         }

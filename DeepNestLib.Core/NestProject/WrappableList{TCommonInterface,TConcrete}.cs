@@ -11,7 +11,7 @@
 
     public WrappableList(IList<TCommonInterface, TConcrete> items)
     {
-      foreach (var item in items)
+      foreach (TCommonInterface item in items)
       {
         this.Add(item);
       }

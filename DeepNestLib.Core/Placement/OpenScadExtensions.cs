@@ -17,11 +17,11 @@
 
     public static string ToOpenScadPolygon(this IntPoint[][] clipperSheetNfp)
     {
-      var resultBuilder = new StringBuilder();
+      StringBuilder resultBuilder = new StringBuilder();
       for (var polygonIdx = 0; polygonIdx < clipperSheetNfp.Length; polygonIdx++)
       {
         resultBuilder.AppendLine("polygon ([");
-        foreach (var p in clipperSheetNfp[polygonIdx])
+        foreach (IntPoint p in clipperSheetNfp[polygonIdx])
         {
           resultBuilder.AppendLine($"[{p.X:0.######},{p.Y:0.######}],");
         }
@@ -34,8 +34,8 @@
 
     public static string ToOpenScadPolygon(this IEnumerable<INfp> nfps)
     {
-      var openScadBuilder = new StringBuilder();
-      foreach (var item in nfps)
+      StringBuilder openScadBuilder = new StringBuilder();
+      foreach (INfp item in nfps)
       {
         openScadBuilder.AppendLine(item.ToOpenScadPolygon());
       }

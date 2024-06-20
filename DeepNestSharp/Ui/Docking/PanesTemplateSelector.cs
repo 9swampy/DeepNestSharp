@@ -68,101 +68,101 @@
     {
       if (item is NestMonitorViewModel)
       {
-        if (NestMonitorTemplate == null)
+        if (this.NestMonitorTemplate == null)
         {
-          throw new System.InvalidOperationException($"{nameof(NestMonitorTemplate)} not set.");
+          throw new System.InvalidOperationException($"{nameof(this.NestMonitorTemplate)} not set.");
         }
         else
         {
-          return NestMonitorTemplate;
+          return this.NestMonitorTemplate;
         }
       }
       else if (item is INestProjectViewModel)
       {
-        if (NestProjectEditorTemplate == null)
+        if (this.NestProjectEditorTemplate == null)
         {
-          throw new System.InvalidOperationException($"{nameof(NestProjectEditorTemplate)} not set.");
+          throw new System.InvalidOperationException($"{nameof(this.NestProjectEditorTemplate)} not set.");
         }
         else
         {
-          return NestProjectEditorTemplate;
+          return this.NestProjectEditorTemplate;
         }
       }
       else if (item is NestResultViewModel)
       {
-        if (NestResultEditorTemplate == null)
+        if (this.NestResultEditorTemplate == null)
         {
-          throw new System.InvalidOperationException($"{nameof(NestResultEditorTemplate)} not set.");
+          throw new System.InvalidOperationException($"{nameof(this.NestResultEditorTemplate)} not set.");
         }
         else
         {
-          return NestResultEditorTemplate;
+          return this.NestResultEditorTemplate;
         }
       }
       else if (item is NfpCandidateListViewModel)
       {
-        if (NfpCandidateListTemplate == null)
+        if (this.NfpCandidateListTemplate == null)
         {
-          throw new System.InvalidOperationException($"{nameof(NfpCandidateListTemplate)} not set.");
+          throw new System.InvalidOperationException($"{nameof(this.NfpCandidateListTemplate)} not set.");
         }
         else
         {
-          return NfpCandidateListTemplate;
+          return this.NfpCandidateListTemplate;
         }
       }
       else if (item is SheetPlacementViewModel)
       {
-        if (SheetPlacementEditorTemplate == null)
+        if (this.SheetPlacementEditorTemplate == null)
         {
-          throw new System.InvalidOperationException($"{nameof(SheetPlacementEditorTemplate)} not set.");
+          throw new System.InvalidOperationException($"{nameof(this.SheetPlacementEditorTemplate)} not set.");
         }
         else
         {
-          return SheetPlacementEditorTemplate;
+          return this.SheetPlacementEditorTemplate;
         }
       }
       else if (item is PreviewViewModel)
       {
-        if (PreviewTemplate == null)
+        if (this.PreviewTemplate == null)
         {
-          throw new System.InvalidOperationException($"{nameof(PreviewTemplate)} not set.");
+          throw new System.InvalidOperationException($"{nameof(this.PreviewTemplate)} not set.");
         }
         else
         {
-          return PreviewTemplate;
+          return this.PreviewTemplate;
         }
       }
       else if (item is SvgNestConfigViewModel)
       {
-        if (SettingsEditorTemplate == null)
+        if (this.SettingsEditorTemplate == null)
         {
-          throw new System.InvalidOperationException($"{nameof(SettingsEditorTemplate)} not set.");
+          throw new System.InvalidOperationException($"{nameof(this.SettingsEditorTemplate)} not set.");
         }
         else
         {
-          return SettingsEditorTemplate;
+          return this.SettingsEditorTemplate;
         }
       }
       else if (item is PartEditorViewModel)
       {
-        if (PartEditorTemplate == null)
+        if (this.PartEditorTemplate == null)
         {
-          throw new System.InvalidOperationException($"{nameof(PartEditorTemplate)} not set.");
+          throw new System.InvalidOperationException($"{nameof(this.PartEditorTemplate)} not set.");
         }
         else
         {
-          return PartEditorTemplate;
+          return this.PartEditorTemplate;
         }
       }
       else if (item is PropertiesViewModel)
       {
-        if (PropertiesEditorTemplate == null)
+        if (this.PropertiesEditorTemplate == null)
         {
-          throw new System.InvalidOperationException($"{nameof(PropertiesEditorTemplate)} not set.");
+          throw new System.InvalidOperationException($"{nameof(this.PropertiesEditorTemplate)} not set.");
         }
         else
         {
-          return PropertiesEditorTemplate;
+          return this.PropertiesEditorTemplate;
         }
       }
 

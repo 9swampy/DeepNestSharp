@@ -25,15 +25,15 @@
     /// <returns>New <see cref="Sheet"/>.</returns>
     public static new Sheet FromJson(string json)
     {
-      var options = new JsonSerializerOptions();
+      JsonSerializerOptions options = new JsonSerializerOptions();
       options.Converters.Add(new NfpJsonConverter());
-      var result = JsonSerializer.Deserialize<Sheet>(json, options);
+      Sheet result = JsonSerializer.Deserialize<Sheet>(json, options);
       return result;
     }
 
     public static Sheet NewSheet(int nameSuffix, double w = 3000, double h = 1500)
     {
-      var tt = new RectangleSheet();
+      RectangleSheet tt = new RectangleSheet();
       tt.Name = "rectSheet" + nameSuffix;
       tt.Build(w, h);
       return tt;
@@ -42,7 +42,7 @@
     public static Sheet NewSheet(int nameSuffix, INfp nfp)
     {
       INfp shiftedNfp = nfp.ShiftToOrigin();
-      var tt = new ArbitrarySheet();
+      ArbitrarySheet tt = new ArbitrarySheet();
       tt.Name = "arbSheet" + nameSuffix;
       tt.Build(shiftedNfp);
       return tt;
@@ -50,7 +50,7 @@
 
     public override string ToJson()
     {
-      var options = new JsonSerializerOptions();
+      JsonSerializerOptions options = new JsonSerializerOptions();
       options.Converters.Add(new NfpJsonConverter());
       options.WriteIndented = true;
       return JsonSerializer.Serialize(this, options);

@@ -16,7 +16,7 @@
 
     public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
     {
-      if (CanConvert(typeToConvert))
+      if (this.CanConvert(typeToConvert))
       {
         return new SvgNestConfigJsonConverterInner();
       }
@@ -54,7 +54,7 @@
 
     internal static ISvgNestConfig FromJson(string json)
     {
-      var options = new JsonSerializerOptions();
+      JsonSerializerOptions options = new JsonSerializerOptions();
       options.Converters.Add(new SvgNestConfigJsonConverter());
 #if NCRUNCH
       return JsonSerializer.Deserialize<TestSvgNestConfig>(json, options);
@@ -65,7 +65,7 @@
 
     internal static string ToJson(ISvgNestConfig config)
     {
-      var options = new JsonSerializerOptions();
+      JsonSerializerOptions options = new JsonSerializerOptions();
       options.Converters.Add(new SvgNestConfigJsonConverter());
 #if NCRUNCH
       return JsonSerializer.Serialize<TestSvgNestConfig>((TestSvgNestConfig)config, options);

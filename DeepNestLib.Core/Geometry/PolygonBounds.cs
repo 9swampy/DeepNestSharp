@@ -4,10 +4,10 @@
   {
     public PolygonBounds(double x, double y, double w, double h)
     {
-      X = x;
-      Y = y;
-      Width = w;
-      Height = h;
+      this.X = x;
+      this.Y = y;
+      this.Width = w;
+      this.Height = h;
     }
 
     public double X { get; set; }

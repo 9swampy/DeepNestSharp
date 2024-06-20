@@ -8,8 +8,8 @@
   {
     public LocalContour(List<PointF> points, HashSet<TSourceEntity> entities)
     {
-      Entities = entities;
-      Points = points;
+      this.Entities = entities;
+      this.Points = points;
     }
 
     public double Len
@@ -17,10 +17,10 @@
       get
       {
         double len = 0;
-        for (var i = 1; i <= Points.Count; i++)
+        for (var i = 1; i <= this.Points.Count; i++)
         {
-          var p1 = Points[i - 1];
-          var p2 = Points[i % Points.Count];
+          PointF p1 = this.Points[i - 1];
+          PointF p2 = this.Points[i % this.Points.Count];
           len += Math.Sqrt(Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Y - p2.Y, 2));
         }
 

@@ -17,8 +17,8 @@
     public double Evaluate()
     {
       var result = 0D;
-      result += Unplaced;
-      var sheetPlacementFitness = (ISheetPlacementFitness)this;
+      result += this.Unplaced;
+      ISheetPlacementFitness sheetPlacementFitness = (ISheetPlacementFitness)this;
       result += sheetPlacementFitness.Bounds;
       result += sheetPlacementFitness.Sheets;
       result += sheetPlacementFitness.MaterialWasted;
@@ -31,7 +31,7 @@
     {
       get
       {
-        return nestResult.UsedSheets.Sum(o => o.Sheet.Area);
+        return this.nestResult.UsedSheets.Sum(o => o.Sheet.Area);
       }
     }
 
@@ -42,7 +42,7 @@
     {
       get
       {
-        return ((SheetPlacementCollection)nestResult.UsedSheets).Sheets;
+        return ((SheetPlacementCollection)this.nestResult.UsedSheets).Sheets;
       }
     }
 
@@ -53,7 +53,7 @@
     {
       get
       {
-        return ((SheetPlacementCollection)nestResult.UsedSheets).MaterialUtilization;
+        return ((SheetPlacementCollection)this.nestResult.UsedSheets).MaterialUtilization;
       }
     }
 
@@ -64,7 +64,7 @@
     {
       get
       {
-        return ((SheetPlacementCollection)nestResult.UsedSheets).MaterialWasted;
+        return ((SheetPlacementCollection)this.nestResult.UsedSheets).MaterialWasted;
       }
     }
 
@@ -75,7 +75,7 @@
     {
       get
       {
-        return ((SheetPlacementCollection)nestResult.UsedSheets).Bounds;
+        return ((SheetPlacementCollection)this.nestResult.UsedSheets).Bounds;
       }
     }
 
@@ -86,8 +86,8 @@
     {
       get
       {
-        var result = nestResult.UnplacedParts.Sum(o => 50 * Math.Abs(GeometryUtil.PolygonArea(o)));
-        if (nestResult.UnplacedParts.Any(o => o.IsPriority))
+        var result = this.nestResult.UnplacedParts.Sum(o => 50 * Math.Abs(GeometryUtil.PolygonArea(o)));
+        if (this.nestResult.UnplacedParts.Any(o => o.IsPriority))
         {
           result *= 2;
         }

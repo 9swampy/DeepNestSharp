@@ -7,9 +7,9 @@
   {
     public INfp GenerateRectangle(string name, double width, double height, RectangleType type, bool isClosed = false)
     {
-      var generator = new DxfGenerator();
-      var points = generator.RectanglePoints(width, height, type, isClosed);
-      var result = new NoFitPolygon(points.Select(o => new SvgPoint(o.X, o.Y)));
+      DxfGenerator generator = new DxfGenerator();
+      System.Collections.Generic.IEnumerable<IxMilia.Dxf.DxfPoint> points = generator.RectanglePoints(width, height, type, isClosed);
+      NoFitPolygon result = new NoFitPolygon(points.Select(o => new SvgPoint(o.X, o.Y)));
       result.Name = name;
       return result;
     }

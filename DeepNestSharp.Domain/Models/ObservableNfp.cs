@@ -20,7 +20,7 @@
     }
 
     /// <inheritdoc cref="INfp" />
-    public INfp SourceItem => item;
+    public INfp SourceItem => this.item;
 
     /// <inheritdoc/>
     public override bool IsDirty => true;
@@ -36,7 +36,7 @@
     public IList<INfp> Children
     {
       get => this.item.Children;
-      set => SetProperty(nameof(Children), () => this.item.Children, v => this.item.Children = v, value);
+      set => this.SetProperty(nameof(this.Children), () => this.item.Children, v => this.item.Children = v, value);
     }
 
     /// <inheritdoc/>
@@ -53,7 +53,7 @@
     public int Id
     {
       get => this.item.Id;
-      set => SetProperty(nameof(Id), () => this.item.Id, v => this.item.Id = v, value);
+      set => this.SetProperty(nameof(this.Id), () => this.item.Id, v => this.item.Id = v, value);
     }
 
     /// <inheritdoc/>
@@ -67,7 +67,7 @@
     public bool IsPriority
     {
       get => this.item.IsPriority;
-      set => SetProperty(nameof(IsPriority), () => this.item.IsPriority, v => this.item.IsPriority = v, value);
+      set => this.SetProperty(nameof(this.IsPriority), () => this.item.IsPriority, v => this.item.IsPriority = v, value);
     }
 
     /// <inheritdoc/>
@@ -100,10 +100,10 @@
     public string Name
     {
       get => this.item.Name;
-      set => SetProperty(nameof(Name), () => this.item.Name, v => this.item.Name = v, value);
+      set => this.SetProperty(nameof(this.Name), () => this.item.Name, v => this.item.Name = v, value);
     }
 
-    public double NetArea => item.NetArea;
+    public double NetArea => this.item.NetArea;
 
     /// <inheritdoc/>
     [Description("The X offset (Set and used by the export process).")]
@@ -111,7 +111,7 @@
     public double? OffsetX
     {
       get => this.item.OffsetX;
-      set => SetProperty(nameof(OffsetX), () => this.item.OffsetX, v => this.item.OffsetX = v, value);
+      set => this.SetProperty(nameof(this.OffsetX), () => this.item.OffsetX, v => this.item.OffsetX = v, value);
     }
 
     /// <inheritdoc/>
@@ -120,7 +120,7 @@
     public double? OffsetY
     {
       get => this.item.OffsetY;
-      set => SetProperty(nameof(OffsetY), () => this.item.OffsetY, v => this.item.OffsetY = v, value);
+      set => this.SetProperty(nameof(this.OffsetY), () => this.item.OffsetY, v => this.item.OffsetY = v, value);
     }
 
     /// <inheritdoc/>
@@ -132,7 +132,7 @@
     public int PlacementOrder
     {
       get => this.item.PlacementOrder;
-      set => SetProperty(nameof(PlacementOrder), () => this.item.PlacementOrder, v => this.item.PlacementOrder = v, value);
+      set => this.SetProperty(nameof(this.PlacementOrder), () => this.item.PlacementOrder, v => this.item.PlacementOrder = v, value);
     }
 
     /// <inheritdoc/>
@@ -152,14 +152,14 @@
     public INfp Sheet
     {
       get => this.item.Sheet;
-      set => SetProperty(nameof(Sheet), () => this.item.Sheet, v => this.item.Sheet = v, value);
+      set => this.SetProperty(nameof(this.Sheet), () => this.item.Sheet, v => this.item.Sheet = v, value);
     }
 
     /// <inheritdoc/>
     public int Source
     {
       get => this.item.Source;
-      set => SetProperty(nameof(Source), () => this.item.Source, v => this.item.Source = v, value);
+      set => this.SetProperty(nameof(this.Source), () => this.item.Source, v => this.item.Source = v, value);
     }
 
     /// <inheritdoc/>
@@ -168,7 +168,7 @@
     public AnglesEnum StrictAngle
     {
       get => this.item.StrictAngle;
-      set => SetProperty(nameof(StrictAngle), () => this.item.StrictAngle, v => this.item.StrictAngle = v, value);
+      set => this.SetProperty(nameof(this.StrictAngle), () => this.item.StrictAngle, v => this.item.StrictAngle = v, value);
     }
 
     [Description("The overall width of the part.")]
@@ -182,7 +182,7 @@
     public double X
     {
       get => this.item.X;
-      set => SetProperty(nameof(X), () => this.item.X, v => this.item.X = v, value);
+      set => this.SetProperty(nameof(this.X), () => this.item.X, v => this.item.X = v, value);
     }
 
     /// <inheritdoc/>
@@ -191,7 +191,7 @@
     public double Y
     {
       get => this.item.Y;
-      set => SetProperty(nameof(Y), () => this.item.Y, v => this.item.Y = v, value);
+      set => this.SetProperty(nameof(this.Y), () => this.item.Y, v => this.item.Y = v, value);
     }
 
     //public MainViewModel MainViewModel { get; }
@@ -332,7 +332,7 @@
 
     public DxfFile ToDxfFile()
     {
-      return item.ToDxfFile();
+      return this.item.ToDxfFile();
     }
   }
 }

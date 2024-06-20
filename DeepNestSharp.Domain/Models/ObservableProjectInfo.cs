@@ -1,12 +1,12 @@
 ﻿namespace DeepNestSharp.Ui.Models
 {
   using System;
+  using CommunityToolkit.Mvvm.ComponentModel;
   using DeepNestLib;
   using DeepNestLib.NestProject;
   using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Domain.ViewModels;
   using Light.GuardClauses;
-  using Microsoft.Toolkit.Mvvm.ComponentModel;
 
   public class ObservableProjectInfo : ObservableObject, IProjectInfo
   {
@@ -48,7 +48,7 @@
       {
         if (this.sheetLoadInfos == null || this.sheetLoadInfos.Count == 0)
         {
-          sheetLoadInfos = new ObservableCollection<ISheetLoadInfo, SheetLoadInfo, ObservableSheetLoadInfo>(this.wrappedProjectInfo.SheetLoadInfos, x => new ObservableSheetLoadInfo(x));
+          this.sheetLoadInfos = new ObservableCollection<ISheetLoadInfo, SheetLoadInfo, ObservableSheetLoadInfo>(this.wrappedProjectInfo.SheetLoadInfos, x => new ObservableSheetLoadInfo(x));
         }
 
         return this.sheetLoadInfos;
@@ -61,7 +61,7 @@
       {
         if (this.observableConfig == null)
         {
-          this.observableConfig = (ObservableSvgNestConfig)mainViewModel.SvgNestConfigViewModel.SvgNestConfig;
+          this.observableConfig = (ObservableSvgNestConfig)this.mainViewModel.SvgNestConfigViewModel.SvgNestConfig;
         }
 
         return this.observableConfig;
@@ -70,34 +70,34 @@
 
     private void DetailLoadInfos_IsDirtyChanged(object? sender, EventArgs e)
     {
-      IsDirtyChanged?.Invoke(this, e);
+      this.IsDirtyChanged?.Invoke(this, e);
     }
 
     public void Load(ISvgNestConfig config, string filePath)
     {
       // This is a fudge; need a better way of injecting Config; loathe to go Locator but AvalonDock's pushing that way.
-      config.MustBe(mainViewModel.SvgNestConfigViewModel.SvgNestConfig);
+      config.MustBe(this.mainViewModel.SvgNestConfigViewModel.SvgNestConfig);
       this.DetailLoadInfos.Clear();
       this.SheetLoadInfos.Clear();
-      wrappedProjectInfo.Load(config, filePath);
-      OnPropertyChanged(nameof(DetailLoadInfos));
-      OnPropertyChanged(nameof(SheetLoadInfos));
-      mainViewModel.SvgNestConfigViewModel.RaiseNotifyUpdatePropertyGrid();
+      this.wrappedProjectInfo.Load(config, filePath);
+      this.OnPropertyChanged(nameof(this.DetailLoadInfos));
+      this.OnPropertyChanged(nameof(this.SheetLoadInfos));
+      this.mainViewModel.SvgNestConfigViewModel.RaiseNotifyUpdatePropertyGrid();
     }
 
     public void Load(ProjectInfo source)
     {
-      wrappedProjectInfo.Load(source);
+      this.wrappedProjectInfo.Load(source);
     }
 
     public string ToJson()
     {
-      return wrappedProjectInfo.ToJson();
+      return this.wrappedProjectInfo.ToJson();
     }
 
     public void SaveState()
     {
-      detailLoadInfos?.SaveState();
+      this.detailLoadInfos?.SaveState();
     }
   }
 }

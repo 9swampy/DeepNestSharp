@@ -11,35 +11,35 @@
     [Fact]
     public void GivenPartWithAsymetricHolesRotatedClockwiseWhenRotatedBackThenShouldBeEquivalent()
     {
-      var sut = DxfParser.LoadDxfFileStreamAsNfp("Dxfs._10.dxf");
+      INfp sut = DxfParser.LoadDxfFileStreamAsNfp("Dxfs._10.dxf");
       sut.Rotate(90).Rotate(-90).Should().BeEquivalentTo(sut);
     }
 
     [Fact]
     public void GivenPartWithAsymetricHolesWhenRotatedClockwiseThenShouldHaveSameNumberOfPoints()
     {
-      var sut = DxfParser.LoadDxfFileStreamAsNfp("Dxfs._10.dxf");
+      INfp sut = DxfParser.LoadDxfFileStreamAsNfp("Dxfs._10.dxf");
       sut.Rotate(90).Points.Length.Should().Be(sut.Points.Length);
     }
 
     [Fact]
     public void GivenPartWithAsymetricHolesWhenRotatedClockwiseThenShouldHaveSameNumberOfChildren()
     {
-      var sut = DxfParser.LoadDxfFileStreamAsNfp("Dxfs._10.dxf");
+      INfp sut = DxfParser.LoadDxfFileStreamAsNfp("Dxfs._10.dxf");
       sut.Rotate(90).Children.Count.Should().Be(sut.Children.Count);
     }
 
     [Fact]
     public void GivenPartWithNoHolesRotatedClockwiseWhenRotatedBackThenShouldBeEquivalent()
     {
-      var sut = DxfParser.LoadDxfFileStreamAsNfp("Dxfs._5.dxf");
+      INfp sut = DxfParser.LoadDxfFileStreamAsNfp("Dxfs._5.dxf");
       sut.Rotate(90).Rotate(-90).Should().BeEquivalentTo(sut);
     }
 
     [Fact]
     public void GivenRectangleExpectPoints()
     {
-      var sut = NoFitPolygon.FromDxf(new DxfGenerator().Rectangle(10, 20, RectangleType.Normal));
+      INfp sut = NoFitPolygon.FromDxf(new DxfGenerator().Rectangle(10, 20, RectangleType.Normal));
       sut.Points.Should().BeEquivalentTo(new List<SvgPoint>() {
         new SvgPoint(0, 0),
         new SvgPoint(0, 20),
@@ -52,7 +52,7 @@
     [Fact]
     public void GivenRectangleWhenRotateThenOriginalUnchanged()
     {
-      var sut = NoFitPolygon.FromDxf(new DxfGenerator().Rectangle(10, 20, RectangleType.BottomLeftClockwise));
+      INfp sut = NoFitPolygon.FromDxf(new DxfGenerator().Rectangle(10, 20, RectangleType.BottomLeftClockwise));
       sut.Rotate(90);
       sut.Points.Should().BeEquivalentTo(new List<SvgPoint>() {
         new SvgPoint(0, 0),
@@ -66,7 +66,7 @@
     [Fact]
     public void GivenRectangleWhenRotatedClockwiseExpectPoints()
     {
-      var sut = NoFitPolygon.FromDxf(new DxfGenerator().Rectangle(10, 20, RectangleType.BottomLeftClockwise));
+      INfp sut = NoFitPolygon.FromDxf(new DxfGenerator().Rectangle(10, 20, RectangleType.BottomLeftClockwise));
       sut.Rotate(-90).Points.Should().BeEquivalentTo(new List<SvgPoint>() {
         new SvgPoint(0, 0),
         new SvgPoint(20, 0),
@@ -82,7 +82,7 @@
     [Fact]
     public void GivenSquareWithChildWhenRotatedClockwiseExpectChildPoints()
     {
-      var sut = NoFitPolygon.FromDxf(new DxfGenerator().Square(20, RectangleType.BottomLeftClockwise));
+      INfp sut = NoFitPolygon.FromDxf(new DxfGenerator().Square(20, RectangleType.BottomLeftClockwise));
       sut.Children.Add(NoFitPolygon.FromDxf(new DxfGenerator().Square(10, RectangleType.BottomLeftClockwise)).Shift(5, 5));
       sut.Rotate(-90).Children[0].Points.Should().BeEquivalentTo(new List<SvgPoint>() {
         new SvgPoint(5, -5),
@@ -99,7 +99,7 @@
     [Fact]
     public void GivenRectangleWhenRotatedAntiClockwiseExpectPoints()
     {
-      var sut = NoFitPolygon.FromDxf(new DxfGenerator().Rectangle(10, 20, RectangleType.BottomLeftClockwise));
+      INfp sut = NoFitPolygon.FromDxf(new DxfGenerator().Rectangle(10, 20, RectangleType.BottomLeftClockwise));
       sut.Rotate(90).Points.Should().BeEquivalentTo(new List<SvgPoint>() {
         new SvgPoint(0, 0),
         new SvgPoint(-20, 0),
@@ -126,7 +126,7 @@
     [InlineData(450)]
     public void GivenFirstPointOriginWhenRotateThenExpectOrigin(double rotation)
     {
-      var sut = NoFitPolygon.FromDxf(new DxfGenerator().Rectangle(10, 20, RectangleType.BottomLeftClockwise));
+      INfp sut = NoFitPolygon.FromDxf(new DxfGenerator().Rectangle(10, 20, RectangleType.BottomLeftClockwise));
       sut.Rotate(rotation).Points[0].Should().BeEquivalentTo(new SvgPoint(0, 0));
     }
 
@@ -144,8 +144,8 @@
     [InlineData(450)]
     public void GivenEquivalentStartSquareWhenRotateThenExpectSameExtrema(double rotation)
     {
-      var expected = NoFitPolygon.FromDxf(new DxfGenerator().Rectangle(10, 20, RectangleType.BottomLeftClockwise)).Rotate(rotation);
-      var sut = NoFitPolygon.FromDxf(new DxfGenerator().Rectangle(10, 20, RectangleType.FileLoad));
+      INfp expected = NoFitPolygon.FromDxf(new DxfGenerator().Rectangle(10, 20, RectangleType.BottomLeftClockwise)).Rotate(rotation);
+      INfp sut = NoFitPolygon.FromDxf(new DxfGenerator().Rectangle(10, 20, RectangleType.FileLoad));
       sut.Rotate(rotation).MinX.Should().BeApproximately(expected.MinX, 0.001);
       sut.Rotate(rotation).MinY.Should().BeApproximately(expected.MinY, 0.001);
       sut.Rotate(rotation).MaxX.Should().BeApproximately(expected.MaxX, 0.001);

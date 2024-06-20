@@ -14,7 +14,7 @@
       get
       {
         return this.forceIsDirty ||
-               this.ToJson(false) != saveState;
+               this.ToJson(false) != this.saveState;
       }
     }
 
@@ -25,7 +25,7 @@
     /// </summary>
     public void SaveState()
     {
-      saveState = this.ToJson(false);
+      this.saveState = this.ToJson(false);
     }
 
     /// <summary>

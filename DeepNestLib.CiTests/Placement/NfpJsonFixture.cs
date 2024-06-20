@@ -21,7 +21,7 @@
     [Fact]
     public void GivenSimpleSutWhenToJsonThenShouldNotThrow()
     {
-      var sut = new NoFitPolygon();
+      NoFitPolygon sut = new NoFitPolygon();
       Action act = () => sut.ToJson();
 
       act.Should().NotThrow();
@@ -79,7 +79,7 @@
 
       var json = expected.ToJson();
 
-      var actual = NoFitPolygon.FromJson(json);
+      NoFitPolygon actual = NoFitPolygon.FromJson(json);
 
       actual.Should().BeEquivalentTo(expected, options => 
                    options.Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 0.0001))
@@ -98,7 +98,7 @@
 
       var json = expected.ToJson();
 
-      var actual = Sheet.FromJson(json);
+      Sheet actual = Sheet.FromJson(json);
 
       actual.Should().BeEquivalentTo(expected, options =>
                    options.Using<double>(ctx => ctx.Subject.Should().BeApproximately(ctx.Expectation, 0.0001))

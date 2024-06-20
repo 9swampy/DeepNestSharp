@@ -54,39 +54,39 @@
     }
 
     [JsonIgnore]
-    public int ALength => Item1;
+    public int ALength => this.Item1;
 
     [JsonIgnore]
-    public double[] APoints => ToDoubleArray(Item2);
+    public double[] APoints => ToDoubleArray(this.Item2);
 
     [JsonIgnore]
-    public int AChildrenLength => Item3;
+    public int AChildrenLength => this.Item3;
 
     [JsonIgnore]
-    public int[] Arr1 => Item4;
+    public int[] Arr1 => this.Item4;
 
     [JsonIgnore]
-    public double[] Hdat => ToDoubleArray(Item5);
+    public double[] Hdat => ToDoubleArray(this.Item5);
 
     [JsonIgnore]
-    public int BLength => Item6;
+    public int BLength => this.Item6;
 
     [JsonIgnore]
-    public double[] BPoints => ToDoubleArray(Item7);
+    public double[] BPoints => ToDoubleArray(this.Item7);
 
     public override string ToString()
     {
-      return $"a{ALength}-ac{AChildrenLength}-arr{Arr1.Length}-h{Hdat.Length}-b{BLength}-bp{BPoints.Length}";
+      return $"a{this.ALength}-ac{this.AChildrenLength}-arr{this.Arr1.Length}-h{this.Hdat.Length}-b{this.BLength}-bp{this.BPoints.Length}";
     }
 
     public override int GetHashCode()
     {
-      var result = CombineHashCodes(Item1, ((IStructuralEquatable)Item2.Select(o => o.ToString()).ToArray()).GetHashCode(EqualityComparer<string>.Default));
-      result = CombineHashCodes(result, Item3);
-      result = CombineHashCodes(result, ((IStructuralEquatable)Item4.Select(o => o.ToString()).ToArray()).GetHashCode(EqualityComparer<string>.Default));
-      result = CombineHashCodes(result, ((IStructuralEquatable)Item5.Select(o => o.ToString()).ToArray()).GetHashCode(EqualityComparer<string>.Default));
-      result = CombineHashCodes(result, Item6);
-      result = CombineHashCodes(result, ((IStructuralEquatable)Item7.Select(o => o.ToString()).ToArray()).GetHashCode(EqualityComparer<string>.Default));
+      var result = CombineHashCodes(this.Item1, ((IStructuralEquatable)this.Item2.Select(o => o.ToString()).ToArray()).GetHashCode(EqualityComparer<string>.Default));
+      result = CombineHashCodes(result, this.Item3);
+      result = CombineHashCodes(result, ((IStructuralEquatable)this.Item4.Select(o => o.ToString()).ToArray()).GetHashCode(EqualityComparer<string>.Default));
+      result = CombineHashCodes(result, ((IStructuralEquatable)this.Item5.Select(o => o.ToString()).ToArray()).GetHashCode(EqualityComparer<string>.Default));
+      result = CombineHashCodes(result, this.Item6);
+      result = CombineHashCodes(result, ((IStructuralEquatable)this.Item7.Select(o => o.ToString()).ToArray()).GetHashCode(EqualityComparer<string>.Default));
       return result;
     }
 

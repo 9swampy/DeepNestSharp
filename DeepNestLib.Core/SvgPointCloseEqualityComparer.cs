@@ -8,8 +8,8 @@
     public bool Equals(SvgPoint x, SvgPoint y)
     {
       double precision = 0.0001;
-      if (CloseEqual(x.X, y.X, precision) &&
-          CloseEqual(x.Y, y.Y, precision) &&
+      if (this.CloseEqual(x.X, y.X, precision) &&
+          this.CloseEqual(x.Y, y.Y, precision) &&
           x.Exact == y.Exact &&
           x.Marked == y.Marked)
       {

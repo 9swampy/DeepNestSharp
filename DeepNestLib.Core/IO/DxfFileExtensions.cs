@@ -7,7 +7,7 @@
   {
     public static void AddRange(this IList<DxfEntity> list, IEnumerable<DxfLine> lines)
     {
-      foreach (var line in lines)
+      foreach (DxfLine line in lines)
       {
         list.Add(line);
       }

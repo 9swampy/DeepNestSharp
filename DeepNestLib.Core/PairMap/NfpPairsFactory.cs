@@ -23,10 +23,10 @@
         Parallel.For(0, gene.Length, i =>
         {
           {
-            foreach (var pair in CreatePairs(i, gene))
+            foreach (NfpPair pair in this.CreatePairs(i, gene))
             {
-              var doc = new DbCacheKey(pair.Asource, pair.Bsource, pair.ARotation, pair.BRotation);
-              AddToPairs(pairs, pair, doc);
+              DbCacheKey doc = new DbCacheKey(pair.Asource, pair.Bsource, pair.ARotation, pair.BRotation);
+              this.AddToPairs(pairs, pair, doc);
             }
           }
         });
@@ -35,10 +35,10 @@
       {
         for (var i = 0; i < gene.Length; i++)
         {
-          foreach (var pair in CreatePairs(i, gene))
+          foreach (NfpPair pair in this.CreatePairs(i, gene))
           {
-            var doc = new DbCacheKey(pair.Asource, pair.Bsource, pair.ARotation, pair.BRotation);
-            AddToPairs(pairs, pair, doc);
+            DbCacheKey doc = new DbCacheKey(pair.Asource, pair.Bsource, pair.ARotation, pair.BRotation);
+            this.AddToPairs(pairs, pair, doc);
           }
         }
       }
@@ -48,10 +48,10 @@
 
     private IEnumerable<NfpPair> CreatePairs(int i, DeepNestGene gene)
     {
-      var b = gene[i];
+      Chromosome b = gene[i];
       for (var j = 0; j < i; j++)
       {
-        var a = gene[j];
+        Chromosome a = gene[j];
         yield return new NfpPair()
         {
           A = a.Part,
@@ -68,7 +68,7 @@
     {
       lock (preProcessSyncLock)
       {
-        if (!this.InPairs(key, pairs.ToArray()) && !window.Has(doc))
+        if (!this.InPairs(key, pairs.ToArray()) && !this.window.Has(doc))
         {
           pairs.Add(key);
         }

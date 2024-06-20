@@ -26,7 +26,7 @@
     {
       if (sender is ListView listView)
       {
-        var headerClicked = e.OriginalSource as GridViewColumnHeader;
+        GridViewColumnHeader? headerClicked = e.OriginalSource as GridViewColumnHeader;
         ListSortDirection direction;
 
         if (headerClicked != null)
@@ -37,7 +37,7 @@
                 ? ListSortDirection.Ascending
                 : this.lastDirection == ListSortDirection.Ascending ? ListSortDirection.Descending : ListSortDirection.Ascending;
 
-            var columnBinding = headerClicked.Column.DisplayMemberBinding as Binding;
+            Binding? columnBinding = headerClicked.Column.DisplayMemberBinding as Binding;
             var sortBy = (string)(columnBinding?.Path.Path ?? headerClicked.Column.Header);
 
             Sort(listView, sortBy, direction);

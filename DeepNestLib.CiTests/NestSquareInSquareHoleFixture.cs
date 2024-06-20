@@ -67,7 +67,7 @@
 
       config = SingleSimpleSquareOnSingleSheetFixture.StableButIrrelevantConfig(false); //new Random().NextBool()); //Using DllImport fixes the odd 6es
       nfpHelper = A.Dummy<NfpHelper>();
-      var placementWorker = new PlacementWorker(nfpHelper, new ISheet[] { firstSheet }, new DeepNestGene(new Chromosome[] { firstPart.ToChromosome(firstRotation), secondPart.ToChromosome(secondRotation) }.ApplyIndex()), config, A.Dummy<Stopwatch>(), A.Fake<INestState>());
+      PlacementWorker placementWorker = new PlacementWorker(nfpHelper, new ISheet[] { firstSheet }, new DeepNestGene(new Chromosome[] { firstPart.ToChromosome(firstRotation), secondPart.ToChromosome(secondRotation) }.ApplyIndex()), config, A.Dummy<Stopwatch>(), A.Fake<INestState>());
       ITestPlacementWorker sut = placementWorker;
       nestResult = placementWorker.PlaceParts();
 

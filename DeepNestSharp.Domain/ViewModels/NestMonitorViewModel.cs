@@ -6,13 +6,13 @@
   using System.Text;
   using System.Threading.Tasks;
   using System.Windows.Input;
+  using CommunityToolkit.Mvvm.Input;
   using DeepNestLib;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain;
   using DeepNestSharp.Domain.Docking;
   using DeepNestSharp.Domain.Services;
   using DeepNestSharp.Ui.ViewModels;
-  using Microsoft.Toolkit.Mvvm.Input;
 
   public class NestMonitorViewModel : ToolViewModel, INestMonitorViewModel
   {
@@ -24,7 +24,7 @@
     private bool isRunning;
     private bool isStopping;
     private NestExecutionHelper nestExecutionHelper = new NestExecutionHelper();
-    private NestingContext context;
+    private NestingContext context; // this is the context that stores the original sheets, in the order they appear in the NestProjectEditor. remove before flight
     private NestWorker nestWorker;
     private ConfiguredTaskAwaitable? nestWorkerConfiguredTaskAwaitable;
     private Task nestWorkerTask;
@@ -50,53 +50,47 @@
       this.mouseCursorService = mouseCursorService;
     }
 
-    public ICommand ContinueNestCommand => continueNestCommand ?? (continueNestCommand = new RelayCommand(OnContinueNest, () => false));
+    public ICommand ContinueNestCommand => this.continueNestCommand ?? (this.continueNestCommand = new RelayCommand(this.OnContinueNest, () => false));
 
     public IZoomPreviewDrawingContext ZoomDrawingContext { get; } = new ZoomPreviewDrawingContext();
 
     public bool IsRunning
     {
-      get
-      {
-        return this.isRunning;
-      }
+      get => this.isRunning;
 
       private set
       {
-        SetProperty(ref this.isRunning, value);
-        Contextualise();
+        this.SetProperty(ref this.isRunning, value);
+        this.Contextualise();
       }
     }
 
     public bool IsSecondaryProgressVisible
     {
-      get => isSecondaryProgressVisible;
-      set => SetProperty(ref isSecondaryProgressVisible, value);
+      get => this.isSecondaryProgressVisible;
+      set => this.SetProperty(ref this.isSecondaryProgressVisible, value);
     }
 
     public bool IsStopping
     {
-      get
-      {
-        return this.isStopping;
-      }
+      get => this.isStopping;
 
       private set
       {
-        SetProperty(ref this.isStopping, value);
-        Contextualise();
+        this.SetProperty(ref this.isStopping, value);
+        this.Contextualise();
       }
     }
 
     public string LastLogMessage
     {
-      get => lastLogMessage;
-      set => SetProperty(ref lastLogMessage, value);
+      get => this.lastLogMessage;
+      set => this.SetProperty(ref this.lastLogMessage, value);
     }
 
-    public ICommand LoadSheetPlacementCommand => loadSheetPlacementCommand ?? (loadSheetPlacementCommand = new RelayCommand(OnLoadSheetPlacement, () => false));
+    public ICommand LoadSheetPlacementCommand => this.loadSheetPlacementCommand ?? (this.loadSheetPlacementCommand = new RelayCommand(this.OnLoadSheetPlacement, () => false));
 
-    public ICommand LoadNestResultCommand => loadNestResultCommand ?? (loadNestResultCommand = new RelayCommand<INestResult>(OnLoadNestResult, x => true));
+    public ICommand LoadNestResultCommand => this.loadNestResultCommand ?? (this.loadNestResultCommand = new RelayCommand<INestResult>(this.OnLoadNestResult, x => true));
 
     public string MessageLog
     {
@@ -110,54 +104,55 @@
 
     public double Progress
     {
-      get => progress;
-      set => SetProperty(ref progress, value);
+      get => this.progress;
+      set => this.SetProperty(ref this.progress, value);
     }
 
     public double ProgressSecondary
     {
-      get => progressSecondary;
-      set => SetProperty(ref progressSecondary, value);
+      get => this.progressSecondary;
+      set => this.SetProperty(ref this.progressSecondary, value);
     }
 
-    public ICommand RestartNestCommand => restartNestCommand ?? (restartNestCommand = new RelayCommand(OnRestartNest, () => false));
+    public ICommand RestartNestCommand => this.restartNestCommand ?? (this.restartNestCommand = new RelayCommand(this.OnRestartNest, () => false));
 
-    public INestState State => Context.State;
+    public INestState State => this.Context.State;
 
-    public ICommand StopNestCommand => stopNestCommand ?? (stopNestCommand = new RelayCommand(OnStopNest, () => IsRunning && !IsStopping));
+    public ICommand StopNestCommand => this.stopNestCommand ?? (this.stopNestCommand = new RelayCommand(this.OnStopNest, () => this.IsRunning && !this.IsStopping));
 
     public int SelectedIndex
     {
-      get => selectedIndex;
-      set => SetProperty(ref selectedIndex, value);
+      get => this.selectedIndex;
+      set => this.SetProperty(ref this.selectedIndex, value);
     }
 
     public INestResult SelectedItem
     {
-      get => selectedItem;
+      get => this.selectedItem;
       set
       {
         if (value == null)
         {
-          ZoomDrawingContext.Clear();
+          this.ZoomDrawingContext.Clear();
           if (!this.TopNestResults.IsEmpty)
           {
             _ = Task.Factory.StartNew(() =>
               {
-                SelectedIndex = 0;
+                this.SelectedIndex = 0;
               });
           }
         }
         else
         {
-          SetProperty(ref selectedItem, value);
-          ZoomDrawingContext.For(value.UsedSheets[0]);
-          OnPropertyChanged(nameof(ZoomDrawingContext));
+          INestResult nestResultWithOriginalSheets = this.NestResultWithOriginalSheets(value);
+          this.SetProperty(ref this.selectedItem, nestResultWithOriginalSheets);
+          this.ZoomDrawingContext.For(nestResultWithOriginalSheets.UsedSheets[0]);
+          this.OnPropertyChanged(nameof(this.ZoomDrawingContext));
         }
       }
     }
 
-    public TopNestResultsCollection TopNestResults => Context.State.TopNestResults;
+    public TopNestResultsCollection TopNestResults => this.Context.State.TopNestResults;
 
     private NestingContext Context
     {
@@ -167,9 +162,9 @@
         {
           if (this.context == null)
           {
-            var progressDisplayer = ProgressDisplayer;
-            var nestState = new NestState(mainViewModel.SvgNestConfigViewModel.SvgNestConfig, mainViewModel.DispatcherService);
-            this.context = new NestingContext(messageService, progressDisplayer, nestState, mainViewModel.SvgNestConfigViewModel.SvgNestConfig);
+            IProgressDisplayer progressDisplayer = this.ProgressDisplayer;
+            NestState nestState = new NestState(this.mainViewModel.SvgNestConfigViewModel.SvgNestConfig, this.mainViewModel.DispatcherService);
+            this.context = new NestingContext(this.messageService, progressDisplayer, nestState, this.mainViewModel.SvgNestConfigViewModel.SvgNestConfig);
           }
         }
 
@@ -177,7 +172,7 @@
       }
     }
 
-    private IProgressDisplayer ProgressDisplayer => progressDisplayer ?? (progressDisplayer = new ProgressDisplayer(this, messageService, mainViewModel.DispatcherService));
+    private IProgressDisplayer ProgressDisplayer => this.progressDisplayer ?? (this.progressDisplayer = new ProgressDisplayer(this, this.messageService, this.mainViewModel.DispatcherService));
 
     public async Task<bool> TryStartAsync(INestProjectViewModel nestProjectViewModel)
     {
@@ -233,20 +228,20 @@
 
     public void UpdateNestsList()
     {
-      OnPropertyChanged(nameof(TopNestResults));
+      this.OnPropertyChanged(nameof(this.TopNestResults));
     }
 
     private void Contextualise()
     {
-      if (mainViewModel.DispatcherService.InvokeRequired)
+      if (this.mainViewModel.DispatcherService.InvokeRequired)
       {
-        mainViewModel.DispatcherService.Invoke(Contextualise);
+        this.mainViewModel.DispatcherService.Invoke(this.Contextualise);
       }
       else
       {
-        stopNestCommand?.NotifyCanExecuteChanged();
-        restartNestCommand?.NotifyCanExecuteChanged();
-        continueNestCommand?.NotifyCanExecuteChanged();
+        this.stopNestCommand?.NotifyCanExecuteChanged();
+        this.restartNestCommand?.NotifyCanExecuteChanged();
+        this.continueNestCommand?.NotifyCanExecuteChanged();
       }
     }
 
@@ -254,7 +249,7 @@
     {
       if (nestResult != null)
       {
-        mainViewModel.OnLoadNestResult(nestResult);
+        this.mainViewModel.OnLoadNestResult(nestResult);
       }
     }
 
@@ -275,9 +270,21 @@
 
     private void OnStopNest()
     {
-      System.Diagnostics.Debug.Print("NestMonitorViewModel.OnStopNest()");
+      Debug.Print("NestMonitorViewModel.OnStopNest()");
       this.mouseCursorService.OverrideCursor = Cursors.Wait;
       this.Stop();
+    }
+
+    private INestResult NestResultWithOriginalSheets(INestResult nestResultWithOffsetSheets)
+    {
+      for (int i = 0; i < nestResultWithOffsetSheets.UsedSheets.Count; i++)
+      {
+        int sheetSource = nestResultWithOffsetSheets.UsedSheets[i].SheetSource - 1;
+        INfp originalSheetNfp = this.context.Sheets[sheetSource];
+        nestResultWithOffsetSheets.UsedSheets[i].Sheet.ReplacePoints(originalSheetNfp);
+      }
+
+      return nestResultWithOffsetSheets;
     }
 
     private class NestWorker
@@ -294,25 +301,25 @@
         try
         {
           Debug.Print("NestMonitorViewModel.Start-Execute");
-          await nestMonitorViewModel.Context.StartNest();
-          nestMonitorViewModel.ProgressDisplayer.UpdateNestsList();
-          while (!nestMonitorViewModel.IsStopping)
+          await this.nestMonitorViewModel.Context.StartNest();
+          this.nestMonitorViewModel.ProgressDisplayer.UpdateNestsList();
+          while (!this.nestMonitorViewModel.IsStopping)
           {
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            await NestIterate();
-            await UpdateNestsList();
+            await this.NestIterate();
+            await this.UpdateNestsList();
             sw.Stop();
             if (SvgNest.Config.UseParallel)
             {
-              await DisplayToolStripMessage($"Iteration time:{sw.ElapsedMilliseconds}ms Average:{nestMonitorViewModel.Context.State.AveragePlacementTime}ms");
+              await this.DisplayToolStripMessage($"Iteration time:{sw.ElapsedMilliseconds}ms Average:{this.nestMonitorViewModel.Context.State.AveragePlacementTime}ms");
             }
             else
             {
-              await DisplayToolStripMessage($"Nesting time:{sw.ElapsedMilliseconds}ms Average:{nestMonitorViewModel.Context.State.AveragePlacementTime}ms");
+              await this.DisplayToolStripMessage($"Nesting time:{sw.ElapsedMilliseconds}ms Average:{this.nestMonitorViewModel.Context.State.AveragePlacementTime}ms");
             }
 
-            if (nestMonitorViewModel.Context.State.IsErrored)
+            if (this.nestMonitorViewModel.Context.State.IsErrored)
             {
               break;
             }
@@ -329,7 +336,7 @@
         }
         finally
         {
-          await nestMonitorViewModel.mainViewModel.DispatcherService.InvokeAsync(() =>
+          await this.nestMonitorViewModel.mainViewModel.DispatcherService.InvokeAsync(() =>
           {
             this.nestMonitorViewModel.mouseCursorService.OverrideCursor = null;
             this.nestMonitorViewModel.IsStopping = false;
@@ -343,33 +350,33 @@
 
       private async Task DisplayToolStripMessage(string message)
       {
-        if (!nestMonitorViewModel.IsStopping)
+        if (!this.nestMonitorViewModel.IsStopping)
         {
-          await Task.Run(() => nestMonitorViewModel.ProgressDisplayer.DisplayTransientMessage(message)).ConfigureAwait(false);
+          await Task.Run(() => this.nestMonitorViewModel.ProgressDisplayer.DisplayTransientMessage(message)).ConfigureAwait(false);
         }
       }
 
       private async Task UpdateNestsList()
       {
-        if (!nestMonitorViewModel.IsStopping)
+        if (!this.nestMonitorViewModel.IsStopping)
         {
-          await Task.Run(() => nestMonitorViewModel.ProgressDisplayer.UpdateNestsList()).ConfigureAwait(false);
+          await Task.Run(() => this.nestMonitorViewModel.ProgressDisplayer.UpdateNestsList()).ConfigureAwait(false);
         }
       }
 
       private async Task NestIterate()
       {
-        if (!nestMonitorViewModel.IsStopping)
+        if (!this.nestMonitorViewModel.IsStopping)
         {
-          if (nestMonitorViewModel.Context.Nest.IsStopped)
+          if (this.nestMonitorViewModel.Context.Nest.IsStopped)
           {
-            nestMonitorViewModel.Stop();
+            this.nestMonitorViewModel.Stop();
           }
           else
           {
             await Task.Run(() =>
             {
-              nestMonitorViewModel.Context.NestIterate(SvgNest.Config);
+              this.nestMonitorViewModel.Context.NestIterate(SvgNest.Config);
             }).ConfigureAwait(false);
           }
         }

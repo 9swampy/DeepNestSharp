@@ -15,20 +15,20 @@
     {
       var small = 10;
       var large = 20;
-      var sheetPlacementVertical = A.Fake<ISheetPlacement>();
-      var sutVertical = new OriginalFitnessSheet(sheetPlacementVertical);
+      ISheetPlacement sheetPlacementVertical = A.Fake<ISheetPlacement>();
+      OriginalFitnessSheet sutVertical = new OriginalFitnessSheet(sheetPlacementVertical);
       A.CallTo(() => sheetPlacementVertical.RectBounds).Returns(new PolygonBounds(0, 0, small, large));
       A.CallTo(() => sheetPlacementVertical.PlacementType).Returns(PlacementTypeEnum.Gravity);
-      var sheetSquare = A.Fake<ISheet>();
+      ISheet sheetSquare = A.Fake<ISheet>();
       A.CallTo(() => sheetSquare.Area).Returns(Math.Pow(Math.Max(small, large), 2));
       A.CallTo(() => sheetSquare.WidthCalculated).Returns(Math.Max(small, large));
       A.CallTo(() => sheetPlacementVertical.Sheet).Returns(sheetSquare);
-      var hull = A.Fake<INfp>();
+      INfp hull = A.Fake<INfp>();
       A.CallTo(() => hull.Area).Returns(small * large);
       A.CallTo(() => sheetPlacementVertical.Hull).Returns(hull);
 
-      var sheetPlacementHorizontal = A.Fake<ISheetPlacement>();
-      var sutHorizontal = new OriginalFitnessSheet(sheetPlacementHorizontal);
+      ISheetPlacement sheetPlacementHorizontal = A.Fake<ISheetPlacement>();
+      OriginalFitnessSheet sutHorizontal = new OriginalFitnessSheet(sheetPlacementHorizontal);
       A.CallTo(() => sheetPlacementHorizontal.RectBounds).Returns(new PolygonBounds(0, 0, large, small));
       A.CallTo(() => sheetPlacementHorizontal.PlacementType).Returns(PlacementTypeEnum.Gravity);
       A.CallTo(() => sheetPlacementHorizontal.Sheet).Returns(sheetSquare);

@@ -26,11 +26,11 @@
 
       sut = PartPlacementWorker.FromJson(json);
 
-      var config = sut.Config as ISvgNestConfig;
+      ISvgNestConfig config = sut.Config as ISvgNestConfig;
       config.Rotations = 1;
       config.ExportExecutions = false;
       config.ExportExecutions.Should().BeFalse();
-      var dispatcherService = A.Fake<IDispatcherService>();
+      IDispatcherService dispatcherService = A.Fake<IDispatcherService>();
       A.CallTo(() => dispatcherService.InvokeRequired).Returns(false);
 
       ((ITestPartPlacementWorker)sut).State = new NestState(config, dispatcherService);
@@ -39,7 +39,7 @@
       ((ITestPartPlacementWorker)sut).PlacementWorker = placementWorker;
       ((ITestNfpHelper)((ITestPartPlacementWorker)sut).NfpHelper).MinkowskiSumService = MinkowskiSum.CreateInstance(config, A.Fake<INestStateMinkowski>());
 
-      var partPlacementArg = new Capture<PartPlacement>();
+      Capture<PartPlacement> partPlacementArg = new Capture<PartPlacement>();
       A.CallTo(() => placementWorker.AddPlacement(sut.InputPart, A<List<IPartPlacement>>._, A<INfp>._, partPlacementArg, A<PlacementTypeEnum>._, A<ISheet>._, A<double>._)).Returns(default);
 
       inputPartClone = new NoFitPolygon(sut.InputPart, WithChildren.Included);

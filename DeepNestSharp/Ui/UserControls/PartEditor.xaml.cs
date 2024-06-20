@@ -9,7 +9,7 @@
   {
     public PartEditor()
     {
-      InitializeComponent();
+      this.InitializeComponent();
     }
   }
 }

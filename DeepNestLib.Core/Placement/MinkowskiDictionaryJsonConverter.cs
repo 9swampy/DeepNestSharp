@@ -15,10 +15,10 @@
 
     public override MinkowskiDictionary Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-      var kvpList = JsonSerializer.Deserialize<List<KeyValuePair<MinkowskiKey, INfp>>>(ref reader, options);
+      List<KeyValuePair<MinkowskiKey, INfp>> kvpList = JsonSerializer.Deserialize<List<KeyValuePair<MinkowskiKey, INfp>>>(ref reader, options);
       var json = JsonSerializer.Serialize(kvpList, options);
-      var result = new MinkowskiDictionary();
-      foreach (var kvp in kvpList)
+      MinkowskiDictionary result = new MinkowskiDictionary();
+      foreach (KeyValuePair<MinkowskiKey, INfp> kvp in kvpList)
       {
         // System.Diagnostics.Debug.Print(string.Join(",", kvp.Key.Item7));
         result.Add(kvp.Key, kvp.Value, false);
@@ -29,7 +29,7 @@
 
     public override void Write(Utf8JsonWriter writer, MinkowskiDictionary dictionary, JsonSerializerOptions options)
     {
-      var kvpList = dictionary.ToList();
+      List<KeyValuePair<MinkowskiKey, INfp>> kvpList = dictionary.ToList();
       JsonSerializer.Serialize(writer, kvpList, options);
     }
   }

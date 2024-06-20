@@ -15,7 +15,7 @@
   {
     public SvgParser(ISvgNestConfig config)
     {
-      Config = config;
+      this.Config = config;
     }
 
     public ISvgNestConfig Config { get; }
@@ -23,13 +23,13 @@
     public static IRawDetail LoadSvg(string path)
     {
       XDocument doc = XDocument.Load(path);
-      var fi = new FileInfo(path);
-      var s = new RawDetail<XElement>();
+      FileInfo fi = new FileInfo(path);
+      RawDetail<XElement> s = new RawDetail<XElement>();
       s.Name = fi.Name;
       List<GraphicsPath> paths = new List<GraphicsPath>();
       var ns = doc.Descendants().First().Name.Namespace.NamespaceName;
 
-      foreach (var item in doc.Descendants("path"))
+      foreach (XElement item in doc.Descendants("path"))
       {
         var dd = item.Attribute("d").Value;
 
@@ -61,7 +61,7 @@
         //    /*Points = p.PathPoints.Select(z => new SvgPoint(z.X, z.Y)).ToArray()*/ });
       }
 
-      foreach (var item in doc.Descendants("rect"))
+      foreach (XElement item in doc.Descendants("rect"))
       {
         double xx = 0;
         double yy = 0;
@@ -82,7 +82,7 @@
         s.AddContour(new LocalContour<XElement>(p.PathPoints.ToList(), new HashSet<XElement> { item }));
       }
 
-      foreach (var item in doc.Descendants(XName.Get("polygon", ns)))
+      foreach (XElement item in doc.Descendants(XName.Get("polygon", ns)))
       {
         var str = item.Attribute("points").Value.ToString();
         var spl = str.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
@@ -279,8 +279,8 @@
       }
 
       // do not include last point if coincident with starting point
-      while (poly.Count > 0 && GeometryUtil.AlmostEqual(poly[0].X, poly[poly.Count - 1].X, Config.ToleranceSvg)
-          && GeometryUtil.AlmostEqual(poly[0].Y, poly[poly.Count - 1].Y, Config.ToleranceSvg))
+      while (poly.Count > 0 && GeometryUtil.AlmostEqual(poly[0].X, poly[poly.Count - 1].X, this.Config.ToleranceSvg)
+          && GeometryUtil.AlmostEqual(poly[0].Y, poly[poly.Count - 1].Y, this.Config.ToleranceSvg))
       {
         poly.RemoveAt(0);
       }

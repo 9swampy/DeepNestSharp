@@ -7,6 +7,6 @@
 
     public int Quantity { get; set; }
 
-    public bool IsSheet => Polygon is ISheet;
+    public bool IsSheet => this.Polygon is ISheet;
   }
 }

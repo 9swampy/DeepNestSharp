@@ -17,25 +17,25 @@
 
     public override double Width
     {
-      get { return config.SheetWidth; }
-      set { config.SheetWidth = value; }
+      get { return this.config.SheetWidth; }
+      set { this.config.SheetWidth = value; }
     }
 
     public override double Height
     {
-      get { return config.SheetHeight; }
-      set { config.SheetHeight = value; }
+      get { return this.config.SheetHeight; }
+      set { this.config.SheetHeight = value; }
     }
 
     public override int Quantity
     {
-      get { return config.SheetQuantity; }
-      set { config.SheetQuantity = value; }
+      get { return this.config.SheetQuantity; }
+      set { this.config.SheetQuantity = value; }
     }
 
     public override string ToJson(bool writeIndented = false)
     {
-      var options = new JsonSerializerOptions();
+      JsonSerializerOptions options = new JsonSerializerOptions();
       options.WriteIndented = writeIndented;
       return JsonSerializer.Serialize(this, options);
     }

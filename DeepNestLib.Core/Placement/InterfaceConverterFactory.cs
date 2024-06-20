@@ -23,7 +23,7 @@
 
     public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
     {
-      var converterType = typeof(InterfaceConverter<,>).MakeGenericType(this.ConcreteType, this.InterfaceType);
+      Type converterType = typeof(InterfaceConverter<,>).MakeGenericType(this.ConcreteType, this.InterfaceType);
 
       return (JsonConverter)Activator.CreateInstance(converterType);
     }

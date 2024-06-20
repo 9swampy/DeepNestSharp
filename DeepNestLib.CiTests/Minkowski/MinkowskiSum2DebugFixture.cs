@@ -48,7 +48,7 @@
 
       ret = NoFitPolygon.FromJson(json);
 
-      var minkowski = MinkowskiSum.CreateInstance(false, A.Fake<INestStateMinkowski>());
+      IMinkowskiSumService minkowski = MinkowskiSum.CreateInstance(false, A.Fake<INestStateMinkowski>());
 
       dllResult = ((ITestNfpHelper)new NfpHelper(minkowski, A.Fake<IWindowUnk>())).ExecuteInterchangeableMinkowski(true, sheet, part);
       newClipperResult = ((ITestNfpHelper)new NfpHelper(minkowski, A.Fake<IWindowUnk>())).ExecuteInterchangeableMinkowski(false, sheet, part);
@@ -114,7 +114,7 @@
     [InlineData(false)]
     public void GivenPartCanBePlacedThenBothShouldSatisfySheetNfpRequirements(bool useDllImport)
     {
-      var minkowski = MinkowskiSum.CreateInstance(false, A.Fake<INestStateMinkowski>());
+      IMinkowskiSumService minkowski = MinkowskiSum.CreateInstance(false, A.Fake<INestStateMinkowski>());
 
       INfp[] result;
       if (useDllImport)
@@ -123,7 +123,7 @@
       }
       else
       {
-        var deframedSheet = sheet; // new Sheet(sheet.Children[0], WithChildren.Excluded);
+        ISheet deframedSheet = sheet; // new Sheet(sheet.Children[0], WithChildren.Excluded);
         result = ((ITestNfpHelper)new NfpHelper(minkowski, A.Fake<IWindowUnk>())).ExecuteInterchangeableMinkowski(useDllImport, deframedSheet, part);
       }
 

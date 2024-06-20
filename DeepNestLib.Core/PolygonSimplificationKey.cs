@@ -9,12 +9,12 @@
     {
     }
 
-    public SvgPoint[] Points => Item1;
+    public SvgPoint[] Points => this.Item1;
 
-    public double? DataB => Item2;
+    public double? DataB => this.Item2;
 
-    public bool DataC => Item3;
+    public bool DataC => this.Item3;
 
-    public bool DataD => Item3;
+    public bool DataD => this.Item3;
   }
 }

@@ -20,7 +20,7 @@
       this.stateFactory = stateFactory;
     }
 
-    protected INestState State => state ?? (state = stateFactory());
+    protected INestState State => this.state ?? (this.state = this.stateFactory());
 
     public abstract bool IsVisibleSecondaryProgressBar { get; set; }
 
@@ -30,12 +30,12 @@
       {
         default:
         case ProgressBar.Primary:
-          loopIndex++;
-          this.DisplayProgress(progressBar, loopIndex / loopMax);
+          this.loopIndex++;
+          this.DisplayProgress(progressBar, this.loopIndex / this.loopMax);
           break;
         case ProgressBar.Secondary:
-          loopIndexSecondary++;
-          this.DisplayProgress(progressBar, loopIndexSecondary / loopMaxSecondary);
+          this.loopIndexSecondary++;
+          this.DisplayProgress(progressBar, this.loopIndexSecondary / this.loopMaxSecondary);
           break;
       }
     }
@@ -57,7 +57,7 @@
 
       if (progressBar == ProgressBar.Secondary)
       {
-        IsVisibleSecondaryProgressBar = true;
+        this.IsVisibleSecondaryProgressBar = true;
       }
 
       this.DisplayProgress(progressBar, 0);
@@ -65,13 +65,13 @@
 
     public void InitialiseLoopProgress(ProgressBar progressBar, string transientMessage, int loopMax)
     {
-      if (State.AverageNestTime == 0 || State.AverageNestTime > 2500)
+      if (this.State.AverageNestTime == 0 || this.State.AverageNestTime > 2500)
       {
         this.DisplayTransientMessage(transientMessage);
       }
 
       System.Diagnostics.Debug.Print(transientMessage);
-      InitialiseLoopProgress(progressBar, loopMax);
+      this.InitialiseLoopProgress(progressBar, loopMax);
     }
 
     public abstract void DisplayProgress(ProgressBar progressBar, double percentageComplete);

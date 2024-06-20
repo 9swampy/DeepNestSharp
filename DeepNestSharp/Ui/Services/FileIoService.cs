@@ -18,13 +18,13 @@
 
     public bool Exists(string filePath)
     {
-      var fileInfo = new FileInfo(filePath);
+      FileInfo fileInfo = new FileInfo(filePath);
       return fileInfo.Exists;
     }
 
     public async Task<string> GetOpenFilePathAsync(string filter, string initialDirectory)
     {
-      var filePaths = await GetOpenFilePathsAsync(filter, initialDirectory, false).ConfigureAwait(false);
+      var filePaths = await this.GetOpenFilePathsAsync(filter, initialDirectory, false).ConfigureAwait(false);
       return filePaths.First();
     }
 
@@ -44,7 +44,7 @@
         }
 
         bool dialogResponse = false;
-        await dispatcherService.InvokeAsync(() => dialogResponse = openFileDialog.ShowDialog() == true).ConfigureAwait(false);
+        await this.dispatcherService.InvokeAsync(() => dialogResponse = openFileDialog.ShowDialog() == true).ConfigureAwait(false);
         if (dialogResponse)
         {
           return openFileDialog.FileNames;
@@ -60,7 +60,7 @@
 
     public string GetSaveFilePath(string fileDialogFilter, string? fileName = null, string? initialDirectory = null)
     {
-      var dlg = new SaveFileDialog()
+      SaveFileDialog dlg = new SaveFileDialog()
       {
         Filter = fileDialogFilter,
       };

@@ -21,7 +21,6 @@
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
-      <!--<ColumnDefinition Width="Auto" MinWidth="250" />-->
       <ColumnDefinition Width="450" />
       <ColumnDefinition Width="*" MinWidth="250" />
     </Grid.ColumnDefinitions>
@@ -62,6 +61,7 @@
     <ProgressBar Grid.Row="1" Margin="0,10,0,0" Height="10" HorizontalAlignment="Stretch" Minimum="0" Maximum="1" Value="{Binding ProgressSecondary, Mode=OneWay}" Visibility="{Binding IsSecondaryProgressVisible, Converter={StaticResource BoolToVis}}" Foreground="LightSeaGreen" />
     <TextBlock Grid.Row="2" Text="{Binding LastLogMessage}" HorizontalAlignment="Stretch" />
     <ListView Grid.Row="3"
+              GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler"
               ItemsSource="{Binding TopNestResults}" 
               SelectedItem="{Binding SelectedItem, Mode=TwoWay}" 
               SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}" d:ItemsSource="{d:SampleData ItemCount=5}">

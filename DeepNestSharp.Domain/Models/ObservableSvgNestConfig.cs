@@ -20,8 +20,8 @@
     [Category("Nest Settings")]
     public double ClipperScale
     {
-      get => svgNestConfig.ClipperScale;
-      set => SetProperty(nameof(ClipperScale), () => svgNestConfig.ClipperScale, v => svgNestConfig.ClipperScale = v, value);
+      get => this.svgNestConfig.ClipperScale;
+      set => this.SetProperty(nameof(this.ClipperScale), () => this.svgNestConfig.ClipperScale, v => this.svgNestConfig.ClipperScale = v, value);
     }
 
     [Description("Gets or sets whether to clip the simplified polygon used in nesting by the hull. This often improves the fit to the original part but may slightly increase the number of points in the simplification and accordingly may marginally slow the nest. Requires a restart of the application because it's not a part of the cache key so you have to restart to reinitialise the cache.")]
@@ -29,16 +29,16 @@
     /// <inheritdoc />
     public bool ClipByHull
     {
-      get => svgNestConfig.ClipByHull;
-      set => SetProperty(nameof(ClipByHull), () => svgNestConfig.ClipByHull, v => svgNestConfig.ClipByHull = v, value);
+      get => this.svgNestConfig.ClipByHull;
+      set => this.SetProperty(nameof(this.ClipByHull), () => this.svgNestConfig.ClipByHull, v => this.svgNestConfig.ClipByHull = v, value);
     }
 
     /// <inheritdoc />
     [Category("Simplifications")]
     public double CurveTolerance
     {
-      get => svgNestConfig.CurveTolerance;
-      set => SetProperty(nameof(CurveTolerance), () => svgNestConfig.CurveTolerance, v => svgNestConfig.CurveTolerance = v, value);
+      get => this.svgNestConfig.CurveTolerance;
+      set => this.SetProperty(nameof(this.CurveTolerance), () => this.svgNestConfig.CurveTolerance, v => this.svgNestConfig.CurveTolerance = v, value);
     }
 
     /// <inheritdoc />
@@ -46,40 +46,40 @@
     [Category("File Settings")]
     public bool DifferentiateChildren
     {
-      get => svgNestConfig.DifferentiateChildren;
-      set => SetProperty(nameof(DifferentiateChildren), () => svgNestConfig.DifferentiateChildren, v => svgNestConfig.DifferentiateChildren = v, value);
+      get => this.svgNestConfig.DifferentiateChildren;
+      set => this.SetProperty(nameof(this.DifferentiateChildren), () => this.svgNestConfig.DifferentiateChildren, v => this.svgNestConfig.DifferentiateChildren = v, value);
     }
 
     /// <inheritdoc />
     [Category("Simplifications")]
     public bool DrawSimplification
     {
-      get => svgNestConfig.DrawSimplification;
-      set => SetProperty(nameof(DrawSimplification), () => svgNestConfig.DrawSimplification, v => svgNestConfig.DrawSimplification = v, value);
+      get => this.svgNestConfig.DrawSimplification;
+      set => this.SetProperty(nameof(this.DrawSimplification), () => this.svgNestConfig.DrawSimplification, v => this.svgNestConfig.DrawSimplification = v, value);
     }
 
     /// <inheritdoc />
     [Category("File Settings")]
     public bool ExportExecutions
     {
-      get => svgNestConfig.ExportExecutions;
-      set => SetProperty(nameof(ExportExecutions), () => svgNestConfig.ExportExecutions, v => svgNestConfig.ExportExecutions = v, value);
+      get => this.svgNestConfig.ExportExecutions;
+      set => this.SetProperty(nameof(this.ExportExecutions), () => this.svgNestConfig.ExportExecutions, v => this.svgNestConfig.ExportExecutions = v, value);
     }
 
     /// <inheritdoc />
     [Category("File Settings")]
     public string ExportExecutionPath
     {
-      get => svgNestConfig.ExportExecutionPath;
-      set => SetProperty(nameof(ExportExecutionPath), () => svgNestConfig.ExportExecutionPath, v => svgNestConfig.ExportExecutionPath = v, value);
+      get => this.svgNestConfig.ExportExecutionPath;
+      set => this.SetProperty(nameof(this.ExportExecutionPath), () => this.svgNestConfig.ExportExecutionPath, v => this.svgNestConfig.ExportExecutionPath = v, value);
     }
 
     /// <inheritdoc />
     [Category("Unimplemented")]
     public bool ExploreConcave
     {
-      get => svgNestConfig.ExploreConcave;
-      set => SetProperty(nameof(ExploreConcave), () => svgNestConfig.ExploreConcave, v => svgNestConfig.ExploreConcave = v, value);
+      get => this.svgNestConfig.ExploreConcave;
+      set => this.SetProperty(nameof(this.ExploreConcave), () => this.svgNestConfig.ExploreConcave, v => this.svgNestConfig.ExploreConcave = v, value);
     }
 
     /// <inheritdoc />
@@ -90,16 +90,16 @@
     [Category("File Settings")]
     public string LastDebugFilePath
     {
-      get => svgNestConfig.LastDebugFilePath;
-      set => SetProperty(nameof(LastDebugFilePath), () => svgNestConfig.LastDebugFilePath, v => svgNestConfig.LastDebugFilePath = v, value);
+      get => this.svgNestConfig.LastDebugFilePath;
+      set => this.SetProperty(nameof(this.LastDebugFilePath), () => this.svgNestConfig.LastDebugFilePath, v => this.svgNestConfig.LastDebugFilePath = v, value);
     }
 
     /// <inheritdoc />
     [Category("File Settings")]
     public string LastNestFilePath
     {
-      get => svgNestConfig.LastNestFilePath;
-      set => SetProperty(nameof(LastNestFilePath), () => svgNestConfig.LastNestFilePath, v => svgNestConfig.LastNestFilePath = v, value);
+      get => this.svgNestConfig.LastNestFilePath;
+      set => this.SetProperty(nameof(this.LastNestFilePath), () => this.svgNestConfig.LastNestFilePath, v => this.svgNestConfig.LastNestFilePath = v, value);
     }
 
     [Description("Merge coaligned and coincident lines when exporting to Dxf so they'll only get cut once (no effect if you're exporting Svg, and of course Spacing setting needs to be 0).")]
@@ -107,16 +107,16 @@
     [Category("File Settings")]
     public bool MergeLines
     {
-      get => svgNestConfig.MergeLines;
-      set => SetProperty(nameof(MergeLines), () => svgNestConfig.MergeLines, v => svgNestConfig.MergeLines = v, value);
+      get => this.svgNestConfig.MergeLines;
+      set => this.SetProperty(nameof(this.MergeLines), () => this.svgNestConfig.MergeLines, v => this.svgNestConfig.MergeLines = v, value);
     }
 
     /// <inheritdoc />
     [Browsable(false)]
     public int MutationRate
     {
-      get => svgNestConfig.MutationRate;
-      set => SetProperty(nameof(MutationRate), () => svgNestConfig.MutationRate, v => svgNestConfig.MutationRate = v, value);
+      get => this.svgNestConfig.MutationRate;
+      set => this.SetProperty(nameof(this.MutationRate), () => this.svgNestConfig.MutationRate, v => this.svgNestConfig.MutationRate = v, value);
     }
 
     /// <inheritdoc />
@@ -128,10 +128,10 @@
     public int MutationRateMax => this.svgNestConfig.MutationRateMax;
 
     [Browsable(false)]
-    public double MutationRateMinAsPercent => MutationRateMin / 100D;
+    public double MutationRateMinAsPercent => this.MutationRateMin / 100D;
 
     [Browsable(false)]
-    public double MutationRateMaxAsPercent => MutationRateMax / 100D;
+    public double MutationRateMaxAsPercent => this.MutationRateMax / 100D;
 
     [Description("Percentage chance that a gene will mutate during procreation. Set it too low and the nest could stagnate. Set it too high and fittest gene sequences may not get inherited.")]
     /// <inheritdoc path="MutationRate">
@@ -139,32 +139,32 @@
     [DisplayName("MutationRate")]
     public double MutationRateAsPercent
     {
-      get => svgNestConfig.MutationRate / 100D;
-      set => SetProperty(nameof(MutationRate), () => svgNestConfig.MutationRate, v => svgNestConfig.MutationRate = (int)v, Math.Round(value * 100D));
+      get => this.svgNestConfig.MutationRate / 100D;
+      set => this.SetProperty(nameof(this.MutationRate), () => this.svgNestConfig.MutationRate, v => this.svgNestConfig.MutationRate = (int)v, Math.Round(value * 100D));
     }
 
     /// <inheritdoc />
     [Category("Nest Settings")]
     public bool OffsetTreePhase
     {
-      get => svgNestConfig.OffsetTreePhase;
-      set => SetProperty(nameof(OffsetTreePhase), () => svgNestConfig.OffsetTreePhase, v => svgNestConfig.OffsetTreePhase = v, value);
+      get => this.svgNestConfig.OffsetTreePhase;
+      set => this.SetProperty(nameof(this.OffsetTreePhase), () => this.svgNestConfig.OffsetTreePhase, v => this.svgNestConfig.OffsetTreePhase = v, value);
     }
 
     /// <inheritdoc />
     [Category("Nest Settings")]
     public bool OverlapDetection
     {
-      get => svgNestConfig.OverlapDetection;
-      set => SetProperty(nameof(OverlapDetection), () => svgNestConfig.OverlapDetection, v => svgNestConfig.OverlapDetection = v, value);
+      get => this.svgNestConfig.OverlapDetection;
+      set => this.SetProperty(nameof(this.OverlapDetection), () => this.svgNestConfig.OverlapDetection, v => this.svgNestConfig.OverlapDetection = v, value);
     }
 
     /// <inheritdoc />
     [Category("Nest Settings")]
     public PlacementTypeEnum PlacementType
     {
-      get => svgNestConfig.PlacementType;
-      set => SetProperty(nameof(PlacementType), () => svgNestConfig.PlacementType, v => svgNestConfig.PlacementType = v, value);
+      get => this.svgNestConfig.PlacementType;
+      set => this.SetProperty(nameof(this.PlacementType), () => this.svgNestConfig.PlacementType, v => this.svgNestConfig.PlacementType = v, value);
     }
 
     /// <inheritdoc />
@@ -172,56 +172,56 @@
     [Category("Genetic Algorithm")]
     public int PopulationSize
     {
-      get => svgNestConfig.PopulationSize;
-      set => SetProperty(nameof(PopulationSize), () => svgNestConfig.PopulationSize, v => svgNestConfig.PopulationSize = v, value);
+      get => this.svgNestConfig.PopulationSize;
+      set => this.SetProperty(nameof(this.PopulationSize), () => this.svgNestConfig.PopulationSize, v => this.svgNestConfig.PopulationSize = v, value);
     }
 
     /// <inheritdoc />
     [Category("Nest Settings")]
     public int ProcreationTimeout
     {
-      get => svgNestConfig.ProcreationTimeout;
-      set => SetProperty(nameof(ProcreationTimeout), () => svgNestConfig.ProcreationTimeout, v => svgNestConfig.ProcreationTimeout = v, value);
+      get => this.svgNestConfig.ProcreationTimeout;
+      set => this.SetProperty(nameof(this.ProcreationTimeout), () => this.svgNestConfig.ProcreationTimeout, v => this.svgNestConfig.ProcreationTimeout = v, value);
     }
 
     /// <inheritdoc />
     [Category("Nest Settings")]
     public int Rotations
     {
-      get => svgNestConfig.Rotations;
-      set => SetProperty(nameof(Rotations), () => svgNestConfig.Rotations, v => svgNestConfig.Rotations = v, value);
+      get => this.svgNestConfig.Rotations;
+      set => this.SetProperty(nameof(this.Rotations), () => this.svgNestConfig.Rotations, v => this.svgNestConfig.Rotations = v, value);
     }
 
     /// <inheritdoc />
     [Browsable(false)]
     public int SaveAsFileTypeIndex
     {
-      get => svgNestConfig.SaveAsFileTypeIndex;
-      set => SetProperty(nameof(SaveAsFileTypeIndex), () => svgNestConfig.SaveAsFileTypeIndex, v => svgNestConfig.SaveAsFileTypeIndex = v, value);
+      get => this.svgNestConfig.SaveAsFileTypeIndex;
+      set => this.SetProperty(nameof(this.SaveAsFileTypeIndex), () => this.svgNestConfig.SaveAsFileTypeIndex, v => this.svgNestConfig.SaveAsFileTypeIndex = v, value);
     }
 
     /// <inheritdoc />
     [Category("Unimplemented")]
     public double Scale
     {
-      get => svgNestConfig.Scale;
-      set => SetProperty(nameof(Scale), () => svgNestConfig.Scale, v => svgNestConfig.Scale = v, value);
+      get => this.svgNestConfig.Scale;
+      set => this.SetProperty(nameof(this.Scale), () => this.svgNestConfig.Scale, v => this.svgNestConfig.Scale = v, value);
     }
 
     /// <inheritdoc />
     [Category("Sheet Defaults")]
     public double SheetHeight
     {
-      get => svgNestConfig.SheetHeight;
-      set => SetProperty(nameof(SheetHeight), () => svgNestConfig.SheetHeight, v => svgNestConfig.SheetHeight = v, value);
+      get => this.svgNestConfig.SheetHeight;
+      set => this.SetProperty(nameof(this.SheetHeight), () => this.svgNestConfig.SheetHeight, v => this.svgNestConfig.SheetHeight = v, value);
     }
 
     /// <inheritdoc />
     [Category("Sheet Defaults")]
     public int SheetQuantity
     {
-      get => svgNestConfig.SheetQuantity;
-      set => SetProperty(nameof(SheetQuantity), () => svgNestConfig.SheetQuantity, v => svgNestConfig.SheetQuantity = v, value);
+      get => this.svgNestConfig.SheetQuantity;
+      set => this.SetProperty(nameof(this.SheetQuantity), () => this.svgNestConfig.SheetQuantity, v => this.svgNestConfig.SheetQuantity = v, value);
     }
 
     /// <inheritdoc />
@@ -229,24 +229,24 @@
     [Category("File Settings")]
     public double SheetSpacing
     {
-      get => svgNestConfig.SheetSpacing;
-      set => SetProperty(nameof(SheetSpacing), () => svgNestConfig.SheetSpacing, v => svgNestConfig.SheetSpacing = v, value);
+      get => this.svgNestConfig.SheetSpacing;
+      set => this.SetProperty(nameof(this.SheetSpacing), () => this.svgNestConfig.SheetSpacing, v => this.svgNestConfig.SheetSpacing = v, value);
     }
 
     /// <inheritdoc />
     [Category("Sheet Defaults")]
     public double SheetWidth
     {
-      get => svgNestConfig.SheetWidth;
-      set => SetProperty(nameof(SheetWidth), () => svgNestConfig.SheetWidth, v => svgNestConfig.SheetWidth = v, value);
+      get => this.svgNestConfig.SheetWidth;
+      set => this.SetProperty(nameof(this.SheetWidth), () => this.svgNestConfig.SheetWidth, v => this.svgNestConfig.SheetWidth = v, value);
     }
 
     /// <inheritdoc />
     [Category("Simplifications")]
     public bool Simplify
     {
-      get => svgNestConfig.Simplify;
-      set => SetProperty(nameof(Simplify), () => svgNestConfig.Simplify, v => svgNestConfig.Simplify = v, value);
+      get => this.svgNestConfig.Simplify;
+      set => this.SetProperty(nameof(this.Simplify), () => this.svgNestConfig.Simplify, v => this.svgNestConfig.Simplify = v, value);
     }
 
     /// <inheritdoc />
@@ -254,32 +254,32 @@
     [Category("Nest Settings")]
     public double Spacing
     {
-      get => svgNestConfig.Spacing;
-      set => SetProperty(nameof(Spacing), () => svgNestConfig.Spacing, v => svgNestConfig.Spacing = v, value);
+      get => this.svgNestConfig.Spacing;
+      set => this.SetProperty(nameof(this.Spacing), () => this.svgNestConfig.Spacing, v => this.svgNestConfig.Spacing = v, value);
     }
 
     /// <inheritdoc />
     [Category("Unimplemented")]
     public double TimeRatio
     {
-      get => svgNestConfig.TimeRatio;
-      set => SetProperty(nameof(TimeRatio), () => svgNestConfig.TimeRatio, v => svgNestConfig.TimeRatio = v, value);
+      get => this.svgNestConfig.TimeRatio;
+      set => this.SetProperty(nameof(this.TimeRatio), () => this.svgNestConfig.TimeRatio, v => this.svgNestConfig.TimeRatio = v, value);
     }
 
     /// <inheritdoc />
     [Category("Unimplemented")]
     public double Tolerance
     {
-      get => svgNestConfig.Tolerance;
-      set => SetProperty(nameof(Tolerance), () => svgNestConfig.Tolerance, v => svgNestConfig.Tolerance = v, value);
+      get => this.svgNestConfig.Tolerance;
+      set => this.SetProperty(nameof(this.Tolerance), () => this.svgNestConfig.Tolerance, v => this.svgNestConfig.Tolerance = v, value);
     }
 
     /// <inheritdoc />
     [Category("File Settings")]
     public double ToleranceSvg
     {
-      get => svgNestConfig.ToleranceSvg;
-      set => SetProperty(nameof(ToleranceSvg), () => svgNestConfig.ToleranceSvg, v => svgNestConfig.ToleranceSvg = v, value);
+      get => this.svgNestConfig.ToleranceSvg;
+      set => this.SetProperty(nameof(this.ToleranceSvg), () => this.svgNestConfig.ToleranceSvg, v => this.svgNestConfig.ToleranceSvg = v, value);
     }
 
     /// <inheritdoc />
@@ -287,40 +287,40 @@
     [Category("Experimental")]
     public AnglesEnum StrictAngles
     {
-      get => svgNestConfig.StrictAngles;
-      set => SetProperty(nameof(StrictAngles), () => svgNestConfig.StrictAngles, v => svgNestConfig.StrictAngles = v, value);
+      get => this.svgNestConfig.StrictAngles;
+      set => this.SetProperty(nameof(this.StrictAngles), () => this.svgNestConfig.StrictAngles, v => this.svgNestConfig.StrictAngles = v, value);
     }
 
     /// <inheritdoc />
     [Category("Nest Settings")]
     public int Multiplier
     {
-      get => svgNestConfig.Multiplier;
-      set => SetProperty(nameof(Multiplier), () => svgNestConfig.Multiplier, v => svgNestConfig.Multiplier = v, value);
+      get => this.svgNestConfig.Multiplier;
+      set => this.SetProperty(nameof(this.Multiplier), () => this.svgNestConfig.Multiplier, v => this.svgNestConfig.Multiplier = v, value);
     }
 
     /// <inheritdoc />
     [Category("Experimental")]
     public int ParallelNests
     {
-      get => svgNestConfig.ParallelNests;
-      set => SetProperty(nameof(ParallelNests), () => svgNestConfig.ParallelNests, v => svgNestConfig.ParallelNests = v, value);
+      get => this.svgNestConfig.ParallelNests;
+      set => this.SetProperty(nameof(this.ParallelNests), () => this.svgNestConfig.ParallelNests, v => this.svgNestConfig.ParallelNests = v, value);
     }
 
     /// <inheritdoc />
     [Category("Unimplemented")]
     public bool ShowPartPositions
     {
-      get => svgNestConfig.ShowPartPositions;
-      set => SetProperty(nameof(ShowPartPositions), () => svgNestConfig.ShowPartPositions, v => svgNestConfig.ShowPartPositions = v, value);
+      get => this.svgNestConfig.ShowPartPositions;
+      set => this.SetProperty(nameof(this.ShowPartPositions), () => this.svgNestConfig.ShowPartPositions, v => this.svgNestConfig.ShowPartPositions = v, value);
     }
 
     /// <inheritdoc />
     [Category("Unimplemented")]
     public bool UseHoles
     {
-      get => svgNestConfig.UseHoles;
-      set => SetProperty(nameof(UseHoles), () => svgNestConfig.UseHoles, v => svgNestConfig.UseHoles = v, value);
+      get => this.svgNestConfig.UseHoles;
+      set => this.SetProperty(nameof(this.UseHoles), () => this.svgNestConfig.UseHoles, v => this.svgNestConfig.UseHoles = v, value);
     }
 
     /// <inheritdoc />
@@ -328,16 +328,16 @@
     [Category("Experimental")]
     public bool UseMinkowskiCache
     {
-      get => svgNestConfig.UseMinkowskiCache;
-      set => SetProperty(nameof(UseMinkowskiCache), () => svgNestConfig.UseMinkowskiCache, v => svgNestConfig.UseMinkowskiCache = v, value);
+      get => this.svgNestConfig.UseMinkowskiCache;
+      set => this.SetProperty(nameof(this.UseMinkowskiCache), () => this.svgNestConfig.UseMinkowskiCache, v => this.svgNestConfig.UseMinkowskiCache = v, value);
     }
 
     /// <inheritdoc />
     [Category("Experimental")]
     public bool UseParallel
     {
-      get => svgNestConfig.UseParallel;
-      set => SetProperty(nameof(UseParallel), () => svgNestConfig.UseParallel, v => svgNestConfig.UseParallel = v, value);
+      get => this.svgNestConfig.UseParallel;
+      set => this.SetProperty(nameof(this.UseParallel), () => this.svgNestConfig.UseParallel, v => this.svgNestConfig.UseParallel = v, value);
     }
 
     /// <inheritdoc />
@@ -345,8 +345,8 @@
     [Category("Experimental")]
     public bool UsePriority
     {
-      get => svgNestConfig.UsePriority;
-      set => SetProperty(nameof(UsePriority), () => svgNestConfig.UsePriority, v => svgNestConfig.UsePriority = v, value);
+      get => this.svgNestConfig.UsePriority;
+      set => this.SetProperty(nameof(this.UsePriority), () => this.svgNestConfig.UsePriority, v => this.svgNestConfig.UsePriority = v, value);
     }
 
     /// <inheritdoc />
@@ -354,8 +354,8 @@
     [Category("Experimental")]
     public bool UseDllImport
     {
-      get => svgNestConfig.UseDllImport;
-      set => SetProperty(nameof(UseDllImport), () => svgNestConfig.UseDllImport, v => svgNestConfig.UseDllImport = v, value);
+      get => this.svgNestConfig.UseDllImport;
+      set => this.SetProperty(nameof(this.UseDllImport), () => this.svgNestConfig.UseDllImport, v => this.svgNestConfig.UseDllImport = v, value);
     }
 
     /// <inheritdoc />
@@ -363,15 +363,15 @@
     [Category("Genetic Algorithm")]
     public double TopDiversity
     {
-      get => svgNestConfig.TopDiversity;
-      set => SetProperty(nameof(TopDiversity), () => svgNestConfig.TopDiversity, v => svgNestConfig.TopDiversity = v, value);
+      get => this.svgNestConfig.TopDiversity;
+      set => this.SetProperty(nameof(this.TopDiversity), () => this.svgNestConfig.TopDiversity, v => this.svgNestConfig.TopDiversity = v, value);
     }
 
-    ISvgNestConfig IExportableConfig.ExportableInstance => svgNestConfig;
+    ISvgNestConfig IExportableConfig.ExportableInstance => this.svgNestConfig;
 
     public string ToJson()
     {
-      return svgNestConfig.ToJson();
+      return this.svgNestConfig.ToJson();
     }
   }
 }

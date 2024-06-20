@@ -9,9 +9,9 @@
   {
     public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
     {
-      var boundValue = values[0] as ObservablePartPlacement;
-      var selectedValue = values[1] as ObservablePartPlacement;
-      var hoverValue = values[2] as ObservablePartPlacement;
+      ObservablePartPlacement? boundValue = values[0] as ObservablePartPlacement;
+      ObservablePartPlacement? selectedValue = values[1] as ObservablePartPlacement;
+      ObservablePartPlacement? hoverValue = values[2] as ObservablePartPlacement;
       if (boundValue == null)
       {
         return Brushes.AliceBlue;

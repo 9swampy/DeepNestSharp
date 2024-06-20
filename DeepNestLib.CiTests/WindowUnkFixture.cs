@@ -20,25 +20,25 @@
     [Fact]
     public void ShouldRoundTripSerialize()
     {
-      var sut = new WindowUnk();
+      WindowUnk sut = new WindowUnk();
       var json = sut.ToJson();
-      var actual = WindowUnk.FromJson(json);
+      WindowUnk actual = WindowUnk.FromJson(json);
       actual.Should().BeEquivalentTo(sut);
     }
 
     [Fact]
     public void GenerateAJsonViaNfpHelper()
     {
-      var sut = new WindowUnk();
-      var config = new TestSvgNestConfig();
+      WindowUnk sut = new WindowUnk();
+      TestSvgNestConfig config = new TestSvgNestConfig();
       config.UseDllImport = true;
-      var nfpHelper = new NfpHelper(MinkowskiSum.CreateInstance(config, A.Fake<INestStateMinkowski>()), sut);
+      NfpHelper nfpHelper = new NfpHelper(MinkowskiSum.CreateInstance(config, A.Fake<INestStateMinkowski>()), sut);
 
       ISheet firstSheet;
       new DxfGenerator().GenerateRectangle("Sheet", 180D, 88D, RectangleType.FileLoad).TryConvertToSheet(1, out firstSheet).Should().BeTrue();
       firstSheet.Id = 0;
       INfp firstPart = DxfParser.LoadDxfFileStreamAsNfp("Dxfs._2.dxf");
-      var sheetNfp = new SheetNfp(nfpHelper, firstSheet, firstPart, config.ClipperScale, config.UseDllImport, o => { });
+      SheetNfp sheetNfp = new SheetNfp(nfpHelper, firstSheet, firstPart, config.ClipperScale, config.UseDllImport, o => { });
 
       var json = sut.ToJson();
     }

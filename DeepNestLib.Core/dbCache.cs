@@ -7,14 +7,14 @@
   {
     public DbCache(IWindowUnk w)
     {
-      Window = w;
+      this.Window = w;
     }
 
     public bool Has(DbCacheKey dbCacheKey)
     {
       lock (lockobj)
       {
-        if (Window.nfpCache.ContainsKey(dbCacheKey.Key))
+        if (this.Window.nfpCache.ContainsKey(dbCacheKey.Key))
         {
           return true;
         }
@@ -33,9 +33,9 @@
       {
         lock (lockobj)
         {
-          if (!Window.nfpCache.ContainsKey(obj.Key))
+          if (!this.Window.nfpCache.ContainsKey(obj.Key))
           {
-            Window.nfpCache.Add(obj.Key, CacheHelper.CloneNfp(obj.Nfp, inner).ToList());
+            this.Window.nfpCache.Add(obj.Key, CacheHelper.CloneNfp(obj.Nfp, inner).ToList());
           }
           else
           {
@@ -56,9 +56,9 @@
         //var key = "A" + obj.A + "B" + obj.B + "Arot" + (int)Math.Round(obj.ARotation) + "Brot" + (int)Math.Round((obj.BRotation));
 
         //console.log('key: ', key);
-        if (Window.nfpCache.ContainsKey(key.Key))
+        if (this.Window.nfpCache.ContainsKey(key.Key))
         {
-          return CacheHelper.CloneNfp(Window.nfpCache[key.Key].ToArray(), inner);
+          return CacheHelper.CloneNfp(this.Window.nfpCache[key.Key].ToArray(), inner);
         }
 
         return null;

@@ -14,12 +14,12 @@
 
     public void Set(ISheetPlacement sheetPlacement)
     {
-      For(sheetPlacement);
+      this.For(sheetPlacement);
     }
 
     public IZoomPreviewDrawingContext For(ISheetPlacement sheetPlacement)
     {
-      return For(new ObservableSheetPlacement((SheetPlacement)sheetPlacement));
+      return this.For(new ObservableSheetPlacement((SheetPlacement)sheetPlacement));
     }
 
     /// <inheritdoc />
@@ -30,13 +30,13 @@
       this.Width = sheetPlacement.Sheet.WidthCalculated;
       this.Height = sheetPlacement.Sheet.HeightCalculated;
       this.Add(sheetPlacement);
-      foreach (var partPlacement in sheetPlacement.PartPlacements)
+      foreach (IPartPlacement partPlacement in sheetPlacement.PartPlacements)
       {
         INfp part = partPlacement.Part;
         this.Add(partPlacement);
-        foreach (var child in part.Children)
+        foreach (INfp child in part.Children)
         {
-          AppendChild(new ObservableHole(child.Shift(partPlacement)));
+          this.AppendChild(new ObservableHole(child.Shift(partPlacement)));
         }
       }
 
@@ -46,7 +46,7 @@
     /// <inheritdoc />
     public IZoomPreviewDrawingContext For(INfp part)
     {
-      For(new ObservableNfp(part));
+      this.For(new ObservableNfp(part));
       return this;
     }
 
@@ -57,9 +57,9 @@
       this.Width = part.WidthCalculated;
       this.Height = part.HeightCalculated;
       this.Add(part);
-      foreach (var c in part.Children)
+      foreach (INfp c in part.Children)
       {
-        AppendChild(c);
+        this.AppendChild(c);
       }
 
       return this;
@@ -69,19 +69,19 @@
     {
       if (c is ObservableHole observableHole)
       {
-        AppendChild(observableHole);
+        this.AppendChild(observableHole);
       }
       else if (c is ObservablePoint observablePoint)
       {
-        AppendChild(observablePoint);
+        this.AppendChild(observablePoint);
       }
       else if (c is ObservableFrame observableFrame)
       {
-        AppendChild(observableFrame);
+        this.AppendChild(observableFrame);
       }
       else
       {
-        AppendChild(new ObservableHole(c));
+        this.AppendChild(new ObservableHole(c));
       }
     }
 
@@ -89,9 +89,9 @@
     public void AppendChild(ObservableHole child)
     {
       this.Add(child);
-      foreach (var c in child.Children)
+      foreach (INfp c in child.Children)
       {
-        AppendChild(new ObservableHole(c));
+        this.AppendChild(new ObservableHole(c));
       }
     }
 

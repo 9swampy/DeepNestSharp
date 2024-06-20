@@ -10,7 +10,7 @@
     {
       if (x.Item1.Length == y.Item1.Length)
       {
-        return GetHashCode(x) == GetHashCode(y);
+        return this.GetHashCode(x) == this.GetHashCode(y);
       }
 
       return false;

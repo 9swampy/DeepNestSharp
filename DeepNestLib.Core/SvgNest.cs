@@ -44,7 +44,7 @@
     = new SvgNestConfig();
 #endif
 
-    public bool IsStopped { get => isStopped; private set => isStopped = value; }
+    public bool IsStopped { get => this.isStopped; private set => this.isStopped = value; }
 
     private (NestItem<INfp>[] PartsLocal, List<NestItem<ISheet>> SheetsLocal) NestItems { get; }
 
@@ -52,17 +52,17 @@
 
     internal static INfp CleanPolygon2(INfp polygon)
     {
-      var p = SvgToClipper(polygon);
+      List<IntPoint> p = SvgToClipper(polygon);
 
       // remove self-intersections and find the biggest polygon that's left
-      var simple = ClipperLib.Clipper.SimplifyPolygon(p, ClipperLib.PolyFillType.pftNonZero);
+      List<List<IntPoint>> simple = ClipperLib.Clipper.SimplifyPolygon(p, ClipperLib.PolyFillType.pftNonZero);
 
       if (simple == null || simple.Count == 0)
       {
         return null;
       }
 
-      var biggest = simple[0];
+      List<IntPoint> biggest = simple[0];
       var biggestarea = Math.Abs(ClipperLib.Clipper.Area(biggest));
       for (var i = 1; i < simple.Count; i++)
       {
@@ -75,18 +75,18 @@
       }
 
       // clean up singularities, coincident points and edges
-      var clean = ClipperLib.Clipper.CleanPolygon(biggest, 0.01 * Config.CurveTolerance * Config.ClipperScale);
+      List<IntPoint> clean = ClipperLib.Clipper.CleanPolygon(biggest, 0.01 * Config.CurveTolerance * Config.ClipperScale);
 
       if (clean == null || clean.Count == 0)
       {
         return null;
       }
 
-      var cleaned = ClipperToSvg(clean);
+      NoFitPolygon cleaned = ClipperToSvg(clean);
 
       // remove duplicate endpoints
-      var start = cleaned[0];
-      var end = cleaned[cleaned.Length - 1];
+      SvgPoint start = cleaned[0];
+      SvgPoint end = cleaned[cleaned.Length - 1];
       if (start == end || (GeometryUtil.AlmostEqual(start.X, end.X)
           && GeometryUtil.AlmostEqual(start.Y, end.Y)))
       {
@@ -104,8 +104,8 @@
     // offset tree recursively
     internal static void OffsetTree(ref INfp t, double offset, ISvgNestConfig config, bool? inside = null)
     {
-      var simple = NfpSimplifier.SimplifyFunction(t, (inside == null) ? false : inside.Value, config);
-      var offsetpaths = new INfp[] { simple };
+      INfp simple = NfpSimplifier.SimplifyFunction(t, (inside == null) ? false : inside.Value, config);
+      INfp[] offsetpaths = new INfp[] { simple };
       if (Math.Abs(offset) > 0)
       {
         offsetpaths = PolygonOffsetDeepNest(simple, offset);
@@ -140,7 +140,7 @@
       {
         for (var i = 0; i < t.Children.Count; i++)
         {
-          var child = t.Children[i];
+          INfp child = t.Children[i];
           OffsetTree(ref child, -offset, config, (inside == null) ? true : (!inside));
         }
       }
@@ -155,16 +155,16 @@
         return new[] { polygon };
       }
 
-      var p = SvgToClipper(polygon);
+      List<IntPoint> p = SvgToClipper(polygon);
 
       var miterLimit = 4;
-      var co = new ClipperLib.ClipperOffset(miterLimit, Config.CurveTolerance * Config.ClipperScale);
+      ClipperOffset co = new ClipperLib.ClipperOffset(miterLimit, Config.CurveTolerance * Config.ClipperScale);
       co.AddPath(p.ToList(), ClipperLib.JoinType.jtMiter, ClipperLib.EndType.etClosedPolygon);
 
-      var newpaths = new List<List<ClipperLib.IntPoint>>();
+      List<List<IntPoint>> newpaths = new List<List<ClipperLib.IntPoint>>();
       co.Execute(ref newpaths, offset * Config.ClipperScale);
 
-      var result = new List<NoFitPolygon>();
+      List<NoFitPolygon> result = new List<NoFitPolygon>();
       for (var i = 0; i < newpaths.Count; i++)
       {
         result.Add(ClipperToSvg(newpaths[i]));
@@ -201,12 +201,12 @@
           return;
         }
 
-        State.IncrementPopulation();
-        State.SetLastNestTime(payload.BackgroundTime);
-        State.SetLastPlacementTime(payload.PlacePartTime);
-        State.IncrementNestCount();
-        State.IncrementPlacementTime(payload.PlacePartTime);
-        State.IncrementNestTime(payload.BackgroundTime);
+        this.State.IncrementPopulation();
+        this.State.SetLastNestTime(payload.BackgroundTime);
+        this.State.SetLastPlacementTime(payload.PlacePartTime);
+        this.State.IncrementNestCount();
+        this.State.IncrementPlacementTime(payload.PlacePartTime);
+        this.State.IncrementNestTime(payload.BackgroundTime);
 
 #if NCRUNCH
         Trace.WriteLine("payload.Index I don't think is being set right; double check before retrying threaded execution.");
@@ -223,7 +223,7 @@
         }
         else
         {
-          var result = this.State.TopNestResults.TryAdd(payload);
+          TryAddResult result = this.State.TopNestResults.TryAdd(payload);
           if (result == TryAddResult.Added)
           {
             if (this.State.TopNestResults.IndexOf(payload) < this.State.TopNestResults.EliteSurvivors)
@@ -252,10 +252,10 @@
             this.progressDisplayer.DisplayTransientMessage($"Nesting time = {payload.PlacePartTime}ms ({suffix})");
           }
 
-          IncrementSecondaryProgressBar();
+          this.IncrementSecondaryProgressBar();
           if (this.State.TopNestResults.Top.TotalPlacedCount > 0)
           {
-            progressDisplayer.DisplayProgress(State.Population, State.TopNestResults.Top);
+            this.progressDisplayer.DisplayProgress(this.State.Population, this.State.TopNestResults.Top);
           }
 
           System.Diagnostics.Debug.Print($"Nest {payload.BackgroundTime}ms {suffix}");
@@ -279,14 +279,14 @@
         {
           if (this.procreant.IsCurrentGenerationFinished)
           {
-            InitialiseAnotherGeneration();
+            this.InitialiseAnotherGeneration();
           }
 
-          var sheets = new List<ISheet>();
+          List<ISheet> sheets = new List<ISheet>();
           var sid = 0;
           for (int i = 0; i < this.NestItems.SheetsLocal.Count(); i++)
           {
-            var poly = this.NestItems.SheetsLocal[i].Polygon;
+            ISheet poly = this.NestItems.SheetsLocal[i].Polygon;
             for (int j = 0; j < this.NestItems.SheetsLocal[i].Quantity; j++)
             {
               ISheet clone;
@@ -318,38 +318,38 @@
             var end2 = this.procreant.Population.Length * 2 / 3;
             var end3 = this.procreant.Population.Length;
             Parallel.Invoke(
-              () => ProcessPopulation(0, end1, config, sheets.ToArray(), nestStateBackground),
-              () => ProcessPopulation(end1, end2, config, sheets.ToArray(), nestStateBackground),
-              () => ProcessPopulation(end2, this.procreant.Population.Length, config, sheets.ToArray(), nestStateBackground));
+              () => this.ProcessPopulation(0, end1, config, sheets.ToArray(), nestStateBackground),
+              () => this.ProcessPopulation(end1, end2, config, sheets.ToArray(), nestStateBackground),
+              () => this.ProcessPopulation(end2, this.procreant.Population.Length, config, sheets.ToArray(), nestStateBackground));
           }
           else
           {
-            ProcessPopulation(0, this.procreant.Population.Length, config, sheets.ToArray(), nestStateBackground);
+            this.ProcessPopulation(0, this.procreant.Population.Length, config, sheets.ToArray(), nestStateBackground);
           }
         }
       }
       catch (DllNotFoundException)
       {
-        DisplayMinkowskiDllError();
-        State.SetIsErrored();
+        this.DisplayMinkowskiDllError();
+        this.State.SetIsErrored();
       }
       catch (BadImageFormatException badImageEx)
       {
         if (badImageEx.StackTrace.Contains("Minkowski"))
         {
-          DisplayMinkowskiDllError();
+          this.DisplayMinkowskiDllError();
         }
         else
         {
           this.messageService.DisplayMessage(badImageEx);
         }
 
-        State.SetIsErrored();
+        this.State.SetIsErrored();
       }
       catch (Exception ex)
       {
         this.messageService.DisplayMessage(ex);
-        State.SetIsErrored();
+        this.State.SetIsErrored();
 #if NCRUNCH
         throw;
 #endif
@@ -363,7 +363,7 @@
     // converts a polygon from normal double coordinates to integer coordinates used by clipper, as well as x/y -> X/Y
     private static List<ClipperLib.IntPoint> SvgToClipper(INfp polygon)
     {
-      var d = DeepNestClipper.ScaleUpPath(polygon.Points, Config.ClipperScale);
+      List<IntPoint> d = DeepNestClipper.ScaleUpPath(polygon.Points, Config.ClipperScale);
       return d;
     }
 
@@ -388,7 +388,7 @@
 
       for (i = 0; i < list.Length; i++)
       {
-        var p = list[i];
+        PolygonTreeItem p = list[i];
 
         var ischild = false;
         for (j = 0; j < list.Length; j++)
@@ -458,8 +458,8 @@
       }
 #endif
 
-      State.IncrementGenerations();
-      State.ResetPopulation();
+      this.State.IncrementGenerations();
+      this.State.ResetPopulation();
     }
 
     private void DisplayMinkowskiDllError()
@@ -480,7 +480,7 @@
 
     private void ProcessPopulation(int start, int end, ISvgNestConfig config, ISheet[] sheets, INestStateBackground nestStateBackground)
     {
-      State.IncrementThreads();
+      this.State.IncrementThreads();
       for (int i = start; i < end; i++)
       {
         if (this.IsStopped)
@@ -490,7 +490,7 @@
 
         // if(running < config.threads && !GA.population[i].processing && !GA.population[i].fitness){
         // only one background window now...
-        var individual = procreant.Population[i];
+        PopulationItem individual = this.procreant.Population[i];
         if (!this.IsStopped && individual.IsPending)
         {
           individual.Processing = true;
@@ -500,13 +500,13 @@
           }
           else
           {
-            var background = new Background(this.progressDisplayer, this, minkowskiSumService, nestStateBackground, config.UseDllImport);
+            Background background = new Background(this.progressDisplayer, this, this.minkowskiSumService, nestStateBackground, config.UseDllImport);
             background.BackgroundStart(individual, sheets, config);
           }
         }
       }
 
-      State.DecrementThreads();
+      this.State.DecrementThreads();
     }
   }
 }

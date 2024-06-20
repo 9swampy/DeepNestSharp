@@ -386,14 +386,14 @@ namespace DeepNestLib
       get
       {
         var result = (int)Settings.Default["MutationRate"];
-        if (result < MutationRateMin)
+        if (result < this.MutationRateMin)
         {
-          return MutationRateMin;
+          return this.MutationRateMin;
         }
 
-        if (result > MutationRateMax)
+        if (result > this.MutationRateMax)
         {
-          return MutationRateMax;
+          return this.MutationRateMax;
         }
 
         return result;
@@ -417,12 +417,12 @@ namespace DeepNestLib
       get
       {
         var result = (int)Settings.Default["Multiplier"];
-        if (result < MutationRateMin)
+        if (result < this.MutationRateMin)
         {
           return MultiplierMin;
         }
 
-        if (result > MutationRateMax)
+        if (result > this.MutationRateMax)
         {
           return MultiplierMax;
         }

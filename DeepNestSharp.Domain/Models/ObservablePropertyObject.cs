@@ -1,7 +1,7 @@
 ﻿namespace DeepNestSharp.Domain.Models
 {
   using System;
-  using Microsoft.Toolkit.Mvvm.ComponentModel;
+  using CommunityToolkit.Mvvm.ComponentModel;
 
   public abstract class ObservablePropertyObject : ObservableObject
   {
@@ -14,8 +14,8 @@
         if ((value == null && getProp() != null) || (value != null && !value.Equals(getProp())))
         {
           setProp(value);
-          OnPropertyChanged(propertyName);
-          OnPropertyChanged("IsDirty");
+          this.OnPropertyChanged(propertyName);
+          this.OnPropertyChanged("IsDirty");
         }
       }
       catch (Exception ex)

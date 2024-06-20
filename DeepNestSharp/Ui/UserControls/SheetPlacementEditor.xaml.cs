@@ -4,6 +4,6 @@
 
   public partial class SheetPlacementEditor : UserControl
   {
-    public SheetPlacementEditor() => InitializeComponent();
+    public SheetPlacementEditor() => this.InitializeComponent();
   }
 }

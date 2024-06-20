@@ -12,13 +12,13 @@
     [JsonConstructor]
     public Chromosome(double rotation)
     {
-      Rotation = rotation;
+      this.Rotation = rotation;
     }
 
     public Chromosome(INfp part, double rotation)
     {
-      Part = part.Clone();
-      Rotation = rotation;
+      this.Part = part.Clone();
+      this.Rotation = rotation;
     }
 
     [JsonInclude]
@@ -29,7 +29,7 @@
 
     internal void SetIndex(int idx)
     {
-      Part.Id = idx;
+      this.Part.Id = idx;
     }
   }
 }
