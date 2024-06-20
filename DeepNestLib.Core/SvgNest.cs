@@ -46,7 +46,7 @@
 
     public bool IsStopped { get => this.isStopped; private set => this.isStopped = value; }
 
-    private (NestItem<INfp>[] PartsLocal, List<NestItem<ISheet>> SheetsLocal) NestItems { get; }
+    public (NestItem<INfp>[] PartsLocal, List<NestItem<ISheet>> SheetsLocal) NestItems { get; }
 
     private INestStateSvgNest State { get; }
 

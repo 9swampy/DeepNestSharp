@@ -2,6 +2,7 @@
 {
   using System;
   using System.Diagnostics;
+  using System.Linq;
   using System.Runtime.CompilerServices;
   using System.Text;
   using System.Threading.Tasks;
@@ -13,6 +14,7 @@
   using DeepNestSharp.Domain.Docking;
   using DeepNestSharp.Domain.Services;
   using DeepNestSharp.Ui.ViewModels;
+  using Light.GuardClauses.FrameworkExtensions;
 
   public class NestMonitorViewModel : ToolViewModel, INestMonitorViewModel
   {
@@ -279,8 +281,10 @@
     {
       for (int i = 0; i < nestResultWithOffsetSheets.UsedSheets.Count; i++)
       {
-        int sheetSource = nestResultWithOffsetSheets.UsedSheets[i].SheetSource - 1;
-        INfp originalSheetNfp = this.context.Sheets[sheetSource];
+        // Somewhere here, I'm certain there's some shenanigans with modifying the reference for the offset sheets.
+        int partCount = this.Context.Nest.NestItems.PartsLocal.Count();
+        int sheetSource = nestResultWithOffsetSheets.UsedSheets[i].SheetSource - partCount;
+        INfp originalSheetNfp = this.Context.Sheets[sheetSource];
         nestResultWithOffsetSheets.UsedSheets[i].Sheet.ReplacePoints(originalSheetNfp);
       }
 

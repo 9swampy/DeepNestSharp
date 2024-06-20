@@ -50,7 +50,7 @@
     /// <returns>awaitable Task.</returns>
     public async Task StartNest()
     {
-      this.progressDisplayer.DisplayTransientMessage($"Pre-processing. . .");
+      this.progressDisplayer.DisplayTransientMessage($"Pre-processing...");
       this.ReorderSheets();
       this.InternalReset();
       this.Current = null;
