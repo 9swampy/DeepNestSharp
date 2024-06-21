@@ -27,8 +27,8 @@
     {
       this.Clear();
       // Width and Height should include the offset of the sheet in order for the sheet to be centered on the canvas (either that, or the sheets should be substituted with their originals and their Width/HeightCalculated). remove before flight.
-      this.Width = sheetPlacement.Sheet.WidthCalculated;
-      this.Height = sheetPlacement.Sheet.HeightCalculated;
+      this.Width = sheetPlacement.OriginalSheet.WidthCalculated;
+      this.Height = sheetPlacement.OriginalSheet.HeightCalculated;
       this.Add(sheetPlacement);
       foreach (IPartPlacement partPlacement in sheetPlacement.PartPlacements)
       {

@@ -22,15 +22,16 @@
     private double clipperScale;
 
     [JsonConstructor]
-    public SheetPlacement(PlacementTypeEnum placementType, ISheet sheet, IReadOnlyList<IPartPlacement> partPlacements, double mergedLength)
-      : this(placementType, sheet, partPlacements, mergedLength, new TestSvgNestConfig().ClipperScale)
+    public SheetPlacement(PlacementTypeEnum placementType, ISheet sheet, ISheet originalSheet, IReadOnlyList<IPartPlacement> partPlacements, double mergedLength)
+      : this(placementType, sheet, originalSheet, partPlacements, mergedLength, new TestSvgNestConfig().ClipperScale)
     {
     }
 
-    public SheetPlacement(PlacementTypeEnum placementType, ISheet sheet, IReadOnlyList<IPartPlacement> partPlacements, double mergedLength, double clipperScale)
+    public SheetPlacement(PlacementTypeEnum placementType, ISheet sheet, ISheet originalSheet, IReadOnlyList<IPartPlacement> partPlacements, double mergedLength, double clipperScale)
     {
       this.PlacementType = placementType;
       this.Sheet = sheet;
+      this.OriginalSheet = originalSheet;
       this.PartPlacements = partPlacements;
       this.MergedLength = mergedLength;
       this.clipperScale = clipperScale;
@@ -52,6 +53,9 @@
 
     [JsonInclude]
     public ISheet Sheet { get; private set; }
+
+    [JsonInclude]
+    public ISheet OriginalSheet { get; private set; }
 
     [JsonInclude]
     public IReadOnlyList<IPartPlacement> PartPlacements { get; private set; } = new List<IPartPlacement>();

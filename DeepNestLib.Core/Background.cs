@@ -41,7 +41,7 @@
       this.nfpHelper = new NfpHelper(minkowskiSumService, this.window);
     }
 
-    internal void BackgroundStart(PopulationItem individual, ISheet[] sheets, ISvgNestConfig config)
+    internal void BackgroundStart(PopulationItem individual, ISheet[] sheets, ISheet[] originalSheets, ISvgNestConfig config)
     {
       try
       {
@@ -62,11 +62,11 @@
         {
           PmapWorker pmapWorker = new PmapWorker(pairs, this.progressDisplayer, config.UseParallel, this.minkowskiSumService, this.state);
           NfpPair[] pmapResult = pmapWorker.PmapDeepNest();
-          this.ThenDeepNest(pmapResult, gene, sheets, config, individual.Index, backgroundStopwatch);
+          this.ThenDeepNest(pmapResult, gene, sheets, originalSheets, config, individual.Index, backgroundStopwatch);
         }
         else
         {
-          this.SyncPlaceParts(gene, sheets, config, individual.Index, backgroundStopwatch);
+          this.SyncPlaceParts(gene, sheets, originalSheets, config, individual.Index, backgroundStopwatch);
         }
       }
       catch (ArgumentNullException)
@@ -87,11 +87,11 @@
       }
     }
 
-    private void SyncPlaceParts(DeepNestGene gene, ISheet[] sheets, ISvgNestConfig config, int index, Stopwatch backgroundStopwatch)
+    private void SyncPlaceParts(DeepNestGene gene, ISheet[] sheets, ISheet[] originalSheets, ISvgNestConfig config, int index, Stopwatch backgroundStopwatch)
     {
       try
       {
-        NestResult nestResult = new PlacementWorker(this.nfpHelper, sheets, gene, config, backgroundStopwatch, this.state).PlaceParts();
+        NestResult nestResult = new PlacementWorker(this.nfpHelper, sheets, originalSheets, gene, config, backgroundStopwatch, this.state).PlaceParts();
         if (nestResult != null)
         {
           nestResult.Index = index;
@@ -153,13 +153,13 @@
       this.window.Insert(keyItem);
     }
 
-    private void ThenDeepNest(NfpPair[] nfpPairs, DeepNestGene gene, ISheet[] sheets, ISvgNestConfig config, int index, Stopwatch backgroundStopwatch)
+    private void ThenDeepNest(NfpPair[] nfpPairs, DeepNestGene gene, ISheet[] sheets, ISheet[] originalSheets, ISvgNestConfig config, int index, Stopwatch backgroundStopwatch)
     {
       bool hideSecondaryProgress = false;
       if (this.state.NestCount == 0 || this.state.AverageNestTime > 2000)
       {
         hideSecondaryProgress = true;
-        this.progressDisplayer.InitialiseLoopProgress(ProgressBar.Secondary, "Placement. . .", nfpPairs.Length);
+        this.progressDisplayer.InitialiseLoopProgress(ProgressBar.Secondary, "Placement...", nfpPairs.Length);
       }
 
       if (config.UseParallel)
@@ -179,7 +179,7 @@
 
       // console.timeEnd('Total');
       // console.log('before sync');
-      this.SyncPlaceParts(gene, sheets, config, index, backgroundStopwatch);
+      this.SyncPlaceParts(gene, sheets, originalSheets, config, index, backgroundStopwatch);
       if (hideSecondaryProgress)
       {
         this.progressDisplayer.IsVisibleSecondaryProgressBar = false;

@@ -24,6 +24,8 @@
 
     ISheet Sheet { get; }
 
+    ISheet OriginalSheet { get; }
+
     int SheetId { get; }
 
     int SheetSource { get; }

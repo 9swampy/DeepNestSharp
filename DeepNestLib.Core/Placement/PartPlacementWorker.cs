@@ -88,8 +88,12 @@
     [JsonInclude]
     public ISheet Sheet { get; private set; }
 
+    public ISheet OriginalSheet { get; private set; }
+
     [JsonInclude]
     public SheetNfp SheetNfp { get; private set; }
+
+    public SheetNfp OriginalSheetNfp { get; private set; }
 
     [JsonInclude]
     public List<List<IntPoint>> CombinedNfp { get; private set; }
@@ -520,7 +524,7 @@
 
     private SheetPlacement AddPlacement(INfp inputPart, INfp processedPart, PartPlacement position, int inputPartIndex)
     {
-      SheetPlacement result = this.placementWorker.AddPlacement(inputPart, this.Placements, processedPart, position, this.Config.PlacementType, this.Sheet, this.MergedLength);
+      SheetPlacement result = this.placementWorker.AddPlacement(inputPart, this.Placements, processedPart, position, this.Config.PlacementType, this.Sheet, this.OriginalSheet, this.MergedLength);
       if (this.ExportExecutions)
       {
         this.PrepExport(inputPartIndex, "Out.json", () => this.ToJson(true));

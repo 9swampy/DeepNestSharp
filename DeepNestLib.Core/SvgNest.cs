@@ -27,7 +27,7 @@
       IProgressDisplayer progressDisplayer,
       NestState nestState,
       ISvgNestConfig config,
-      (NestItem<INfp>[] PartsLocal, List<NestItem<ISheet>> SheetsLocal) nestItems)
+      (NestItem<INfp>[] PartsLocal, List<NestItem<ISheet>> SheetsLocal, List<NestItem<ISheet>> SheetsOriginal) nestItems)
     {
       this.State = nestState;
       this.messageService = messageService;
@@ -46,7 +46,7 @@
 
     public bool IsStopped { get => this.isStopped; private set => this.isStopped = value; }
 
-    public (NestItem<INfp>[] PartsLocal, List<NestItem<ISheet>> SheetsLocal) NestItems { get; }
+    public (NestItem<INfp>[] PartsLocal, List<NestItem<ISheet>> SheetsLocal, List<NestItem<ISheet>> SheetsOriginal) NestItems { get; }
 
     private INestStateSvgNest State { get; }
 
@@ -283,16 +283,20 @@
           }
 
           List<ISheet> sheets = new List<ISheet>();
+          List<ISheet> originalSheets = new List<ISheet>();
           var sid = 0;
           for (int i = 0; i < this.NestItems.SheetsLocal.Count(); i++)
           {
             ISheet poly = this.NestItems.SheetsLocal[i].Polygon;
+            ISheet originalPoly = this.NestItems.SheetsOriginal[i].Polygon;
             for (int j = 0; j < this.NestItems.SheetsLocal[i].Quantity; j++)
             {
               ISheet clone;
-              if (poly is Sheet sheet)
+              ISheet originalClone;
+              if (poly is Sheet sheet && originalPoly is Sheet originalSheet)
               {
                 clone = (ISheet)poly.CloneTree();
+                originalClone = (ISheet)originalPoly.CloneTree();
               }
               else
               {
@@ -303,28 +307,32 @@
               }
 
               clone.Id = sid; // id is the unique id of all parts that will be nested, including cloned duplicates
+              originalClone.Id = sid;
               clone.Source = poly.Source; // source is the id of each unique part from the main part list
+              originalClone.Source = originalPoly.Source;
               clone.Children = poly.Children.ToList();
+              originalClone.Children = originalPoly.Children.ToList();
 
               sheets.Add(new Sheet(clone, WithChildren.Included));
+              originalSheets.Add(new Sheet(originalClone, WithChildren.Included));
               sid++;
             }
           }
 
-          this.progressDisplayer.DisplayTransientMessage("Executing Nest. . .");
+          this.progressDisplayer.DisplayTransientMessage("Executing Nest...");
           if (config.UseParallel)
           {
             var end1 = this.procreant.Population.Length / 3;
             var end2 = this.procreant.Population.Length * 2 / 3;
             var end3 = this.procreant.Population.Length;
             Parallel.Invoke(
-              () => this.ProcessPopulation(0, end1, config, sheets.ToArray(), nestStateBackground),
-              () => this.ProcessPopulation(end1, end2, config, sheets.ToArray(), nestStateBackground),
-              () => this.ProcessPopulation(end2, this.procreant.Population.Length, config, sheets.ToArray(), nestStateBackground));
+              () => this.ProcessPopulation(0, end1, config, sheets.ToArray(), originalSheets.ToArray(), nestStateBackground),
+              () => this.ProcessPopulation(end1, end2, config, sheets.ToArray(), originalSheets.ToArray(), nestStateBackground),
+              () => this.ProcessPopulation(end2, this.procreant.Population.Length, config, sheets.ToArray(), originalSheets.ToArray(), nestStateBackground));
           }
           else
           {
-            this.ProcessPopulation(0, this.procreant.Population.Length, config, sheets.ToArray(), nestStateBackground);
+            this.ProcessPopulation(0, this.procreant.Population.Length, config, sheets.ToArray(), originalSheets.ToArray(), nestStateBackground);
           }
         }
       }
@@ -478,7 +486,7 @@
                   MessageBoxIcon.Error);
     }
 
-    private void ProcessPopulation(int start, int end, ISvgNestConfig config, ISheet[] sheets, INestStateBackground nestStateBackground)
+    private void ProcessPopulation(int start, int end, ISvgNestConfig config, ISheet[] sheets, ISheet[] originalSheets, INestStateBackground nestStateBackground)
     {
       this.State.IncrementThreads();
       for (int i = start; i < end; i++)
@@ -501,7 +509,7 @@
           else
           {
             Background background = new Background(this.progressDisplayer, this, this.minkowskiSumService, nestStateBackground, config.UseDllImport);
-            background.BackgroundStart(individual, sheets, config);
+            background.BackgroundStart(individual, sheets, originalSheets, config);
           }
         }
       }

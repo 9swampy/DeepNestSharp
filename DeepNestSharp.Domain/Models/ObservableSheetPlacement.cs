@@ -91,6 +91,8 @@
 
     public ISheet Sheet => this.sheetPlacement?.Sheet;
 
+    public ISheet OriginalSheet => this.sheetPlacement?.OriginalSheet;
+
     public int SheetId => this.sheetPlacement.SheetId;
 
     public int SheetSource => this.sheetPlacement.SheetSource;

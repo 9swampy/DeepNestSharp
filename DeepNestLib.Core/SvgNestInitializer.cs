@@ -6,14 +6,17 @@
 
   public class SvgNestInitializer
   {
-    public static (NestItem<INfp>[] PartsLocal, List<NestItem<ISheet>> SheetsLocal) BuildNestItems(ISvgNestConfig config, ICollection<INfp> parts, IList<ISheet> sheets, IProgressDisplayer progressDisplayer)
+    public static (NestItem<INfp>[] PartsLocal, List<NestItem<ISheet>> SheetsLocal, List<NestItem<ISheet>> OriginalSheetsLocal) BuildNestItems(ISvgNestConfig config, ICollection<INfp> parts, IList<ISheet> sheets, IList<ISheet> originalSheets, IProgressDisplayer progressDisplayer)
     {
       List<NestItem<INfp>> partsLocal;
       List<NestItem<ISheet>> sheetsLocal;
+      List<NestItem<ISheet>> originalSheetsLocal;
       SetPolygonIds(parts);
       SetSheetIds(sheets);
+      SetSheetIds(originalSheets);
       IList<INfp> clonedPolygons = ClonePolygons(parts);
       List<ISheet> clonedSheets = CloneSheets(sheets);
+      List<ISheet> clonedOriginalSheets = CloneSheets(originalSheets);
 
       if (config.OffsetTreePhase)
       {
@@ -22,9 +25,10 @@
 
       partsLocal = GroupToNestItemList(clonedPolygons);
       sheetsLocal = GroupToNestItemList(clonedSheets);
-      SetIncrementingSource(partsLocal, sheetsLocal);
+      originalSheetsLocal = GroupToNestItemList(clonedOriginalSheets);
+      SetIncrementingSource(partsLocal, sheetsLocal, originalSheetsLocal);
 
-      return (partsLocal.ToArray(), sheetsLocal);
+      return (partsLocal.ToArray(), sheetsLocal, originalSheetsLocal);
     }
 
     /// <summary>
@@ -32,7 +36,7 @@
     /// </summary>
     /// <param name="partsLocal">NestItem list of parts to index.</param>
     /// <param name="sheetsLocal">NestItem list of sheets to index.</param>
-    private static void SetIncrementingSource(IEnumerable<NestItem<INfp>> partsLocal, IEnumerable<NestItem<ISheet>> sheetsLocal)
+    private static void SetIncrementingSource(IEnumerable<NestItem<INfp>> partsLocal, IEnumerable<NestItem<ISheet>> sheetsLocal, IEnumerable<NestItem<ISheet>> originalSheetsLocal)
     {
       int srcc = 0;
       foreach (NestItem<INfp> item in partsLocal)
@@ -41,6 +45,11 @@
       }
 
       foreach (NestItem<ISheet> item in sheetsLocal)
+      {
+        item.Polygon.Source = srcc++;
+      }
+
+      foreach (NestItem<ISheet> item in originalSheetsLocal)
       {
         item.Polygon.Source = srcc++;
       }
