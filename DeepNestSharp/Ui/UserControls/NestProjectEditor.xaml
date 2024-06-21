@@ -40,7 +40,8 @@
               GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler"
               ItemsSource="{Binding Path=ProjectInfo.DetailLoadInfos}" 
               SelectedItem="{Binding SelectedDetailLoadInfo}" 
-              SelectedIndex="{Binding SelectedDetailLoadInfoIndex, Mode=TwoWay}">
+              SelectedIndex="{Binding SelectedDetailLoadInfoIndex, Mode=TwoWay}"
+              GotFocus="PartEditor_GotFocus">
       <ListView.Resources>
         <DataTemplate x:Key="EditableDouble">
           <DockPanel >
@@ -50,11 +51,6 @@
         <Style TargetType="ListViewItem">
           <Setter Property="HorizontalContentAlignment" Value="Stretch" />
           <Setter Property="Background" Value="{Binding IsValid, Converter={StaticResource IsValidToListViewItemBackgroundColor}}" />
-          <Style.Triggers>
-            <Trigger Property="IsFocused" Value="True">
-              <Setter Property="Foreground" Value="Green" />
-            </Trigger>
-          </Style.Triggers>
         </Style>
       </ListView.Resources>
       <behaviors:Interaction.Triggers>
@@ -133,7 +129,8 @@
     <ListView Grid.Row="3" 
               ItemsSource="{Binding Path=ProjectInfo.SheetLoadInfos}" 
               SelectedItem="{Binding SelectedSheetLoadInfo}" 
-              SelectedIndex="{Binding SelectedSheetLoadInfoIndex, Mode=TwoWay}">
+              SelectedIndex="{Binding SelectedSheetLoadInfoIndex, Mode=TwoWay}"
+              GotFocus="SheetEditor_GotFocus">
       <ListView.Resources>
         <DataTemplate x:Key="EditableDouble">
           <DockPanel >
@@ -142,11 +139,6 @@
         </DataTemplate>
         <Style TargetType="ListViewItem">
           <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-          <Style.Triggers>
-            <Trigger Property="IsFocused" Value="True">
-              <Setter Property="Foreground" Value="Green" />
-            </Trigger>
-          </Style.Triggers>
         </Style>
       </ListView.Resources>
       <ListView.View>

@@ -16,10 +16,8 @@
   {
     private int selectedDetailLoadInfoIndex;
     private IDetailLoadInfo selectedDetailLoadInfo;
-    private bool isInFocusDetailLoadInfo;
     private int selectedSheetLoadInfoIndex;
     private ISheetLoadInfo selectedSheetLoadInfo;
-    private bool isInFocusSheetLoadInfo;
     private AsyncRelayCommand executeNestCommand;
     private AsyncRelayCommand addPartCommand;
     private AsyncRelayCommand addArbitrarySheetCommand;
@@ -84,12 +82,6 @@
       set => this.SetProperty(ref this.selectedDetailLoadInfoIndex, value);
     }
 
-    public bool IsInFocusDetailLoadInfo
-    {
-      get => this.isInFocusDetailLoadInfo;
-      set => this.SetProperty(ref this.isInFocusDetailLoadInfo, value);
-    }
-
     public ISheetLoadInfo SelectedSheetLoadInfo
     {
       get => this.selectedSheetLoadInfo;
@@ -100,12 +92,6 @@
     {
       get => this.selectedSheetLoadInfoIndex;
       set => this.SetProperty(ref this.selectedSheetLoadInfoIndex, value);
-    }
-
-    public bool IsInFocusSheetLoadInfo
-    {
-      get => this.isInFocusSheetLoadInfo;
-      set => this.SetProperty(ref this.isInFocusSheetLoadInfo, value);
     }
 
     public override string TextContent { get => this.ProjectInfo.ToJson(); }

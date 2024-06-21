@@ -1,5 +1,6 @@
 ﻿namespace DeepNestSharp.Ui.UserControls
 {
+  using System;
   using System.ComponentModel;
   using System.Windows;
   using System.Windows.Controls;
@@ -66,6 +67,24 @@
     private bool LastHeaderSame(GridViewColumnHeader? headerClicked)
     {
       return this.lastHeaderClicked == null || this.lastHeaderClicked == headerClicked;
+    }
+
+    private void PartEditor_GotFocus(object sender, RoutedEventArgs e)
+    {
+      ListView? listView = sender as ListView;
+      if (listView is not null)
+      {
+        listView.SelectedIndex = -1;
+      }
+    }
+
+    private void SheetEditor_GotFocus(object sender, RoutedEventArgs e)
+    {
+      ListView? listView = sender as ListView;
+      if (listView is not null)
+      {
+        listView.SelectedIndex = -1;
+      }
     }
   }
 }

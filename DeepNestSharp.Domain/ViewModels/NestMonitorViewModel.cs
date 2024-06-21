@@ -146,9 +146,8 @@
         }
         else
         {
-          INestResult nestResultWithOriginalSheets = this.NestResultWithOriginalSheets(value);
-          this.SetProperty(ref this.selectedItem, nestResultWithOriginalSheets);
-          this.ZoomDrawingContext.For(nestResultWithOriginalSheets.UsedSheets[0]);
+          this.SetProperty(ref this.selectedItem, value);
+          this.ZoomDrawingContext.For(value.UsedSheets[0]);
           this.OnPropertyChanged(nameof(this.ZoomDrawingContext));
         }
       }
@@ -224,7 +223,7 @@
         Debug.Print("NestMonitorViewModel.Stop()");
         this.IsStopping = true;
         this.context?.StopNest();
-        this.nestWorkerTask?.Wait(5000);
+        this.nestWorkerTask?.Wait(1000); // Why shouldn't this be shorter than the previous value of 5 seconds?
       }
     }
 
@@ -277,19 +276,19 @@
       this.Stop();
     }
 
-    private INestResult NestResultWithOriginalSheets(INestResult nestResultWithOffsetSheets)
-    {
-      for (int i = 0; i < nestResultWithOffsetSheets.UsedSheets.Count; i++)
-      {
-        // Somewhere here, I'm certain there's some shenanigans with modifying the reference for the offset sheets.
-        int partCount = this.Context.Nest.NestItems.PartsLocal.Count();
-        int sheetSource = nestResultWithOffsetSheets.UsedSheets[i].SheetSource - partCount;
-        INfp originalSheetNfp = this.Context.Sheets[sheetSource];
-        nestResultWithOffsetSheets.UsedSheets[i].Sheet.ReplacePoints(originalSheetNfp);
-      }
+    //private INestResult NestResultWithOriginalSheets(INestResult nestResultWithOffsetSheets)
+    //{
+    //  for (int i = 0; i < nestResultWithOffsetSheets.UsedSheets.Count; i++)
+    //  {
+    //    // Somewhere here, I'm certain there's some shenanigans with modifying the reference for the offset sheets.
+    //    int partCount = this.Context.Nest.NestItems.PartsLocal.Count();
+    //    int sheetSource = nestResultWithOffsetSheets.UsedSheets[i].SheetSource - partCount;
+    //    INfp originalSheetNfp = this.Context.Sheets[sheetSource];
+    //    nestResultWithOffsetSheets.UsedSheets[i].Sheet.ReplacePoints(originalSheetNfp);
+    //  }
 
-      return nestResultWithOffsetSheets;
-    }
+    //  return nestResultWithOffsetSheets;
+    //}
 
     private class NestWorker
     {
