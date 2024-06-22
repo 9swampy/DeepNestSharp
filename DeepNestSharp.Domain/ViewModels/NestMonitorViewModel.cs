@@ -146,7 +146,7 @@
         }
         else
         {
-          this.SetProperty(ref this.selectedItem, value);
+          this.SetProperty(ref this.selectedItem, value); // by the time we get here, the height of the sheet in this.context is already off. remove before flight.
           this.ZoomDrawingContext.For(value.UsedSheets[0]);
           this.OnPropertyChanged(nameof(this.ZoomDrawingContext));
         }

@@ -34,7 +34,7 @@
     /// </summary>
     /// <param name="nfpHelper">NfpHelper provides access to the Nfp cache generated in the PMap stage and this will add to it, potentially.</param>
     /// <param name="sheets">The list of sheets upon which to place parts.</param>
-    /// <param name="originalSheets">The list of un-offset sheets upon which to place parts after nesting is complete.</param>
+    /// <param name="originalSheets">The list of un-offset sheets corresponding with sheets.</param>
     /// <param name="gene">The list of parts to be placed.</param>
     /// <param name="config">Config for the Nest.</param>
     /// <param name="backgroundStopwatch">Stopwatch started at Background.Start (included the PMap stage prior to the PlacementWorker).</param>

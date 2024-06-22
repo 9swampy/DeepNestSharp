@@ -16,7 +16,7 @@
 
     public async Task Export(Stream stream, ISheetPlacement sheetPlacement, bool doMergeLines, bool differentiateChildren)
     {
-      await this.Export(stream, sheetPlacement.PolygonsForExport, sheetPlacement.Sheet, doMergeLines, differentiateChildren);
+      await this.Export(stream, sheetPlacement.PolygonsForExport, sheetPlacement.OriginalSheet, doMergeLines, differentiateChildren);
     }
 
     public async Task Export(Stream stream, IEnumerable<INfp> polygons, ISheet sheet, bool doMergeLines, bool differentiateChildren)

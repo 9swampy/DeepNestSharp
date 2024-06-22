@@ -41,7 +41,8 @@
               ItemsSource="{Binding Path=ProjectInfo.DetailLoadInfos}" 
               SelectedItem="{Binding SelectedDetailLoadInfo}" 
               SelectedIndex="{Binding SelectedDetailLoadInfoIndex, Mode=TwoWay}"
-              GotFocus="PartEditor_GotFocus">
+              GotFocus="PartEditor_GotFocus"
+              PreviewMouseWheel="HandleHorizontalScroll">
       <ListView.Resources>
         <DataTemplate x:Key="EditableDouble">
           <DockPanel >
@@ -130,7 +131,8 @@
               ItemsSource="{Binding Path=ProjectInfo.SheetLoadInfos}" 
               SelectedItem="{Binding SelectedSheetLoadInfo}" 
               SelectedIndex="{Binding SelectedSheetLoadInfoIndex, Mode=TwoWay}"
-              GotFocus="SheetEditor_GotFocus">
+              GotFocus="SheetEditor_GotFocus"
+              PreviewMouseWheel="HandleHorizontalScroll">
       <ListView.Resources>
         <DataTemplate x:Key="EditableDouble">
           <DockPanel >

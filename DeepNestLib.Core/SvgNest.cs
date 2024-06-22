@@ -27,7 +27,7 @@
       IProgressDisplayer progressDisplayer,
       NestState nestState,
       ISvgNestConfig config,
-      (NestItem<INfp>[] PartsLocal, List<NestItem<ISheet>> SheetsLocal, List<NestItem<ISheet>> SheetsOriginal) nestItems)
+      (NestItem<INfp>[] PartsLocal, List<NestItem<ISheet>> SheetsLocal, List<NestItem<ISheet>> OriginalSheetsLocal) nestItems)
     {
       this.State = nestState;
       this.messageService = messageService;
@@ -46,7 +46,7 @@
 
     public bool IsStopped { get => this.isStopped; private set => this.isStopped = value; }
 
-    public (NestItem<INfp>[] PartsLocal, List<NestItem<ISheet>> SheetsLocal, List<NestItem<ISheet>> SheetsOriginal) NestItems { get; }
+    public (NestItem<INfp>[] PartsLocal, List<NestItem<ISheet>> SheetsLocal, List<NestItem<ISheet>> OriginalSheetsLocal) NestItems { get; }
 
     private INestStateSvgNest State { get; }
 
@@ -288,7 +288,7 @@
           for (int i = 0; i < this.NestItems.SheetsLocal.Count(); i++)
           {
             ISheet poly = this.NestItems.SheetsLocal[i].Polygon;
-            ISheet originalPoly = this.NestItems.SheetsOriginal[i].Polygon;
+            ISheet originalPoly = this.NestItems.OriginalSheetsLocal[i].Polygon;
             for (int j = 0; j < this.NestItems.SheetsLocal[i].Quantity; j++)
             {
               ISheet clone;

@@ -13,7 +13,7 @@
       await this.Export(
         path,
         sheetPlacement.PolygonsForExport,
-        new ISheet[] { sheetPlacement.Sheet, },
+        new ISheet[] { sheetPlacement.OriginalSheet, },
         doMergeLines,
         differentiateChildren).ConfigureAwait(false);
     }

@@ -15,7 +15,8 @@
       HorizontalAlignment="Stretch" 
       VerticalAlignment="Stretch"
       SelectedObject="{Binding SvgNestConfig}"
-      AutoGenerateProperties="true">
+      AutoGenerateProperties="true"
+      PreviewMouseWheel="PropertyGrid_PreviewMouseWheel">
       <xctk:PropertyGrid.EditorDefinitions>
         <xctk:EditorTemplateDefinition TargetProperties="MutationRateAsPercent">
           <xctk:EditorTemplateDefinition.EditingTemplate>

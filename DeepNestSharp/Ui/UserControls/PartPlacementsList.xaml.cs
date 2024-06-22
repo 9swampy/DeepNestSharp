@@ -1,9 +1,12 @@
 ﻿namespace DeepNestSharp.Ui.UserControls
 {
+  using System;
   using System.Collections.Generic;
   using System.Collections.ObjectModel;
   using System.Windows;
   using System.Windows.Controls;
+  using System.Windows.Input;
+  using System.Windows.Media;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain.Models;
 
@@ -29,8 +32,13 @@
                                                         typeof(IPartPlacement),
                                                         typeof(PartPlacementsList),
                                                         new FrameworkPropertyMetadata() { BindsTwoWayByDefault = true });
+    private HorizontalScrollHandler horizontalScrollHandler;
 
-    public PartPlacementsList() => this.InitializeComponent();
+    public PartPlacementsList()
+    {
+      horizontalScrollHandler = new HorizontalScrollHandler();
+      this.InitializeComponent();
+    }
 
     public int SelectedIndex
     {
@@ -52,6 +60,11 @@
     {
       get => (ObservableCollection<ObservablePartPlacement>)this.GetValue(ItemsSourceProperty);
       set => this.SetValue(ItemsSourceProperty, value);
+    }
+
+    private void HandleHorizontalScroll(object sender, MouseWheelEventArgs e)
+    {
+      horizontalScrollHandler.ListView_PreviewMouseWheel(sender, e);
     }
   }
 }

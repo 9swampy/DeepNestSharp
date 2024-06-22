@@ -64,7 +64,8 @@
               GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler"
               ItemsSource="{Binding TopNestResults}" 
               SelectedItem="{Binding SelectedItem, Mode=TwoWay}" 
-              SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}" d:ItemsSource="{d:SampleData ItemCount=5}">
+              SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}" d:ItemsSource="{d:SampleData ItemCount=5}"
+              PreviewMouseWheel="HandleHorizontalScroll">
       <ListView.Resources>
         <Style TargetType="ListViewItem">
           <Setter Property="HorizontalContentAlignment" Value="Stretch" />

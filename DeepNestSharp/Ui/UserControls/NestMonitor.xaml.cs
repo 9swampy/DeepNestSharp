@@ -1,9 +1,12 @@
 ﻿namespace DeepNestSharp.Ui.UserControls
 {
+  using System;
   using System.ComponentModel;
   using System.Windows;
   using System.Windows.Controls;
   using System.Windows.Data;
+  using System.Windows.Input;
+  using System.Windows.Media;
 
   /// <summary>
   /// Interaction logic for NestMonitor.xaml
@@ -12,8 +15,13 @@
   {
     private GridViewColumnHeader lastHeaderClicked;
     private ListSortDirection lastDirection = ListSortDirection.Ascending;
+    private HorizontalScrollHandler horizontalScrollHandler;
 
-    public NestMonitor() => this.InitializeComponent();
+    public NestMonitor()
+    {
+      horizontalScrollHandler = new HorizontalScrollHandler();
+      this.InitializeComponent();
+    }
 
     private static void Sort(ListView sender, string sortBy, ListSortDirection direction)
     {
@@ -79,6 +87,11 @@
     private bool LastHeaderSame(GridViewColumnHeader? headerClicked)
     {
       return this.lastHeaderClicked == null || this.lastHeaderClicked == headerClicked;
+    }
+
+    private void HandleHorizontalScroll(object sender, MouseWheelEventArgs e)
+    {
+      horizontalScrollHandler.ListView_PreviewMouseWheel(sender, e);
     }
   }
 }

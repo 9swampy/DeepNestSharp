@@ -8,6 +8,7 @@
   using DeepNestLib;
   using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Geometry;
+  using DeepNestLib.IO;
   using DeepNestLib.Placement;
 
   public class ObservableSheetPlacement : ObservableObject, ISheetPlacement, IWrapper<ISheetPlacement, SheetPlacement>

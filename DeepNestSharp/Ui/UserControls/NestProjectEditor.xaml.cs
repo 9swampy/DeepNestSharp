@@ -5,13 +5,19 @@
   using System.Windows;
   using System.Windows.Controls;
   using System.Windows.Data;
+  using System.Windows.Input;
 
   public partial class NestProjectEditor : UserControl
   {
     private GridViewColumnHeader lastHeaderClicked;
     private ListSortDirection lastDirection = ListSortDirection.Ascending;
+    private HorizontalScrollHandler horizontalScrollHandler;
 
-    public NestProjectEditor() => this.InitializeComponent();
+    public NestProjectEditor()
+    {
+      horizontalScrollHandler = new HorizontalScrollHandler();
+      this.InitializeComponent();
+    }
 
     private static void Sort(ListView sender, string sortBy, ListSortDirection direction)
     {
@@ -85,6 +91,11 @@
       {
         listView.SelectedIndex = -1;
       }
+    }
+
+    private void HandleHorizontalScroll(object sender, MouseWheelEventArgs e)
+    {
+      horizontalScrollHandler.ListView_PreviewMouseWheel(sender, e);
     }
   }
 }

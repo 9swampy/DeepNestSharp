@@ -11,7 +11,8 @@
     <ListView Grid.Row="2"
               ItemsSource="{Binding NestResult.UsedSheets}" 
               SelectedItem="{Binding SelectedItem}" 
-              SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}">
+              SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
+              PreviewMouseWheel="HandleHorizontalScroll">
       <ListView.Resources>
         <Style TargetType="ListViewItem">
           <Setter Property="HorizontalContentAlignment" Value="Stretch" />
