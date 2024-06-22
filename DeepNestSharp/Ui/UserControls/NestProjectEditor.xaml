@@ -81,8 +81,7 @@
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          <!--Priority not implemented, so commenting out for now:-->
-          <!--<GridViewColumn Header=" Priority " Width="Auto" >
+          <GridViewColumn Header=" Priority " Width="Auto" >
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <DockPanel HorizontalAlignment="Center">
@@ -90,7 +89,7 @@
                 </DockPanel>
               </DataTemplate>
             </GridViewColumn.CellTemplate>
-          </GridViewColumn>-->
+          </GridViewColumn>
           <GridViewColumn Header=" Multiplied " Width="Auto">
             <GridViewColumn.CellTemplate>
               <DataTemplate>

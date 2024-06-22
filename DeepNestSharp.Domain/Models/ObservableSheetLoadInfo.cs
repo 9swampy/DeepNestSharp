@@ -110,7 +110,7 @@
         this.nfp = new InvalidNoFitPolygon();
       }
 
-      this.netArea = null; // Is this hacky?
+      this.netArea = null;
       return this.nfp;
     }
   }

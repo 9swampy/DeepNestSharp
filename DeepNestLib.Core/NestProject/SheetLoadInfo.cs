@@ -38,7 +38,6 @@
 
     public SheetLoadInfo(double width, double height, int quantity)
     {
-      // There used to be a "this" in front of each of these. Were they needed? Genuinely don't know.
       this.SheetType = SheetTypeEnum.Rectangle;
       this.Path = null;
       this.Width = width;
@@ -48,7 +47,6 @@
 
     public SheetLoadInfo(string path, int quantity)
     {
-      // There used to be a "this" in front of each of these. Were they needed? Genuinely don't know.
       this.SheetType = SheetTypeEnum.Arbitrary;
       this.Path = path;
       this.Width = 0;
@@ -63,11 +61,11 @@
 
     public virtual double Height { get; set; }
 
-    public string Path { get; set; } // added later than width/height/quantity: does it also need to be virtual?
+    public string Path { get; set; }
 
     public virtual int Quantity { get; set; }
 
-    public SheetTypeEnum SheetType { get; } // added later than width/height/quantity: does it also need to be virtual?
+    public SheetTypeEnum SheetType { get; }
 
     public virtual double Width { get; set; }
 

@@ -312,7 +312,7 @@
 
         if (this.lastActiveViewModel != null)
         {
-          this.lastActiveViewModel.PropertyChanged += this.ActiveViewModel_PropertyChanged; // step 0: subscribe ActiveViewModel_PropertyChanged to the PropertyChanged notification of lastActiveViewModel.
+          this.lastActiveViewModel.PropertyChanged += this.ActiveViewModel_PropertyChanged;
         }
       }
     }
@@ -344,7 +344,7 @@
       }
     }
 
-    private void ActiveViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e) // step 1: called whenever a property (to which this method is subscribed) is changed. Contains logic determining what action to take based on what property was changed and where the notification came from.
+    private void ActiveViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
       if (sender == this.mainViewModel.ActiveDocument)
       {
@@ -364,13 +364,13 @@
         else if (sender is NestProjectViewModel nestProjectViewModel)
         {
           if (e.PropertyName == nameof(NestProjectViewModel.SelectedDetailLoadInfo) &&
-                 nestProjectViewModel.SelectedDetailLoadInfo is ObservableDetailLoadInfo detailLoadInfo) // step 2: passes detailLoadInfo from nestProjectViewModel to the ObservableDetailLoadInfo constructor, sends to Set method.
+                 nestProjectViewModel.SelectedDetailLoadInfo is ObservableDetailLoadInfo detailLoadInfo)
           {
             this.Set(detailLoadInfo);
             this.IsSelected = true;
           }
           else if (e.PropertyName == nameof(NestProjectViewModel.SelectedSheetLoadInfo) &&
-                 nestProjectViewModel.SelectedSheetLoadInfo is ObservableSheetLoadInfo sheetLoadInfo) // step 2: passes sheetLoadInfo from nestProjectViewModel to the ObservableSheetLoadInfo constructor, sends to Set method.
+                 nestProjectViewModel.SelectedSheetLoadInfo is ObservableSheetLoadInfo sheetLoadInfo)
           {
             this.Set(sheetLoadInfo);
             this.IsSelected = true;
@@ -411,9 +411,8 @@
     /// <summary>
     /// Clear DrawingContext and set for Part as a Frame including Point of origin.
     /// </summary>
-    private void Set(ObservableDetailLoadInfo item) // step 3: updates graphics viewer with the geometry from the newly-instantiated ObservableDetailLoadInfo
+    private void Set(ObservableDetailLoadInfo item)
     {
-      // TODO: this same method needs to be called whenever focus changes from SheetEditor to PartEditor
       INfp polygon = item.LoadAsync().Result;
       INfp shiftedPart = polygon.ShiftToOrigin();
       this.ZoomDrawingContext.For(new ObservableNfp(shiftedPart));
@@ -422,9 +421,8 @@
     /// <summary>
     /// Clear DrawingContext and set for Sheet as a Frame including Point of origin.
     /// </summary>
-    private void Set(ObservableSheetLoadInfo item) // step 3: updates graphics viewer with the geometry from the newly-instantiated ObservableSheetLoadInfo
+    private void Set(ObservableSheetLoadInfo item)
     {
-      // TODO: this same method needs to be called whenever the dimensions of a sheet are changed, and whenever focus changes from PartEditor to SheetEditor
       INfp polygon = item.LoadAsync().Result;
       INfp shiftedPart = polygon.ShiftToOrigin();
       this.ZoomDrawingContext.For(new ObservableNfp(shiftedPart));
